@@ -315,185 +315,191 @@ export function BirlikPaneli({
   // ── Ordu sayfası ──
   const orduSayfasi = (
     <div className="sayfa-izgara ordu-izgara">
-      <div className="sayfa-blok blok-durum">
-        {ustBlok}
-        <h4>{t('durumBaslik')}</h4>
-        <div className="isletme-ozet">
-          <span>
-            ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, b.pay)}%` : `%${formatMusteri(dil, b.pay)}`}</strong>
-          </span>
-          <span>
-            🪖 {t('er')}: <strong>{b.er}</strong>
-            {dokum && dokum.musteriDegisim !== 0 ? <em className={isaretSinifi(dokum.musteriDegisim)}> ({dokum.musteriDegisim > 0 ? '+' : ''}{dokum.musteriDegisim})</em> : null}
-          </span>
-          <span title={t('limitNot')}>
-            📏 {t('limit')}: <strong>{b.limit.komuta}</strong>
-            {b.limit.asim > 0 ? <em className="negatif"> (+{b.limit.asim} {t('fazla')})</em> : null}
-          </span>
-          <span>
-            💪 {t('guc')}: <strong>{b.guc.toplam}</strong>
-          </span>
-          <span>
-            🙂 {t('moral')}: <strong>{b.moral.deger}</strong> ({yuzdeMetni(b.moral.gucYuzde)})
-          </span>
-          <span>
-            🎖️ {t('talim')}: <strong>{b.talim.seviye}</strong> ({yuzdeMetni(b.talim.gucYuzde)})
-          </span>
-          {b.yarali.sayi > 0 && (
+      <div className="sayfa-sutun ordu-kol">
+        <div className="sayfa-blok blok-durum">
+          {ustBlok}
+          <h4>{t('durumBaslik')}</h4>
+          <div className="isletme-ozet">
             <span>
-              🩹 {t('yarali')}: <strong>{b.yarali.sayi}</strong>
+              ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, b.pay)}%` : `%${formatMusteri(dil, b.pay)}`}</strong>
             </span>
-          )}
-          {durum.otorite && (
             <span>
-              🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
+              🪖 {t('er')}: <strong>{b.er}</strong>
+              {dokum && dokum.musteriDegisim !== 0 ? <em className={isaretSinifi(dokum.musteriDegisim)}> ({dokum.musteriDegisim > 0 ? '+' : ''}{dokum.musteriDegisim})</em> : null}
             </span>
+            <span title={t('limitNot')}>
+              📏 {t('limit')}: <strong>{b.limit.komuta}</strong>
+              {b.limit.asim > 0 ? <em className="negatif"> (+{b.limit.asim} {t('fazla')})</em> : null}
+            </span>
+            <span>
+              💪 {t('guc')}: <strong>{b.guc.toplam}</strong>
+            </span>
+            <span>
+              🙂 {t('moral')}: <strong>{b.moral.deger}</strong> ({yuzdeMetni(b.moral.gucYuzde)})
+            </span>
+            <span>
+              🎖️ {t('talim')}: <strong>{b.talim.seviye}</strong> ({yuzdeMetni(b.talim.gucYuzde)})
+            </span>
+            {b.yarali.sayi > 0 && (
+              <span>
+                🩹 {t('yarali')}: <strong>{b.yarali.sayi}</strong>
+              </span>
+            )}
+            {durum.otorite && (
+              <span>
+                🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
+              </span>
+            )}
+          </div>
+          {b.rakipler.length > 0 && (
+            <div className="isletme-imtiyazlar">
+              <strong>{t('rakipBaslik')}:</strong> {b.rakipler.map((r) => `${r.ad} — ${t('rakipGuc')} ${r.guc}`).join(' · ')}
+            </div>
           )}
         </div>
-        {b.rakipler.length > 0 && (
-          <div className="isletme-imtiyazlar">
-            <strong>{t('rakipBaslik')}:</strong> {b.rakipler.map((r) => `${r.ad} — ${t('rakipGuc')} ${r.guc}`).join(' · ')}
-          </div>
-        )}
-      </div>
-
-      <div className="sayfa-sutun blok-yan1">
-        <div className="sayfa-blok blok-guc">
-          <h4>{t('gucBaslik')}</h4>
-          <div className="isletme-dokum">
-            <div>
-              {t('ham')}: <strong>{b.guc.ham}</strong>
-              <small>
-                {' '}
-                ({(['dusuk', 'orta', 'yuksek'] as const).filter((k) => b.kalite.sayilar[k] > 0).map((k) => `${KALITE_SIMGE[k]} ${b.kalite.sayilar[k]}×${b.guc.kaliteCarpani[k]}`).join(' · ')})
-              </small>
-            </div>
-            <div>
-              {t('birlikCarpani')}: <strong>×{b.guc.saldiriCarpani} / ×{b.guc.savunmaCarpani}</strong>
-            </div>
-            {b.guc.bonuslar.map((x) => (
-              <div key={x.kod + x.taraf} className={x.yuzde >= 0 ? 'cemaat-arti' : 'cemaat-eksi'}>
-                {d(x.ad)}: <strong>{yuzdeMetni(x.yuzde)}</strong>
+        <div className="sayfa-sutun blok-yan1">
+          <div className="sayfa-blok blok-guc">
+            <h4>{t('gucBaslik')}</h4>
+            <div className="isletme-dokum">
+              <div>
+                {t('ham')}: <strong>{b.guc.ham}</strong>
+                <small>
+                  {' '}
+                  ({(['dusuk', 'orta', 'yuksek'] as const).filter((k) => b.kalite.sayilar[k] > 0).map((k) => `${KALITE_SIMGE[k]} ${b.kalite.sayilar[k]}×${b.guc.kaliteCarpani[k]}`).join(' · ')})
+                </small>
               </div>
-            ))}
-            <div className="isletme-dokum-net">
-              {t('toplamGuc')}: <strong>{b.guc.toplam}</strong> <small>(⚔️ {b.guc.saldiri} · 🛡️ {b.guc.savunma})</small>
-            </div>
-            <small>{t('gucNot')}</small>
-          </div>
-        </div>
-        <div className="sayfa-blok blok-doktrin">
-          <h4>{t('doktrinBaslik')}</h4>
-          {b.doktrin.secilen.length === 0 ? (
-            <p className="isletme-bos">{t('doktrinYok')}</p>
-          ) : (
-            <div className="isletme-yatirimlar">
-              {b.doktrin.secilen.map((o) => (
-                <div key={o.id} className="isletme-yatirim">
-                  <strong>
-                    {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
-                  </strong>
-                  <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-                  <small>{doktrinEtkiMetni(o.etki, dil).join(' · ')}</small>
+              <div>
+                {t('birlikCarpani')}: <strong>×{b.guc.saldiriCarpani} / ×{b.guc.savunmaCarpani}</strong>
+              </div>
+              {b.guc.bonuslar.map((x) => (
+                <div key={x.kod + x.taraf} className={x.yuzde >= 0 ? 'cemaat-arti' : 'cemaat-eksi'}>
+                  {d(x.ad)}: <strong>{yuzdeMetni(x.yuzde)}</strong>
                 </div>
               ))}
+              <div className="isletme-dokum-net">
+                {t('toplamGuc')}: <strong>{b.guc.toplam}</strong> <small>(⚔️ {b.guc.saldiri} · 🛡️ {b.guc.savunma})</small>
+              </div>
+              <small>{t('gucNot')}</small>
             </div>
-          )}
-        </div>
-      </div>
-
-      <div className="sayfa-blok blok-pol">
-        <h4>{t('politikaBaslik')}</h4>
-        {politika(
-          'ganimet',
-          t('ganimetPayi'),
-          b.politikalar.ganimetPayi.secili,
-          b.politikalar.ganimetPayi.secenekler,
-          (id) => onBirlikKarar({ ganimet_payi: id })
-        )}
-        {politika('talim', t('talimPol'), b.talim.politika, b.talim.politikalar, (id) => onBirlikKarar({ talim: id }))}
-        {politika('ton', t('tonPol'), b.politikalar.ton.secili, b.politikalar.ton.secenekler, (id) => onBirlikKarar({ ton: id }))}
-      </div>
-
-      <div className="sayfa-blok blok-butce">
-        <h4>{t('dokumBaslik')}</h4>
-        <div className="isletme-dokum">
-          <div>{d(b.hesap.soldAdi)}: <strong>+{formatPara(b.hesap.sold)}</strong></div>
-          <div>{t('gorevGeliri')}: <strong>+{formatPara(b.hesap.gorevGeliri)}</strong></div>
-          <div>{t('ganimetNet')}: <strong>+{formatPara(b.hesap.ganimetNet)}</strong></div>
-          {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong>+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
-          <div>{t('toplamGelir')}: <strong>+{formatPara(b.hesap.toplamGelir)}</strong></div>
-          <div>{t('gErMasrafi')}: <strong>−{formatPara(b.hesap.erMasrafi)}</strong></div>
-          <div>{t('gErzak')}: <strong>−{formatPara(b.hesap.erzak)}</strong></div>
-          {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong>−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
-          <div>{t('gKisla')}: <strong>−{formatPara(b.hesap.kislaBakim)}</strong></div>
-          <div>{t('gTechizat')}: <strong>−{formatPara(b.hesap.techizatBakim)}</strong></div>
-          {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong>−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
-          {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong>−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
-          {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong>−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
-          <div>{t('gTalim')}: <strong>−{formatPara(b.hesap.talimMasrafi)}</strong></div>
-          <div className="isletme-dokum-net">
-            {t('beklenenNet')}: <strong>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
           </div>
-          <small>{t('ekipNot')}</small>
+          <div className="sayfa-blok blok-doktrin">
+            <h4>{t('doktrinBaslik')}</h4>
+            {b.doktrin.secilen.length === 0 ? (
+              <p className="isletme-bos">{t('doktrinYok')}</p>
+            ) : (
+              <div className="isletme-yatirimlar">
+                {b.doktrin.secilen.map((o) => (
+                  <div key={o.id} className="isletme-yatirim">
+                    <strong>
+                      {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
+                    </strong>
+                    <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
+                    <small>{doktrinEtkiMetni(o.etki, dil).join(' · ')}</small>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-        {dokum && dokum.birlik && (
+
+
+      </div>
+      <div className="sayfa-sutun ordu-kol">
+
+        <div className="sayfa-blok blok-pol">
+          <h4>{t('politikaBaslik')}</h4>
+          {politika(
+            'ganimet',
+            t('ganimetPayi'),
+            b.politikalar.ganimetPayi.secili,
+            b.politikalar.ganimetPayi.secenekler,
+            (id) => onBirlikKarar({ ganimet_payi: id })
+          )}
+          {politika('talim', t('talimPol'), b.talim.politika, b.talim.politikalar, (id) => onBirlikKarar({ talim: id }))}
+          {politika('ton', t('tonPol'), b.politikalar.ton.secili, b.politikalar.ton.secenekler, (id) => onBirlikKarar({ ton: id }))}
+        </div>
+        <div className="sayfa-blok blok-butce">
+          <h4>{t('dokumBaslik')}</h4>
           <div className="isletme-dokum">
-            <div>
-              {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('ganimetNet').split(' ')[0]} {formatPara(dokum.birlik.ganimetPara)}
+            <div>{d(b.hesap.soldAdi)}: <strong className="s-arti">+{formatPara(b.hesap.sold)}</strong></div>
+            <div>{t('gorevGeliri')}: <strong className="s-arti">+{formatPara(b.hesap.gorevGeliri)}</strong></div>
+            <div>{t('ganimetNet')}: <strong className="s-arti">+{formatPara(b.hesap.ganimetNet)}</strong></div>
+            {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong className="s-arti">+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
+            <div>{t('toplamGelir')}: <strong className="s-arti">+{formatPara(b.hesap.toplamGelir)}</strong></div>
+            <div>{t('gErMasrafi')}: <strong className="s-eksi">−{formatPara(b.hesap.erMasrafi)}</strong></div>
+            <div>{t('gErzak')}: <strong className="s-eksi">−{formatPara(b.hesap.erzak)}</strong></div>
+            {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong className="s-eksi">−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
+            <div>{t('gKisla')}: <strong className="s-eksi">−{formatPara(b.hesap.kislaBakim)}</strong></div>
+            <div>{t('gTechizat')}: <strong className="s-eksi">−{formatPara(b.hesap.techizatBakim)}</strong></div>
+            {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong className="s-eksi">−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
+            {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-eksi">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
+            {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-eksi">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
+            <div>{t('gTalim')}: <strong className="s-eksi">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
+            <div className="isletme-dokum-net">
+              {t('beklenenNet')}: <strong className={b.hesap.net >= 0 ? 's-arti' : 's-eksi'}>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
             </div>
-            {dokum.uyarilar.map((u, i) => {
-              const sm = uyariMetni(u);
-              return sm ? <div key={i}>{sm}</div> : null;
-            })}
+            <small>{t('ekipNot')}</small>
           </div>
-        )}
-      </div>
-
-      <div className="sayfa-sutun blok-gorev">
-        {gorevlerBlok}
-        <div className="sayfa-blok blok-savas">
-          <h4>{t('savasBaslik')}</h4>
-          {!b.savas.aktif ? (
-            <p className="isletme-bos">{t('savasYok')}</p>
-          ) : (
-            <div className="isletme-ozet">
-              {b.savas.araziAd && (
-                <span>
-                  🏞️ {t('arazi')}: <strong>{d(b.savas.araziAd)}</strong>
-                </span>
-              )}
-              <span>
-                ⚔️ {t('kanat')}: <strong>{b.savas.kanatZafer} / {b.savas.kanatYenilgi}</strong>
-              </span>
-              {b.emir && (
-                <span title={d(b.emir.aciklama)}>
-                  {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>
-                </span>
-              )}
-              {b.kiralik.aktif && (
-                <span>
-                  🗡️ {t('kiralikVar')}: <strong>{b.kiralik.er}</strong>
-                </span>
-              )}
-              {onKiralik && b.kiralik.mumkun && (
-                <button className="ikincil" disabled={yukleniyor} onClick={onKiralik}>
-                  {t('kiralikTut')} · {formatPara(b.kiralik.ucret)} {pb}
-                </button>
-              )}
+          {dokum && dokum.birlik && (
+            <div className="isletme-dokum">
+              <div>
+                {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('ganimetNet').split(' ')[0]} {formatPara(dokum.birlik.ganimetPara)}
+              </div>
+              {dokum.uyarilar.map((u, i) => {
+                const sm = uyariMetni(u);
+                return sm ? <div key={i}>{sm}</div> : null;
+              })}
             </div>
           )}
-          {b.kale > 0 && (
-            <div className="isletme-ozet">
-              <span>
-                🏰 {t('kale')}: <strong>{b.kale}</strong>
-              </span>
-            </div>
-          )}
-          {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster={false} />}
         </div>
-      </div>
 
+      </div>
+      <div className="sayfa-sutun ordu-kol">
+        <div className="sayfa-sutun blok-gorev">
+          {gorevlerBlok}
+          <div className="sayfa-blok blok-savas">
+            <h4>{t('savasBaslik')}</h4>
+            {!b.savas.aktif ? (
+              <p className="isletme-bos">{t('savasYok')}</p>
+            ) : (
+              <div className="isletme-ozet">
+                {b.savas.araziAd && (
+                  <span>
+                    🏞️ {t('arazi')}: <strong>{d(b.savas.araziAd)}</strong>
+                  </span>
+                )}
+                <span>
+                  ⚔️ {t('kanat')}: <strong>{b.savas.kanatZafer} / {b.savas.kanatYenilgi}</strong>
+                </span>
+                {b.emir && (
+                  <span title={d(b.emir.aciklama)}>
+                    {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>
+                  </span>
+                )}
+                {b.kiralik.aktif && (
+                  <span>
+                    🗡️ {t('kiralikVar')}: <strong>{b.kiralik.er}</strong>
+                  </span>
+                )}
+                {onKiralik && b.kiralik.mumkun && (
+                  <button className="ikincil" disabled={yukleniyor} onClick={onKiralik}>
+                    {t('kiralikTut')} · {formatPara(b.kiralik.ucret)} {pb}
+                  </button>
+                )}
+              </div>
+            )}
+            {b.kale > 0 && (
+              <div className="isletme-ozet">
+                <span>
+                  🏰 {t('kale')}: <strong>{b.kale}</strong>
+                </span>
+              </div>
+            )}
+            {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster={false} />}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 
@@ -522,7 +528,7 @@ export function BirlikPaneli({
                   {t('techGuc')} <b>×{sayi(sv.carpan)}</b>
                 </span>
                 <span>
-                  {t('moral')} <b>{isaretliSayi(sv.moral)}{dil === 'en' ? '/yr' : '/yıl'}</b>
+                  {t('moral')} <b className={sv.moral > 0 ? 's-arti' : sv.moral < 0 ? 's-eksi' : ''}>{isaretliSayi(sv.moral)}{dil === 'en' ? '/yr' : '/yıl'}</b>
                 </span>
                 <span>
                   {t('techTalim')} <b>×{sayi(sv.talim)}</b>
@@ -608,7 +614,7 @@ export function BirlikPaneli({
   const terhisBlok = (
     <div className="sayfa-blok blok-terhis">
       <h4>{t('terhisBaslik')}</h4>
-      <div className="isletme-fiyat-not">{t('terhisNot')}</div>
+      <div className="isletme-fiyat-not terhis-not" title={t('terhisNot')}>{t('terhisNot')}</div>
       <div className="isletme-fiyat-satir">
         <input type="number" min={1} max={Math.max(1, b.er - 6)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} className="isletme-sayi-giris" />{' '}
         <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 6 < 1} onClick={() => onTerhis(terhis)}>

@@ -2038,7 +2038,40 @@ function App() {
   // PC: Evin / Mağaza / Sosyalleş / İlişkiler / Gayrimenkuller de strateji sayfaları gibi ana ekranın ortasında açılır
   // (sol-sağ panel ve alttaki meslek tuşları görünür kalır). Yalnız "ilerle" modunda ve bekleyen olay yokken.
   const yanEkranPc = !mobil && !!karakter && ilerleModu && !senaryo && !tanisma && !tanismaSonuc && YAN_EKRANLAR.includes(ekran);
-  const yanEkranSarmal = (jsx: ReactNode) => (!mobil && yanEkranPc ? (panelHedef ? createPortal(jsx, panelHedef) : null) : jsx);
+  const yanEkranBasligi: Partial<Record<Ekran, string>> = {
+    finans: m.shEv,
+    yatirim: m.iyBaslik,
+    magaza: m.mpBaslikTam,
+    sosyallesme: m.spSosyallesBaslik,
+    aile: m.aeBaslikTam,
+  };
+  const yanEkranSarmal = (jsx: ReactNode) =>
+    !mobil && yanEkranPc
+      ? panelHedef
+        ? createPortal(
+            <>
+              <header className="strateji-baslik yan-baslik">
+                <div>
+                  <h1>{yanEkranBasligi[ekran] ?? ''}</h1>
+                </div>
+                <button
+                  type="button"
+                  className="strateji-kapat"
+                  aria-label={m.agKapat}
+                  onClick={() => {
+                    setIslemMesaji(null);
+                    setEkran('oyun');
+                  }}
+                >
+                  ✕
+                </button>
+              </header>
+              {jsx}
+            </>,
+            panelHedef
+          )
+        : null
+      : jsx;
 
   // Strateji sayfası (İşletme/Yatırım/Çalışan/Çevre): PC'de merkez panelde ('panel'), mobilde tam ekran ('tam').
   function stratejiSayfasi(modu: 'panel' | 'tam') {

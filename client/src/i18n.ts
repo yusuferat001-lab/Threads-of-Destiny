@@ -325,7 +325,7 @@ const TR = {
   shIsyeri: 'Yatırım',
   shMagaza: 'Mağaza',
   shSosyallesme: 'Sosyalleş',
-  shIsinKisa: 'Gayrimenkuller',
+  shIsinKisa: 'Mülkler',
   pcKararlar: 'Kararlar',
   shEvinKisa: 'Evin',
   shEvFallback: 'Ev',
@@ -338,7 +338,7 @@ const TR = {
   // ---- Mobil canlı skor rozeti + detay modalı ----
   skorDetayBaslik: 'Canlı Skor',
   skorDetayPlaceholder: 'Skor Hesaplama Detayları',
-  shIsyeriTitle: 'Gayrimenkuller: arazi ve binalar',
+  shIsyeriTitle: 'Mülkler: arazi ve binalar',
   shEvTitle: '{0} — Gelir & Gider',
 
   // ---- EtkiCipleri ----
@@ -464,7 +464,7 @@ const TR = {
   feSohretYil: '⭐ Şöhret {0}/yıl',
 
   // ---- IsYatirimEkrani ----
-  iyBaslik: 'Gayrimenkuller',
+  iyBaslik: 'Mülkler',
   iyGorevin: 'Görevin',
   iyYillikKazanc: 'Yıllık Kazanç',
   iySehirYonetimi: 'Şehir Yönetimi',

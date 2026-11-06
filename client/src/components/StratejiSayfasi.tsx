@@ -3,14 +3,14 @@ import { PiyasaHaberleri } from './PiyasaHaberleri';
 import type { KrediConfig, FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, BirlikKararGirdisi, BirlikTur, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi } from '../format';
-import { bic, type Metinler } from '../i18n';
-import type { Dil } from '../ayarlar';
+import { bic } from '../i18n';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
 import { IsletmePaneli } from './IsletmePaneli';
 import { CemaatPaneli } from './CemaatPaneli';
 import { BirlikPaneli } from './BirlikPaneli';
 import { ButcePaneli } from './ButcePaneli';
 import { KrediKarti } from './KrediKarti';
+import { KaranlikIsler } from './KaranlikIsler';
 import type { AnaTusId } from './AnaEkranMobil';
 
 type StratejiSayfa = AnaTusId;
@@ -96,181 +96,6 @@ interface StratejiSayfasiProps {
   krediConfig?: KrediConfig | null;
   onKrediAl?: (teklifId: string) => void;
   onKrediPazarlik?: () => void;
-}
-
-/** Karanlık iş adları/açıklamaları — i18n.ts yerine bileşene gömülü (NasilOynanir deseni). */
-const KARANLIK_ISLER: Record<string, { tr: { ad: string; aciklama: string }; en: { ad: string; aciklama: string } }> = {
-  kervan_yagmalat: {
-    tr: { ad: '🐫 Rakibin Kervanını Yağmalat', aciklama: 'Yolda baskın yaptır; mal senin olsun, rakibin pazarı sarsılsın.' },
-    en: { ad: "🐫 Have Your Rival's Caravan Raided", aciklama: 'Ambush it on the road; the goods are yours and your rival’s market reels.' },
-  },
-  rakibe_iftira: {
-    tr: { ad: '📜 Rakibe İftira At', aciklama: 'Rakibin hakkında dedikodu yay; müşterileri sana geçsin. Yakalanırsan itibarın zedelenir.' },
-    en: { ad: '📜 Slander Your Rival', aciklama: 'Spread rumours about your rival so customers drift to you. Get caught and your name suffers.' },
-  },
-  gumruk_rusvet: {
-    tr: { ad: '🛃 Gümrüğe Rüşvet', aciklama: 'Gümrükçüye avuç dolusu para; malın sorgusuz geçer, sermayen büyür.' },
-    en: { ad: '🛃 Bribe the Customs House', aciklama: 'A fistful of coin to the customs man; your goods pass unasked, your capital grows.' },
-  },
-  sahte_mucize: {
-    tr: { ad: '✨ Sahte Mucize', aciklama: 'Ağlayan ikona, iyileşen kör… Cemaat sana koşar. Yakalanırsan şarlatansın.' },
-    en: { ad: '✨ Stage a False Miracle', aciklama: 'A weeping icon, a blind man healed… the faithful flock to you. Get caught and you are a fraud.' },
-  },
-  afaroz_ettir: {
-    tr: { ad: '📜 Rakibi Aforoz Ettir', aciklama: 'Üstlerine rakibini ihbar et; cemaatini elinden al.' },
-    en: { ad: '📜 Have Your Rival Excommunicated', aciklama: 'Denounce your rival to the hierarchy and strip away their flock.' },
-  },
-  vali_santaj: {
-    tr: { ad: '🗝️ Valiye Şantaj', aciklama: 'Günah çıkarırken duyduklarını kullan; vali sana borçlansın.' },
-    en: { ad: '🗝️ Blackmail the Governor', aciklama: 'Use what you heard in confession; let the governor owe you.' },
-  },
-  formul_cal: {
-    tr: { ad: '🔍 Rakibin Formülünü Çal', aciklama: 'Atölyesine birini sok; sırrı senin olsun, üretimin artsın.' },
-    en: { ad: "🔍 Steal Your Rival's Formula", aciklama: 'Slip someone into their workshop; the secret is yours and your output grows.' },
-  },
-  hammadde_topla: {
-    tr: { ad: '🪵 Hammaddeyi Kapat', aciklama: 'Piyasadaki malzemeyi peşin al; rakip boş tezgâhta kalsın, sen kârla sat.' },
-    en: { ad: '🪵 Corner the Raw Materials', aciklama: 'Buy up the supply in advance; your rival idles while you sell at a profit.' },
-  },
-  lonca_manipule: {
-    tr: { ad: '⚖️ Lonca Kararını Çarpıt', aciklama: 'Oyları satın al; kararlar senden yana çıksın, ustalar sana yaklaşsın.' },
-    en: { ad: '⚖️ Rig the Guild Vote', aciklama: 'Buy the votes; decisions go your way and the masters draw closer to you.' },
-  },
-  kaos_cikar: {
-    tr: { ad: '🌪️ Kaos Çıkar, Koruma Sat', aciklama: 'Sokakları karıştır, sonra düzeni sen getir; vali sana muhtaç kalsın.' },
-    en: { ad: '🌪️ Stir Chaos, Sell Protection', aciklama: 'Stir up the streets, then bring the order yourself; leave the governor needing you.' },
-  },
-  kaza_duello: {
-    tr: { ad: '🤺 Kaza Süsü Verilmiş Düello', aciklama: 'Rakip komutanı düelloya çağır, "kaza" olsun. Kazanırsan rakibin biter; kaybedersen ölebilirsin.' },
-    en: { ad: '🤺 A Duel Dressed Up as an Accident', aciklama: 'Call the rival commander out and let it be an "accident". Win and your rival is finished; lose and you may die.' },
-  },
-  kervan_baskini: {
-    tr: { ad: '🏴 Kervan Baskını', aciklama: 'Adamlarınla yol kes; ganimet ve silah senin.' },
-    en: { ad: '🏴 Caravan Raid', aciklama: 'Hold up the road with your men; the loot and the weapons are yours.' },
-  },
-};
-
-/** Sünni İslam'da aforoz yerine tekfir fetvası (aynı mekanik, farklı ad). */
-const AFAROZ_SUNNI = {
-  tr: { ad: '📜 Rakip Hakkında Fetva Çıkart', aciklama: 'Kadıya rakibini şikâyet et; hakkında fetva çıksın, cemaati dağılsın.' },
-  en: { ad: '📜 Get a Fatwa Against Your Rival', aciklama: "Denounce your rival to the qadi; let a fatwa scatter their flock." },
-};
-
-function karanlikIsMetni(dil: Dil, id: string, dinKultur?: string | null): { ad: string; aciklama: string } {
-  const kayit = id === 'afaroz_ettir' && dinKultur === 'Sünni İslam' ? AFAROZ_SUNNI : KARANLIK_ISLER[id];
-  if (!kayit) return { ad: id, aciklama: '' };
-  return dil === 'en' ? kayit.en : kayit.tr;
-}
-
-function sucSeviyesiEtiketi(m: Metinler, seviye: number): string {
-  if (seviye < 25) return m.iySicilTemiz;
-  if (seviye < 50) return m.iySicilDikkat;
-  if (seviye < 75) return m.iySicilCiddi;
-  return m.iySicilPesinde;
-}
-
-/** Tek bir karanlık iş kartı — rakip hedefleyen işlerde hedef seçimi taşır. */
-function KaranlikIsKart({
-  is,
-  dil,
-  m,
-  paraBirimi,
-  yukleniyor,
-  rakipler,
-  dinKultur,
-  ekip,
-  onKotuIs,
-}: {
-  is: KotuIsKarti;
-  dil: Dil;
-  m: Metinler;
-  paraBirimi: string;
-  yukleniyor: boolean;
-  rakipler: Rakip[];
-  dinKultur: string | null;
-  ekip: EkipUyesi[];
-  onKotuIs: StratejiSayfasiProps['onKotuIs'];
-}) {
-  const en = dil === 'en';
-  const metin = karanlikIsMetni(dil, is.id, dinKultur);
-  const aktifRakipler = rakipler.filter((r) => !r.yenildi);
-  const rakipHedefli = is.rakipKirmaYuzde > 0 && aktifRakipler.length > 0;
-  const [hedef, setHedef] = useState<string>(aktifRakipler[0]?.ad ?? '');
-  const bekliyor = is.kalanYil > 0;
-  const [calisanId, setCalisanId] = useState<string>('');
-
-  const ozet: string[] = [bic(m.iyKaranlikSans, is.basariSansi)];
-  if (is.tahminiKazanc > 0) ozet.push(bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi));
-  if (is.maliyet > 0) ozet.push(`${en ? 'cost' : 'bedel'} ${formatPara(is.maliyet)} ${paraBirimi}`);
-  if (is.musteriKazanci > 0) ozet.push(en ? `+${is.musteriKazanci} customers` : `+${is.musteriKazanci} müşteri`);
-  if (is.rakipKirmaYuzde >= 100) ozet.push(en ? 'finishes your rival' : 'rakibi bitirir');
-  else if (is.rakipKirmaYuzde > 0) ozet.push(en ? 'weakens your rival' : 'rakibi zayıflatır');
-
-  return (
-    <div className={`yatirim-kart isyatirim-kendi-is-kart${bekliyor ? ' karanlik-bekliyor' : ''}`} title={metin.aciklama}>
-      <span className="meslek-simge">{is.simge}</span>
-      <strong>{metin.ad.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u, '')}</strong>
-      <span className="meslek-aciklama">{ozet.join(' · ')}</span>
-      <span className="meslek-aciklama tam-yardimci-metin">{metin.aciklama}</span>
-
-      {rakipHedefli && !bekliyor && (
-        <div className="karanlik-hedef-satir">
-          <select
-            className="karanlik-hedef-secim"
-            value={hedef}
-            disabled={yukleniyor}
-            onChange={(e) => setHedef(e.target.value)}
-          >
-            {aktifRakipler.map((r) => (
-              <option key={r.ad} value={r.ad}>
-                {en ? 'Target: ' : 'Hedef: '}
-                {r.ad}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      <button
-        className="ikincil karanlik-cevir-buton"
-        disabled={yukleniyor || bekliyor}
-        onClick={() => onKotuIs(is.id, { hedefRakipAd: rakipHedefli ? hedef : undefined })}
-      >
-        {bekliyor ? (en ? 'Lie low for now' : 'Ortalık kızışık') : en ? 'Do it yourself' : 'Kendin çevir'}
-      </button>
-
-      {/* Çalışanınla yaptır (§45): sonuç yıl dönerken öğrenilir; başarıda risk onda, ele verirse sana dönebilir. */}
-      {is.calisanIsi && !bekliyor && (
-        <div className="karanlik-hedef-satir">
-          {ekip.length === 0 ? (
-            <small>{en ? 'Hire an employee to have them do this for you.' : 'Bu işi yaptırmak için bir çalışan tut.'}</small>
-          ) : (
-            <>
-              <select
-                className="karanlik-hedef-secim"
-                value={calisanId || ekip[0].id}
-                disabled={yukleniyor}
-                onChange={(e) => setCalisanId(e.target.value)}
-              >
-                {ekip.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.isim} ({formatYuzde(dil, Math.round(u.sadakat))} {en ? 'loyal' : 'sadık'})
-                  </option>
-                ))}
-              </select>
-              <button
-                className="karanlik-cevir-buton"
-                disabled={yukleniyor}
-                onClick={() => onKotuIs(is.id, { hedefRakipAd: rakipHedefli ? hedef : undefined, ajanId: calisanId || ekip[0].id })}
-              >
-                {en ? 'Have them do it' : 'Yaptır'}
-              </button>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
 }
 
 /** Yönetim etkileşimleri (bağış / yağcılık / hizmet) — iki dilli, bileşene gömülü. */
@@ -762,9 +587,6 @@ export function StratejiSayfasi({
     if (islemMesaji) setModalMesaj(islemMesaji);
   }, [islemMesaji]);
 
-  const husumetEtiket = (h: number) =>
-    h >= 70 ? (en ? 'blood feud' : 'kan davası') : h >= 45 ? (en ? 'holds a grudge' : 'kırgın') : en ? 'lukewarm' : 'ılımlı';
-
   const meslekGucSatirlari: [string, string][] = [];
   // Asker (birlik modu): er sayısı ve teçhizat artık Ordun panelinde (BirlikPaneli) gösterilir.
   void orduMevcudu;
@@ -798,66 +620,6 @@ export function StratejiSayfasi({
   );
   const statEtiket = (adi: 'un' | 'ahlak' | null) =>
     adi === 'ahlak' ? m.skorKirilimAhlak.replace(/^[^\s]+\s/, '') : m.skorKirilimSohret.replace(/^[^\s]+\s/, '');
-
-  const karanlikGovde = () => (
-    <>
-            <div className="kariyer-karanlik-modal-baslik">
-              <h3>{m.iyKaranlikIsler}</h3>
-            </div>
-
-            {/* Rakibin — karanlık işlerin en üstünde: hedef seçimi buradan başlar. */}
-            {rakipler.length > 0 && (
-              <div className="aile-koken-karti kariyer-karanlik-rakip">
-                <h3>{en ? 'Your Rival' : 'Rakibin'}</h3>
-                <div className="aile-koken-listesi">
-                  {rakipler.map((r) => (
-                    <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
-                      ♟️ {r.ad} · {kt(r.meslek)}
-                      {r.yenildi
-                        ? ` · ${en ? 'defeated' : 'saf dışı'}`
-                        : ` · ${en ? 'share' : 'pay'}: ${formatYuzde(dil, pazarDurum?.rakipler.find((x) => x.ad === r.ad)?.pay ?? 0)} · ${husumetEtiket(r.husumet)}`}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
-
-            {[true, false].map((ozel) => {
-              const liste = kotuIsler.filter((k) => k.meslegeOzel === ozel);
-              if (liste.length === 0) return null;
-              return (
-                <div key={String(ozel)} className="karanlik-grup">
-                  <h4 className="karanlik-grup-baslik">
-                    {ozel ? (en ? 'Your trade’s dirty work' : 'Mesleğine özel işler') : en ? 'Anyone can do these' : 'Herkesin işleri'}
-                  </h4>
-                  <div className="yatirim-kartlari">
-                    {liste.map((is) => (
-                      <KaranlikIsKart
-                        key={is.id}
-                        is={is}
-                        dil={dil}
-                        m={m}
-                        paraBirimi={paraBirimi}
-                        yukleniyor={yukleniyor}
-                        rakipler={rakipler}
-                        dinKultur={dinKultur}
-                        ekip={ekip}
-                        onKotuIs={onKotuIs}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-
-            <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
-              {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
-            </p>
-
-    </>
-  );
 
   // Rütbe kademesi + ilerleme çubukları + hapis/veba uyarıları (Asker'de Ordu sayfasının ilk hücresine girer).
   const kademeBlok = (
@@ -1221,7 +983,21 @@ export function StratejiSayfasi({
           )}
 
           {/* ===== KARANLIK İŞLER (ayrı bir pencerede açılır) ===== */}
-          {sayfa === 'cevre' && <div className="strateji-karanlik">{karanlikGovde()}</div>}
+          {sayfa === 'cevre' && (
+            <div className="strateji-karanlik">
+              <KaranlikIsler
+                isler={kotuIsler}
+                rakipler={rakipler}
+                ekip={ekip}
+                paraBirimi={paraBirimi}
+                yukleniyor={yukleniyor}
+                dinKultur={dinKultur}
+                sucSeviyesi={sucSeviyesi}
+                rakipPay={(ad) => pazarDurum?.rakipler.find((x) => x.ad === ad)?.pay ?? 0}
+                onKotuIs={onKotuIs}
+              />
+            </div>
+          )}
         </div>
 
         <aside className="kariyer-yan-sutun">

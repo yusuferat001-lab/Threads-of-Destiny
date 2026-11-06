@@ -428,165 +428,171 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
       {(bolum === 'hepsi' || bolum === 'isletme') && (
         <>
       <div className="sayfa-izgara dukkan-izgara">
-      <div className="sayfa-blok blok-durum">
-      {ustBlok}
-      <div className="isletme-ozet isletme-ozet-ana">
-        <span>
-          ⚖️ {t('pay')}: <strong>{payMetni(dil, durum.pazarPayi)}</strong>
-        </span>
-        <span>
-          👥 {t('musteri')}: <strong>{formatMusteri(dil, durum.musteri)}</strong>
-          {dokum && dokum.musteriDegisim !== 0 ? <em> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
-        </span>
-        <span>
-          🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong>
-        </span>
-        <span>
-          💰 {t('beklenen')}: <strong className={isaretSinifi(durum.butce.net)}>~{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
-        </span>
-      </div>
-
-      <details className="isletme-ozet-detay">
-        <summary>{t('dahaFazla')}</summary>
-        <div className="isletme-ozet">
+      <div className="sayfa-sutun dukkan-kol">
+        <div className="sayfa-blok blok-durum">
+        {ustBlok}
+        <div className="isletme-ozet isletme-ozet-ana">
           <span>
-            🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
+            ⚖️ {t('pay')}: <strong>{payMetni(dil, durum.pazarPayi)}</strong>
           </span>
           <span>
-            📑 {t('slot')}: <strong>{durum.slot.kullanilan}/{durum.slot.toplam}</strong>
-          </span>
-          {durum.uretim && (
-            <span>
-              🔨 {t('uretimTavani')}: <strong>{durum.uretim.tavan}{t('yil')}</strong>
-            </span>
-          )}
-          <span>
-            🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>
-            {durum.vergi.indirimKalanYil > 0 ? ` (${t('vergiIndirim')} ${durum.vergi.indirimKalanYil} ${t('yilKisa')})` : ''}
+            👥 {t('musteri')}: <strong>{formatMusteri(dil, durum.musteri)}</strong>
+            {dokum && dokum.musteriDegisim !== 0 ? <em> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
           </span>
           <span>
-            🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong>
+            🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong>
           </span>
-          {durum.tedarikciBorcu > 0 && (
-            <span>
-              🧾 {t('borc')}: <strong>{formatPara(durum.tedarikciBorcu)} {pb}</strong>
-            </span>
-          )}
-          {durum.otorite && (
-            <span>
-              🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
-            </span>
-          )}
-          {(donemAdi || durum.dunya.savas || durum.dunya.veba) && (
-            <span>
-              🌍 {[donemAdi, durum.dunya.savas ? t('savas') : null, durum.dunya.veba ? t('veba') : null].filter(Boolean).join(' · ')}
-            </span>
-          )}
+          <span>
+            💰 {t('beklenen')}: <strong className={isaretSinifi(durum.butce.net)}>~{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
+          </span>
         </div>
-      </details>
 
-      {durum.imtiyazlar.length > 0 && (
-        <div className="isletme-imtiyazlar">
-          <strong>{t('imtiyazlar')}:</strong>{' '}
-          {durum.imtiyazlar.map((i) => `${IMTIYAZ_ADLARI[i.id] ? d(IMTIYAZ_ADLARI[i.id]) : i.id} (${i.kalanYil} ${t('yilKisa')})`).join(' · ')}
+        <details className="isletme-ozet-detay">
+          <summary>{t('dahaFazla')}</summary>
+          <div className="isletme-ozet">
+            <span>
+              🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
+            </span>
+            <span>
+              📑 {t('slot')}: <strong>{durum.slot.kullanilan}/{durum.slot.toplam}</strong>
+            </span>
+            {durum.uretim && (
+              <span>
+                🔨 {t('uretimTavani')}: <strong>{durum.uretim.tavan}{t('yil')}</strong>
+              </span>
+            )}
+            <span>
+              🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>
+              {durum.vergi.indirimKalanYil > 0 ? ` (${t('vergiIndirim')} ${durum.vergi.indirimKalanYil} ${t('yilKisa')})` : ''}
+            </span>
+            <span>
+              🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong>
+            </span>
+            {durum.tedarikciBorcu > 0 && (
+              <span>
+                🧾 {t('borc')}: <strong>{formatPara(durum.tedarikciBorcu)} {pb}</strong>
+              </span>
+            )}
+            {durum.otorite && (
+              <span>
+                🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
+              </span>
+            )}
+            {(donemAdi || durum.dunya.savas || durum.dunya.veba) && (
+              <span>
+                🌍 {[donemAdi, durum.dunya.savas ? t('savas') : null, durum.dunya.veba ? t('veba') : null].filter(Boolean).join(' · ')}
+              </span>
+            )}
+          </div>
+        </details>
+
+        {durum.imtiyazlar.length > 0 && (
+          <div className="isletme-imtiyazlar">
+            <strong>{t('imtiyazlar')}:</strong>{' '}
+            {durum.imtiyazlar.map((i) => `${IMTIYAZ_ADLARI[i.id] ? d(IMTIYAZ_ADLARI[i.id]) : i.id} (${i.kalanYil} ${t('yilKisa')})`).join(' · ')}
+          </div>
+        )}
+
         </div>
-      )}
-
-      </div>
-      <div className="sayfa-blok blok-depo">
-      {durum.depo.kapasite > 0 && (
-        <div className={`isletme-depo-doldur${uretimModu ? ' isletme-depo-uretim' : ''}`}>
-          <h4>
-            🏚️ {uretimModu ? t('hammaddeDeposu') : t('depoBaslik')} — {durum.depo.kullanilan}/{durum.depo.kapasite} {t('adetBirim')}
-          </h4>
-          <div className="isletme-depo-olcek" title={`${durum.depo.dolulukYuzde}% ${t('depoDolu')}`}>
-            <div className={`isletme-depo-dolgu ${dolulukSinifi(durum.depo.dolulukYuzde)}`} style={{ width: `${Math.min(100, durum.depo.dolulukYuzde)}%` }} />
-            <span>{durum.depo.dolulukYuzde}% {t('depoDolu')}</span>
-          </div>
-          <div className="isletme-depo-chipler">
-            <span>♻️ {t('curume')} %{durum.depo.curumeYuzde}</span>
-            <span>🔧 {t('dukkanGideri')} {formatPara(durum.depo.dukkanGideri)}</span>
-          </div>
-          <div className="isletme-depo-hatlar">
-            {acikHatlar.map((h) => (
-              <div key={h.id} className="isletme-depo-hat" title={`${h.stok} ${t('adetBirim')} (${t('stokPay')})`}>
-                <div className="isletme-depo-hat-ust">
-                  <strong>{h.simge} {d(h.ad)}</strong>
-                  <span>
-                    {t('depodaStok')} <b>{h.stok}</b> · {t('tahminiTalep')} <b>{h.talepMin}–{h.talepMax}</b> · {t('depoBirimFiyat')} {formatPara(h.birimMaliyet)}
-                  </span>
+        <div className="sayfa-blok blok-depo">
+        {durum.depo.kapasite > 0 && (
+          <div className={`isletme-depo-doldur${uretimModu ? ' isletme-depo-uretim' : ''}`}>
+            <h4>
+              🏚️ {uretimModu ? t('hammaddeDeposu') : t('depoBaslik')} — {durum.depo.kullanilan}/{durum.depo.kapasite} {t('adetBirim')}
+            </h4>
+            <div className="isletme-depo-olcek" title={`${durum.depo.dolulukYuzde}% ${t('depoDolu')}`}>
+              <div className={`isletme-depo-dolgu ${dolulukSinifi(durum.depo.dolulukYuzde)}`} style={{ width: `${Math.min(100, durum.depo.dolulukYuzde)}%` }} />
+              <span>{durum.depo.dolulukYuzde}% {t('depoDolu')}</span>
+            </div>
+            <div className="isletme-depo-chipler">
+              <span>♻️ {t('curume')} %{durum.depo.curumeYuzde}</span>
+              <span>🔧 {t('dukkanGideri')} {formatPara(durum.depo.dukkanGideri)}</span>
+            </div>
+            <div className="isletme-depo-hatlar">
+              {acikHatlar.map((h) => (
+                <div key={h.id} className="isletme-depo-hat" title={`${h.stok} ${t('adetBirim')} (${t('stokPay')})`}>
+                  <div className="isletme-depo-hat-ust">
+                    <strong>{h.simge} {d(h.ad)}</strong>
+                    <span>
+                      {t('depodaStok')} <b>{h.stok}</b> · {t('tahminiTalep')} <b>{h.talepMin}–{h.talepMax}</b> · {t('depoBirimFiyat')} {formatPara(h.birimMaliyet)}
+                    </span>
+                  </div>
+                  <div className="isletme-depo-mini">
+                    <div style={{ width: `${durum.depo.kapasite > 0 ? Math.min(100, (h.stok / durum.depo.kapasite) * 100) : 0}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {durum.uretim && (
+              <div className={`isletme-uretim-gosterge${uretimBeklenen > durum.uretim.tavan ? ' isletme-uretim-asildi' : ''}`}>
+                <div>
+                  🔨 {t('uretimBeklenen')}: <b>~{uretimBeklenen}</b> / {t('uretimTavani')}: <b>{durum.uretim.tavan}</b>
                 </div>
                 <div className="isletme-depo-mini">
-                  <div style={{ width: `${durum.depo.kapasite > 0 ? Math.min(100, (h.stok / durum.depo.kapasite) * 100) : 0}%` }} />
+                  <div style={{ width: `${Math.min(100, (uretimBeklenen / Math.max(1, durum.uretim.tavan)) * 100)}%` }} />
                 </div>
+                {uretimBeklenen > durum.uretim.tavan && <div className="isletme-uretim-uyari">⚠️ {t('uretimTavaniAsildi')}</div>}
+              </div>
+            )}
+            <div className="isletme-fiyat-not">{t('depoOtoNot')}</div>
+          </div>
+        )}
+
+        </div>
+      </div>
+      <div className="sayfa-sutun dukkan-kol">
+        <div className="sayfa-blok blok-hatlar">
+        <h4>{t('hatlar')}</h4>
+        <div className="isletme-hatlar">{acikHatlar.map(hatKarti)}</div>
+        {digerHatlar.length > 0 && (
+          <>
+            {acikHatlar.length > 0 && (
+              <button className="isletme-diger-hatlar ikincil" onClick={() => setDigerAcik(!digerAcik)}>
+                {digerAcik ? '▴' : '▾'} {t('digerHatlar')} ({digerHatlar.length})
+              </button>
+            )}
+            {digerGoster && <div className="isletme-hatlar">{digerHatlar.map(hatKarti)}</div>}
+          </>
+        )}
+
+        </div>
+      </div>
+      <div className="sayfa-sutun dukkan-kol">
+        <div className="sayfa-blok blok-piyasa">
+        {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
+        </div>
+        <div className="sayfa-blok blok-butce">
+        <h4 className="isletme-butce-baslik">{t('butceBaslik')}</h4>
+        <div className="isletme-butce">
+          <div className="isletme-butce-sutun">
+            <h5>{t('buYil')}</h5>
+            <div className="isletme-butce-satir"><span>{t('satis')}</span><span className="kademe-yuksek">+{formatPara(durum.butce.satis)}</span></div>
+            <div className="isletme-butce-satir"><span>{etiketAlim}</span><span className="kademe-dusuk">−{formatPara(durum.butce.alim)}</span></div>
+            <div className="isletme-butce-satir"><span>{t('depoMasrafi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.depo)}</span></div>
+            <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.aidat)}</span></div>
+            <div className="isletme-butce-satir"><span>{t('vergiKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.vergi)}</span></div>
+            {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
+            <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
+            <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
+            <div className="isletme-butce-satir"><span>{t('yasam')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasam)}</span></div>
+            <div className="isletme-butce-satir"><span>{t('kira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.kira)}</span></div>
+            {durum.butce.evcilHayvan > 0 && <div className="isletme-butce-satir"><span>{t('hayvanGider')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.evcilHayvan)}</span></div>}
+            {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
+            <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>
+          </div>
+        </div>
+
+        {dokum && (
+          <div className="isletme-dokum">
+            {dokum.uyarilar.map((u, i) => (
+              <div key={i} className="isletme-uyari">
+                {uyariMetni(u)}
               </div>
             ))}
           </div>
-          {durum.uretim && (
-            <div className={`isletme-uretim-gosterge${uretimBeklenen > durum.uretim.tavan ? ' isletme-uretim-asildi' : ''}`}>
-              <div>
-                🔨 {t('uretimBeklenen')}: <b>~{uretimBeklenen}</b> / {t('uretimTavani')}: <b>{durum.uretim.tavan}</b>
-              </div>
-              <div className="isletme-depo-mini">
-                <div style={{ width: `${Math.min(100, (uretimBeklenen / Math.max(1, durum.uretim.tavan)) * 100)}%` }} />
-              </div>
-              {uretimBeklenen > durum.uretim.tavan && <div className="isletme-uretim-uyari">⚠️ {t('uretimTavaniAsildi')}</div>}
-            </div>
-          )}
-          <div className="isletme-fiyat-not">{t('depoOtoNot')}</div>
+        )}
+
         </div>
-      )}
-
-      </div>
-      <div className="sayfa-blok blok-hatlar">
-      <h4>{t('hatlar')}</h4>
-      <div className="isletme-hatlar">{acikHatlar.map(hatKarti)}</div>
-      {digerHatlar.length > 0 && (
-        <>
-          {acikHatlar.length > 0 && (
-            <button className="isletme-diger-hatlar ikincil" onClick={() => setDigerAcik(!digerAcik)}>
-              {digerAcik ? '▴' : '▾'} {t('digerHatlar')} ({digerHatlar.length})
-            </button>
-          )}
-          {digerGoster && <div className="isletme-hatlar">{digerHatlar.map(hatKarti)}</div>}
-        </>
-      )}
-
-      </div>
-      <div className="sayfa-blok blok-piyasa">
-      {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
-      </div>
-      <div className="sayfa-blok blok-butce">
-      <h4 className="isletme-butce-baslik">{t('butceBaslik')}</h4>
-      <div className="isletme-butce">
-        <div className="isletme-butce-sutun">
-          <h5>{t('buYil')}</h5>
-          <div className="isletme-butce-satir"><span>{t('satis')}</span><span className="kademe-yuksek">+{formatPara(durum.butce.satis)}</span></div>
-          <div className="isletme-butce-satir"><span>{etiketAlim}</span><span className="kademe-dusuk">−{formatPara(durum.butce.alim)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('depoMasrafi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.depo)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.aidat)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('vergiKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.vergi)}</span></div>
-          {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
-          <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
-          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('yasam')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasam)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('kira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.kira)}</span></div>
-          {durum.butce.evcilHayvan > 0 && <div className="isletme-butce-satir"><span>{t('hayvanGider')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.evcilHayvan)}</span></div>}
-          {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
-          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>
-        </div>
-      </div>
-
-      {dokum && (
-        <div className="isletme-dokum">
-          {dokum.uyarilar.map((u, i) => (
-            <div key={i} className="isletme-uyari">
-              {uyariMetni(u)}
-            </div>
-          ))}
-        </div>
-      )}
-
       </div>
       </div>
 
