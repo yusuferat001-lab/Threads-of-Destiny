@@ -435,36 +435,36 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         <h4 className="isletme-butce-baslik">{dil === 'en' ? '📒 Your budget' : '📒 Bütçen'}</h4>
         <div className="isletme-dokum">
           <div>
-            {t('bagisKalemi')} ({formatMusteri(dil, c.bagisYapan)} {t('bagisYapan')} %{c.bagisOrani}): <strong>+{formatPara(c.bagis)}</strong>
+            {t('bagisKalemi')} ({formatMusteri(dil, c.bagisYapan)} {t('bagisYapan')} %{c.bagisOrani}): <strong className="s-gelir">+{formatPara(c.bagis)}</strong>
           </div>
           <div>
-            {t('faaliyetKalemi')}: <strong>+{formatPara(c.faaliyetGelir)}</strong>
+            {t('faaliyetKalemi')}: <strong className="s-gelir">+{formatPara(c.faaliyetGelir)}</strong>
           </div>
           <div>
-            {t('toplamGelir')}: <strong>+{formatPara(c.toplamGelir)}</strong>
+            {t('toplamGelir')}: <strong className="s-gelir">+{formatPara(c.toplamGelir)}</strong>
           </div>
-          <div>{t('gFaaliyet')}: <strong>−{formatPara(c.giderler.faaliyet)}</strong></div>
-          <div>{t('gAyin')}: <strong>−{formatPara(c.giderler.ayin)}</strong></div>
-          <div>{t('gBina')}: <strong>−{formatPara(c.giderler.bina)}</strong></div>
-          <div>{t('gYardim')}: <strong>−{formatPara(c.giderler.yardim)}</strong></div>
-          <div>{t('gAidat')}: <strong>−{formatPara(c.giderler.aidat)}</strong></div>
-          <div>{t('gVergi')}: <strong>−{formatPara(c.giderler.vergi)}</strong></div>
+          <div>{t('gFaaliyet')}: <strong className="s-gider">−{formatPara(c.giderler.faaliyet)}</strong></div>
+          <div>{t('gAyin')}: <strong className="s-gider">−{formatPara(c.giderler.ayin)}</strong></div>
+          <div>{t('gBina')}: <strong className="s-gider">−{formatPara(c.giderler.bina)}</strong></div>
+          <div>{t('gYardim')}: <strong className="s-gider">−{formatPara(c.giderler.yardim)}</strong></div>
+          <div>{t('gAidat')}: <strong className="s-gider">−{formatPara(c.giderler.aidat)}</strong></div>
+          <div>{t('gVergi')}: <strong className="s-gider">−{formatPara(c.giderler.vergi)}</strong></div>
           {durum.butce.maas > 0 && (
-            <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong>−{formatPara(durum.butce.maas)}</strong></div>
+            <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>
           )}
           <div className="isletme-dokum-net">
-            {t('beklenenNet')}: <strong>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
+            {t('beklenenNet')}: <strong className={durum.butce.net >= 0 ? 's-gelir' : 's-gider'}>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
           </div>
-          <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong>−{formatPara(durum.butce.yasam)}</strong></div>
-          <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong>−{formatPara(durum.butce.kira)}</strong></div>
+          <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
+          <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>
           {durum.butce.evcilHayvan > 0 && (
-            <div>{dil === 'en' ? 'Pets' : 'Evcil hayvan'}: <strong>−{formatPara(durum.butce.evcilHayvan)}</strong></div>
+            <div>{dil === 'en' ? 'Pets' : 'Evcil hayvan'}: <strong className="s-gider">−{formatPara(durum.butce.evcilHayvan)}</strong></div>
           )}
           {durum.butce.krediTaksit > 0 && (
-            <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong>−{formatPara(durum.butce.krediTaksit)}</strong></div>
+            <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong className="s-gider">−{formatPara(durum.butce.krediTaksit)}</strong></div>
           )}
           <div className="isletme-dokum-net">
-            {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
+            {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong className={durum.butce.cebineKalan >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
           </div>
         </div>
 
@@ -479,24 +479,24 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
               {t('gelenGercek')}: <strong>{formatMusteri(dil, dokum.cemaat.gelen)}</strong> / {dokum.cemaat.kapasite} ({dokum.cemaat.gelmeOrani * 100}%)
             </div>
             <div>
-              {t('bagisKalemi')}: <strong>+{formatPara(dokum.cemaat.bagis)}</strong>
+              {t('bagisKalemi')}: <strong className="s-gelir">+{formatPara(dokum.cemaat.bagis)}</strong>
             </div>
             <div>
-              {t('faaliyetKalemi')}: <strong>+{formatPara(dokum.satis - dokum.cemaat.bagis)}</strong>
+              {t('faaliyetKalemi')}: <strong className="s-gelir">+{formatPara(dokum.satis - dokum.cemaat.bagis)}</strong>
             </div>
-            <div>{t('gFaaliyet')} + {dil === 'en' ? 'rites' : 'ayin'}: <strong>−{formatPara(dokum.alim)}</strong></div>
-            <div>{t('gBina')}: <strong>−{formatPara(dokum.depoMasrafi)}</strong></div>
-            <div>{t('gYardim')}: <strong>−{formatPara(dokum.cemaat.yardim)}</strong></div>
-            <div>{t('gAidat')}: <strong>−{formatPara(dokum.loncaAidati)}</strong></div>
+            <div>{t('gFaaliyet')} + {dil === 'en' ? 'rites' : 'ayin'}: <strong className="s-gider">−{formatPara(dokum.alim)}</strong></div>
+            <div>{t('gBina')}: <strong className="s-gider">−{formatPara(dokum.depoMasrafi)}</strong></div>
+            <div>{t('gYardim')}: <strong className="s-gider">−{formatPara(dokum.cemaat.yardim)}</strong></div>
+            <div>{t('gAidat')}: <strong className="s-gider">−{formatPara(dokum.loncaAidati)}</strong></div>
             {dokum.vergi > 0 && (
               <div>
-                {t('gVergi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong>−{formatPara(dokum.vergi)}</strong>
+                {t('gVergi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong className="s-gider">−{formatPara(dokum.vergi)}</strong>
               </div>
             )}
             {((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0)) > 0 && (
-              <div>{dil === 'en' ? 'Theft / raid / severance' : 'Hırsızlık / baskın / tazminat'}: <strong className="kademe-dusuk">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</strong></div>
+              <div>{dil === 'en' ? 'Theft / raid / severance' : 'Hırsızlık / baskın / tazminat'}: <strong className="s-gider">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</strong></div>
             )}
-            <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="kademe-dusuk">−{formatPara(dokum.calisanMaasi ?? 0)}</strong></div>
+            <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="s-gider">−{formatPara(dokum.calisanMaasi ?? 0)}</strong></div>
             <div className="isletme-dokum-net">
               {t('net')}: <strong className={isaretSinifi(dokum.net)}>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
             </div>

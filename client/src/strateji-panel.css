@@ -509,75 +509,49 @@
 }
 
 /* ---- Sayı renkleri ----
-   Para dışı sayılar: 3 lacivert tonu (ana değer koyu, ikincil orta, açıklayıcı soluk); artı yeşil / eksi kırmızı kalır.
-   Para: 3 sarı ton — gelir parlak altın, gider koyu bronz, net/toplam derin hardal (şerit içinde). */
+   Para ve bonuslar: artı/gelir YEŞİL, eksi/gider KIRMIZI (tüm oyunda). Lacivert yalnız durum sayılarında
+   (er, güç, pay, moral, teçhizat etkisi); geri kalan sayılar nötr koyu kahve. */
 .strateji-sayfa {
-  --c-arti: #1f7a35;
-  --c-eksi: #b3261e;
+  --c-arti: #12893a;
+  --c-eksi: #cc2a1e;
+  --c-gelir: var(--c-arti);
+  --c-gider: var(--c-eksi);
   --c-lacivert-1: #14305c;
-  --c-lacivert-2: #2a5298;
-  --c-lacivert-3: #4a6794;
-  --c-gelir: #c99400;
-  --c-gider: #8a6a00;
-  --c-net: #4f3a00;
-  --c-para-sirit: rgba(201, 148, 0, 0.18);
-  --c-para: var(--c-gelir);
+  --c-para-sirit: rgba(31, 122, 53, 0.12);
 }
-/* Para dışı sayılar: lacivert */
 .strateji-sayfa .isletme-ozet strong,
-.strateji-sayfa .techizat-kart-etki b,
-.strateji-sayfa .blok-guc .isletme-dokum strong,
-.strateji-sayfa .ordu-kol .blok-durum .isletme-dokum strong {
+.strateji-sayfa .techizat-kart-etki b {
   color: var(--c-lacivert-1);
   font-weight: 800;
 }
-.strateji-sayfa .birlik-kart-etki,
-.strateji-sayfa .gorev-kart small,
-.strateji-sayfa .kis-rozetler {
-  color: var(--c-lacivert-2);
-}
-.strateji-sayfa .ordu-politika-detay,
-.strateji-sayfa .blok-doktrin small {
-  color: var(--c-lacivert-3);
-}
-/* Para: üç sarı */
-.strateji-sayfa .isletme-dokum strong,
-.strateji-sayfa .isletme-butce-satir > span:last-child,
-.strateji-sayfa .techizat-kart-masraf b {
-  color: var(--c-gelir);
-  font-weight: 800;
-}
 .strateji-sayfa strong.s-gelir,
-.strateji-sayfa .isletme-butce-satir > span.kademe-yuksek {
-  color: var(--c-gelir);
-}
-.strateji-sayfa strong.s-gider,
-.strateji-sayfa .isletme-butce-satir > span.kademe-dusuk {
-  color: var(--c-gider);
-}
-.strateji-sayfa strong.s-net,
-.strateji-sayfa .isletme-dokum-net strong,
-.strateji-sayfa .isletme-butce-toplam > span:last-child {
-  color: var(--c-net);
-}
-/* Artı / eksi (para dışı) */
 .strateji-sayfa strong.s-arti,
 .strateji-sayfa b.s-arti,
+.strateji-sayfa .isletme-butce-satir > span.kademe-yuksek,
+.strateji-sayfa .isletme-dokum strong.kademe-yuksek,
 .strateji-sayfa .cemaat-arti,
 .strateji-sayfa .piyasa-art,
 .strateji-sayfa .isletme-yatirim-sonraki,
 .strateji-sayfa .ordu-arti li::before {
   color: var(--c-arti);
+  font-weight: 800;
 }
+.strateji-sayfa strong.s-gider,
 .strateji-sayfa strong.s-eksi,
 .strateji-sayfa b.s-eksi,
+.strateji-sayfa .isletme-butce-satir > span.kademe-dusuk,
+.strateji-sayfa .isletme-dokum strong.kademe-dusuk,
 .strateji-sayfa .cemaat-eksi,
 .strateji-sayfa .piyasa-eksi,
 .strateji-sayfa .isletme-uyari,
-.strateji-sayfa .isletme-ozet em.negatif {
+.strateji-sayfa .techizat-kart-masraf b,
+.strateji-sayfa .isletme-ozet em.negatif,
+.strateji-sayfa .ordu-eksi li::before {
   color: var(--c-eksi);
+  font-weight: 800;
 }
-/* Net / toplam satırları: altın şerit */
+.strateji-sayfa .isletme-ozet strong.negatif { color: var(--c-eksi); }
+/* Net / toplam satırları: şerit (tonu işaretine göre yeşil/kırmızı metin) */
 .strateji-sayfa .isletme-dokum-net,
 .strateji-sayfa .isletme-butce-toplam {
   margin-top: 3px;
@@ -680,7 +654,7 @@
   flex-wrap: wrap;
   gap: 2px 8px;
   font-size: 0.74rem;
-  color: var(--c-para, #8a5a00);
+  color: var(--s-latte-soluk);
 }
 .kis-secili {
   padding: 5px 9px;
@@ -848,7 +822,7 @@
   opacity: 0.55;
 }
 .strateji-sayfa .kis-kart .kis-rozetler {
-  color: var(--c-para, #8a5a00);
+  color: var(--s-latte-soluk);
   font-weight: 600;
 }
 .strateji-sayfa .kis-sekmeler button:not(.kis-sekme-aktif) {

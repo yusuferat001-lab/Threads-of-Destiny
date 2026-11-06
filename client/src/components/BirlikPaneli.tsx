@@ -436,7 +436,7 @@ export function BirlikPaneli({
             {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
             <div>{t('gTalim')}: <strong className="s-gider">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
             <div className="isletme-dokum-net">
-              {t('beklenenNet')}: <strong className="s-net">~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
+              {t('beklenenNet')}: <strong className={b.hesap.net >= 0 ? 's-gelir' : 's-gider'}>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
             </div>
             <small>{t('ekipNot')}</small>
           </div>
