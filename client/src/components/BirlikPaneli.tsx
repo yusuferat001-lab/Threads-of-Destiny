@@ -421,22 +421,22 @@ export function BirlikPaneli({
         <div className="sayfa-blok blok-butce">
           <h4>{t('dokumBaslik')}</h4>
           <div className="isletme-dokum">
-            <div>{d(b.hesap.soldAdi)}: <strong className="s-arti">+{formatPara(b.hesap.sold)}</strong></div>
-            <div>{t('gorevGeliri')}: <strong className="s-arti">+{formatPara(b.hesap.gorevGeliri)}</strong></div>
-            <div>{t('ganimetNet')}: <strong className="s-arti">+{formatPara(b.hesap.ganimetNet)}</strong></div>
-            {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong className="s-arti">+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
-            <div>{t('toplamGelir')}: <strong className="s-arti">+{formatPara(b.hesap.toplamGelir)}</strong></div>
-            <div>{t('gErMasrafi')}: <strong className="s-eksi">−{formatPara(b.hesap.erMasrafi)}</strong></div>
-            <div>{t('gErzak')}: <strong className="s-eksi">−{formatPara(b.hesap.erzak)}</strong></div>
-            {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong className="s-eksi">−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
-            <div>{t('gKisla')}: <strong className="s-eksi">−{formatPara(b.hesap.kislaBakim)}</strong></div>
-            <div>{t('gTechizat')}: <strong className="s-eksi">−{formatPara(b.hesap.techizatBakim)}</strong></div>
-            {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong className="s-eksi">−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
-            {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-eksi">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
-            {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-eksi">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
-            <div>{t('gTalim')}: <strong className="s-eksi">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
+            <div>{d(b.hesap.soldAdi)}: <strong className="s-gelir">+{formatPara(b.hesap.sold)}</strong></div>
+            <div>{t('gorevGeliri')}: <strong className="s-gelir">+{formatPara(b.hesap.gorevGeliri)}</strong></div>
+            <div>{t('ganimetNet')}: <strong className="s-gelir">+{formatPara(b.hesap.ganimetNet)}</strong></div>
+            {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong className="s-gelir">+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
+            <div>{t('toplamGelir')}: <strong className="s-gelir">+{formatPara(b.hesap.toplamGelir)}</strong></div>
+            <div>{t('gErMasrafi')}: <strong className="s-gider">−{formatPara(b.hesap.erMasrafi)}</strong></div>
+            <div>{t('gErzak')}: <strong className="s-gider">−{formatPara(b.hesap.erzak)}</strong></div>
+            {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong className="s-gider">−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
+            <div>{t('gKisla')}: <strong className="s-gider">−{formatPara(b.hesap.kislaBakim)}</strong></div>
+            <div>{t('gTechizat')}: <strong className="s-gider">−{formatPara(b.hesap.techizatBakim)}</strong></div>
+            {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong className="s-gider">−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
+            {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-gider">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
+            {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
+            <div>{t('gTalim')}: <strong className="s-gider">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
             <div className="isletme-dokum-net">
-              {t('beklenenNet')}: <strong className={b.hesap.net >= 0 ? 's-arti' : 's-eksi'}>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
+              {t('beklenenNet')}: <strong className="s-net">~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
             </div>
             <small>{t('ekipNot')}</small>
           </div>
