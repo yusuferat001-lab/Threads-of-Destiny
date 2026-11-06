@@ -512,7 +512,7 @@ export function BirlikPaneli({
                 </span>
               </div>
             )}
-            {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster={false} />}
+            {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster={false} meslek="Asker" />}
           </div>
         </div>
 

@@ -312,6 +312,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
   {
     id: "ekonomi_kriz_donemi",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     gerekliUlke: {
       ekonomi: "kotu",
     },

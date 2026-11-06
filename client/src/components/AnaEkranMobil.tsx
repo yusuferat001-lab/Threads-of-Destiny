@@ -123,7 +123,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
     <div className={`ana-ekran${sayfaAcik || kompakt ? ' ana-ekran-kompakt' : ''}`}>
       {!sayfaAcik && !kompakt && (<>
       <div className="ana-tablolar">
-        <button type="button" className="ana-cam ana-cam-tikla" onClick={onMusteriTikla} disabled={yukleniyor} title={tr ? 'Dükkân sayfasını aç' : 'Open shop page'}>
+        <button type="button" className="ana-cam ana-cam-tikla" onClick={onMusteriTikla} disabled={yukleniyor} title={karakter.meslek === 'Asker' ? (tr ? 'Ordu sayfasını aç' : 'Open army page') : karakter.meslek === 'Din Adamı' ? (tr ? 'Cemaat sayfasını aç' : 'Open parish page') : karakter.meslek === 'Zanaatkâr' ? (tr ? 'Atölye sayfasını aç' : 'Open workshop page') : (tr ? 'Dükkân sayfasını aç' : 'Open shop page')}>
           <span className="ana-etiket">{musteriEtiket}</span>
           <strong className="ana-deger">{formatMusteri(dil === 'en' ? 'en' : 'tr', musteriDeger)}</strong>
           <span className="ana-alt">

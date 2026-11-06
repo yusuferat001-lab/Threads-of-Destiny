@@ -45,3 +45,19 @@ export function kademeSinifi(deger: number, esikler: [number, number] = [40, 70]
 export function isaretSinifi(deger: number): string {
   return deger > 0 ? 'kademe-yuksek' : deger < 0 ? 'kademe-dusuk' : '';
 }
+
+/** Pazardaki "kitle" sözcüğü mesleğe göre: Tüccar/Zanaatkâr müşteri, Din Adamı inanan, Asker er. */
+export function kitleSozlugu(meslek: string | undefined, dil: 'tr' | 'en'): { birim: string; sahip: string; kucuk: string } {
+  const en = dil === 'en';
+  if (meslek === 'Din Adamı') return en ? { birim: 'believers', sahip: 'Your flock', kucuk: 'Small congregations' } : { birim: 'inanan', sahip: 'İnananların', kucuk: 'Küçük cemaatler' };
+  if (meslek === 'Asker') return en ? { birim: 'men', sahip: 'Your men', kucuk: 'Small units' } : { birim: 'er', sahip: 'Erlerin', kucuk: 'Küçük birlikler' };
+  return en ? { birim: 'customers', sahip: 'Your customers', kucuk: 'Small traders' } : { birim: 'müşteri', sahip: 'Müşterilerin', kucuk: 'Küçük esnaflar' };
+}
+
+/** Yatkınlığın yıllık kitle bonusu, mesleğe göre: "Müşteri +1/yıl" · "İnanan +1/yıl" · "Er +2/yıl" (tam sayı; sunucu meslekYatkinlik.ts). */
+export function yatkinlikKitleMetni(meslek: string | undefined, dil: 'tr' | 'en', sayi: number): string {
+  const en = dil === 'en';
+  const ad = meslek === 'Din Adamı' ? (en ? 'Believers' : 'İnanan') : meslek === 'Asker' ? (en ? 'Men' : 'Er') : en ? 'Customers' : 'Müşteri';
+  const isaret = sayi > 0 ? '+' : sayi < 0 ? '−' : '';
+  return `${ad} ${isaret}${Math.abs(sayi)}${en ? '/yr' : '/yıl'}`;
+}

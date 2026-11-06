@@ -25,7 +25,7 @@ import {
   POLIS_UYARI_GECIKME_MAX_YIL,
   POLIS_UYARI_GECIKME_MIN_YIL,
   aralikTamSayi,
-  meslekDebuffOrani,
+  aranmaMusteriKaybi,
   sucBasariBonusu,
   sucRiskCarpani,
   sucSinifiDegeri,
@@ -260,12 +260,29 @@ export function aranmaBildirimiKapat(state: CharacterState, id: string): void {
 
 // ─── Aranma ekranı verisi ────────────────────────────────────────────────────
 
-const DEBUFF_ETIKETI: Record<string, string> = {
-  "Tüccar": "pazar payın ve gelirin",
-  "Zanaatkâr": "müşterilerin ve işin kalitesi",
-  "Din Adamı": "cemaatin ve bağışların",
-  "Asker": "birliğinin morali ve maaşın",
-};
+/**
+ * Aranma ekranındaki "şu an ne kaybediyorsun" cümlesi. v10'dan beri aranma gelir/maaş kısmaz:
+ * Tüccar/Zanaatkâr müşteri, Din Adamı inanan kaybeder (yılda %1 · %2,5 · %4), Asker'de firar eğilimi artar.
+ */
+function aranmaGolgeMetni(state: CharacterState, puan: number): string {
+  const en = state.dil === "en";
+  const y = Math.round(aranmaMusteriKaybi(puan) * 1000) / 10;
+  const yazi = en ? String(y) : String(y).replace(".", ",");
+  if (y <= 0) return "";
+  if (state.meslek === "Asker") {
+    return en
+      ? "Your notoriety wears on the army: desertion grows likelier and your morality slips each year."
+      : "Aranman orduyu da yıpratıyor: firar ihtimali artıyor, ahlakın her yıl düşüyor.";
+  }
+  if (state.meslek === "Din Adamı") {
+    return en
+      ? `Because of your notoriety, about ${yazi}% of your believers drift away each year and your morality slips.`
+      : `Aranman yüzünden inananlarının yaklaşık %${yazi} kadarı her yıl senden uzaklaşıyor, ahlakın da düşüyor.`;
+  }
+  return en
+    ? `Because of your notoriety, about ${yazi}% of your customers leave each year and your morality slips.`
+    : `Aranman yüzünden müşterilerinin yaklaşık %${yazi} kadarı her yıl seni bırakıyor, ahlakın da düşüyor.`;
+}
 
 export function aranmaDurumuUret(state: CharacterState, hapisCezaTahmini: (puan: number) => number): AranmaDurumu {
   const puan = Math.round(state.suc_seviyesi);
@@ -275,7 +292,7 @@ export function aranmaDurumuUret(state: CharacterState, hapisCezaTahmini: (puan:
   return {
     puan,
     yildiz: yildizSayisi(puan),
-    debuffOrani: meslekDebuffOrani(puan),
+    debuffOrani: aranmaMusteriKaybi(puan),
     basariBonusu: sucBasariBonusu(puan),
     tamTutar: tam,
     yarimTutar: yarim,
@@ -285,7 +302,7 @@ export function aranmaDurumuUret(state: CharacterState, hapisCezaTahmini: (puan:
     paraBirimi: state.para_birimi,
     hapiste: state.etiketler.includes("hapiste"),
     bekleyenBaskin: state.baskin_yili !== null,
-    debuffEtiketi: T(state.dil, DEBUFF_ETIKETI[state.meslek] ?? "gelirin"),
+    debuffEtiketi: aranmaGolgeMetni(state, puan),
   };
 }
 

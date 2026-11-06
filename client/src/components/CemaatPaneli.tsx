@@ -149,32 +149,10 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
   yangin: { tr: 'ibadethaneni yakmaya geldi, bekçilerin püskürttü', en: 'came to burn your sanctuary; your watchmen drove them off' },
 };
 
-let sonGosterilenYil = -1;
-
-export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi', ustBlok }: Props) {
-  const { dil } = useDil();
-  const t = (k: keyof typeof M) => M[k][dil];
-  const d = (m: D) => m[dil];
-  const [uyariAcik, setUyariAcik] = useState(false);
-  const c = durum.cemaat;
-  const dokum = durum.sonDokum;
-  const onemliKodlar: IsletmeUyari['kod'][] = ['sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'bina_tasti', 'asiri_olay', 'mezun'];
-  const onemliUyarilar = dokum ? dokum.uyarilar.filter((u) => onemliKodlar.includes(u.kod)) : [];
-  useEffect(() => {
-    if (dokum && onemliUyarilar.length > 0 && dokum.yil !== sonGosterilenYil) {
-      sonGosterilenYil = dokum.yil;
-      setUyariAcik(true);
-    }
-  }, [dokum?.yil]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (!durum.aktif || !c) return null;
-  const pb = durum.paraBirimi;
-  const yuzdeMetni = (v: number) => formatYuzde(dil, v, true);
-  const donemAdi = DONEM_ADLARI[c.donem.kaynak] ? d(DONEM_ADLARI[c.donem.kaynak]) : '';
-  const fanatikRenk = c.fanatiklik >= 60 ? 'var(--s-kotu, #9a2f22)' : c.fanatiklik >= 30 ? '#b8741a' : 'var(--s-altin, #c9a24a)';
-
-  const uyariMetni = (u: IsletmeUyari): string => {
+export function cemaatUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 'tr' | 'en'): string {
     const en = dil === 'en';
+    const d = (m: D) => m[dil];
+    const pb = durum.paraBirimi;
     switch (u.kod) {
       case 'calisan_ayrildi':
         return `🚪 ${u.isim ?? ''}: ${en ? 'quit and took a severance from the offering box' : 'işi bıraktı ve kumbaradan tazminat aldı'}`;
@@ -210,7 +188,33 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
       default:
         return '';
     }
-  };
+  }
+
+let sonGosterilenYil = -1;
+
+export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi', ustBlok }: Props) {
+  const { dil } = useDil();
+  const t = (k: keyof typeof M) => M[k][dil];
+  const d = (m: D) => m[dil];
+  const [uyariAcik, setUyariAcik] = useState(false);
+  const c = durum.cemaat;
+  const dokum = durum.sonDokum;
+  const onemliKodlar: IsletmeUyari['kod'][] = ['sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'bina_tasti', 'asiri_olay', 'mezun'];
+  const onemliUyarilar = dokum ? dokum.uyarilar.filter((u) => onemliKodlar.includes(u.kod)) : [];
+  useEffect(() => {
+    if (dokum && onemliUyarilar.length > 0 && dokum.yil !== sonGosterilenYil) {
+      sonGosterilenYil = dokum.yil;
+      setUyariAcik(true);
+    }
+  }, [dokum?.yil]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!durum.aktif || !c) return null;
+  const pb = durum.paraBirimi;
+  const yuzdeMetni = (v: number) => formatYuzde(dil, v, true);
+  const donemAdi = DONEM_ADLARI[c.donem.kaynak] ? d(DONEM_ADLARI[c.donem.kaynak]) : '';
+  const fanatikRenk = c.fanatiklik >= 60 ? 'var(--s-kotu, #9a2f22)' : c.fanatiklik >= 30 ? '#b8741a' : 'var(--s-altin, #c9a24a)';
+
+  const uyariMetni = (u: IsletmeUyari): string => cemaatUyariMetni(u, durum, dil);
 
   const politika = (baslik: string, anahtar: keyof CemaatKararGirdisi, p: CemaatPolitikaGorunumu) => {
     const secili = p.secenekler.find((s) => s.id === p.secili) ?? p.secenekler[0];
@@ -430,7 +434,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
       </div>
       <div className="sayfa-sutun cemaat-kol">
         <div className="sayfa-blok blok-piyasa">
-        {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
+        {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster meslek="Din Adamı" />}
         </div>
         <div className="sayfa-blok blok-butce">
         <h4 className="isletme-butce-baslik">{dil === 'en' ? '📒 Your budget' : '📒 Bütçen'}</h4>

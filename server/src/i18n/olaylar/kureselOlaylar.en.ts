@@ -20,7 +20,7 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
         },
       },
       {
-        metin: "Work carefully: fewer customers, cleanliness, distance.",
+        metin: "Work carefully: fewer people, cleanliness, distance.",
         kilitAciklamasi: "You can't afford the precautions.",
         basariliSonuc: {
           mesaj:
@@ -35,11 +35,11 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
         metin: "Carry on as if nothing happened.",
         basariliSonuc: {
           mesaj:
-            "The shop is open, but frightened people stay away. The plague hits everyone alike.",
+            "Your work goes on, but frightened people keep away. The plague hits everyone alike.",
         },
         basarisizSonuc: {
           mesaj:
-            "One market day was enough; you woke feverish but survived. Customers thinned out badly.",
+            "One market day was enough; you woke feverish but survived. Business thinned out badly.",
         },
       },
     ],

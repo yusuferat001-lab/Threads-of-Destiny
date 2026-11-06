@@ -87,14 +87,7 @@ export function AranmaPaneli({ karakter, onState }: AranmaPaneliProps) {
           ))}
         </tbody>
       </table>
-      {d.debuffOrani > 0 && (
-        <p className="gosterge-bilgi">
-          {t(
-            `Şu an ${d.debuffEtiketi} ${Math.round(d.debuffOrani * 1000) / 10}% etkileniyor.`,
-            `Currently ${d.debuffEtiketi} is cut by ${Math.round(d.debuffOrani * 1000) / 10}%.`
-          )}
-        </p>
-      )}
+      {d.debuffOrani > 0 && d.debuffEtiketi && <p className="gosterge-bilgi">{d.debuffEtiketi}</p>}
       {d.bekleyenBaskin && (
         <p className="gosterge-bilgi aranma-uyari">
           {t(
