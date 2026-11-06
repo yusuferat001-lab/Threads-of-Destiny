@@ -8,6 +8,7 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 - **Olay verisini (`server/src/data/olaylar/*.ts`, ~48.000 satır) ve `stateManager.ts`/`gameEngine.ts`'i baştan sona okuma.** Belirli bir olay için `grep -n 'id: "<olay_id>"' server/src/data/olaylar/*.ts`.
 - **Çelişki kuralı:** docs'ta aynı konu birden çok tur güncellendi. Numarası/sürümü yüksek bölüm geçerlidir (ör. §45 v13 > §45 v8; §51–§53 > eski §13/§27). Bir sayıya güvenmeden önce koddaki sabiti de kontrol et.
 - Mekanik değiştirince **ilgili test dosyasını** çalıştır (`cd server && npx vitest run tests/<dosya>.test.ts`); tüm paket bu ortamda çok uzun sürebilir. Sunucu tarafı tip kontrolü: `cd server && npx tsc --noEmit`.
+- **Yeni ekran/özellik eklerken sayı renklerini `docs/referans/14-renk-paleti.md` + `client/src/renk-paleti.css`'ten al; yeni renk uydurma.**
 - Mekanik/sabit değişince `docs/referans/` içindeki ilgili bölümü de güncelle (§ numarasını koru, yeni tur notunu bölüm sonuna ekle).
 - Yeni oyuncuya görünen metinlere mekanik eşik/süre/oran yazma; TR kaynak kanoniktir, İngilizce aynası `server/src/i18n/olaylar/*.en.ts` (§30).
 - Yeni olay eklemek için `/olay-ekle` skill'ini kullan (`.claude/skills/olay-ekle`). Her `.ts` düzenlemesinden sonra sunucu tip kontrolünü bir hook çalıştırır (`.claude/settings.json`).
@@ -29,6 +30,7 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 | `11-isletme.md` | 45 | **Meslek işletmesi** (Tüccar/Zanaatkâr/Din Adamı), v8→v33 tüm sürüm notları |
 | `12-gosterge-pc-aile2-hayvan-aranma.md` | 47, 48, 49, 50, 47 (Aranma II) | Gösterge detay, PC olay kutusu, eş/evlilik/doğum, evcil hayvan, aranma sistemi (not: iki ayrı §47 var) |
 | `13-garanti-sink-tema.md` | 51–53 | Olay garanti tabloları, geç oyun sink'leri/ekstra vergi/mağaza vitrini, PC tema |
+| `14-renk-paleti.md` | — | **Sayı/değer renk paleti** (yeşil gelir/artı, kırmızı gider/eksi, lacivert durum, eflatun şart/eşik); yeni ekran/özellikte uy |
 
 Sık sorulan: "bir endpoint ne yapar" → 01 · "bir alan ne anlama gelir" → 02 · "tur nasıl çözülür / formül" → 03 · "ekonomi/işletme sayısı" → 11 + 13 · "çeviri nasıl eklenir" → 07 (§30).
 

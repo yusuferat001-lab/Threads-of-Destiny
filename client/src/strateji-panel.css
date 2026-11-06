@@ -511,14 +511,6 @@
 /* ---- Sayı renkleri ----
    Para ve bonuslar: artı/gelir YEŞİL, eksi/gider KIRMIZI (tüm oyunda). Lacivert yalnız durum sayılarında
    (er, güç, pay, moral, teçhizat etkisi); geri kalan sayılar nötr koyu kahve. */
-.strateji-sayfa {
-  --c-arti: #12893a;
-  --c-eksi: #cc2a1e;
-  --c-gelir: var(--c-arti);
-  --c-gider: var(--c-eksi);
-  --c-lacivert-1: #14305c;
-  --c-para-sirit: rgba(31, 122, 53, 0.12);
-}
 .strateji-sayfa .isletme-ozet strong,
 .strateji-sayfa .techizat-kart-etki b {
   color: var(--c-lacivert-1);
@@ -552,9 +544,6 @@
 }
 .strateji-sayfa .isletme-ozet strong.negatif { color: var(--c-eksi); }
 /* Eşik / gereken değerler (gereken askerî güç, kademe x/y, rütbe şartı, birlik hakkı): eflatun */
-.strateji-sayfa {
-  --c-esik: #6a3f9f;
-}
 .strateji-sayfa .s-esik,
 .strateji-sayfa strong.s-esik,
 .strateji-sayfa .kariyer-ilerleme-deger,

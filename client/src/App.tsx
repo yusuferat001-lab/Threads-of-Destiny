@@ -186,6 +186,7 @@ import './ana-ekran.css';
 import './strateji.css';
 import './pc-olay-kutusu.css';
 import './pc-tema.css';
+import './renk-paleti.css';
 import './strateji-panel.css';
 
 // Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
