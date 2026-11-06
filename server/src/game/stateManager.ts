@@ -53,7 +53,7 @@ import {
   STOK_EKSI_NAKIT_LIMITI,
 } from "./isletme";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
-import { ASKER_PAZAR_BASLANGIC, BASLANGIC_ER } from "../data/birlik";
+import { ASKER_PAZAR_BASLANGIC, BASLANGIC_ER, ASKER_KARIYER_PUANI_KATSAYISI, ASKER_KARIYER_GUC_TAVANI, dusmanReferansGucuYas } from "../data/birlik";
 import {
   DONEM_SURE,
   DONEM_ADLARI,
@@ -3278,10 +3278,20 @@ export function musteriEkle(state: CharacterState, delta: number): void {
  * rakip ve küçük esnaf hareketleri, haberler, yeni rakip girişi — game/piyasa.ts).
  * Bir anlatı cümlesi döndürebilir.
  */
+/** Yıllık pazar kaynaklı kariyer puanı: Asker'de askerî güçten (düşman referansına oran), diğer mesleklerde pazar payından. */
+export function yillikKariyerPuaniHesapla(state: CharacterState): number {
+  if (state.meslek === "Asker") {
+    const guc = state.isletme?.birlik?.guc ?? 0;
+    const oran = Math.min(ASKER_KARIYER_GUC_TAVANI, guc / Math.max(1, dusmanReferansGucuYas(state.yas)));
+    return oran * ASKER_KARIYER_PUANI_KATSAYISI;
+  }
+  return pazarPayiHesapla(state) * PAZAR_KARIYER_PUANI_YILLIK;
+}
+
 export function pazarYillikUygula(state: CharacterState, yasArtisi: number): string | null {
   if (yasArtisi <= 0 || !pazarAdlariGetir(state.meslek)) return null;
   const mesaj = piyasaYillikUygula(state, yasArtisi);
-  state.kariyer_puani += pazarPayiHesapla(state) * PAZAR_KARIYER_PUANI_YILLIK * yasArtisi;
+  state.kariyer_puani += yillikKariyerPuaniHesapla(state) * yasArtisi;
   return mesaj;
 }
 

@@ -133,6 +133,7 @@ import {
   rakiplerGuncelle,
   musteriEkle,
   pazarYillikUygula,
+  yillikKariyerPuaniHesapla,
   krediAl,
   krediPazarlik,
   krediYillikUygula,
@@ -4486,7 +4487,7 @@ export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
     rakipler,
     digerPay: Math.max(0, 100 - Math.round(pay * 100) - rakipler.reduce((t, r) => t + r.pay, 0)),
     maasEtkisi: Math.round((pazarMaasCarpani(pay) - 1) * 100),
-    yillikKariyerPuani: Math.round(pay * PAZAR_KARIYER_PUANI_YILLIK * 10) / 10,
+    yillikKariyerPuani: Math.round(yillikKariyerPuaniHesapla(state) * 10) / 10,
     rutbeSarti:
       gerekli !== undefined && sonraki <= 5
         ? { seviye: sonraki, gerekliPay: Math.round(gerekli * 100), karsilaniyor: pay >= gerekli }

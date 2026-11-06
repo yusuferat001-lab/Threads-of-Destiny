@@ -8,6 +8,8 @@ import {
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   rutbeGuncelle,
+  yillikKariyerPuaniHesapla,
+  pazarYillikUygula,
 } from "../src/game/stateManager";
 import {
   yeniOyun,
@@ -73,6 +75,8 @@ import {
   SOLD,
   ER_MASRAFI,
   ERZAK_BIRIMI,
+  ASKER_KARIYER_GUC_TAVANI,
+  ASKER_KARIYER_PUANI_KATSAYISI,
   KALITE_BAKIM,
   KALITE_CARPANI,
   ER_BASI_GELIR,
@@ -812,6 +816,17 @@ describe("talim, doktrin, birlik, terhis", () => {
     birlikAl(s).guc = 60;
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
+  });
+
+  it("Asker'in yıllık kariyer puanı askerî güçten gelir (güç/düşman referansı, tavanlı)", () => {
+    const s = asker();
+    birlikAl(s).guc = 0;
+    expect(yillikKariyerPuaniHesapla(s)).toBe(0);
+    birlikAl(s).guc = 10000;
+    expect(yillikKariyerPuaniHesapla(s)).toBeCloseTo(ASKER_KARIYER_GUC_TAVANI * ASKER_KARIYER_PUANI_KATSAYISI, 5);
+    const once = s.kariyer_puani;
+    pazarYillikUygula(s, 2);
+    expect(s.kariyer_puani).toBeGreaterThan(once);
   });
 
   it("özel birlik limiti rütbeye bağlı (1/1/2/2/3)", () => {

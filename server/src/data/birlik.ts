@@ -319,7 +319,10 @@ export const ERZAK_BIRIMI = 0.15;
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
-export const GANIMET_GUC_BIRIMI = 1.0;
+export const GANIMET_GUC_BIRIMI = 1.5;
+/** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
+export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
+export const ASKER_KARIYER_GUC_TAVANI = 2.5;
 /** Çatışma sonrası bekleme (yıl; savaşta sayaç durur, savaştan sonra en az 1 yıl) ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
 export const BARIS_BEKLEME = 2;
 /** Bekleme bittikten sonra her yıl çatışma çıkma şansı. */

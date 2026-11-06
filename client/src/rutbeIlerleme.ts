@@ -26,19 +26,19 @@ const RUTBELER: Record<string, Record<string, RutbeTanimi>> = {
     'Orta Çağ': {
       unvanlar: ['Er', 'Onbaşı', 'Silahşor', 'Kumandan', 'Serdar'],
       esikler: [
-        { kariyer_puani: 10, un: 20 },
-        { kariyer_puani: 32, un: 36 },
-        { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 330, un: 78 },
+        { kariyer_puani: 10, un: 18 },
+        { kariyer_puani: 32, un: 32 },
+        { kariyer_puani: 64, un: 43 },
+        { kariyer_puani: 330, un: 70 },
       ],
     },
     'Sanayi Devrimi': {
       unvanlar: ['Er', 'Onbaşı', 'Çavuş', 'Yüzbaşı', 'Binbaşı'],
       esikler: [
-        { kariyer_puani: 10, un: 20 },
-        { kariyer_puani: 32, un: 36 },
-        { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 330, un: 78 },
+        { kariyer_puani: 10, un: 18 },
+        { kariyer_puani: 32, un: 32 },
+        { kariyer_puani: 64, un: 43 },
+        { kariyer_puani: 330, un: 70 },
       ],
     },
   },
