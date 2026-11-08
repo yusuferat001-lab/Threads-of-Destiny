@@ -79,6 +79,7 @@ function tuslar(meslek: string): TusTanimi[] {
 export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, onMusteriTikla, onGelirTikla, onIlerle, yilNotu, onNotKapat, sayfaAcik = null, kompakt = false }: AnaEkranProps) {
   const { dil } = useDil();
   const [donemAcik, setDonemAcik] = useState(false);
+  const [rakipAcik, setRakipAcik] = useState(false);
   const tr = dil !== 'en';
   const dokum = isletme?.sonDokum ?? null;
   const birim = karakter.para_birimi;
@@ -168,7 +169,15 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         </button>
       </div>
 
-      {pay !== null && (
+      {isletme?.birlik ? (
+        <button type="button" className="ana-cam ana-pay ana-cam-tikla" onClick={() => setRakipAcik(true)} title={tr ? 'Rakip komutanların gücünü gör' : 'See rival commanders\' strength'}>
+          <span className="ana-etiket">{tr ? 'Askerî Güç' : 'Military Strength'}</span>
+          <b>{isletme.birlik.guc.toplam}</b>
+          <span className="ana-alt">
+            ⚔️ {isletme.birlik.guc.saldiri} · 🛡️ {isletme.birlik.guc.savunma}
+          </span>
+        </button>
+      ) : pay !== null && (
         <div className="ana-cam ana-pay">
           <span className="ana-etiket">{karakter.meslek === 'Din Adamı' ? (tr ? 'Cemaat Payı' : 'Flock Share') : tr ? 'Pazar Payı' : 'Market Share'}</span>
           <div className="ana-cubuk" role="progressbar" aria-valuenow={pay} aria-valuemin={0} aria-valuemax={100}>
@@ -207,6 +216,37 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         <b>{tr ? 'İLERLE' : 'ADVANCE'}</b>
         <small>▸ {tr ? '1 yıl' : '1 year'}</small>
       </button>
+
+      {rakipAcik && isletme?.birlik && (
+        <div className="kariyer-sonuc-katman" onClick={() => setRakipAcik(false)}>
+          <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <h3>⚔️ {tr ? 'Askerî Güç' : 'Military Strength'}</h3>
+            <ul className="ana-donem-liste">
+              <li>
+                <b>
+                  {tr ? 'Sen' : 'You'}: <span className="s-durum">{isletme.birlik.guc.toplam}</span>
+                </b>
+                <small> (⚔️ {isletme.birlik.guc.saldiri} · 🛡️ {isletme.birlik.guc.savunma})</small>
+              </li>
+              {isletme.birlik.rakipler.length === 0 ? (
+                <li>{tr ? 'Şu an tanınan rakip komutan yok.' : 'No known rival commanders right now.'}</li>
+              ) : (
+                [...isletme.birlik.rakipler]
+                  .sort((a, b) => b.guc - a.guc)
+                  .map((r) => (
+                    <li key={r.ad}>
+                      <b>{r.ad}</b>: <span className={r.guc > isletme.birlik!.guc.toplam ? 's-eksi' : 's-arti'}>{r.guc}</span>
+                      <small> · {tr ? 'husumet' : 'enmity'} {r.husumet}</small>
+                    </li>
+                  ))
+              )}
+            </ul>
+            <button type="button" onClick={() => setRakipAcik(false)}>
+              {tr ? 'Tamam' : 'OK'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {donemAcik && (
         <div className="kariyer-sonuc-katman" onClick={() => setDonemAcik(false)}>

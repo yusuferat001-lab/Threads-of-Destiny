@@ -50,7 +50,7 @@ const M = {
   ham: { tr: 'Ham güç (kalite × er)', en: 'Raw strength (quality × men)' },
   birlikCarpani: { tr: 'Özel birlik çarpanı (saldırı / savunma)', en: 'Special-unit multiplier (attack / defence)' },
   toplamGuc: { tr: 'Toplam güç', en: 'Total strength' },
-  gucNot: { tr: 'Pay = senin gücün / (senin gücün + rakipler + diğer ordular).', en: 'Share = your strength / (yours + rivals + other armies).' },
+  gucNot: { tr: 'Güç = (saldırı + savunma) / 2. Rütben, kariyer puanın ve görev şartların buna bağlıdır; düşman gücü yaşınla artar.', en: 'Strength = (attack + defence) / 2. Your rank, career points and duty requirements depend on it; enemy strength grows with your age.' },
   gorevBaslik: { tr: 'Görevler', en: 'Duties' },
   gorevNot: {
     tr: 'Ordu açık görevlere eşit bölünür; her görev yıllık düzenli gelir getirir.',
@@ -107,6 +107,13 @@ const M = {
   arazi: { tr: 'Arazi', en: 'Terrain' },
   araziIhtimali: { tr: 'arazi seçme ihtimalin', en: 'chance to pick the terrain' },
   kanat: { tr: 'Kanat sonuçları (zafer / yenilgi)', en: 'Wing results (wins / losses)' },
+  dusmanTahmin: { tr: 'Düşmanın tahmini gücü', en: 'Estimated enemy strength' },
+  kiyasSaldiri: { tr: 'Saldırıdaysan', en: 'If you attack' },
+  kiyasSavunma: { tr: 'Savunmadaysan', en: 'If you defend' },
+  kiyasNot: { tr: 'Saldırıda senin saldırı gücün düşmanın savunmasıyla, savunmada senin savunma gücün düşmanın saldırısıyla yarışır; iki tarafa da küçük zar (±%8) eklenir.', en: 'Attacking, your attack power meets the enemy defence; defending, your defence meets their attack. Both sides add a small roll (±8%).' },
+  sonSavas: { tr: 'Son karar savaşı', en: 'Last decisive battle' },
+  zafer: { tr: 'zafer', en: 'victory' },
+  yenilgi: { tr: 'yenilgi', en: 'defeat' },
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
   sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
   erBasi: { tr: 'Er başı gelir', en: 'Per-man income' },
@@ -488,6 +495,31 @@ export function BirlikPaneli({
                 <span>
                   ⚔️ {t('kanat')}: <strong>{b.savas.kanatZafer} / {b.savas.kanatYenilgi}</strong>
                 </span>
+                {(() => {
+                  const k = b.savas.kiyas;
+                  const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen < a[0] ? 's-eksi' : 's-durum');
+                  const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
+                  return (
+                    <>
+                      <span>
+                        🎯 {t('dusmanTahmin')}: <strong>{aralik(k.dusman.guc)}</strong>
+                      </span>
+                      <span>
+                        ⚔️ {t('kiyasSaldiri')}: <strong className={renk(k.oyuncu.saldiri, k.dusman.savunma)}>{k.oyuncu.saldiri}</strong> ↔ 🛡️ <strong>{aralik(k.dusman.savunma)}</strong>
+                      </span>
+                      <span>
+                        🛡️ {t('kiyasSavunma')}: <strong className={renk(k.oyuncu.savunma, k.dusman.saldiri)}>{k.oyuncu.savunma}</strong> ↔ ⚔️ <strong>{aralik(k.dusman.saldiri)}</strong>
+                      </span>
+                      <small>{t('kiyasNot')}</small>
+                      {k.son && (
+                        <span>
+                          📜 {t('sonSavas')} ({k.son.yil}): {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} <strong>{k.son.oyuncuGuc}</strong> ({k.son.oyuncuZar >= 0 ? '+' : ''}{k.son.oyuncuZar}%) ↔ <strong>{k.son.dusmanGuc}</strong> ({k.son.dusmanZar >= 0 ? '+' : ''}{k.son.dusmanZar}%) →{' '}
+                          <strong className={k.son.genelZafer ? 's-arti' : 's-eksi'}>{k.son.genelZafer ? t('zafer') : t('yenilgi')}</strong>
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
                 {b.emir && (
                   <span title={d(b.emir.aciklama)}>
                     {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>

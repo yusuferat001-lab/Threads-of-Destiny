@@ -802,6 +802,7 @@ export interface IsletmeUyari {
     | 'madalya'
     | 'yagma'
     | 'savas_kayip'
+    | 'savas_catisma'
     | 'yarali_iyilesti'
     | 'limit_asimi';
   hat?: string;
@@ -826,6 +827,8 @@ export interface IsletmeUyari {
   yaralanan?: number;
   savasSonucu?: 'zafer' | 'yenilgi';
   catismaTur?: 'haydut' | 'sinir';
+  /** savas_catisma: karar savaşının kıyas dökümü (kıyaslanan güçler ve iki tarafın zarı, %). */
+  catisma?: { yil: number; inisiyatif: 'saldiri' | 'savunma'; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean };
 }
 
 export interface IsletmeDokum {
@@ -1150,6 +1153,12 @@ export interface BirlikGorunumu {
     kanatYenilgi: number;
     kararBekliyor: boolean;
     araziIhtimali: number;
+    kiyas: {
+      /** Düşmanın tahmini gücü [alt, üst] (±%5); saldırı ve savunma ayrı. */
+      dusman: { guc: [number, number]; saldiri: [number, number]; savunma: [number, number] };
+      oyuncu: { saldiri: number; savunma: number };
+      son: { yil: number; inisiyatif: 'saldiri' | 'savunma'; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean } | null;
+    };
   };
   kale: number;
   emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
@@ -1458,6 +1467,8 @@ export interface FinansOzeti {
   giderKalemleri: GiderKalemleri;
   krediTaksit: number;
   isletmeli: boolean;
+  /** İşletmeli mesleklerde çalışan (Asker'de subay) maaşları toplamı; maasYillik bunu zaten düşmüş içerir (bilgi satırı). */
+  isletmeCalisanMaasi: number;
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez. */
   enflasyonYuzdesi: number;

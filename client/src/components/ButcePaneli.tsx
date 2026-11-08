@@ -36,7 +36,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
   const gercekNet = netYillik + gayrimenkulYillikGelir;
   const netEtiketi =
     meslek === 'Asker'
-      ? dil === 'en' ? '💰 Army net (last year)' : '💰 Ordu neti (geçen yıl)'
+      ? dil === 'en' ? '💰 Army net (last year, after officer wages)' : '💰 Ordu neti (geçen yıl, subay maaşı sonrası)'
       : meslek === 'Din Adamı'
         ? dil === 'en' ? '💰 Parish net (last year, after tax and wages)' : '💰 Cemaat neti (geçen yıl, vergi ve maaş sonrası)'
         : meslek === 'Zanaatkâr'
@@ -54,6 +54,17 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
                 {maasYillik >= 0 ? '+' : '−'}{formatPara(Math.abs(maasYillik))} {paraBirimi}
               </span>
             </div>
+
+            {isletmeAktif && finans.isletmeCalisanMaasi > 0 && (
+              <div className="finans-satiri">
+                <span>
+                  ↳ {meslek === 'Asker' ? (dil === 'en' ? 'Officer wages (already deducted above)' : 'Subay maaşları (yukarıdaki nete dahil)') : dil === 'en' ? 'Staff wages (already deducted above)' : 'Çalışan maaşları (yukarıdaki nete dahil)'}
+                </span>
+                <span className="s-gider">
+                  -{formatPara(finans.isletmeCalisanMaasi)} {paraBirimi}
+                </span>
+              </div>
+            )}
 
             {!isletmeAktif && (
             <details className="finans-maas-kirilim">

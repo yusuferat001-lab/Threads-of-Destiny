@@ -2733,6 +2733,8 @@ export interface FinansOzeti {
   /** v11: yıllık kredi taksidi tahmini (hiç kredi yoksa 0) ve gelirin işletme neti olup olmadığı. */
   krediTaksit: number;
   isletmeli: boolean;
+  /** İşletmeli mesleklerde çalışan (Asker'de subay) maaşlarının yıllık toplamı — maasYillik (işletme neti) bunu ZATEN düşmüş içerir; bilgi satırı. */
+  isletmeCalisanMaasi: number;
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez, iç kullanım/uyum için. */
   enflasyonYuzdesi: number;
@@ -2841,6 +2843,7 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     giderKalemleri,
     krediTaksit,
     isletmeli: isletmeAktif(state),
+    isletmeCalisanMaasi: isletmeAktif(state) ? paraYuvarla(state.ekip.reduce((t, u) => t + u.maas, 0)) : 0,
     netYillik: paraYuvarla(maasYillik - toplamGider - krediTaksit),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
     giderEnflasyonYuzdesi: giderEnflasyonYuzdesiHesapla(state),

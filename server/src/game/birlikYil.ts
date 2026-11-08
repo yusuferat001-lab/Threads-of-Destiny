@@ -779,6 +779,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     savasYili = savasYiliCoz(state, b, bg);
     ilkYilGenelCagri = b.savas!.seferberlik === "genel" && (b.savas!.yil_sayac ?? 1) <= 1;
     catisma = savasYili.catisma;
+    if (catisma && b.savas!.son_catisma) uyarilar.push({ kod: "savas_catisma", catisma: { ...b.savas!.son_catisma } });
     ganimetCarpani = b.savas!.sonuc === "zafer" ? 1.3 : b.savas!.sonuc === "yenilgi" ? 0.3 : 1;
   } else if (b.savas) {
     savasSonu = savasiBitir(state, b, bg, uyarilar);

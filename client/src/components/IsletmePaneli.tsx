@@ -293,6 +293,16 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
       case 'seferberlik_terhis':
         return en ? `🎖️ ${u.sayi ?? 0} wartime recruits were discharged.` : `🎖️ Savaş devşirmesinden ${u.sayi ?? 0} er terhis edildi.`;
+      case 'savas_catisma': {
+        const c = u.catisma;
+        if (!c) return '';
+        const ys = (x: number) => `${x >= 0 ? '+' : ''}${x}%`;
+        const yon = c.inisiyatif === 'saldiri' ? (en ? 'attack' : 'saldırı') : (en ? 'defence' : 'savunma');
+        const kars = c.inisiyatif === 'saldiri' ? (en ? 'defence' : 'savunma') : (en ? 'attack' : 'saldırı');
+        return en
+          ? `⚔️ Decisive battle: your ${yon} ${c.oyuncuGuc} (roll ${ys(c.oyuncuZar)}) vs enemy ${kars} ${c.dusmanGuc} (roll ${ys(c.dusmanZar)}) — ${c.genelZafer ? 'victory' : 'defeat'}.`
+          : `⚔️ Karar savaşı: senin ${yon} gücün ${c.oyuncuGuc} (zar ${ys(c.oyuncuZar)}) ↔ düşman ${kars} ${c.dusmanGuc} (zar ${ys(c.dusmanZar)}) — ${c.genelZafer ? 'zafer' : 'yenilgi'}.`;
+      }
       case 'savas_sonu':
         return u.savasSonucu === 'zafer'
           ? (en ? '🏆 The war ended in victory.' : '🏆 Savaş zaferle bitti.')

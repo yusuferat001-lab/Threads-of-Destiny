@@ -6,6 +6,7 @@ import type {
   BirlikIkmal,
   BirlikKalite,
   BirlikRol,
+  BirlikSavasDurumu,
   BirlikSavasKarari,
   BirlikSeferberlik,
   BirlikTalim,
@@ -18,6 +19,9 @@ import {
   ARAZI_ADLARI,
   ARAZI_SIRASI,
   ARAZI_TERCIH_IHTIMALI,
+  DUSMAN_ORAN,
+  dusmanAraziCarpani,
+  dusmanSaldiriSavunma,
   SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
   GANIMET_GUC_BIRIMI,
@@ -87,6 +91,7 @@ import {
   gorevPaylari,
   gorevSlotSayisi,
   gucHesapla,
+  dusmanReferansGucu,
   kaliteCikar,
   kayipCarpani,
   kislaKademesi,
@@ -637,6 +642,7 @@ export interface BirlikGorunumu {
     kanatYenilgi: number;
     kararBekliyor: boolean;
     araziIhtimali: number;
+    kiyas: SavasKiyasi;
   };
   /** Ele geçirilen kale sayısı, savaşta geçerli komutan emri ve kiralık ordu durumu. */
   kale: number;
@@ -670,6 +676,32 @@ export interface BirlikGorunumu {
     barisGanimetTahmini: number;
   };
   yol: string | null;
+}
+
+/** Karar savaşının kıyas özeti: düşmanın tahmini güç aralığı (±%5) ile senin saldırı/savunma gücün (güncel arazide). */
+export interface SavasKiyasi {
+  /** Aralıklar [alt, üst]: gerçek değer savaş başında bu aralıkta çekilmiştir. */
+  dusman: { guc: [number, number]; saldiri: [number, number]; savunma: [number, number] };
+  oyuncu: { saldiri: number; savunma: number };
+  /** Son karar savaşının dökümü (kıyaslanan güçler ve iki zar, %). */
+  son: NonNullable<BirlikSavasDurumu["son_catisma"]> | null;
+}
+
+export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): SavasKiyasi {
+  const b = birlikAl(state);
+  const sv = b.savas;
+  const ref = dusmanReferansGucu(state);
+  const tur = sv?.dusman_tur ?? "karma";
+  const arazi = sv?.arazi ?? null;
+  const dagilim = dusmanSaldiriSavunma(tur);
+  const araziC = arazi ? dusmanAraziCarpani(arazi, tur) : 1;
+  const aralik = (taban: number): [number, number] => [Math.round(taban * DUSMAN_ORAN[0]), Math.round(taban * DUSMAN_ORAN[1])];
+  const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(sv && arazi ? { savas: { arazi, dusmanTur: tur, inisiyatif: "savunma" as const } } : {}) });
+  return {
+    dusman: { guc: aralik(ref * araziC), saldiri: aralik(ref * dagilim.saldiri * araziC), savunma: aralik(ref * dagilim.savunma * araziC) },
+    oyuncu: { saldiri: Math.round(d.saldiri), savunma: Math.round(d.savunma) },
+    son: sv?.son_catisma ?? null,
+  };
 }
 
 export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami): BirlikGorunumu {
@@ -800,6 +832,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kanatYenilgi: b.savas?.kanat_yenilgi ?? 0,
       kararBekliyor: !!k && k.adim < k.adimlar.length,
       araziIhtimali: Math.round(ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] * 100),
+      kiyas: savasKiyasiHesapla(state, bg),
     },
     kale: b.kale,
     emir: (() => {

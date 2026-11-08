@@ -975,6 +975,7 @@ export interface IsletmeUyari {
     | "madalya"
     | "yagma"
     | "savas_kayip"
+    | "savas_catisma"
     | "yarali_iyilesti"
     | "limit_asimi";
   hat?: string;
@@ -1001,6 +1002,8 @@ export interface IsletmeUyari {
   savasSonucu?: "zafer" | "yenilgi";
   /** Barış çatışması (haydut / sınır) türü. */
   catismaTur?: "haydut" | "sinir";
+  /** savas_catisma: karar savaşının kıyas dökümü (kıyaslanan güçler ve iki tarafın zarı, %). */
+  catisma?: { yil: number; inisiyatif: "saldiri" | "savunma"; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean };
 }
 
 export interface IsletmeDokum {
