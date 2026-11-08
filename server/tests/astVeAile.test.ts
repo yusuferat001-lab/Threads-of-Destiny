@@ -147,7 +147,7 @@ describe("astlar", () => {
   it("seviye 2'ye terfi edince tam 1 ast, kendinden düşük (seviye 1) unvanla eklenir", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
-    state.kariyer_puani = 20;
+    state.kariyer_puani = 60; // Asker S2 eşiği 55
     state.un = 40;
     payiAyarla(state, 0.5); // pay şartı
     rutbeGuncelle(state);
@@ -164,13 +164,13 @@ describe("astlar", () => {
   it("seviye 3'e terfi edince 2. bir ast (seviye 2 unvanlı) eklenir, ilk astın ismi değişmez", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
-    state.kariyer_puani = 20;
+    state.kariyer_puani = 60; // Asker S2 eşiği 55
     state.un = 40;
     payiAyarla(state, 0.5); // pay şartı
     rutbeGuncelle(state);
     const ilkAstIsim = state.astlar[0].isim;
 
-    state.kariyer_puani = 60;
+    state.kariyer_puani = 130; // Asker S3 eşiği 125
     state.un = 55;
     state.yil += 12; // seviye 3 cooldown'u aşılır
     rutbeGuncelle(state);
