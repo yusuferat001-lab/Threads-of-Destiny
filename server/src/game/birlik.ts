@@ -208,6 +208,9 @@ export function birlikHazirla(state: CharacterState): void {
   if (typeof b.erzak_oran !== "number") b.erzak_oran = 1;
   if (b.savas === undefined) b.savas = null;
   if (b.savas_karari === undefined) b.savas_karari = null;
+  // Eski "kale çevresi" arazisi sık ormana dönüştü (ova / dağ geçidi / sık orman).
+  if ((b.savas?.arazi as string | undefined) === "kale") b.savas!.arazi = "orman";
+  if ((b.savas_karari?.arazi as string | null | undefined) === "kale") b.savas_karari!.arazi = "orman";
   if (b.esir_bekleyen === undefined) b.esir_bekleyen = 0;
   if (b.kale === undefined) b.kale = 0;
   if (is.adaylar.length === 0) adaylariYenile(state);
@@ -395,7 +398,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
     let a1 = piyade * PIYADE.saldiri * ac.piyade;
     let s1 = piyade * PIYADE.savunma * ac.piyade;
     for (const [tur, pay] of Object.entries(paylar) as [BirlikTur, number][]) {
-      const c = tur === "okcu" ? ac.okcu : tur === "suvari" ? ac.suvari : ac.piyade;
+      const c = ac[tur]; // her özel birliğin kendi arazi çarpanı (okçu / süvari / mızraklı)
       a1 += pay * TUR_TANIMLARI[tur].saldiri * c;
       s1 += pay * TUR_TANIMLARI[tur].savunma * c;
     }

@@ -1070,7 +1070,7 @@ export type BirlikTur = 'okcu' | 'suvari' | 'mizrakli';
 export type BirlikGanimetPayi = 'az' | 'dengeli' | 'comert';
 export type BirlikTalim = 'hafif' | 'orta' | 'agir';
 export type BirlikTon = 'merhametli' | 'dengeli' | 'sert';
-export type BirlikArazi = 'ova' | 'kale' | 'dag';
+export type BirlikArazi = 'ova' | 'dag' | 'orman';
 export type BirlikSeferberlik = 'genel' | 'secme' | 'dengeli';
 interface DilMetni { tr: string; en: string }
 

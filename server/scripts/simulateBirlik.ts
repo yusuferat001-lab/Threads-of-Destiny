@@ -184,6 +184,9 @@ interface Omur {
   savasKaybi: number[];
   zafer: Record<"haydut" | "sinir" | "savas", [number, number]>;
   gucRutbe: number[][];
+  /** Yıl sonu kariyer puanı ve şöhret (rütbe kapılarının hangisinin sınırlayıcı olduğunu görmek için). */
+  puan: number[];
+  un: number[];
   sonEr: number;
   olduYil: number;
 }
@@ -192,7 +195,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, "Asker");
-  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], sonEr: 0, olduYil: YIL };
+  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], puan: [], un: [], sonEr: 0, olduYil: YIL };
   let savasOncesi = 0;
   let savasta = false;
   for (let y = 0; y < YIL; y++) {
@@ -257,6 +260,8 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
     o.er.push(erSayisi(s));
     o.pay.push(pazarPayiHesapla(s) * 100);
     o.guc.push(birlikAl(s).guc);
+    o.puan.push(s.kariyer_puani);
+    o.un.push(s.un);
     o.gucRutbe[Math.max(0, Math.min(4, s.rutbe_seviye - 1))].push(birlikAl(s).guc);
     const gel = d?.satis ?? 0;
     o.ganimetOrani.push(gel > 0 ? ((d?.birlik?.ganimetPara ?? 0) - (d?.birlik?.devletPayi ?? 0)) / gel : 0);
@@ -302,6 +307,9 @@ for (const cag of CAGLAR) {
     );
     console.log(
       `  güç yaşa göre (medyan/ort) @25/35/45/55/65: ${[25, 35, 45, 55, 65].map((yas) => { const v = omurler.map((o) => o.guc[yas - 15 - 1]).filter((x): x is number => typeof x === "number"); return v.length ? `${f(med(v), 0)}/${f(ort(v), 0)}` : "-"; }).join(" · ")}`
+    );
+    console.log(
+      `  kariyer puanı / şöhret (ort) @25/30/35/40/45/55: ${[25, 30, 35, 40, 45, 55].map((yas) => { const p = omurler.map((o) => o.puan[yas - 15 - 1]).filter((x): x is number => typeof x === "number"); const u = omurler.map((o) => o.un[yas - 15 - 1]).filter((x): x is number => typeof x === "number"); return p.length ? `${f(ort(p), 0)}/${f(ort(u), 0)}` : "-"; }).join(" · ")}`
     );
     console.log(
       `  zafer% haydut/sınır/savaş = ${(["haydut", "sinir", "savas"] as const).map((k) => { const z = omurler.reduce((t, o) => t + o.zafer[k][0], 0); const n = omurler.reduce((t, o) => t + o.zafer[k][1], 0); return n ? `${f((z / n) * 100, 0)} (n=${n})` : "-"; }).join(" / ")}`

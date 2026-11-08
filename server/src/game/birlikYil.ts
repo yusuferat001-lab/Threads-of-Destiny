@@ -105,6 +105,9 @@ import {
   TON_TANIMLARI,
   TUR_TANIMLARI,
   ZAR_BOLEN,
+  SAVAS_ZAR_BOLEN,
+  dusmanAraziCarpani,
+  dusmanSaldiriSavunma,
   doktrinToplami,
   gorevGetir,
   odenmeyenCeza,
@@ -493,16 +496,40 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   sv.inisiyatif = inisiyatif;
   const ctx = { enflasyon: bg.enflasyon, savas: { arazi, dusmanTur: sv.dusman_tur, inisiyatif } };
   const d = gucHesapla(state, ctx);
+  // Kıyas yönü: SALDIRIDAYSAN senin saldırı gücün düşmanın SAVUNMA gücüyle, SAVUNMADAYSAN senin savunma gücün düşmanın SALDIRI gücüyle yarışır.
   const oyuncuG = inisiyatif === "saldiri" ? d.saldiri : d.savunma;
-  // Düşmanın gücü MUTLAKTIR (rütbeye göre referans × savaşın şiddeti): bizim gücümüz sonucu doğrudan belirler.
+  // Düşmanın gücü MUTLAKTIR (yaşa göre referans × savaş başında çekilen ±%5): bizim gücümüz sonucu doğrudan belirler.
   const E = dusmanReferansGucu(state) * sv.dusman_orani;
+  const dagilim = dusmanSaldiriSavunma(sv.dusman_tur);
+  // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo).
+  const dusmanG = E * (inisiyatif === "saldiri" ? dagilim.savunma : dagilim.saldiri) * dusmanAraziCarpani(arazi, sv.dusman_tur);
   const rol = ROL_TANIMLARI[karar?.rol ?? "ana"];
-  const bizimZar = () => oyuncuG * (1 + (d20() - 10.5) / ZAR_BOLEN + b.zar_bonusu + rol.zar);
-  const dusmanZar = () => Math.max(1e-6, E * (1 + (d20() - 10.5) / ZAR_BOLEN));
+  const zarYuzde = () => (d20() - 10.5) / SAVAS_ZAR_BOLEN; // ±%8
+  let sonBizimZar = 0;
+  let sonDusmanZar = 0;
+  const bizimZar = () => {
+    sonBizimZar = zarYuzde();
+    return oyuncuG * (1 + sonBizimZar + b.zar_bonusu + rol.zar);
+  };
+  const dusmanZar = () => {
+    sonDusmanZar = zarYuzde();
+    return Math.max(1e-6, dusmanG * (1 + sonDusmanZar));
+  };
   const R = bizimZar() / dusmanZar();
   const kanatZafer = R >= 1;
+  const kanatZarlari = { bizim: sonBizimZar, dusman: sonDusmanZar };
   // Genel sonuç (kampanya): aynı güçlerin ikinci, bağımsız zarı.
   const genelZafer = bizimZar() >= dusmanZar();
+  sv.son_catisma = {
+    yil: state.yil,
+    inisiyatif,
+    oyuncuGuc: Math.round(oyuncuG),
+    dusmanGuc: Math.round(dusmanG),
+    oyuncuZar: Math.round(kanatZarlari.bizim * 1000) / 10,
+    dusmanZar: Math.round(kanatZarlari.dusman * 1000) / 10,
+    kanatZafer,
+    genelZafer,
+  };
   if (kanatZafer) sv.kanat_zafer += 1;
   else sv.kanat_yenilgi += 1;
   if (genelZafer) sv.genel_zafer += 1;

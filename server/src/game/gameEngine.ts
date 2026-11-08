@@ -20,7 +20,7 @@ import {
   type SavasKarariDurumu,
 } from "./birlikIslem";
 import { birlikSenkron, doktrinBekliyorMu, erSayisi } from "./birlik";
-import { KISLA_ER_LIMITI } from "../data/birlik";
+import { KISLA_ER_LIMITI, HARP_GUC_KATSAYISI, TABIP_KAYIP_AZALTMA } from "../data/birlik";
 import { yeniErEkle } from "./birlikYil";
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
@@ -5054,6 +5054,18 @@ export interface IsletmeGorunumu {
   paraBirimi: string;
 }
 
+/**
+ * Asker subaylarının ekranda gösterilen GERÇEK etkisi: Harp subayı güce `bonus × HARP_GUC_KATSAYISI`, Tabip subayı kayıp ve firara
+ * `koruma × TABIP_KAYIP_AZALTMA` yansıtır (toplam tavanlar HARP_GUC_TAVAN / TABIP_KAYIP_TAVAN); Levazım ve Devşirme doğrudan.
+ * Diğer mesleklerde bonus aynen döner.
+ */
+function subayEtkisi(profilMod: string | undefined, etki: { tur: IsletmeRolTuru; deger: number } | null): { tur: IsletmeRolTuru; deger: number } | null {
+  if (!etki || profilMod !== "birlik") return etki;
+  if (etki.tur === "ana") return { tur: etki.tur, deger: etki.deger * HARP_GUC_KATSAYISI };
+  if (etki.tur === "guvenlik") return { tur: etki.tur, deger: etki.deger * TABIP_KAYIP_AZALTMA };
+  return etki;
+}
+
 function rolAciklamasi(_state: CharacterState, profilMod: string | undefined, tur: IsletmeRolTuru): IkiDilMetin {
   const m = ROL_ACIKLAMALARI[profilMod === "uretim" ? "uretim" : profilMod === "cemaat" ? "cemaat" : profilMod === "birlik" ? "birlik" : "ticaret"][tur];
   return { tr: m.tr, en: m.en };
@@ -5233,7 +5245,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       maas: paraYuvarla(e.maas),
       sadik: e.sadakat >= SADIK_ESIGI,
       riskli: e.sadakat < SADAKAT_RISK_ESIGI,
-      etki: calisanBonusu(e),
+      etki: subayEtkisi(profil.mod, calisanBonusu(e)),
     };
   });
   const adaylar: IsletmeAdayGorunumu[] = is.adaylar.map((a) => {
@@ -5251,7 +5263,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       yetenek: a.yetenek,
       sadakat: a.sadakat,
       maas: paraYuvarla(a.maas_taban * genf),
-      etki: calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as EkipUyesi),
+      etki: subayEtkisi(profil.mod, calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as EkipUyesi)),
     };
   });
   const unvan = sehirYoneticisiUnvani(state.cag, state.bolge, state.meslek);

@@ -1117,7 +1117,7 @@ export type BirlikTur = "okcu" | "suvari" | "mizrakli";
 export type BirlikGanimetPayi = "az" | "dengeli" | "comert";
 export type BirlikTalim = "hafif" | "orta" | "agir";
 export type BirlikTon = "merhametli" | "dengeli" | "sert";
-export type BirlikArazi = "ova" | "kale" | "dag";
+export type BirlikArazi = "ova" | "dag" | "orman";
 export type BirlikRol = "onc" | "ana" | "yedek";
 export type BirlikIkmal = "yeterli" | "kit" | "yagma";
 export type BirlikEsirKarari = "idam" | "serbest" | "sat" | "karma";
@@ -1171,6 +1171,17 @@ export interface BirlikSavasDurumu {
   dusman_orani: number;
   /** Düşmanın baskın birliği (taş-kağıt-makas bonusu için). */
   dusman_tur: BirlikTur | "karma";
+  /** Son karar savaşının dökümü: kıyaslanan güçler (saldırıdaysan senin saldırın ↔ düşman savunması; savunmadaysan tersi) ve iki tarafın zarı (%, ±8). */
+  son_catisma?: {
+    yil: number;
+    inisiyatif: "saldiri" | "savunma";
+    oyuncuGuc: number;
+    dusmanGuc: number;
+    oyuncuZar: number;
+    dusmanZar: number;
+    kanatZafer: boolean;
+    genelZafer: boolean;
+  };
   kanat_zafer: number;
   kanat_yenilgi: number;
   /** Genel savaş sonucu: şimdiye dek kazanılan / kaybedilen yıl sayısı. */

@@ -31,9 +31,22 @@ type Etki = { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } |
 /** Çalışanın/adayın işletmeye etkisi, mesleğe göre okunur tek satır (örn. "Alış maliyeti −%12"). */
 function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string | null {
   if (!etki) return null;
-  const mod = durum.cemaat ? 'cemaat' : durum.uretim ? 'uretim' : 'ticaret';
+  const mod = durum.birlik ? 'birlik' : durum.cemaat ? 'cemaat' : durum.uretim ? 'uretim' : 'ticaret';
   const yuzde = Math.round(etki.deger * 100);
   const tr = dil === 'tr';
+  if (mod === 'birlik') {
+    // Asker subayları: sunucu GERÇEK etkiyi gönderir (güce yansıyan %, kayıp/firar azalması %, yılda gelen er).
+    switch (etki.tur) {
+      case 'ana':
+        return `${tr ? 'Askerî güç' : 'Military strength'} ${formatYuzde(dil, yuzde, true)}`;
+      case 'maliyet':
+        return `${tr ? 'Er ve erzak masrafı' : 'Men and supply costs'} −${formatYuzde(dil, yuzde)}`;
+      case 'musteri':
+        return tr ? `+${Math.round(etki.deger)} er/yıl` : `+${Math.round(etki.deger)} men/yr`;
+      case 'guvenlik':
+        return `${tr ? 'Kayıp ve firar' : 'Losses and desertion'} −${formatYuzde(dil, yuzde)}`;
+    }
+  }
   switch (etki.tur) {
     case 'maliyet': {
       const ad = mod === 'cemaat' ? (tr ? 'Faaliyet masrafı' : 'Activity costs') : mod === 'uretim' ? (tr ? 'Hammadde gideri' : 'Material costs') : tr ? 'Alış maliyeti' : 'Purchase cost';
@@ -78,6 +91,7 @@ export function IsletmeOrtak({
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
+  const en = dil === 'en';
   const pb = durum.paraBirimi;
   const sad = d(sadakatAdi);
   const yatirimGoster = goster === 'hepsi' || goster === 'yatirim';
@@ -146,6 +160,7 @@ export function IsletmeOrtak({
           {durum.calisanlar.map((c) => (
             <div key={c.id} className={`isletme-calisan${c.riskli ? ' isletme-calisan-riskli' : ''}`}>
               <strong>{c.isim}</strong> <em>({d(c.rol)})</em>
+              {durum.birlik && <small>{d(c.rolAciklama)}</small>}
               {c.sadik && <span className="isletme-etiket">⭐ {t('sadik')}</span>}
               {c.riskli && (
                 <span className="isletme-etiket" title={d(riskliAciklama)}>
@@ -174,7 +189,11 @@ export function IsletmeOrtak({
             {durum.adaylar.map((a) => (
               <div key={a.id} className="isletme-calisan isletme-aday">
                 <strong>{a.isim}</strong> <em>({d(a.rol)})</em>
+                {durum.birlik && <small>{d(a.rolAciklama)} · <b>{d(a.tipAdi)}</b></small>}
                 <small>{d(a.gecmis)}</small>
+                {durum.birlik && a.sadakat < 45 && (
+                  <small className="s-eksi">⚠ {en ? 'Low loyalty: may leak secrets, steal or desert.' : 'Sadakati düşük: sır sızdırabilir, çalabilir ya da ayrılabilir.'}</small>
+                )}
                 {etkiMetni(dil, a.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">{etkiMetni(dil, a.etki, durum)}</span>}
                 <span>
                   {t('yetenek')} <b className={kademeSinifi(a.yetenek, [40, 65])}>{a.yetenek}</b> · {sad} <b className={kademeSinifi(a.sadakat, [45, 75])}>{a.sadakat}</b> · {t('maas')} {formatPara(a.maas)}

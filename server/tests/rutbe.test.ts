@@ -46,7 +46,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   it("kariyer_puani + ün eşiği aşılınca seviye 2'ye terfi eder (bekleme yılı yok)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
-    s.kariyer_puani = 20;
+    s.kariyer_puani = 60; // Asker S2 eşiği: 55 puan + 18 ün + askerî güç
     s.un = 40;
     payiAyarla(s, 0.5);
     rutbeGuncelle(s);
@@ -58,7 +58,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   it("bekleme yılı yok: puan dolunca her çağrıda bir kademe çıkar, hemen ardından da", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
-    s.kariyer_puani = 20;
+    s.kariyer_puani = 60; // Asker S2 eşiği: 55 puan + 18 ün + askerî güç
     s.un = 40;
     payiAyarla(s, 0.5);
     rutbeGuncelle(s);

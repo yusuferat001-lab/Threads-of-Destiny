@@ -481,36 +481,57 @@ export const GOREV_DONEM_CARPANI: Partial<Record<GorevTuru, Partial<Record<Donem
 export const VEBA_GOREV_CARPANI = 0.55;
 
 // ── Savaş ───────────────────────────────────────────────────────────────────
-export const ARAZI_SIRASI: BirlikArazi[] = ["ova", "kale", "dag"];
+export const ARAZI_SIRASI: BirlikArazi[] = ["ova", "dag", "orman"];
 export const ARAZI_ADLARI: Record<BirlikArazi, { orta: DilliMetin; sanayi: DilliMetin; simge: string }> = {
   ova: { orta: { tr: "Açık ova", en: "Open plain" }, sanayi: { tr: "Açık arazi", en: "Open ground" }, simge: "🌾" },
-  kale: { orta: { tr: "Kale çevresi", en: "Castle grounds" }, sanayi: { tr: "Siperli hat / şehir", en: "Trenches / town" }, simge: "🏰" },
-  dag: { orta: { tr: "Dağ geçidi / orman", en: "Mountain pass / forest" }, sanayi: { tr: "Dağ / boğaz", en: "Mountain / strait" }, simge: "⛰️" },
+  dag: { orta: { tr: "Dağ geçidi", en: "Mountain pass" }, sanayi: { tr: "Dağ geçidi / boğaz", en: "Mountain pass / strait" }, simge: "⛰️" },
+  orman: { orta: { tr: "Sık orman", en: "Dense forest" }, sanayi: { tr: "Sık orman / çalılık", en: "Dense forest / thicket" }, simge: "🌲" },
 };
-/** Arazi × tür çarpanı (Mızraklı piyade "piyade" sayılır). */
-export const ARAZI_CARPANLARI: Record<BirlikArazi, { piyade: number; okcu: number; suvari: number }> = {
-  ova: { piyade: 1, okcu: 0.95, suvari: 1.25 },
-  kale: { piyade: 1.1, okcu: 1.15, suvari: 0.8 },
-  dag: { piyade: 1.1, okcu: 1.2, suvari: 0.7 },
+/**
+ * Arazi × birlik çarpanı (her birliğin kendi satırı; hem oyuncuya hem düşmanın baskın birliğine uygulanır).
+ * Ova: süvari alanı · Dağ geçidi: dar cephe, okçu üstün, süvari felç · Sık orman: yakın dövüş, piyade üstün, atlı ve atış kısıtlı.
+ * Satır ortalaması ≈ 1 (ova 1,06 · dağ 1,01 · orman 0,94) → hiçbir arazi herkese birden avantaj vermez. "karma" = dört satırın ortalaması.
+ */
+export type AraziBirimi = "piyade" | "mizrakli" | "okcu" | "suvari";
+export const ARAZI_CARPANLARI: Record<BirlikArazi, Record<AraziBirimi, number>> = {
+  ova: { piyade: 1, mizrakli: 1.05, okcu: 0.95, suvari: 1.25 },
+  dag: { piyade: 1.05, mizrakli: 1.1, okcu: 1.2, suvari: 0.7 },
+  orman: { piyade: 1.2, mizrakli: 0.95, okcu: 0.9, suvari: 0.7 },
 };
+/** Düşmanın baskın türüne göre arazi çarpanı ("karma" = ortalama). */
+export function dusmanAraziCarpani(arazi: BirlikArazi, tur: BirlikTur | "karma"): number {
+  const a = ARAZI_CARPANLARI[arazi];
+  if (tur === "karma") return (a.piyade + a.mizrakli + a.okcu + a.suvari) / 4;
+  return a[tur];
+}
+/** Düşmanın saldırı/savunma dağılımı (baskın türe göre; ikisinin ortalaması 1 → toplam güç değişmez). */
+export function dusmanSaldiriSavunma(tur: BirlikTur | "karma"): { saldiri: number; savunma: number } {
+  if (tur === "karma") return { saldiri: 1, savunma: 1 };
+  const t = TUR_TANIMLARI[tur];
+  const top = t.saldiri + t.savunma;
+  return { saldiri: (2 * t.saldiri) / top, savunma: (2 * t.savunma) / top };
+}
 /** Rütbe S1..S5 → seçtiğin arazinin gerçekleşme ihtimali. */
 export const ARAZI_TERCIH_IHTIMALI = [0, 0.15, 0.3, 0.55, 0.8];
-/** Bölgeye göre arazi ağırlıkları (ova, kale, dağ). */
+/** Bölgeye göre arazi ağırlıkları (sıra: ova, dağ geçidi, sık orman = ARAZI_SIRASI). */
 export const BOLGE_ARAZI_AGIRLIGI: Record<string, [number, number, number]> = {
-  Fransa: [0.45, 0.35, 0.2],
-  "Kutsal Roma": [0.3, 0.35, 0.35],
-  Bizans: [0.25, 0.4, 0.35],
-  Selçuklu: [0.5, 0.2, 0.3],
-  Eyyubiler: [0.5, 0.25, 0.25],
-  İngiltere: [0.4, 0.35, 0.25],
-  Osmanlı: [0.3, 0.3, 0.4],
-  Rusya: [0.6, 0.15, 0.25],
+  Fransa: [0.45, 0.25, 0.3],
+  "Kutsal Roma": [0.25, 0.3, 0.45],
+  Bizans: [0.3, 0.55, 0.15],
+  Selçuklu: [0.5, 0.45, 0.05],
+  Eyyubiler: [0.65, 0.3, 0.05],
+  İngiltere: [0.4, 0.2, 0.4],
+  Osmanlı: [0.3, 0.45, 0.25],
+  Rusya: [0.45, 0.15, 0.4],
 };
 export const ARAZI_DEGISIM_ORANI = 0.4;
 /** İnisiyatif zarı: oyuncu seçer / zorunlu saldırı / zorunlu savunma. */
 export const INISIYATIF_OYUNCU_SECER = 0.4;
 export const INISIYATIF_ZORUNLU_SALDIRI = 0.3;
-export const DUSMAN_ORAN: [number, number] = [0.85, 1.25];
+/** Büyük savaşta düşman gücü sapması: referans × [0,95; 1,05] (savaş başında bir kez çekilir; oyuncuya ±%5 aralık olarak gösterilir). */
+export const DUSMAN_ORAN: [number, number] = [0.95, 1.05];
+/** Karar savaşı zarı: her taraf güç × (1 ± %8) (d20: (zar − 10,5) / 118,75). */
+export const SAVAS_ZAR_BOLEN = 118.75;
 /**
  * Düşmanın MUTLAK gücü (bizim gücümüzden bağımsız). Referans karakterin YAŞINA göre büyür ("zamanla tehlike artar"):
  * rütbeye bağlamak, rütbenin kendisi güçten çıktığı için yatırımın etkisini siler. Büyük savaşta × DUSMAN_ORAN,
