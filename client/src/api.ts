@@ -294,6 +294,9 @@ export function birlikTerhis(stateId: string, adet: number) {
 export function birlikKiralik(stateId: string) {
   return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kiralik`, { method: 'POST', body: '{}' });
 }
+export function birlikIkmalDegistir(stateId: string, id: string) {
+  return istek<BirlikYaniti & { ikmal: string }>(`/api/game/${stateId}/birlik/ikmal`, { method: 'POST', body: JSON.stringify({ id }) });
+}
 export function birlikSavasKarariGetir(stateId: string) {
   return istek<{ karar: SavasKarariDurumu | null }>(`/api/game/${stateId}/birlik/savas-karari`);
 }

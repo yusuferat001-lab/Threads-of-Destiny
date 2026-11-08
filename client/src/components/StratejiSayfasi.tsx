@@ -82,6 +82,7 @@ interface StratejiSayfasiProps {
   onBirlikKusatma?: (seviye: number) => void;
   onBirlikTerhis?: (adet: number) => void;
   onBirlikKiralik?: () => void;
+  onBirlikIkmal?: (id: string) => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeYatirimDusur?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
@@ -578,6 +579,7 @@ export function StratejiSayfasi({
   onBirlikKusatma,
   onBirlikTerhis,
   onBirlikKiralik,
+  onBirlikIkmal,
   onIsletmeKarar,
   onIsletmeYatirim,
   onIsletmeYatirimDusur,
@@ -926,6 +928,7 @@ export function StratejiSayfasi({
               onKusatma={onBirlikKusatma}
               onTerhis={onBirlikTerhis}
               onKiralik={onBirlikKiralik}
+              onIkmal={onBirlikIkmal}
               onYatirim={onIsletmeYatirim}
               onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}

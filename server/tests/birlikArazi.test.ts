@@ -127,3 +127,25 @@ describe("Asker bütçesi: Kazanç kutusu tutarlı", () => {
     expect(maasli).toBeCloseTo(maassiz - 5, 1);
   });
 });
+
+describe("savaş planı: ikmal sonradan Ordu ekranından değişir", () => {
+  it("savaş yokken ya da plan tamamlanmadan değiştirilemez; sonra ücretsiz değişir", async () => {
+    const { ikmalDegistir, savasKarariVer, savasKarariDurumu } = await import("../src/game/birlikIslem");
+    const s = asker();
+    const bg = isletmeBaglami(s);
+    expect(() => ikmalDegistir(s, "kit", bg)).toThrow(/savaş sürerken/);
+    s.ulke.savasta = true;
+    // Plan penceresi: seferberlik + emir + ikmal tek grupta.
+    const d = savasKarariDurumu(s, bg)!;
+    expect(d.grup).toBe("plan");
+    expect(d.adimlar.map((a) => a.adim)).toEqual(["seferberlik", "emir", "ikmal"]);
+    expect(() => ikmalDegistir(s, "kit", bg)).toThrow(/savaş sürerken|savaş planını/);
+    for (const a of d.adimlar) savasKarariVer(s, a.secenekler[0].id, bg);
+    expect(birlikAl(s).savas!.ikmal).toBe("yeterli");
+    expect(ikmalDegistir(s, "kit", bg)).toBe("kit");
+    expect(birlikAl(s).savas!.ikmal).toBe("kit");
+    expect(() => ikmalDegistir(s, "olmayan", bg)).toThrow(/Geçersiz/);
+    // İkinci kez plan penceresi açılmaz.
+    expect(savasKarariDurumu(s, bg)).toBeNull();
+  });
+});

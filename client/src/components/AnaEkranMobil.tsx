@@ -80,6 +80,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const { dil } = useDil();
   const [donemAcik, setDonemAcik] = useState(false);
   const [rakipAcik, setRakipAcik] = useState(false);
+  const [savasAcik, setSavasAcik] = useState(false);
   const tr = dil !== 'en';
   const dokum = isletme?.sonDokum ?? null;
   const birim = karakter.para_birimi;
@@ -187,6 +188,26 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         </div>
       )}
 
+      {isletme?.birlik?.savas.aktif && isletme.birlik.savas.plan && (
+        <button type="button" className="ana-cam ana-savas-serit ana-cam-tikla" onClick={() => setSavasAcik(true)} title={tr ? 'Savaş ayrıntıları' : 'War details'}>
+          <b>⚔️ {tr ? 'Savaş' : 'War'} {isletme.birlik.savas.plan.yil}/{isletme.birlik.savas.plan.toplamYil}</b>
+          {isletme.birlik.emir && (
+            <span>
+              {isletme.birlik.emir.simge} {isletme.birlik.emir.ad[dil === 'en' ? 'en' : 'tr']}
+            </span>
+          )}
+          {isletme.birlik.savas.plan.ikmal && (
+            <span>
+              🍞 {isletme.birlik.savas.plan.ikmal.ad[dil === 'en' ? 'en' : 'tr']}
+            </span>
+          )}
+          {isletme.birlik.savas.araziAd && <span>🏞️ {isletme.birlik.savas.araziAd[dil === 'en' ? 'en' : 'tr']}</span>}
+          <span>
+            🎯 {isletme.birlik.savas.kiyas.dusman.guc[0]}–{isletme.birlik.savas.kiyas.dusman.guc[1]}
+          </span>
+        </button>
+      )}
+
       <div className="ana-bosluk">
         {yilNotu && (
           <div className="ana-cam ana-not" role="status">
@@ -216,6 +237,70 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         <b>{tr ? 'İLERLE' : 'ADVANCE'}</b>
         <small>▸ {tr ? '1 yıl' : '1 year'}</small>
       </button>
+
+      {savasAcik && isletme?.birlik?.savas.plan && (() => {
+        const sv = isletme.birlik!.savas;
+        const p = sv.plan!;
+        const k = sv.kiyas;
+        const L = dil === 'en' ? 'en' : 'tr';
+        const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
+        return (
+          <div className="kariyer-sonuc-katman" onClick={() => setSavasAcik(false)}>
+            <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <h3>⚔️ {tr ? 'Savaş' : 'War'} {p.yil}/{p.toplamYil}</h3>
+              <ul className="ana-donem-liste">
+                {p.seferberlik && (
+                  <li>
+                    <b>🎖️ {tr ? 'Seferberlik' : 'Mobilisation'}: {p.seferberlik.ad[L]}</b>
+                    <small> — {p.seferberlik.aciklama[L]}</small>
+                  </li>
+                )}
+                {isletme.birlik!.emir && (
+                  <li>
+                    <b>{isletme.birlik!.emir.simge} {tr ? 'Komutan emri' : "Commander's order"}: {isletme.birlik!.emir.ad[L]}</b>
+                    <small> — {isletme.birlik!.emir.aciklama[L]}</small>
+                  </li>
+                )}
+                {p.ikmal && (
+                  <li>
+                    <b>🍞 {tr ? 'İkmal' : 'Supply'}: {p.ikmal.ad[L]}</b>
+                    <small> — {p.ikmal.aciklama[L]}</small>
+                  </li>
+                )}
+                {sv.araziAd && (
+                  <li>
+                    <b>🏞️ {tr ? 'Arazi' : 'Terrain'}: {sv.araziAd[L]}</b>
+                  </li>
+                )}
+                <li>
+                  <b>🎯 {tr ? 'Düşmanın tahmini gücü' : 'Estimated enemy strength'}: {aralik(k.dusman.guc)}</b>
+                  <ul>
+                    <li>
+                      ⚔️ {tr ? 'Saldırıdaysan' : 'If you attack'}: <span className="s-durum">{k.oyuncu.saldiri}</span> ↔ 🛡️ {aralik(k.dusman.savunma)}
+                    </li>
+                    <li>
+                      🛡️ {tr ? 'Savunmadaysan' : 'If you defend'}: <span className="s-durum">{k.oyuncu.savunma}</span> ↔ ⚔️ {aralik(k.dusman.saldiri)}
+                    </li>
+                  </ul>
+                </li>
+                {k.son && (
+                  <li>
+                    <b>📜 {tr ? 'Son karar savaşı' : 'Last decisive battle'} ({k.son.yil})</b>
+                    <small>
+                      {' '}
+                      {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} {k.son.oyuncuGuc} ({k.son.oyuncuZar >= 0 ? '+' : ''}{k.son.oyuncuZar}%) ↔ {k.son.dusmanGuc} ({k.son.dusmanZar >= 0 ? '+' : ''}{k.son.dusmanZar}%) →{' '}
+                    </small>
+                    <b className={k.son.genelZafer ? 's-arti' : 's-eksi'}>{k.son.genelZafer ? (tr ? 'zafer' : 'victory') : tr ? 'yenilgi' : 'defeat'}</b>
+                  </li>
+                )}
+              </ul>
+              <button type="button" onClick={() => setSavasAcik(false)}>
+                {tr ? 'Tamam' : 'OK'}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
       {rakipAcik && isletme?.birlik && (
         <div className="kariyer-sonuc-katman" onClick={() => setRakipAcik(false)}>

@@ -764,7 +764,8 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   // 1. Erzak: ikmal kararı + olay etkisi; yıl sonunda tekrar 1'e döner.
   const karar = b.savas_karari && b.savas_karari.adim >= b.savas_karari.adimlar.length ? b.savas_karari : null;
-  const ikmal = IKMAL_TANIMLARI[karar?.ikmal ?? "yeterli"];
+  const ikmalId = (savasta ? b.savas?.ikmal : undefined) ?? karar?.ikmal ?? "yeterli";
+  const ikmal = IKMAL_TANIMLARI[ikmalId];
   b.erzak_oran = clamp(b.erzak_oran + (savasta ? ikmal.erzakOran : 0), 0, 1);
 
   // 2. Savaş: çatışma / savaş sonu.
@@ -820,7 +821,9 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   // 4. Esir.
   const esirSayisi = olasilikliYuvarla(h.esirBeklenen) + (baris?.esir ?? 0) + (savasSonu?.esir ?? 0);
-  const esirKarari: BirlikEsirKarari = (state.rutbe_seviye ?? 1) >= 3 ? karar?.esir ?? "karma" : "karma";
+  const esirYetkili = (state.rutbe_seviye ?? 1) >= 3;
+  const esirKarari: BirlikEsirKarari = esirYetkili ? b.savas?.esir_karari ?? karar?.esir ?? "karma" : "karma";
+  if (esirYetkili && esirSayisi > 0 && b.savas && !b.savas.esir_karari) b.savas.esir_bekliyor = true; // ilk esir: karar bir kez sorulacak
   const esir = esirSayisi > 0 ? esirleriIsle(state, b, esirSayisi, esirKarari, bg) : null;
   if (esir && esirSayisi > 0) uyarilar.push({ kod: "esir", sayi: esirSayisi });
 
@@ -978,7 +981,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   // 10. Sertlik, ahlak, otorite, aşırılık.
   const gorevSertlik = h.gorevler.filter((g) => g.aktif).reduce((t, g) => t + (gorevSertlikDegeri(g.id)), 0);
-  b.sertlik = clamp(b.sertlik + TON_TANIMLARI[b.ton].sertlik + gorevSertlik + doktrin.sertlik + (yol.sertlik ?? 0) + (karar ? IKMAL_TANIMLARI[karar.ikmal].sertlik : 0) - SERTLIK_DOGAL_SONUM, 0, 100);
+  b.sertlik = clamp(b.sertlik + TON_TANIMLARI[b.ton].sertlik + gorevSertlik + doktrin.sertlik + (yol.sertlik ?? 0) + (savasta ? IKMAL_TANIMLARI[ikmalId].sertlik : 0) - SERTLIK_DOGAL_SONUM, 0, 100);
   state.ahlak = clamp(state.ahlak + doktrin.ahlak + (yol.ahlak ?? 0), 0, 100);
   state.yonetim_iliski = clamp((state.yonetim_iliski ?? 0) + doktrin.otorite + (yol.otorite ?? 0) - b.sertlik * SERTLIK_OTORITE_KATSAYISI, 0, 100);
   if (b.sertlik > ASIRI_ESIK && (b.asiri_son_yil == null || state.yil - b.asiri_son_yil >= ASIRI_COOLDOWN_YIL)) {

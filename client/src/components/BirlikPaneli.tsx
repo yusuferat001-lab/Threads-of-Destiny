@@ -18,6 +18,7 @@ interface Props {
   onKusatma: (seviye: number) => void;
   onTerhis: (adet: number) => void;
   onKiralik?: () => void;
+  onIkmal?: (id: string) => void;
   onYatirim: (yatirimId: string) => void;
   onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
@@ -113,6 +114,11 @@ const M = {
   kiyasNot: { tr: 'Saldırıda senin saldırı gücün düşmanın savunmasıyla, savunmada senin savunma gücün düşmanın saldırısıyla yarışır; iki tarafa da küçük zar (±%8) eklenir.', en: 'Attacking, your attack power meets the enemy defence; defending, your defence meets their attack. Both sides add a small roll (±8%).' },
   sonSavas: { tr: 'Son karar savaşı', en: 'Last decisive battle' },
   zafer: { tr: 'zafer', en: 'victory' },
+  savasYili: { tr: 'Savaş', en: 'War' },
+  yilK: { tr: 'yıl', en: 'year' },
+  seferberlikAd: { tr: 'Seferberlik', en: 'Mobilisation' },
+  ikmalAd: { tr: 'İkmal', en: 'Supply' },
+  ikmalDegistir: { tr: 'İkmali değiştir (ücretsiz)', en: 'Change supply (free)' },
   yenilgi: { tr: 'yenilgi', en: 'defeat' },
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
   sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
@@ -220,6 +226,7 @@ export function BirlikPaneli({
   onKusatma,
   onTerhis,
   onKiralik,
+  onIkmal,
   onYatirim,
   onYatirimDusur,
   onCalisanAl,
@@ -479,7 +486,7 @@ export function BirlikPaneli({
 
       </div>
       <div className="sayfa-sutun ordu-kol">
-        <div className="sayfa-sutun blok-gorev">
+        <div className={`sayfa-sutun blok-gorev${b.savas.aktif ? ' savas-aktif' : ''}`}>
           {gorevlerBlok}
           <div className="sayfa-blok blok-savas">
             <h4>{t('savasBaslik')}</h4>
@@ -524,6 +531,33 @@ export function BirlikPaneli({
                   <span title={d(b.emir.aciklama)}>
                     {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>
                   </span>
+                )}
+                {b.savas.plan && (
+                  <>
+                    <span>
+                      📅 {t('savasYili')}: <strong>{b.savas.plan.yil}/{b.savas.plan.toplamYil}. {t('yilK')}</strong>
+                    </span>
+                    {b.savas.plan.seferberlik && (
+                      <span title={d(b.savas.plan.seferberlik.aciklama)}>
+                        🎖️ {t('seferberlikAd')}: <strong>{d(b.savas.plan.seferberlik.ad)}</strong>
+                      </span>
+                    )}
+                    {b.savas.plan.ikmal && (
+                      <span title={d(b.savas.plan.ikmal.aciklama)}>
+                        🍞 {t('ikmalAd')}: <strong>{d(b.savas.plan.ikmal.ad)}</strong> — <small>{d(b.savas.plan.ikmal.aciklama)}</small>
+                      </span>
+                    )}
+                    {onIkmal && b.savas.plan.ikmal && (
+                      <span className="savas-ikmal-sec">
+                        <small>{t('ikmalDegistir')}:</small>{' '}
+                        {b.savas.plan.ikmalSecenekleri.map((o) => (
+                          <button key={o.id} type="button" className="ikincil" disabled={yukleniyor || o.id === b.savas.plan!.ikmal!.id} title={d(o.aciklama)} onClick={() => onIkmal(o.id)}>
+                            {d(o.ad)}
+                          </button>
+                        ))}
+                      </span>
+                    )}
+                  </>
                 )}
                 {b.kiralik.aktif && (
                   <span>

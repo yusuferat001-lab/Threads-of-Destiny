@@ -1194,6 +1194,12 @@ export interface BirlikSavasDurumu {
   emir?: string | null;
   /** Kiralık ordu: savaş süresince tutulan eğitimli paralı sayısı. */
   kiralik_er?: number;
+  /** Savaş planında (ilk yıl) seçilen ikmal; savaş boyu geçerlidir, yalnız Ordu ekranından değiştirilebilir. */
+  ikmal?: BirlikIkmal;
+  /** Esirlerin kaderi (Rütbe 3+): ilk esir çıkınca bir kez sorulur, savaş boyu geçerlidir. Verilene dek "karma". */
+  esir_karari?: BirlikEsirKarari | null;
+  /** İlk esir alındı ve karar bekliyor (Rütbe 3+). */
+  esir_bekliyor?: boolean;
 }
 
 export interface BirlikDurumu {

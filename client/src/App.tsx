@@ -97,6 +97,7 @@ import {
   birlikKusatma,
   birlikTerhis,
   birlikKiralik,
+  birlikIkmalDegistir,
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
   isletmeYatirimYap,
@@ -1741,19 +1742,23 @@ function App() {
     }
   }
 
-  /** Asker: savaş yılı karar zincirinin bir adımını verir. */
-  async function savasKarariVerHandler(secim: string) {
+  /** Asker: savaş kararı penceresindeki seçimleri (plan / savaş günü / esir) sırayla sunucuya verir. */
+  async function savasKarariVerHandler(secimler: string[]) {
     if (!karakter) return;
     setHata(null);
     setYukleniyor(true);
     try {
-      const sonuc = await birlikSavasKarariVer(karakter.id, secim);
-      setKarakter(sonuc.state);
-      setIsletme(sonuc.durum);
-      setSavasKarari(sonuc.sonraki);
+      let son: Awaited<ReturnType<typeof birlikSavasKarariVer>> | null = null;
+      for (const secim of secimler) {
+        son = await birlikSavasKarariVer(karakter.id, secim);
+        setKarakter(son.state);
+        setIsletme(son.durum);
+      }
+      if (!son) return;
+      setSavasKarari(son.sonraki);
       // Karar zinciri bitti ve bekleyen bir olay varsa (savaş yılı olayla başladıysa) şimdi çek.
-      if (!sonuc.sonraki && !senaryo && sonuc.state.olay_bekliyor) {
-        const yeni = await senaryoGerekirseCek(sonuc.state);
+      if (!son.sonraki && !senaryo && son.state.olay_bekliyor) {
+        const yeni = await senaryoGerekirseCek(son.state);
         if (yeni) {
           setSenaryo(yeni);
           setTepkiModu(false);
@@ -1766,6 +1771,9 @@ function App() {
       setYukleniyor(false);
     }
   }
+
+  /** Asker: savaş sürerken ikmali değiştirir (Ordu ekranındaki savaş kartı; pencere açmaz). */
+  const birlikIkmalHandler = (id: string) => birlikEylemHandler(() => birlikIkmalDegistir(karakter!.id, id));
 
   /** Asker birlik eylemleri (görev/politika/kalite/birlik/kuşatma/terhis): sonuç mesajı Kariyer ekranında gösterilir. */
   async function birlikEylemHandler(calistir: () => Promise<{ state: CharacterState; durum: IsletmeGorunumu }>) {
@@ -2123,6 +2131,7 @@ function App() {
         onBirlikKusatma={birlikKusatmaHandler}
         onBirlikTerhis={birlikTerhisHandler}
         onBirlikKiralik={birlikKiralikHandler}
+        onBirlikIkmal={birlikIkmalHandler}
         onIsletmeYatirim={isletmeYatirimHandler}
         onIsletmeYatirimDusur={isletmeYatirimDusurHandler}
         onIsletmeCalisanAl={isletmeCalisanAlHandler}

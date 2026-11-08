@@ -1159,6 +1159,14 @@ export interface BirlikGorunumu {
       oyuncu: { saldiri: number; savunma: number };
       son: { yil: number; inisiyatif: 'saldiri' | 'savunma'; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean } | null;
     };
+    /** Savaş planı özeti (savaş boyu geçerli seçimler); savaş yoksa null. */
+    plan: {
+      yil: number;
+      toplamYil: number;
+      seferberlik: { ad: DilMetni; aciklama: DilMetni } | null;
+      ikmal: { id: string; ad: DilMetni; aciklama: DilMetni } | null;
+      ikmalSecenekleri: { id: string; ad: DilMetni; aciklama: DilMetni }[];
+    } | null;
   };
   kale: number;
   emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
@@ -1191,6 +1199,13 @@ export interface BirlikGorunumu {
   yol: string | null;
 }
 
+export interface SavasAdimBolumu {
+  adim: string;
+  baslik: DilMetni;
+  aciklama: DilMetni;
+  secenekler: { id: string; simge?: string; ad: DilMetni; aciklama: DilMetni }[];
+}
+
 export interface SavasKarariDurumu {
   adim: string;
   sira: number;
@@ -1198,6 +1213,12 @@ export interface SavasKarariDurumu {
   baslik: DilMetni;
   aciklama: DilMetni;
   secenekler: { id: string; simge?: string; ad: DilMetni; aciklama: DilMetni }[];
+  /** Kalan tüm adımlar (şu anki dahil): tek pencerede toplanıp sırayla gönderilir. */
+  adimlar: SavasAdimBolumu[];
+  /** "plan" (savaşın ilk yılı) | "gun" (karar savaşı) | "esir". */
+  grup: 'plan' | 'gun' | 'esir';
+  /** Savaş günü penceresinde düşmanın tahmini gücü ve senin gücün. */
+  kiyas: BirlikGorunumu['savas']['kiyas'] | null;
   bilgi: { arazi: BirlikArazi | null; dusmanTur: string | null; yil: number };
 }
 

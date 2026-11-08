@@ -12,6 +12,7 @@ import {
   kusatmaAyarla,
   savasKarariBekliyorMu,
   savasKarariDurumu,
+  ikmalDegistir,
   savasKarariVer,
   terhisEt,
   kiralikOrduTut,
@@ -5484,13 +5485,17 @@ export function birlikTerhis(id: string, adet: number) {
 export async function birlikSavasKarariGetir(id: string): Promise<SavasKarariDurumu | null> {
   const { state } = await oturumGetir(id);
   if (state.meslek !== "Asker" || !state.isletme?.birlik) return null;
-  return savasKarariDurumu(state);
+  return savasKarariDurumu(state, isletmeBaglami(state));
 }
 export function birlikSavasKarariVer(id: string, secim: string) {
   return birlikEylemi(id, (state, bg) => {
     savasKarariVer(state, secim, bg);
-    return { sonraki: savasKarariDurumu(state) };
+    return { sonraki: savasKarariDurumu(state, bg) };
   });
+}
+/** Savaş sürerken ikmali değiştirir (Ordu ekranı; pencere açmaz). */
+export function birlikIkmalDegistir(id: string, ikmalId: string) {
+  return birlikEylemi(id, (state, bg) => ({ ikmal: ikmalDegistir(state, ikmalId, bg) }));
 }
 
 /** Rütbeyle açılan öğreti seçimi (seçilmeden oyun devam etmez). Turu tüketmez. */

@@ -628,7 +628,9 @@ describe("savaş", () => {
     expect(karar).not.toContain("arazi"); // S1: arazi seçme ekranı ihtimali %0 → hiç gelmez
     expect(karar).toContain("rol");
     expect(karar).toContain("inisiyatif"); // zar 0,1 < %40: seçim ekranı gelir
-    expect(karar).toContain("ikmal");
+    expect(karar).not.toContain("ikmal"); // ikmal savaş planında (ilk yıl) bir kez seçilir, bir daha sorulmaz
+    expect(karar).not.toContain("seferberlik");
+    expect(karar).not.toContain("emir");
     expect(karar).not.toContain("esir"); // S1: esir yetkisi yok
     expect(savasKarariBekliyorMu(s)).toBe(false);
   });
@@ -650,16 +652,33 @@ describe("savaş", () => {
     expect(kararAdimlari(t)).not.toContain("arazi");
   });
 
-  it("S3'ten itibaren esir kararı adımı karar yılında eklenir", () => {
+  it("S3'ten itibaren esir kararı yalnız ilk esir çıkınca bir kez sorulur ve savaş boyu kalıcıdır", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.1);
     const s = asker();
     s.rutbe_seviye = 3;
     ogretileriTamamla(s);
     savasYili(s);
     kararYilinaGec(s);
-    const adimlar = kararAdimlari(s);
-    expect(adimlar).toContain("esir");
-    expect(adimlar).toContain("arazi");
+    expect(kararAdimlari(s)).not.toContain("esir"); // henüz esir yok
+    const b = birlikAl(s);
+    b.savas!.esir_bekliyor = true; // ilk esir alındı
+    const sonra = kararAdimlari(s);
+    expect(sonra).toEqual(["esir"]);
+    expect(b.savas!.esir_karari).toBeDefined();
+    expect(b.savas!.esir_bekliyor).toBe(false);
+    expect(kararAdimlari(s)).not.toContain("esir"); // bir daha sorulmaz
+  });
+
+  it("ikmal ilk yıl seçilir ve savaş boyu kalıcıdır (yıl sonunda savas_karari silinse de)", () => {
+    const s = asker();
+    savasYili(s);
+    kararYilinaGec(s);
+    const b = birlikAl(s);
+    expect(b.savas!.ikmal).toBeDefined();
+    const secilen = b.savas!.ikmal!;
+    b.savas_karari = null; // yıl sonu
+    expect(birlikHesapla(s, bg(s)).yagmaBrut > 0).toBe(secilen === "yagma");
+    expect(b.savas!.ikmal).toBe(secilen);
   });
 
   it("geçersiz savaş kararı seçimi reddedilir; karar yokken verilemez", () => {

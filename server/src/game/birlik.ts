@@ -211,6 +211,8 @@ export function birlikHazirla(state: CharacterState): void {
   // Eski "kale çevresi" arazisi sık ormana dönüştü (ova / dağ geçidi / sık orman).
   if ((b.savas?.arazi as string | undefined) === "kale") b.savas!.arazi = "orman";
   if ((b.savas_karari?.arazi as string | null | undefined) === "kale") b.savas_karari!.arazi = "orman";
+  // Eski kayıt: yıllık karardaki ikmal artık savaş boyu (b.savas.ikmal) tutulur.
+  if (b.savas && !b.savas.ikmal && b.savas_karari?.ikmal && b.savas_karari.adim > 0) b.savas.ikmal = b.savas_karari.ikmal;
   if (b.esir_bekleyen === undefined) b.esir_bekleyen = 0;
   if (b.kale === undefined) b.kale = 0;
   if (is.adaylar.length === 0) adaylariYenile(state);
@@ -565,7 +567,8 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const doktrin = doktrinToplami(b.doktrinler);
   const yol = yolEtkisi(state);
   const savasta = !!state.ulke.savasta;
-  const karar: Pick<BirlikSavasKarari, "rol" | "ikmal"> = b.savas_karari ?? { rol: "ana", ikmal: "yeterli" };
+  // İkmal savaş planında bir kez seçilir (b.savas.ikmal, savaş boyu); rol yıllık karar penceresinden gelir.
+  const karar: Pick<BirlikSavasKarari, "rol" | "ikmal"> = { rol: b.savas_karari?.rol ?? "ana", ikmal: (savasta ? b.savas?.ikmal : undefined) ?? b.savas_karari?.ikmal ?? "yeterli" };
   const rol = ROL_TANIMLARI[karar.rol];
   const ikmal = IKMAL_TANIMLARI[karar.ikmal];
   const moralC = b.moral >= 70 ? 1.05 : b.moral < 40 ? 0.9 : 1;
