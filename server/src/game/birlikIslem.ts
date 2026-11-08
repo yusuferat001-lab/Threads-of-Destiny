@@ -702,7 +702,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
     guc: {
       ham: Math.round(d.ham * 10) / 10,
       kalite: { ...b.kalite },
-      kaliteCarpani: { dusuk: 1, orta: 1.5, yuksek: 2 },
+      kaliteCarpani: { ...KALITE_CARPANI },
       piyadePayi: Math.round(d.piyadePayi * 1000) / 1000,
       saldiriCarpani: Math.round(d.saldiriCarpani * 1000) / 1000,
       savunmaCarpani: Math.round(d.savunmaCarpani * 1000) / 1000,

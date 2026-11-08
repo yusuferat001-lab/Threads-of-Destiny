@@ -47,7 +47,7 @@ import {
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatYilIsle, faaliyetSlotSayisi } from "./cemaat";
-import { birlikBaslat, birlikHazirla, birlikBeklenenKar, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
+import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
 import { birlikYilIsle } from "./birlikYil";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 
@@ -823,8 +823,18 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
     return { ...bos, brut, net: r2(brut - maas), maas };
   }
   if (profil.mod === "birlik") {
-    const brut = birlikBeklenenKar(state, b);
-    return { ...bos, brut, net: brut, maas };
+    // Asker: gelir/gider kalemleri ve subay maaşı bütçeye girer (net = brüt − subay maaşı; cemaatle aynı tanım).
+    const h = birlikHesapla(state, b);
+    const brut = r2(h.net);
+    return {
+      ...bos,
+      satis: r2(h.toplamGelir),
+      alim: r2(h.erMasrafi + h.erzak + h.talimMasrafi + h.yaraliGideri + h.kiralikMasrafi),
+      depo: r2(h.kislaBakim + h.techizatBakim + h.kusatmaBakim),
+      brut,
+      net: r2(brut - maas),
+      maas,
+    };
   }
   const curume = curumeOrani(is);
   let satis = 0;
