@@ -1005,7 +1005,9 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   const esirGeliri = esir ? esir.para : 0;
   const barisNet = (baris?.net ?? 0) + (savasSonu?.net ?? 0);
-  const net = r2(h.net + barisNet + esirGeliri - nakitHasar - ekstraGider - yeniErMaliyet);
+  // Subay maaşı gerçek nakitten düşer (Tüccar/Zanaatkâr/Din ile aynı; eskiden Asker'de hiç düşülmüyordu → Kazanç subay maaşı kadar şaşıyordu).
+  const calisanMaasi = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
+  const net = r2(h.net + barisNet + esirGeliri - nakitHasar - ekstraGider - yeniErMaliyet - calisanMaasi);
   const yeniEr = erSayisi(state);
   const dokum: IsletmeDokum = {
     yil: state.yil,
@@ -1014,7 +1016,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     depoMasrafi: r2(h.kislaBakim + h.techizatBakim + h.kusatmaBakim),
     yatirimMasrafi: 0,
     loncaAidati: 0,
-    calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
+    calisanMaasi,
     nakitHasar: r2(nakitHasar),
     ekstraGider: r2(ekstraGider + yeniErMaliyet),
     curumeKaybi: 0,

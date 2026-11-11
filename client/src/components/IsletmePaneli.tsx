@@ -293,6 +293,18 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
       case 'seferberlik_terhis':
         return en ? `🎖️ ${u.sayi ?? 0} wartime recruits were discharged.` : `🎖️ Savaş devşirmesinden ${u.sayi ?? 0} er terhis edildi.`;
+      case 'kazanc_ozet': {
+        const f = (v: number) => `${v >= 0 ? '+' : '−'}${formatPara(Math.abs(v))} ${pb}`;
+        const sebep =
+          u.sebep === 'ganimet'
+            ? en ? 'loot or raid income' : 'ganimet / yağma geliri'
+            : u.sebep === 'kayip'
+              ? en ? 'theft or attack losses' : 'hırsızlık / saldırı kaybı'
+              : en ? 'market swings' : 'piyasa dalgalanması';
+        return en
+          ? `📊 Net income: expected ${f(u.beklenen ?? 0)}, actual ${f(u.tutar ?? 0)} — difference: ${sebep}.`
+          : `📊 Yıllık net: beklenen ${f(u.beklenen ?? 0)}, gerçekleşen ${f(u.tutar ?? 0)} — fark nedeni: ${sebep}.`;
+      }
       case 'savas_catisma': {
         const c = u.catisma;
         if (!c) return '';

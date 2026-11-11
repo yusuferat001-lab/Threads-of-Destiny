@@ -2241,6 +2241,7 @@ function App() {
 
       {karakter && vergiBekliyor(karakter) && karakter.yonetim_talep && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <VergiTalebi
+          meslek={karakter.meslek}
           talep={karakter.yonetim_talep}
           paraBirimi={karakter.para_birimi}
           yukleniyor={yukleniyor}

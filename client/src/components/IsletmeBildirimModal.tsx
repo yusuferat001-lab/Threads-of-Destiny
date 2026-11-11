@@ -1,9 +1,10 @@
 import type { IsletmeGorunumu, IsletmeUyari } from '../types';
 import { useDil } from '../DilContext';
+import { gecenYilBaslik } from '../isletmeAdi';
 import { isletmeUyariMetni } from './IsletmePaneli';
 
 /** Geçen yıl işletmede olan önemli olaylar: hırsızlık, rakip saldırısı, sızdırma, ayrılan çalışan, biten imtiyaz. (Stok yetmemesi ayrı pencerede: stokUyari.ts) */
-const ONEMLI_KODLAR: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'baris_catisma', 'savas_sonu', 'seferberlik_terhis', 'savas_ganimet', 'kale', 'madalya', 'yagma', 'savas_kayip', 'savas_catisma'];
+const ONEMLI_KODLAR: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'baris_catisma', 'savas_sonu', 'seferberlik_terhis', 'savas_ganimet', 'kale', 'madalya', 'yagma', 'savas_kayip', 'savas_catisma', 'kazanc_ozet'];
 
 const ANAHTAR = 'kader-carki-isletme-bildirim-yili';
 
@@ -45,7 +46,7 @@ export function IsletmeBildirimModal({ durum, uyarilar, onKapat }: Props) {
   return (
     <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" aria-modal="true">
       <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
-        <h4>{tr ? 'Geçen yıl işletmende olanlar' : 'What happened at your business last year'}</h4>
+        <h4>{gecenYilBaslik(durum.birlik ? 'Asker' : durum.cemaat ? 'Din Adamı' : durum.uretim ? 'Zanaatkâr' : 'Tüccar', tr ? 'tr' : 'en')}</h4>
         {uyarilar.map((u, i) => (
           <p key={i}>{isletmeUyariMetni(u, durum, dil === 'en' ? 'en' : 'tr')}</p>
         ))}

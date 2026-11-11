@@ -2736,6 +2736,12 @@ export interface FinansOzeti {
   isletmeli: boolean;
   /** İşletmeli mesleklerde çalışan (Asker'de subay) maaşlarının yıllık toplamı — maasYillik (işletme neti) bunu ZATEN düşmüş içerir; bilgi satırı. */
   isletmeCalisanMaasi: number;
+  /**
+   * "Kazanç" (ana ekran, sol panel, Bütçen) TEK KAYNAK: bu yılın beklenen, HER ŞEY dahil durumu.
+   * gelir = meslek geliri + mülk geliri; net = işletme neti − subay/çalışan maaşı − yaşam − kira − hayvan − savaş vergisi − kredi taksidi + mülk geliri;
+   * gider = gelir − net; alt/ust = net'in yıllık rastgelelik aralığı (talep gürültüsü, bağış, görev).
+   */
+  kazanc: { gelir: number; gider: number; net: number; alt: number; ust: number };
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez, iç kullanım/uyum için. */
   enflasyonYuzdesi: number;
@@ -2825,6 +2831,22 @@ export async function dunyaGecmisiGetir(id: string): Promise<DunyaGecmisi> {
   return dunyaGecmisiUret(oturum.state);
 }
 
+/** "Kazanç" tek kaynak: bkz. FinansOzeti.kazanc. İşletmeli mesleklerde bu yılın beklenen bütçesi, yoksa maaş − gider. */
+function kazancHesapla(state: CharacterState, maasYillik: number, toplamGider: number, krediTaksit: number): FinansOzeti["kazanc"] {
+  const gay = gayrimenkulYillikGelirHesapla(state);
+  if (!isletmeAktif(state)) {
+    const net = paraYuvarla(maasYillik - toplamGider - krediTaksit + gay);
+    const gelir = paraYuvarla(maasYillik + Math.max(0, gay));
+    return { gelir, gider: paraYuvarla(gelir - net), net, alt: net, ust: net };
+  }
+  const butce = butceVeCebineKalan(state, isletmeBaglami(state));
+  const net = paraYuvarla(butce.cebineKalan + gay);
+  const gelir = paraYuvarla(butce.gelir + Math.max(0, gay));
+  const alt = Math.min(net, paraYuvarla(butce.cebineKalan - (butce.net - butce.netAlt) + gay));
+  const ust = Math.max(net, paraYuvarla(butce.cebineKalan + (butce.netUst - butce.net) + gay));
+  return { gelir, gider: paraYuvarla(gelir - net), net, alt, ust };
+}
+
 export async function finansGetir(id: string): Promise<FinansOzeti> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -2845,6 +2867,7 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     krediTaksit,
     isletmeli: isletmeAktif(state),
     isletmeCalisanMaasi: isletmeAktif(state) ? paraYuvarla(state.ekip.reduce((t, u) => t + u.maas, 0)) : 0,
+    kazanc: kazancHesapla(state, maasYillik, toplamGider, krediTaksit),
     netYillik: paraYuvarla(maasYillik - toplamGider - krediTaksit),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
     giderEnflasyonYuzdesi: giderEnflasyonYuzdesiHesapla(state),
@@ -5170,7 +5193,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
-      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0 },
+      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, gelir: 0, netAlt: 0, netUst: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
       otorite: null, otoriteIliski: state.yonetim_iliski ?? 0, imtiyazlar: [],
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,

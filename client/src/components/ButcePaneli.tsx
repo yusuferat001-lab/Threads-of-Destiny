@@ -33,7 +33,10 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
     giderKalemleri.evcilHayvan +
     giderKalemleri.savasVergisi +
     finans.krediTaksit;
-  const gercekNet = netYillik + gayrimenkulYillikGelir;
+  // "Cebine kalan" tek kaynak: bu yılın beklenen, her şey dahil durumu (aralıkla). Üstteki "geçen yıl" satırı geçmiş bilgisidir.
+  const kz = finans.kazanc;
+  const gercekNet = kz ? kz.net : netYillik + gayrimenkulYillikGelir;
+  const kzAralik = kz && kz.ust - kz.alt >= Math.max(0.5, 0.06 * Math.abs(kz.net)) ? `≈ ${formatPara(kz.alt)} … ${formatPara(kz.ust)}` : null;
   const netEtiketi =
     meslek === 'Asker'
       ? dil === 'en' ? '💰 Army net (last year, after officer wages)' : '💰 Ordu neti (geçen yıl, subay maaşı sonrası)'
@@ -175,10 +178,11 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
             </div>
 
             <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
-              <span>{isletmeAktif ? (dil === 'en' ? 'Left in your pocket' : 'Cebine kalan') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
+              <span>{isletmeAktif ? (dil === 'en' ? 'Left in your pocket (this year, expected)' : 'Cebine kalan (bu yıl, beklenen)') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
               <span className={gercekNet >= 0 ? 's-gelir' : 's-gider'}>
                 {gercekNet >= 0 ? '+' : ''}
                 {formatPara(gercekNet)} {paraBirimi}
+                {kzAralik && <small> ({kzAralik})</small>}
               </span>
             </div>
           </div>

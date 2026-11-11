@@ -96,11 +96,14 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
-  // "Elde kalan" paneli: yıllık tahmini bütçe (işletme) ya da maaş − gider; tüm gelir ve tüm gider altında.
-  const tumGelir = isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
-  const eldeKalan = isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
-  const tumGider = Math.max(0, tumGelir - eldeKalan);
-  const krediTaksit = isletme ? isletme.butce.krediTaksit : (finans?.krediTaksit ?? 0);
+  // "Kazanç": sunucudaki tek kaynak (finans.kazanc) — her şey dahil (maaş, kredi, yaşam, kira…) ve ± aralık. Henüz yüklenmediyse eski tahmine düşer.
+  const kz = finans?.kazanc ?? null;
+  const tumGelir = kz ? kz.gelir : isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
+  const eldeKalan = kz ? kz.net : isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
+  const tumGider = kz ? kz.gider : Math.max(0, tumGelir - eldeKalan);
+  const aralikGenis = kz ? kz.ust - kz.alt : 0;
+  const aralikGoster = !!kz && aralikGenis >= Math.max(0.5, 0.06 * Math.abs(kz.net));
+  const isaretli = (v: number) => `${v >= 0 ? '+' : '−'}${formatPara(Math.abs(Math.round(v * 10) / 10))}`;
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
   const donem = donemAnahtar ? DONEM_ADLARI[donemAnahtar] : null;
@@ -153,9 +156,9 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
           <span className="ana-alt">
             {tr ? 'Gider' : 'Costs'}: <b className={Math.round(tumGider) > 0 ? 'ana-kotu' : ''}>{formatPara(Math.round(tumGider))}</b>
           </span>
-          {krediTaksit > 0 && (
-            <span className="ana-alt ana-alt-kredi">
-              {tr ? 'Kredi taksidi dahil' : 'incl. loan'}: <b className="ana-kotu">{formatPara(Math.round(krediTaksit * 10) / 10)}</b>
+          {aralikGoster && kz && (
+            <span className="ana-alt" title={tr ? 'Yıllık rastgelelik payı (talep, bağış, görev)' : 'Yearly variance (demand, donations, duty)'}>
+              ≈ {isaretli(kz.alt)} … {isaretli(kz.ust)}
             </span>
           )}
         </button>

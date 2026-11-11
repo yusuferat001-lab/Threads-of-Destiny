@@ -14,17 +14,12 @@ interface FinansOzetPaneliProps {
 export function FinansOzetPaneli({ finans, maasYillikYedek, paraBirimi }: FinansOzetPaneliProps) {
   const { m } = useDil();
   const dunyaEtkileri = finans?.dunyaEtkileri ?? [];
-  // "Yıllık gelir" = maaş + (varsa) mülklerden gelen tahmini yıllık net gelir; ikisi ayrı akış
-  // ama oyuncunun göz ucuyla baktığı özet için toplamı daha anlamlı.
-  const gelir = (finans?.maasYillik ?? maasYillikYedek) + (finans?.gayrimenkulYillikGelir ?? 0);
-  const toplamGider = finans
-    ? finans.giderKalemleri.yasam +
-      finans.giderKalemleri.konut +
-      finans.giderKalemleri.ekip +
-      finans.giderKalemleri.evcilHayvan +
-      finans.giderKalemleri.savasVergisi
-    : null;
-  const net = finans ? finans.netYillik + finans.gayrimenkulYillikGelir : null;
+  // Tek kaynak: sunucudaki finans.kazanc (her şey dahil; gelir − gider = eline kalan). Yüklenene dek eski özet.
+  const kz = finans?.kazanc ?? null;
+  const gelir = kz ? kz.gelir : (finans?.maasYillik ?? maasYillikYedek) + (finans?.gayrimenkulYillikGelir ?? 0);
+  const toplamGider = kz ? kz.gider : null;
+  const net = kz ? kz.net : null;
+  const aralik = kz && kz.ust - kz.alt >= Math.max(0.5, 0.06 * Math.abs(kz.net)) ? `≈ ${formatPara(kz.alt)} … ${formatPara(kz.ust)}` : null;
 
   return (
     <div className="finans-ozet-mini">
@@ -46,6 +41,7 @@ export function FinansOzetPaneli({ finans, maasYillikYedek, paraBirimi }: Finans
         <span className="finans-ozet-mini-etiket">{m.foElineKalan}</span>
         <span className="finans-ozet-mini-deger">
           {net === null ? '…' : `${net >= 0 ? '+' : ''}${formatPara(net)} ${paraBirimi}`}
+          {aralik && <small title={aralik}> ({aralik})</small>}
         </span>
       </div>
 

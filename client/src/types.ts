@@ -803,6 +803,7 @@ export interface IsletmeUyari {
     | 'yagma'
     | 'savas_kayip'
     | 'savas_catisma'
+    | 'kazanc_ozet'
     | 'yarali_iyilesti'
     | 'limit_asimi';
   hat?: string;
@@ -827,6 +828,9 @@ export interface IsletmeUyari {
   yaralanan?: number;
   savasSonucu?: 'zafer' | 'yenilgi';
   catismaTur?: 'haydut' | 'sinir';
+  /** kazanc_ozet: yıl başında beklenen net ve fark nedeni (gerçekleşen `tutar`). */
+  beklenen?: number;
+  sebep?: 'ganimet' | 'kayip' | 'piyasa';
   /** savas_catisma: karar savaşının kıyas dökümü (kıyaslanan güçler ve iki tarafın zarı, %). */
   catisma?: { yil: number; inisiyatif: 'saldiri' | 'savunma'; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean };
 }
@@ -1065,6 +1069,10 @@ export interface IsletmeButcesi {
   evcilHayvan: number;
   krediTaksit: number;
   cebineKalan: number;
+  /** Meslek geliri ve net'in ± aralığı (yıllık rastgelelik payı). */
+  gelir: number;
+  netAlt: number;
+  netUst: number;
 }
 
 // ── Asker (birlik modu) — sunucudaki game/birlikIslem.ts ile elle senkron ──
@@ -1490,6 +1498,8 @@ export interface FinansOzeti {
   isletmeli: boolean;
   /** İşletmeli mesleklerde çalışan (Asker'de subay) maaşları toplamı; maasYillik bunu zaten düşmüş içerir (bilgi satırı). */
   isletmeCalisanMaasi: number;
+  /** "Kazanç" tek kaynak: bu yılın beklenen, her şey dahil durumu (gelir, gider, net ve net'in aralığı). */
+  kazanc: { gelir: number; gider: number; net: number; alt: number; ust: number };
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez. */
   enflasyonYuzdesi: number;

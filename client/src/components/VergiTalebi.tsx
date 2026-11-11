@@ -1,12 +1,13 @@
 import { useDil } from '../DilContext';
 import { formatPara } from '../format';
 import type { YonetimTalep } from '../types';
+import { kazancTamlama } from '../isletmeAdi';
 
 const M = {
   baslik: { tr: 'Ekstra Vergi', en: 'Extra Tax' },
   govde: {
-    tr: '{0} işletmenin kazancını fark etti ve senden ekstra vergi istiyor: {1} {2}. Yanıt vermeden hayatına devam edemezsin.',
-    en: '{0} has noticed your business earnings and demands an extra tax: {1} {2}. You cannot carry on until you answer.',
+    tr: '{0} {3} kazancını fark etti ve senden ekstra vergi istiyor: {1} {2}. Yanıt vermeden hayatına devam edemezsin.',
+    en: '{0} has noticed {3} earnings and demands an extra tax: {1} {2}. You cannot carry on until you answer.',
   },
   ode: { tr: 'Öde', en: 'Pay' },
   rusvet: { tr: 'Rüşvet ver', en: 'Offer a bribe' },
@@ -18,7 +19,9 @@ export function VergiTalebi({
   paraBirimi,
   yukleniyor,
   onKarar,
+  meslek,
 }: {
+  meslek?: string | null;
   talep: YonetimTalep;
   paraBirimi: string;
   yukleniyor: boolean;
@@ -28,7 +31,8 @@ export function VergiTalebi({
   const metin = M.govde[dil]
     .replace('{0}', talep.kimAdi)
     .replace('{1}', formatPara(talep.tutar))
-    .replace('{2}', paraBirimi);
+    .replace('{2}', paraBirimi)
+    .replace('{3}', kazancTamlama(meslek, dil));
   return (
     <div className="ogreti-katman zemin-koyu" role="alertdialog" aria-modal="true">
       <div className="ogreti-kutu">

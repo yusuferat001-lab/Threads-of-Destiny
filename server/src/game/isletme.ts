@@ -46,7 +46,7 @@ import {
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
-import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatYilIsle, faaliyetSlotSayisi } from "./cemaat";
+import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
 import { birlikYilIsle } from "./birlikYil";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
@@ -130,7 +130,7 @@ export const PIYASA_SAPMA_SATIS = 0.03;
  * (kayıp en çok %30'dur; ortalama 1 olsa bile).
  */
 const KITLE_KAYIP_KESRI = 0.15; // v22: 0,30 → 0,15
-export const TALEP_GURULTUSU = 0.08;
+export const TALEP_GURULTUSU = 0.04; // v39: ±%8 → ±%4 (Kazanç gösterimi gerçekle yaklaşsın; ortalama değişmez)
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
 /** Maliyet indirimleri ÇARPIMSAL birleşir (tavan yok): maliyet × (1−a)(1−b)(1−c)…; her kaynak kendi payını düşer, yığıldıkça getirisi azalır. */
@@ -810,17 +810,27 @@ export interface IsletmeButcesi {
   /** brüt − vergi − borç ödemesi (dökümdeki `net` ile aynı tanım). */
   net: number;
   maas: number;
+  /** Ana ekran "Kazanç": mesleğin toplam yıllık geliri ve net'in ± aralığı (yıllık rastgelelik payı: talep gürültüsü, bağış, görev). */
+  gelir: number;
+  netAlt: number;
+  netUst: number;
 }
 
 export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): IsletmeButcesi {
   const is = state.isletme;
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
-  const bos: IsletmeButcesi = { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0 };
+  const bos: IsletmeButcesi = { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, gelir: 0, netAlt: 0, netUst: 0 };
   if (!is || !profil) return bos;
   const maas = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
   if (profil.mod === "cemaat") {
-    const brut = cemaatBeklenenKar(state, b);
-    return { ...bos, brut, net: r2(brut - maas), maas };
+    // Beklenen net gerçekle aynı tanım: brüt − VERGİ − çalışan maaşı (eskiden vergi eksikti).
+    const [mn, mx] = gelmeAraligi(state);
+    const netOf = (h: CemaatHesabi) => r2(h.brutKar - h.vergi - maas);
+    const orta = cemaatHesapla(state, b, (mn + mx) / 2);
+    const net = netOf(orta);
+    const a = netOf(cemaatHesapla(state, b, mn));
+    const u = netOf(cemaatHesapla(state, b, mx));
+    return { ...bos, gelir: r2(orta.toplamGelir), brut: orta.brutKar, vergi: orta.vergi, net, netAlt: Math.min(a, u, net), netUst: Math.max(a, u, net), maas };
   }
   if (profil.mod === "birlik") {
     // Asker: gelir/gider kalemleri ve subay maaşı bütçeye girer (net = brüt − subay maaşı; cemaatle aynı tanım).
@@ -834,6 +844,9 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
       brut,
       net: r2(brut - maas),
       maas,
+      gelir: r2(h.toplamGelir),
+      netAlt: r2(brut - maas - 0.03 * h.toplamGelir),
+      netUst: r2(brut - maas + 0.03 * h.toplamGelir),
     };
   }
   const curume = curumeOrani(is);
@@ -871,6 +884,10 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
     borcOdeme: r2(borcOdeme),
     net: r2(brut - vergi - borcOdeme - maas),
     maas,
+    gelir: r2(satis),
+    // Yıllık talep gürültüsü satış, alım ve aidatı aynı oranda oynatır; depo/maaş sabit.
+    netAlt: r2(brut - vergi - borcOdeme - maas - TALEP_GURULTUSU * Math.max(0, satis - alim - aidat) * (brut > 0 ? 1 - vergiOrani(state) : 1)),
+    netUst: r2(brut - vergi - borcOdeme - maas + TALEP_GURULTUSU * Math.max(0, satis - alim - aidat) * (brut > 0 ? 1 - vergiOrani(state) : 1)),
   };
 }
 
@@ -1152,7 +1169,25 @@ export function calisanSadakatKontrolleri(
   return { nakitHasar, ekstraGider };
 }
 
+/** Yıl işleme + yıl sonu "Beklenen / gerçekleşen" özeti: gösterilen Kazanç ile gerçek arasındaki fark bildirimle açıklanır. */
 export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): IsletmeYilSonucu {
+  const beklenen = isletmeButcesi(state, b).net;
+  const sonuc = isletmeYilIsleIc(state, b);
+  const gercek = sonuc.net;
+  if (Math.abs(gercek - beklenen) >= Math.max(1, 0.1 * Math.abs(beklenen))) {
+    const kodlar = sonuc.dokum.uyarilar.map((u) => u.kod);
+    const var_ = (...k: string[]) => kodlar.some((c) => k.includes(c));
+    const sebep: IsletmeUyari["sebep"] = var_("baris_catisma", "savas_ganimet", "yagma", "esir")
+      ? "ganimet"
+      : var_("hirsizlik", "ic_hirsizlik", "rakip_saldiri", "sizdirma", "calisan_ayrildi")
+        ? "kayip"
+        : "piyasa";
+    sonuc.dokum.uyarilar.push({ kod: "kazanc_ozet", beklenen: r2(beklenen), tutar: r2(gercek), sebep });
+  }
+  return sonuc;
+}
+
+function isletmeYilIsleIc(state: CharacterState, b: IsletmeBaglami): IsletmeYilSonucu {
   const is = state.isletme!;
   const profil = isletmeProfiliGetir(state.meslek, state.cag)!;
   if (profil.mod === "cemaat") return cemaatYilIsle(state, b);
