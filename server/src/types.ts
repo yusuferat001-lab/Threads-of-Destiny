@@ -1166,6 +1166,33 @@ export interface BirlikSavasKarari {
   esir: BirlikEsirKarari;
 }
 
+/** Savaş Günü sonucu (Savaş Sonucu ekranı): güçler, zarlar, kayıplar, düşman kaybı tahmini, ganimet tahmini. */
+export interface SavasGunuSonucu {
+  yil: number;
+  /** Genel savaş sonucu ve cephedeki kanat sonucu. */
+  zafer: boolean;
+  kanatZafer: boolean;
+  arazi: BirlikArazi;
+  inisiyatif: "saldiri" | "savunma";
+  oyuncuGuc: number;
+  dusmanGuc: number;
+  /** Zarlar (%, ±8). */
+  oyuncuZar: number;
+  dusmanZar: number;
+  /** Bizim kaybımız (tam sayı) ve kalan er. */
+  olu: number;
+  yarali: number;
+  firar: number;
+  kalanEr: number;
+  /** Düşmanın tahmini kaybı ("~"). */
+  dusmanOlu: number;
+  /** Zaferde savaş sonunda tek seferde gelecek net ganimet tahmini ve beklenen esir (yenilgide 0). */
+  ganimetTahmini: number;
+  esirTahmini: number;
+  /** Talim değişimi (yıl sonunda işlenir). */
+  talim: number;
+}
+
 /** Aktif savaştaki birlik durumu (savaş bitince null). */
 export interface BirlikSavasDurumu {
   /** Savaş başlarken (seferberlikten önce) er sayısı; savaş sonu terhis bu sayının altına inmez. */
@@ -1205,6 +1232,11 @@ export interface BirlikSavasDurumu {
     kanatZafer: boolean;
     genelZafer: boolean;
   };
+  /** Savaş Günü yıl içinde pencere onaylanınca hemen çözülür; yıl işleme aynı savaşı tekrar atmaz ve kaybı ikinci kez uygulamaz. */
+  gun_cozuldu_yil?: number;
+  gun_gosterildi?: boolean;
+  gun_catisma?: { kanatZafer: boolean; genelZafer: boolean; oran: number; arazi: BirlikArazi; inisiyatif: "saldiri" | "savunma" };
+  gun_sonucu?: SavasGunuSonucu;
   kanat_zafer: number;
   kanat_yenilgi: number;
   /** Genel savaş sonucu: şimdiye dek kazanılan / kaybedilen yıl sayısı. */

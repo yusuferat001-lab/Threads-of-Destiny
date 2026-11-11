@@ -1,4 +1,4 @@
-import type { BirlikArazi, BirlikDurumu, BirlikEsirKarari, BirlikKalite, BirlikSavasDurumu, BirlikSeferberlik, BirlikTur, CharacterState, IsletmeDokum, IsletmeUyari } from "../types";
+import type { SavasGunuSonucu, BirlikArazi, BirlikDurumu, BirlikEsirKarari, BirlikKalite, BirlikSavasDurumu, BirlikSeferberlik, BirlikTur, CharacterState, IsletmeDokum, IsletmeUyari } from "../types";
 import {
   ARAZI_DEGISIM_ORANI,
   ARAZI_SIRASI,
@@ -591,6 +591,59 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   return { kanatZafer, genelZafer, oran: R, arazi, inisiyatif };
 }
 
+/**
+ * Savaş Günü penceresi onaylanınca karar savaşı HEMEN çözülür (çatışma + kayıp uygulama); sonuç ekranı için döner.
+ * Yıl işleme (`savasYiliCoz`) aynı yıl bu sonucu kullanır, tekrar zar atmaz ve kaybı ikinci kez uygulamaz.
+ */
+export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami): SavasGunuSonucu | null {
+  const sv = b.savas;
+  if (!sv || sv.sonuc != null || sv.gun_cozuldu_yil === state.yil) return null;
+  if ((sv.yil_sayac ?? 0) + 1 < SAVAS_KARAR_YILI) return null;
+  const gucOnce = gucHesapla(state, { enflasyon: bg.enflasyon }).guc;
+  const catisma = catismaCoz(state, b, bg);
+  const konum = catisma.oran < 0.75 ? "ust" : catisma.oran >= 1.2 ? "alt" : "tam";
+  const zafer = catisma.genelZafer;
+  const t = SAVAS_KARAR_KAYBI[zafer ? "zafer" : "yenilgi"];
+  const oluPct = aralikCek(yariAralik(t.olu, konum));
+  const firarPct = aralikCek(yariAralik(t.firar, konum));
+  const tavan = savasKayipTavani(state, b);
+  const kayip = kayipUygula(state, b, { oluPct, firarPct, oluTavan: tavan.olu, firarTavan: tavan.firar });
+  const E = dusmanReferansGucu(state) * sv.dusman_orani;
+  const dk = BARIS_DUSMAN_KAYBI; // düşman kaybı tahmini: kazanırsak büyük, kaybedersek küçük
+  const doktrin = doktrinToplami(b.doktrinler);
+  const yol = yolEtkisi(state);
+  const emir = emirGetir(sv.emir);
+  const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
+  const ortGanimet = (SAVAS_ZAFER_GANIMET[0] + SAVAS_ZAFER_GANIMET[1]) / 2;
+  const brut = zafer ? gucOnce * ortGanimet * bg.enflasyon * carpan : 0;
+  const net = brut * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
+  const yilSayisi = Math.max(1, (sv.yil_sayac ?? 0) + 1);
+  const sonuc: SavasGunuSonucu = {
+    yil: state.yil,
+    zafer,
+    kanatZafer: catisma.kanatZafer,
+    arazi: catisma.arazi,
+    inisiyatif: catisma.inisiyatif,
+    oyuncuGuc: sv.son_catisma?.oyuncuGuc ?? 0,
+    dusmanGuc: sv.son_catisma?.dusmanGuc ?? 0,
+    oyuncuZar: sv.son_catisma?.oyuncuZar ?? 0,
+    dusmanZar: sv.son_catisma?.dusmanZar ?? 0,
+    olu: kayip.olu,
+    yarali: kayip.yaralanan,
+    firar: kayip.firar,
+    kalanEr: erSayisi(state),
+    dusmanOlu: Math.round(E * (zafer ? rnd(dk.zafer[0], dk.zafer[1]) : rnd(dk.yenilgi[0], dk.yenilgi[1]))),
+    ganimetTahmini: r2(net),
+    esirTahmini: zafer ? Math.round(gucOnce * SAVAS_ZAFER_ESIR * yilSayisi) : 0,
+    talim: catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI,
+  };
+  sv.gun_cozuldu_yil = state.yil;
+  sv.gun_gosterildi = false;
+  sv.gun_catisma = { kanatZafer: catisma.kanatZafer, genelZafer: catisma.genelZafer, oran: catisma.oran, arazi: catisma.arazi, inisiyatif: catisma.inisiyatif };
+  sv.gun_sonucu = sonuc;
+  return sonuc;
+}
+
 export interface SavasYili {
   catisma: CatismaSonucu | null;
   /** Bu yılın ordu % kayıp oranları (aralıktan çekildi). */
@@ -603,6 +656,10 @@ export interface SavasYili {
 export function savasYiliCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami): SavasYili {
   const sv = b.savas!;
   sv.yil_sayac = (sv.yil_sayac ?? 0) + 1;
+  // Karar savaşı pencere onaylanırken zaten çözüldüyse: kaydı kullan, yeniden zar atma, kaybı ikinci kez uygulama.
+  if (sv.gun_cozuldu_yil === state.yil && sv.gun_catisma) {
+    return { catisma: sv.gun_catisma, oluPct: 0, firarPct: 0, faz: "karar" };
+  }
   if (sv.sonuc == null && sv.yil_sayac >= SAVAS_KARAR_YILI) {
     const catisma = catismaCoz(state, b, bg);
     const konum = catisma.oran < 0.75 ? "ust" : catisma.oran >= 1.2 ? "alt" : "tam";
@@ -955,6 +1012,12 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   if (olen > 0) uyarilar.push({ kod: "savas_kayip", sayi: olen, kaynak: kayipKaynak, ...(yaralananOlu > 0 ? { yaralanan: yaralananOlu } : {}) });
   else if (yaralananOlu > 0) uyarilar.push({ kod: "savas_kayip", sayi: 0, kaynak: kayipKaynak, yaralanan: yaralananOlu });
   if ((kayip.yaralananEk ?? 0) > 0) uyarilar.push({ kod: "savas_kayip", sayi: 0, kaynak: "gorev", yaralanan: kayip.yaralananEk, kaynakAd: { tr: yaraliGorevler.join(", "), en: yaraliGorevlerEn.join(", ") } });
+  // Savaş Günü pencere onayında zaten uygulanan karar savaşı kaybı yıl bildiriminde de görünür (ikinci kez uygulanmaz).
+  if (savasYili?.faz === "karar" && b.savas?.gun_sonucu && b.savas.gun_cozuldu_yil === state.yil) {
+    const gs = b.savas.gun_sonucu;
+    if (gs.firar > 0) uyarilar.push({ kod: "firar", sayi: gs.firar });
+    if (gs.olu > 0 || gs.yarali > 0) uyarilar.push({ kod: "savas_kayip", sayi: gs.olu, kaynak: "savas", ...(gs.yarali > 0 ? { yaralanan: gs.yarali } : {}) });
+  }
   if (iyilesen > 0) uyarilar.push({ kod: "yarali_iyilesti", sayi: iyilesen });
   if (h.limitAsimGideri > 0) uyarilar.push({ kod: "limit_asimi" });
 

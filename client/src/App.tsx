@@ -27,6 +27,7 @@ import type {
   BirlikKararGirdisi,
   BirlikTur,
   SavasKarariDurumu,
+  SavasGunuSonucu,
 } from './types';
 import {
   mesleklerGetir,
@@ -148,6 +149,7 @@ import { ogretiBekliyor, vergiBekliyor, doktrinBekliyor, savasKarariOlasi } from
 import { OgretiSecimi } from './components/OgretiSecimi';
 import { DoktrinSecimi } from './components/DoktrinSecimi';
 import { SavasKararlari } from './components/SavasKararlari';
+import { SavasSonucu } from './components/SavasSonucu';
 import { VergiTalebi } from './components/VergiTalebi';
 import { UrunSecimi } from './components/UrunSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
@@ -384,6 +386,7 @@ function App() {
   const [isletme, setIsletme] = useState<IsletmeGorunumu | null>(null);
   /** Asker savaş yılında sıradaki zorunlu karar adımı (yoksa null). */
   const [savasKarari, setSavasKarari] = useState<SavasKarariDurumu | null>(null);
+  const [savasGunuSonucu, setSavasGunuSonucu] = useState<SavasGunuSonucu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
@@ -1756,6 +1759,7 @@ function App() {
       }
       if (!son) return;
       setSavasKarari(son.sonraki);
+      if (son.gunSonucu) setSavasGunuSonucu(son.gunSonucu);
       // Karar zinciri bitti ve bekleyen bir olay varsa (savaş yılı olayla başladıysa) şimdi çek.
       if (!son.sonraki && !senaryo && son.state.olay_bekliyor) {
         const yeni = await senaryoGerekirseCek(son.state);
@@ -2269,6 +2273,10 @@ function App() {
 
       {karakter && savasKarari && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <SavasKararlari karar={savasKarari} yukleniyor={yukleniyor} onSec={savasKarariVerHandler} />
+      )}
+
+      {karakter && savasGunuSonucu && (
+        <SavasSonucu sonuc={savasGunuSonucu} paraBirimi={karakter.para_birimi} onKapat={() => setSavasGunuSonucu(null)} />
       )}
 
       {ayarlarAcik && (

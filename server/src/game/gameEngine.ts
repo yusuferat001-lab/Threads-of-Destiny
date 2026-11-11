@@ -14,6 +14,7 @@ import {
   savasKarariDurumu,
   ikmalDegistir,
   savasKarariVer,
+  savasGunuSonucuAl,
   terhisEt,
   kiralikOrduTut,
   type BirlikGorunumu,
@@ -5513,7 +5514,7 @@ export async function birlikSavasKarariGetir(id: string): Promise<SavasKarariDur
 export function birlikSavasKarariVer(id: string, secim: string) {
   return birlikEylemi(id, (state, bg) => {
     savasKarariVer(state, secim, bg);
-    return { sonraki: savasKarariDurumu(state, bg) };
+    return { sonraki: savasKarariDurumu(state, bg), gunSonucu: savasGunuSonucuAl(state) };
   });
 }
 /** Savaş sürerken ikmali değiştirir (Ordu ekranı; pencere açmaz). */

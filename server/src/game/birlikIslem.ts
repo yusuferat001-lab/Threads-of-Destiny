@@ -1,5 +1,6 @@
 import { subayToplami, SUBAY_TAVANLARI, TAHMIN_ARALIGI_TABAN } from "./subay";
 import type {
+  SavasGunuSonucu,
   BirlikArazi,
   BirlikDurumu,
   BirlikEsirKarari,
@@ -110,7 +111,7 @@ import {
   type GucDokumu,
 } from "./birlik";
 import { SAVAS_SURE } from "../data/dunyaDonemleri";
-import { esirleriIsle, savasBaslat, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
+import { esirleriIsle, savasBaslat, savasGunuCoz, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
 import { olasilikliYuvarla } from "./isletme";
 
 // ── Yardımcılar ─────────────────────────────────────────────────────────────
@@ -533,8 +534,19 @@ export function savasKarariVer(state: CharacterState, secim: string, bg: Isletme
   else if (adim === "rol") k.rol = secim as BirlikRol;
   else if (adim === "inisiyatif") k.inisiyatif = secim as "saldiri" | "savunma";
   k.adim += 1;
+  // Savaş Günü penceresi tamamlanınca karar savaşı HEMEN çözülür (Savaş Sonucu ekranı için sonuç `savasGunuSonucuAl` ile alınır).
+  if (k.adim >= k.adimlar.length && b.savas && b.savas.sonuc == null && (b.savas.yil_sayac ?? 0) + 1 === SAVAS_KARAR_YILI && k.adimlar.some((a) => a === "rol")) {
+    savasGunuCoz(state, b, bg);
+  }
   birlikSenkron(state, bg.enflasyon);
-  void b;
+}
+
+/** Çözülmüş ama henüz gösterilmemiş Savaş Günü sonucunu bir kez verir. */
+export function savasGunuSonucuAl(state: CharacterState): SavasGunuSonucu | null {
+  const sv = state.isletme?.birlik?.savas;
+  if (!sv?.gun_sonucu || sv.gun_gosterildi || sv.gun_cozuldu_yil !== state.yil) return null;
+  sv.gun_gosterildi = true;
+  return sv.gun_sonucu;
 }
 
 // ── Olay etkileri ve eski ordu kancaları ────────────────────────────────────

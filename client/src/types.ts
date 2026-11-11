@@ -1230,6 +1230,27 @@ export interface SavasAdimBolumu {
   secenekler: { id: string; simge?: string; ad: DilMetni; aciklama: DilMetni }[];
 }
 
+/** Savaş Günü sonucu (Savaş Sonucu ekranı). */
+export interface SavasGunuSonucu {
+  yil: number;
+  zafer: boolean;
+  kanatZafer: boolean;
+  arazi: BirlikArazi;
+  inisiyatif: 'saldiri' | 'savunma';
+  oyuncuGuc: number;
+  dusmanGuc: number;
+  oyuncuZar: number;
+  dusmanZar: number;
+  olu: number;
+  yarali: number;
+  firar: number;
+  kalanEr: number;
+  dusmanOlu: number;
+  ganimetTahmini: number;
+  esirTahmini: number;
+  talim: number;
+}
+
 export interface SavasKarariDurumu {
   adim: string;
   sira: number;

@@ -926,3 +926,8 @@
 /* Asker subayı artı/eksi satırları (v39) */
 .subay-satirlar { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: .92em; }
 .subay-satirlar > span { white-space: nowrap; }
+
+/* Savaş Sonucu ekranı (v39) */
+.savas-sonuc { text-align: center; }
+.savas-sonuc-baslik { font-size: 1.8rem; font-weight: 900; letter-spacing: 0.08em; margin: 0.3rem 0; }
+.savas-sonuc .savas-kiyas { text-align: left; }

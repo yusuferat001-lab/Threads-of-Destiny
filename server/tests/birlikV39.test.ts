@@ -201,3 +201,51 @@ describe("v39 haydut / sınır çatışması", () => {
     for (const k of kayiplar) expect((k.yaralanan ?? 0)).toBeGreaterThanOrEqual(k.sayi ?? 0);
   });
 });
+
+describe("v39 Savaş Günü hemen çözülür", () => {
+  function karaSavasi() {
+    const s = asker();
+    s.rutbe_seviye = 3;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 100;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+    b.gorevler = [];
+    s.ulke.savasta = true;
+    const sv = savasBaslat(s);
+    seferberlikUygula(s, "secme", bg(s));
+    sv.emir = "temkinli";
+    sv.ikmal = "yeterli";
+    sv.yil_sayac = 2; // 3. yıl: karar savaşı
+    return { s, b, sv };
+  }
+
+  it("pencere onayı savaşı çözer; yıl işleme aynı savaşı yeniden atmaz ve kaybı ikinci kez uygulamaz", async () => {
+    const { birlikSavasKarariHazirlaTest } = { birlikSavasKarariHazirlaTest: null } as never;
+    void birlikSavasKarariHazirlaTest;
+    const { savasKarariHazirla, savasKarariVer, savasGunuSonucuAl } = await import("../src/game/birlikIslem");
+    const { s, b, sv } = karaSavasi();
+    const k = savasKarariHazirla(s)!;
+    expect(k.adimlar).toContain("rol");
+    for (let i = 0; i < 6 && k.adim < k.adimlar.length; i++) {
+      const adim = k.adimlar[k.adim];
+      const secim = adim === "rol" ? "ana" : adim === "inisiyatif" ? "savunma" : adim === "arazi" ? "ova" : adim === "esir" ? "karma" : adim === "seferberlik" ? "dengeli" : adim === "emir" ? "temkinli" : "yeterli";
+      savasKarariVer(s, secim, bg(s));
+    }
+    expect(sv.gun_cozuldu_yil).toBe(s.yil);
+    const g = savasGunuSonucuAl(s)!;
+    expect(g).toBeTruthy();
+    expect(savasGunuSonucuAl(s)).toBeNull(); // ikinci kez gösterilmez
+    expect(g.oyuncuGuc).toBeGreaterThan(0);
+    expect(g.dusmanGuc).toBeGreaterThan(0);
+    expect(g.olu + g.firar).toBeGreaterThanOrEqual(0);
+    const sayac = sv.genel_zafer + sv.genel_yenilgi;
+    const oluOnce = sv.olu_toplam;
+    const zaferOnce = sv.sonuc;
+    birlikYilIsle(s, bg(s));
+    const sv2 = b.savas ?? sv;
+    expect(sv2.genel_zafer + sv2.genel_yenilgi).toBe(sayac);
+    expect(sv2.sonuc).toBe(zaferOnce);
+    expect(sv2.olu_toplam).toBe(oluOnce);
+  });
+});
