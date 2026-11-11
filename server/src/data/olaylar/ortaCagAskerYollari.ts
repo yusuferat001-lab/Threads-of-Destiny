@@ -533,7 +533,7 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
     gerekliEtiketler: ["yol:asker:sadik"],
     gorsel: "💍",
     baslik: "Düğün Gecesi Çağrısı",
-    metin: "Düğün hazırlığı tamam, ama sınır karakolundan acil çağrı geldi. {es} gözyaşlarını tutuyor, davetliler kapıda.",
+    metin: "Düğün hazırlığı tamam, ama sınır karakolundan acil çağrı geldi. Nişanlın gözyaşlarını tutuyor, davetliler kapıda.",
     secenekler: [
       {
         metin: "Törenden ayrıl, göreve koş.",
@@ -542,7 +542,7 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
           un: 20,
           mutluluk: -15,
           mesaj: "Karakola yetiştin; amirin sadakatini unutmadı.",
-          detay: "{es} affetti, ama anı hep eksik kaldı.",
+          detay: "Nişanlın affetti, ama anı hep eksik kaldı.",
         },
         basarisizSonuc: {
           mutluluk: -10,
@@ -558,7 +558,7 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
           mutluluk: 10,
           ahlak: 5,
           un: -15,
-          mesaj: "Düğünü tamamladın, {es} elini bırakmadı.",
+          mesaj: "Düğünü tamamladın, eşin elini bırakmadı.",
           detay: "Gecikmenin hesabını verdin, pişman değilsin.",
         },
         basarisizSonuc: {

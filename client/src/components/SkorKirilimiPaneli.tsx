@@ -38,7 +38,13 @@ export function SkorKirilimiPaneli({ karakter, baslikGoster = true }: { karakter
         </li>
         {kirilim.isletmePuani > 0 && (
           <li>
-            <span>{m.skorKirilimIsletme}</span>
+            <span>
+              {karakter.meslek === 'Din Adamı'
+                ? dil === 'en' ? '⛪ Congregation (believer count)' : '⛪ Cemaat (inanan sayısı)'
+                : karakter.meslek === 'Asker'
+                  ? dil === 'en' ? '🪖 Army (men count)' : '🪖 Ordu (er sayısı)'
+                  : m.skorKirilimIsletme}
+            </span>
             <span className="s-arti">{say(kirilim.isletmePuani)}</span>
           </li>
         )}

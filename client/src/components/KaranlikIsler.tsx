@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { EkipUyesi, KotuIsKarti, Rakip } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara, formatYuzde } from '../format';
+import { formatPara, formatYuzde, kitleSozlugu } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
 
@@ -85,6 +85,8 @@ interface KaranlikIslerProps {
   yukleniyor: boolean;
   dinKultur: string | null;
   sucSeviyesi: number;
+  /** Meslek (kazanılan kitlenin birimi: müşteri / inanan / er). */
+  meslek?: string;
   /** Rakip adı → pazar payı (0-100), pazar durumundan. */
   rakipPay: (ad: string) => number;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; ajanId?: string }) => void;
@@ -119,7 +121,7 @@ function husumetEtiket(h: number, en: boolean): string {
 }
 
 /** Karanlık işler sihirbazı: 1) suç → 2) rakip (yalnız rakibe yönelik işlerde) → 3) kim yapsın (kendin / çalışan). */
-export function KaranlikIsler({ isler, rakipler, ekip, paraBirimi, yukleniyor, dinKultur, sucSeviyesi, rakipPay, onKotuIs }: KaranlikIslerProps) {
+export function KaranlikIsler({ isler, rakipler, ekip, paraBirimi, yukleniyor, dinKultur, sucSeviyesi, meslek, rakipPay, onKotuIs }: KaranlikIslerProps) {
   const { dil, m, kt } = useDil();
   const en = dil === 'en';
   const t = (k: keyof typeof M) => M[k][en ? 'en' : 'tr'];
@@ -161,7 +163,7 @@ export function KaranlikIsler({ isler, rakipler, ekip, paraBirimi, yukleniyor, d
     const r: ReactNode[] = [<span key="s">{bic(m.iyKaranlikSans, x.basariSansi)}</span>];
     if (x.tahminiKazanc > 0) r.push(<span key="k" className="s-gelir">{bic(m.iyKaranlikKazanc, formatPara(x.tahminiKazanc), paraBirimi)}</span>);
     if (x.maliyet > 0) r.push(<span key="b" className="s-gider">{`${en ? 'cost' : 'bedel'} ${formatPara(x.maliyet)} ${paraBirimi}`}</span>);
-    if (x.musteriKazanci > 0) r.push(<span key="m" className="s-arti">{en ? `+${x.musteriKazanci} customers` : `+${x.musteriKazanci} müşteri`}</span>);
+    if (x.musteriKazanci > 0) r.push(<span key="m" className="s-arti">{`+${x.musteriKazanci} ${kitleSozlugu(meslek, en ? 'en' : 'tr').birim}`}</span>);
     if (x.rakipKirmaYuzde >= 100) r.push(<span key="r">{en ? 'finishes your rival' : 'rakibi bitirir'}</span>);
     else if (x.rakipKirmaYuzde > 0) r.push(<span key="r">{en ? 'weakens your rival' : 'rakibi zayıflatır'}</span>);
     return r;

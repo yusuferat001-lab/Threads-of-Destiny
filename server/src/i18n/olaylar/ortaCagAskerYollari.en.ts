@@ -308,13 +308,13 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_05: {
     baslik: "A Summons on the Wedding Night",
     metin:
-      "The wedding is ready when an urgent call comes from the border post. {es} holds back tears; guests wait at the door.",
+      "The wedding is ready when an urgent call comes from the border post. Your betrothed holds back tears; guests wait at the door.",
     secenekler: [
       {
         metin: "Leave the ceremony; rush to duty.",
         basariliSonuc: {
           mesaj: "You reached the post; your superior never forgot your loyalty.",
-          detay: "{es} forgave you, but the memory stays incomplete.",
+          detay: "Your betrothed forgave you, but the memory stays incomplete.",
         },
         basarisizSonuc: {
           mesaj: "A storm caught you; you reached the post late.",
@@ -324,7 +324,7 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       {
         metin: "Finish the ceremony; leave at dawn.",
         basariliSonuc: {
-          mesaj: "You finished the wedding; {es} never let go of your hand.",
+          mesaj: "You finished the wedding; your spouse never let go of your hand.",
           detay: "You answered for the delay and don't regret it.",
         },
         basarisizSonuc: {

@@ -31,22 +31,23 @@ type Etki = { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } |
 /** Çalışanın/adayın işletmeye etkisi, mesleğe göre okunur tek satır (örn. "Alış maliyeti −%12"). */
 function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string | null {
   if (!etki) return null;
-  const mod = durum.cemaat ? 'cemaat' : durum.uretim ? 'uretim' : 'ticaret';
+  const mod = durum.birlik ? 'birlik' : durum.cemaat ? 'cemaat' : durum.uretim ? 'uretim' : 'ticaret';
   const yuzde = Math.round(etki.deger * 100);
   const tr = dil === 'tr';
   switch (etki.tur) {
     case 'maliyet': {
-      const ad = mod === 'cemaat' ? (tr ? 'Faaliyet masrafı' : 'Activity costs') : mod === 'uretim' ? (tr ? 'Hammadde gideri' : 'Material costs') : tr ? 'Alış maliyeti' : 'Purchase cost';
+      const ad = mod === 'birlik' ? (tr ? 'Er ve erzak masrafı' : 'Soldier and supply costs') : mod === 'cemaat' ? (tr ? 'Faaliyet masrafı' : 'Activity costs') : mod === 'uretim' ? (tr ? 'Hammadde gideri' : 'Material costs') : tr ? 'Alış maliyeti' : 'Purchase cost';
       return `${ad} −${formatYuzde(dil, yuzde)}`;
     }
     case 'musteri': {
       const n = Math.round(etki.deger);
+      if (mod === 'birlik') return tr ? `+${n} er/yıl` : `+${n} men/yr`;
       return mod === 'cemaat' ? (tr ? `+${n} inanan/yıl` : `+${n} worshippers/yr`) : tr ? `+${n} müşteri/yıl` : `+${n} customers/yr`;
     }
     case 'guvenlik':
       return `${tr ? 'Koruma' : 'Protection'} ${formatYuzde(dil, yuzde, true)}`;
     case 'ana': {
-      const ad = mod === 'cemaat' ? (tr ? 'Bağışlar' : 'Donations') : mod === 'uretim' ? (tr ? 'Yıllık üretim' : 'Yearly output') : tr ? 'Satışlar' : 'Sales';
+      const ad = mod === 'birlik' ? (tr ? 'Askerî güç' : 'Military strength') : mod === 'cemaat' ? (tr ? 'Bağışlar' : 'Donations') : mod === 'uretim' ? (tr ? 'Yıllık üretim' : 'Yearly output') : tr ? 'Satışlar' : 'Sales';
       return `${ad} ${formatYuzde(dil, yuzde, true)}`;
     }
   }

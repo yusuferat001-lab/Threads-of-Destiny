@@ -3707,7 +3707,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
   {
     id: "aile_tatil_karari",
     kategori: "sosyal",
-    gerekliEtiketler: ["cocuk_var"],
+    gerekliEtiketler: ["cocuk_var", "medeni:evli"],
     gorsel: "🏞️",
     baslik: "Birlikte Bir Kaçamak",
     metin: "Aylardır aile bir arada doğru dürüst vakit geçirmedi. {es} 'hep birlikte bir yere gitsek' diyor.",

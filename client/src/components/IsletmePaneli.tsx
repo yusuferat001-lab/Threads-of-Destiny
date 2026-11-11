@@ -12,6 +12,7 @@ import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
+import { cemaatUyariMetni } from './CemaatPaneli';
 import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
 
 /** Pazar payı: bir ondalık, dile göre yüzde işareti (TR "%12,7", EN "12.7%"). */
@@ -233,8 +234,14 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
 };
 
 export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 'tr' | 'en'): string {
+  // Din Adamı: kumbara, ibadethane, inanan dili (dükkân/kasa/müşteri değil).
+  if (durum.cemaat) {
+    const m = cemaatUyariMetni(u, durum, dil);
+    if (m) return m;
+  }
   const d = (m: D) => m[dil];
   const pb = durum.paraBirimi;
+  const asker = !!durum.birlik;
   const hatAdi = (id: string) => {
     const h = durum.hatlar.find((x) => x.id === id);
     return h ? d(h.ad) : id;
@@ -256,9 +263,9 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'calisan_ayrildi':
         return `🚪 ${u.isim ?? ''}: ${en ? 'quit and took a severance from the till' : 'işi bıraktı ve kasadan tazminat aldı'}`;
       case 'sizdirma':
-        return `🕵️ ${u.isim ?? ''}: ${en ? 'leaked your secrets to the rival; you lost customers' : 'sırlarını rakibe sızdırdı, müşteri kaybettin'}`;
+        return `🕵️ ${u.isim ?? ''}: ${en ? `leaked your secrets to the rival; ${asker ? 'you lost men' : 'you lost customers'}` : `sırlarını rakibe sızdırdı, ${asker ? 'er kaybettin' : 'müşteri kaybettin'}`}`;
       case 'ic_hirsizlik':
-        return `🫳 ${u.isim ?? ''}: ${en ? `stole goods (${u.urunYuzde}%) and cash (${formatPara(u.tutar ?? 0)})` : `mal (%${u.urunYuzde}) ve para (${formatPara(u.tutar ?? 0)}) çaldı`}`;
+        return `🫳 ${u.isim ?? ''}: ${asker ? (en ? `stole from the strongbox (${formatPara(u.tutar ?? 0)})` : `kasadan para çaldı (${formatPara(u.tutar ?? 0)})`) : en ? `stole goods (${u.urunYuzde}%) and cash (${formatPara(u.tutar ?? 0)})` : `mal (%${u.urunYuzde}) ve para (${formatPara(u.tutar ?? 0)}) çaldı`}`;
       case 'hirsizlik': {
         const s = d(HIRSIZLIK_SONUCLARI[u.sonuc ?? 'sans']);
         const ek = u.urunYuzde || u.tutar ? ` — ${en ? 'goods' : 'mal'} ${u.urunYuzde ?? 0}%, ${en ? 'cash' : 'para'} ${formatPara(u.tutar ?? 0)}` : '';
@@ -270,7 +277,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         const askerMi = !!durum.birlik;
         if (u.engellendi) return `🛡️ ${kim}: ${d(askerMi ? ASKER_SALDIRI_ENGELLENDI[tur] ?? ASKER_SALDIRI_ENGELLENDI.baskin : SALDIRI_ENGELLENDI[tur] ?? SALDIRI_ENGELLENDI.baskin)}`;
         const kayiplar: string[] = [];
-        if (u.musteriKaybi) kayiplar.push(en ? `you lost ${formatMusteri(dil, u.musteriKaybi)} customers` : `${formatMusteri(dil, u.musteriKaybi)} müşteri kaybettin`);
+        if (u.musteriKaybi) kayiplar.push(en ? `you lost ${formatMusteri(dil, u.musteriKaybi)} ${asker ? 'men' : 'customers'}` : `${formatMusteri(dil, u.musteriKaybi)} ${asker ? 'er' : 'müşteri'} kaybettin`);
         if (u.tutar) kayiplar.push(`${formatPara(u.tutar)} ${pb}`);
         if (u.urunYuzde) kayiplar.push(en ? `${u.urunYuzde}% of stock` : `stokun %${u.urunYuzde}'i`);
         if (u.sohretKaybi) kayiplar.push(en ? `fame −${u.sohretKaybi}` : `şöhret −${u.sohretKaybi}`);

@@ -1053,7 +1053,7 @@ export const OLAY_ORTACAG_TUCCAR_YOLLARI: OlayTanimi[] = [
     meslekler: ["Tüccar"],
     minYas: 48,
     maxYas: 65,
-    gerekliEtiketler: ["yol:tuccar:acgozlu"],
+    gerekliEtiketler: ["yol:tuccar:acgozlu", "cocuk_var"],
     gorsel: "🏚️",
     baslik: "Miras Kavgası",
     metin: "{cocuk} servetinden şimdiden pay istiyor; hırsını senden öğrendiğini söylüyor. Ya huzur satın alırsın ya da birikimini korursun.",
