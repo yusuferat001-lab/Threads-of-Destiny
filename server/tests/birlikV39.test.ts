@@ -288,3 +288,39 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
     expect(pencereler.filter((p) => p.length > 0).length).toBeLessThanOrEqual(3);
   });
 });
+
+describe("v40 görev geliri ve birim küçük artıları", () => {
+  it("er başı görev geliri 1,10–1,90 arası (ek çarpan yok)", async () => {
+    const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
+    expect(GOREV_GELIR_CARPANI).toBe(1);
+    const v = GOREVLER.map((g) => g.erBasi);
+    expect(Math.min(...v)).toBeCloseTo(1.1, 6);
+    expect(Math.max(...v)).toBeCloseTo(1.9, 6);
+    for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
+  });
+
+  it("mızraklı yaralıyı, zırhlı ölüyü azaltır; süvari haydut/akın görev gelirini +%10 artırır", async () => {
+    const { yaraliOrani } = await import("../src/game/birlikYil");
+    const { kayipCarpani } = await import("../src/game/birlik");
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const s = asker();
+    const b = birlikAl(s);
+    const y0 = yaraliOrani(s);
+    const k0 = kayipCarpani(s);
+    b.birlik_turler = ["mizrakli"];
+    expect(yaraliOrani(s)).toBeLessThan(y0);
+    b.birlik_turler = ["zirhli"];
+    expect(kayipCarpani(s)).toBeCloseTo(k0 - 0.15, 6);
+    // süvari: haydut görevi geliri
+    s.rutbe_seviye = 3;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 200;
+    b.kalite = { dusuk: 200, orta: 0, yuksek: 0 };
+    b.gorevler = ["haydut"];
+    b.birlik_turler = [];
+    const g0 = birlikHesapla(s, bg(s)).gorevGeliri;
+    b.birlik_turler = ["suvari"];
+    const g1 = birlikHesapla(s, bg(s)).gorevGeliri;
+    expect(g1 / g0).toBeCloseTo(1.1, 6);
+  });
+});

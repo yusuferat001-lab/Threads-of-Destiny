@@ -104,25 +104,25 @@ export const TUR_TANIMLARI: Record<BirlikTur, TurTanimi> = {
   okcu: {
     saldiri: 2.1, savunma: 1.4, pay: TUR_PAYI, arazi: { ova: 0.8, dag: 1.25, orman: 1.35 }, ucret: 0.7, bakim: 0.46, erzak: 1.46, simge: "🏹",
     ad: { orta: { tr: "Okçu", en: "Archers" }, sanayi: { tr: "Nişancı", en: "Riflemen" } },
-    arti: { tr: "Güçlü saldırı ve iyi savunma; dağda ve ormanda üstün", en: "Strong attack, good defence; excels in hills and forest" },
+    arti: { tr: "Güçlü saldırı ve iyi savunma; dağda ve ormanda üstün; baskın cezası −%5", en: "Strong attack, good defence; excels in hills and forest; ambush penalty −5%" },
     eksi: { tr: "Açık ovada zayıf", en: "Weak on open ground" },
   },
   suvari: {
     saldiri: 3, savunma: 0.8, pay: TUR_PAYI, arazi: { ova: 1.6, dag: 0.85, orman: 0.85 }, ucret: 0.85, bakim: 0.55, erzak: 1.55, simge: "🐎",
     ad: { orta: { tr: "Ağır Süvari", en: "Heavy Cavalry" }, sanayi: { tr: "Süvari", en: "Cavalry" } },
-    arti: { tr: "En güçlü saldırı; ovada ezici", en: "Strongest attack; crushing on open ground" },
+    arti: { tr: "En güçlü saldırı; ovada ezici; haydut ve akın geliri +%10", en: "Strongest attack; crushing on open ground; bandit and raid income +10%" },
     eksi: { tr: "Zayıf savunma; dağ ve ormanda zayıf, pahalı", en: "Weak defence; poor in hills and forest, costly" },
   },
   mizrakli: {
     saldiri: 1.3, savunma: 2.3, pay: TUR_PAYI, arazi: { ova: 1.1, dag: 1.5, orman: 0.85 }, ucret: 0.75, bakim: 0.49, erzak: 1.49, simge: "🛡️",
     ad: { orta: { tr: "Kalkan-Mızrak", en: "Shield & Spear" }, sanayi: { tr: "Süngülü Piyade", en: "Bayonet Infantry" } },
-    arti: { tr: "Çok güçlü savunma; dağ geçidinde duvar gibi", en: "Very strong defence; a wall in mountain passes" },
+    arti: { tr: "Çok güçlü savunma; dağ geçidinde duvar gibi; yaralı −%10", en: "Very strong defence; a wall in mountain passes; wounded −10%" },
     eksi: { tr: "Saldırısı düşük; sık ormanda zayıf", en: "Weak attack; poor in dense forest" },
   },
   zirhli: {
     saldiri: 1.9, savunma: 2.9, pay: TUR_PAYI, arazi: { ova: 1.3, dag: 1.2, orman: 1.25 }, ucret: 1.35, bakim: 0.88, erzak: 1.88, simge: "⚔️",
     ad: { orta: { tr: "Zırhlı Şövalye", en: "Armoured Knights" }, sanayi: { tr: "Zırhlı Birlik", en: "Armoured Corps" } },
-    arti: { tr: "En güçlü savunma ve güçlü saldırı; her arazide iyi", en: "Strongest defence and strong attack; good everywhere" },
+    arti: { tr: "En güçlü savunma ve güçlü saldırı; her arazide iyi; ölü −%15", en: "Strongest defence and strong attack; good everywhere; deaths −15%" },
     eksi: { tr: "En pahalı bakım", en: "Costliest upkeep" },
   },
   kusatma: {
@@ -377,12 +377,17 @@ export const MORAL_SERBEST = 3;
 export const SOLD = [6, 6, 6, 6, 6];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir). */
 export const ER_BASI_GELIR = 0.2;
-/** Görev geliri çarpanı (sold'a dokunmaz). */
-export const GOREV_GELIR_CARPANI = 1.09;
+/** Görev geliri ek çarpanı (1 = yok). Er başı görev geliri tabloda doğrudan 1,10–1,90 arasıdır. */
+export const GOREV_GELIR_CARPANI = 1;
 /** Barış yılı görev kayıpları ölü değil yaralı olur: yaralı = görev er payı × kayipBaris × bu. */
 export const BARIS_GOREV_YARALI_CARPANI = 2.5;
 /** Her rütbede sabit yıllık gönüllü er (savaşta ×2, vebada kısılır, kışla limitine takılır). */
 export const BARIS_YILLIK_ER = 1;
+/** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haydut/akın görev gelirini artırır. */
+export const MIZRAKLI_YARALI_AZALTMA = 0.1;
+export const ZIRHLI_OLU_AZALTMA = 0.15;
+export const OKCU_PUSU_AZALTMA = 0.05;
+export const SUVARI_GOREV_GELIRI = 0.1;
 export const SAVAS_ER_BASI_CARPANI = 2;
 export const ER_MASRAFI = 0.25;
 export const ERZAK_BIRIMI = 0.15;
@@ -478,43 +483,43 @@ export const GOREVLER: GorevTanimi[] = [
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 25, erBasi: 1.20, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 25, erBasi: 1.21, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.01, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
   },
   {
-    id: "haydut", tur: "haydut", simge: "🗡️", minGuc: 45, erBasi: 1.30, yalnizSavas: false, ganimet: 0.1,
+    id: "haydut", tur: "haydut", simge: "🗡️", minGuc: 45, erBasi: 1.33, yalnizSavas: false, ganimet: 0.1,
     kayipBaris: 0.01, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1, senaryo: "haydut",
     ad: { orta: { tr: "Haydut Avı", en: "Bandit Hunt" }, sanayi: { tr: "Eşkıya Avı", en: "Outlaw Hunt" } },
     aciklama: { tr: "Küçük ganimet ve esir; süvari ve okçu işe yarar.", en: "Small loot and prisoners; cavalry and archers help." },
   },
   {
-    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 70, erBasi: 1.40, yalnizSavas: false, ganimet: 0,
+    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 70, erBasi: 1.44, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.005, kayipSavas: 0.01, sertlik: 1.2, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Haraç ve Vergi Tahsilatı", en: "Tribute & Tax Collection" }, sanayi: { tr: "Jandarma ve Vergi Tahsilatı", en: "Gendarmerie & Tax Collection" } },
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "akin", tur: "akin", simge: "🔥", minGuc: 100, erBasi: 1.50, yalnizSavas: false, ganimet: 0.15,
+    id: "akin", tur: "akin", simge: "🔥", minGuc: 100, erBasi: 1.56, yalnizSavas: false, ganimet: 0.15,
     kayipBaris: 0.02, kayipSavas: 0.08, sertlik: 0.6, savasCarpani: 2, senaryo: "savas",
     ad: { orta: { tr: "Akın ve Baskın", en: "Raid & Foray" }, sanayi: { tr: "İsyan Bastırma", en: "Suppressing Revolt" } },
     aciklama: { tr: "Barışta zayıf; savaşta geliri ikiye katlar, ganimet getirir ama kayıp yüksektir.", en: "Weak in peace; doubles income in war and brings loot, but losses are heavy." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 140, erBasi: 1.60, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 140, erBasi: 1.67, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "Düşük kayıp, istikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Low losses, steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "muhafiz", tur: "muhafiz", simge: "👑", minGuc: 185, erBasi: 1.70, sohret: 0.5, yalnizSavas: false, ganimet: 0,
+    id: "muhafiz", tur: "muhafiz", simge: "👑", minGuc: 185, erBasi: 1.79, sohret: 0.5, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.005, sertlik: -0.3, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Saray ve Kale Muhafızlığı", en: "Court & Castle Guard" }, sanayi: { tr: "Liman ve Kale Komutanlığı", en: "Harbour & Fort Command" } },
     aciklama: { tr: "Düşük kayıp, iyi ödeme; şöhret getirir.", en: "Low losses, good pay; brings renown." },
   },
   {
-    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 230, erBasi: 1.80, sohret: 1.0, yalnizSavas: false, ganimet: 0.05,
+    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 230, erBasi: 1.90, sohret: 1.0, yalnizSavas: false, ganimet: 0.05,
     kayipBaris: 0.005, kayipSavas: 0.03, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
     aciklama: { tr: "Büyük ordu ister; yüksek ve düzenli kazanç, şöhret getirir.", en: "Needs a big army; high, steady earnings and renown." },

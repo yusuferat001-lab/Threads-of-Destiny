@@ -13,6 +13,8 @@ import {
   KALE_SOHRET,
   BARIS_KAYBI,
   BARIS_YARALI_ORAN,
+  MIZRAKLI_YARALI_AZALTMA,
+  OKCU_PUSU_AZALTMA,
   BARIS_DUSMAN_KAYBI,
   BASKIN_PUSU_CEZASI,
   BASKIN_NAKIT_HASARI,
@@ -174,6 +176,7 @@ import {
   rutbeIndeksi,
   sertlikGelirCarpani,
   turPaylari,
+  turOrani,
   dusmanReferansGucu,
   yolEtkisi,
 } from "./birlik";
@@ -394,7 +397,8 @@ export function dagit(toplam: number, agirlik: number[], ust?: number[]): number
 export function yaraliOrani(state: CharacterState): number {
   const revir = clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4);
   const azalt = subayToplami(state).yaraliAzalt;
-  return Math.max(YARALI_ORAN_TABAN, (aralikCek(YARALI_ORAN) - revir * YARALI_REVIR_DUSUS) * (1 - azalt));
+  const mizrakli = MIZRAKLI_YARALI_AZALTMA * turOrani(birlikAl(state), "mizrakli");
+  return Math.max(YARALI_ORAN_TABAN, (aralikCek(YARALI_ORAN) - revir * YARALI_REVIR_DUSUS) * (1 - azalt - mizrakli));
 }
 /** Yaralı iyileşme süresi (yıl): taban 3, her revir kademesi −0,5 (K4 = 1). */
 export function yaraliIyilesmeSuresi(state: CharacterState): number {
@@ -814,7 +818,7 @@ function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBa
   const dagilim = dusmanSaldiriSavunma(dtur);
   const E = barisDusmanGucuYas(state.yas, tur) * rnd(BARIS_DUSMAN_SAPMA[0], BARIS_DUSMAN_SAPMA[1]);
   const karakol = KARAKOL_KORUMA[clamp(yatirimKademesi(state, "koruma"), 0, KARAKOL_KORUMA.length - 1)];
-  const pusu = baskin ? BASKIN_PUSU_CEZASI * (1 - clamp(sub.pusuAzalt + karakol, 0, 1)) : 0;
+  const pusu = baskin ? BASKIN_PUSU_CEZASI * (1 - clamp(sub.pusuAzalt + karakol + OKCU_PUSU_AZALTMA * turOrani(b, "okcu"), 0, 1)) : 0;
   const oyuncuTaraf = (baskin ? d.savunma : d.saldiri) * (1 - pusu);
   const dusmanTaraf = Math.max(1e-6, E * (baskin ? dagilim.saldiri : dagilim.savunma));
   const oyuncuEff = oyuncuTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN + b.zar_bonusu);

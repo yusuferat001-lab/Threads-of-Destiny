@@ -34,6 +34,8 @@ import {
   YAGMA_GANIMET,
   YAGMA_YIL,
   GOREV_GELIR_CARPANI,
+  SUVARI_GOREV_GELIRI,
+  ZIRHLI_OLU_AZALTMA,
   IKMAL_TANIMLARI,
   KALITE_BAKIM,
   KALITE_CARPANI,
@@ -323,6 +325,11 @@ export function turPaylari(b: BirlikDurumu): Partial<Record<BirlikTur, number>> 
   for (const t of b.birlik_turler) if (t in TUR_TANIMLARI && (KUSATMA_ACIK || t !== "kusatma")) sonuc[t] = TUR_TANIMLARI[t].pay;
   return sonuc;
 }
+/** Bir türün payının tam paya (TUR_PAYI) oranı (0–1): küçük artılar bununla orantılı. */
+export function turOrani(b: BirlikDurumu, tur: BirlikTur): number {
+  const pay = turPaylari(b)[tur] ?? 0;
+  return TUR_TANIMLARI[tur].pay > 0 ? Math.min(1, pay / TUR_TANIMLARI[tur].pay) : 0;
+}
 export function toplamTurPayi(b: BirlikDurumu): number {
   return Object.values(turPaylari(b)).reduce((t, x) => t + (x ?? 0), 0);
 }
@@ -521,7 +528,8 @@ export function kayipCarpani(state: CharacterState): number {
   const tabip = sub.oluFirarAzalt;
   const talim = Math.min(0.15, b.talim * TALIM_KAYIP_KATSAYISI);
   const emir = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;
-  return Math.max(0.3, 1 - talim - revir - tabip + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
+  const zirhli = ZIRHLI_OLU_AZALTMA * turOrani(b, "zirhli");
+  return Math.max(0.3, 1 - talim - revir - tabip - zirhli + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
 }
 /** Levazım subayı + doktrin: er masrafı ve erzak çarpanı. */
 export function masrafCarpani(state: CharacterState): number {
@@ -609,7 +617,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const kazancC = GOREV_GELIR_CARPANI;
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
-    const akinC = g.tur === "akin" ? mizrakliAkin : 1;
+    const akinC = (g.tur === "akin" ? mizrakliAkin : 1) * (g.tur === "akin" || g.tur === "haydut" ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1);
     const gelir = p * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
