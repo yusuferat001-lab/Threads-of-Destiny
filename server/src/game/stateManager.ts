@@ -1,6 +1,6 @@
 import { MADALYA_ADLARI } from "../data/birlik";
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, UlkeDurumu, DonemDurumu, DonemTuru, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi, EvcilHayvan } from "../types";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, UlkeDurumu, DonemDurumu, DonemTuru, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi, EvcilHayvan, DunyaYaklasan } from "../types";
 import { T, K, ikiDilT } from "../i18n";
 import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
@@ -52,6 +52,7 @@ import {
   otomatikDepoDoldur,
   STOK_EKSI_NAKIT_LIMITI,
 } from "./isletme";
+import { kesifSavasHaberi, savasZariDusmani } from "./birlikYil";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 import { ASKER_PAZAR_BASLANGIC, BASLANGIC_ER, ASKER_KARIYER_PUANI_KATSAYISI, ASKER_KARIYER_GUC_TAVANI, dusmanReferansGucuYas } from "../data/birlik";
 import {
@@ -3494,7 +3495,7 @@ export function buyukSavasKontrolEt(state: CharacterState, yasArtisi: number): s
     if (state.yil < yaklasan.yil) return null;
     state.dunya_yaklasan = null;
     if (state.ulke.vebada) return null; // veba araya girdi: savaş çıkmadı
-    return buyukSavasBaslat(state, yaklasan.dusman ?? komsuGucSec(state.bolge));
+    return buyukSavasBaslat(state, yaklasan.dusman ?? komsuGucSec(state.bolge), yaklasan);
   }
   if (yaklasan || state.ulke.vebada || state.veba?.aktif) return null;
   if (state.ulke.donem?.tur === "bolluk") return null;
@@ -3503,13 +3504,14 @@ export function buyukSavasKontrolEt(state: CharacterState, yasArtisi: number): s
   for (let i = 0; i < yasArtisi; i++) {
     if (Math.random() >= SAVAS_YILLIK_IHTIMAL) continue;
     const dusman = tarihiSavasKontrol(state.bolge, state.yil, state.cag) ?? komsuGucSec(state.bolge);
-    state.dunya_yaklasan = { tur: "savas", yil: state.yil + 1, dusman };
+    state.dunya_yaklasan = { tur: "savas", yil: state.yil + 1, dusman, ...savasZariDusmani() };
+    kesifSavasHaberi(state, state.dunya_yaklasan);
     return null;
   }
   return null;
 }
 
-function buyukSavasBaslat(state: CharacterState, dusman: string): string {
+function buyukSavasBaslat(state: CharacterState, dusman: string, yaklasan?: DunyaYaklasan): string {
   const sureYil = sureZarla(SAVAS_SURE);
   const etki = savasEtkisiZarla();
   state.buyuk_savas = {
@@ -3519,6 +3521,7 @@ function buyukSavasBaslat(state: CharacterState, dusman: string): string {
     vergiOrani: savasVergisiZarla(),
     gidaCarpani: etki.yasamGideri,
     etki,
+    ...(yaklasan?.dusmanTur ? { dusmanTur: yaklasan.dusmanTur, dusmanOrani: yaklasan.dusmanOrani } : {}),
   };
   state.ulke.savasta = true;
   ulkeGecmisiEkle(state, "savas_basladi", state.yil, dusman);

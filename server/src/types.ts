@@ -50,6 +50,9 @@ export interface DunyaYaklasan {
   tur: "savas" | "veba";
   yil: number;
   dusman?: string;
+  /** Savaş zarı tutunca belirlenen düşman baskın birliği ve güç oranı (savaş başlayınca aynen kullanılır; Keşif subayı önceden bilir). */
+  dusmanTur?: string;
+  dusmanOrani?: number;
 }
 
 /** Tekrarlayan büyük savaş mekaniği: state.ulke.savasta=true olduğunda aktif; süre/vergi/gıda çarpanı savaş başlarken bir kere rastgele belirlenir. */
@@ -70,6 +73,9 @@ export interface BuyukSavas {
   gidaCarpani: number;
   /** Talep/fiyat/maaş etkileri (eski kayıtlarda yok). */
   etki?: DonemEtkisi;
+  /** Savaş zarında belirlenen düşman birliği/oranı (varsa `savasBaslat` bunu kullanır). */
+  dusmanTur?: string;
+  dusmanOrani?: number;
 }
 
 /** Ömürde bir kez tetiklenebilen veba: aktif fazda ölüm riski taşır, aktif+iz süresi boyunca kira/maaş etkisi kalıcıdır. */
@@ -902,7 +908,7 @@ export interface EkipUyesi {
 }
 
 /** İşletme motorunda çalışanın rolü (meslek×çağ'a göre ad değişir, etkisi aynı). */
-export type IsletmeRolTuru = "ana" | "maliyet" | "musteri" | "guvenlik";
+export type IsletmeRolTuru = "ana" | "maliyet" | "musteri" | "guvenlik" | "taarruz" | "savunma" | "kesif";
 
 /** Aday tipi: Yetenek/Sadakat aralığını ve maaş bandını belirler (data/meslekProfilleri.ts ADAY_TIP_ARALIKLARI). */
 export type IsletmeAdayTipi = "serseri" | "sadik_cirak" | "siradan" | "usta_guvenilmez" | "usta_sadik";
@@ -975,6 +981,9 @@ export interface IsletmeUyari {
     | "madalya"
     | "yagma"
     | "savas_kayip"
+    | "savas_catisma"
+    | "kazanc_ozet"
+    | "kesif_savas"
     | "yarali_iyilesti"
     | "limit_asimi";
   hat?: string;
@@ -998,9 +1007,23 @@ export interface IsletmeUyari {
   sayi?: number;
   /** savas_kayip: aynı olayda yaralanan er sayısı. */
   yaralanan?: number;
+  /** kesif_savas: düşmanın baskın birliği ve tahmini güç aralığı (rakip = düşman adı, sayi = savaşın başlayacağı yıl). */
+  dusmanTur?: string;
+  gucAralik?: [number, number];
+  /** baris_catisma: baskın (savunmada) mı av mı; düşmanın tahmini ölüsü. */
+  baskin?: boolean;
+  dusmanOlu?: number;
+  /** savas_kayip: kaybın kaynağı (görev / çatışma / savaş) ve görev adları. */
+  kaynak?: "gorev" | "catisma" | "savas";
+  kaynakAd?: { tr: string; en: string };
   savasSonucu?: "zafer" | "yenilgi";
   /** Barış çatışması (haydut / sınır) türü. */
   catismaTur?: "haydut" | "sinir";
+  /** kazanc_ozet: yıl başında beklenen net ve fark nedeni (gerçekleşen `tutar`). */
+  beklenen?: number;
+  sebep?: "ganimet" | "kayip" | "piyasa";
+  /** savas_catisma: karar savaşının kıyas dökümü (kıyaslanan güçler ve iki tarafın zarı, %). */
+  catisma?: { yil: number; inisiyatif: "saldiri" | "savunma"; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean };
 }
 
 export interface IsletmeDokum {
@@ -1113,11 +1136,11 @@ export interface CemaatDurumu {
 // ── Asker "birlik" modu (2026-11) ─────────────────────────────────────────────
 export type BirlikKalite = "dusuk" | "orta" | "yuksek";
 /** Orduda pay alan özel birlik türleri (kuşatma ayrı bir seviyedir). */
-export type BirlikTur = "okcu" | "suvari" | "mizrakli";
+export type BirlikTur = "okcu" | "suvari" | "mizrakli" | "zirhli" | "kusatma";
 export type BirlikGanimetPayi = "az" | "dengeli" | "comert";
 export type BirlikTalim = "hafif" | "orta" | "agir";
 export type BirlikTon = "merhametli" | "dengeli" | "sert";
-export type BirlikArazi = "ova" | "kale" | "dag";
+export type BirlikArazi = "ova" | "dag" | "orman";
 export type BirlikRol = "onc" | "ana" | "yedek";
 export type BirlikIkmal = "yeterli" | "kit" | "yagma";
 export type BirlikEsirKarari = "idam" | "serbest" | "sat" | "karma";
@@ -1141,6 +1164,33 @@ export interface BirlikSavasKarari {
   inisiyatif: "saldiri" | "savunma" | null;
   ikmal: BirlikIkmal;
   esir: BirlikEsirKarari;
+}
+
+/** Savaş Günü sonucu (Savaş Sonucu ekranı): güçler, zarlar, kayıplar, düşman kaybı tahmini, ganimet tahmini. */
+export interface SavasGunuSonucu {
+  yil: number;
+  /** Genel savaş sonucu ve cephedeki kanat sonucu. */
+  zafer: boolean;
+  kanatZafer: boolean;
+  arazi: BirlikArazi;
+  inisiyatif: "saldiri" | "savunma";
+  oyuncuGuc: number;
+  dusmanGuc: number;
+  /** Zarlar (%, ±8). */
+  oyuncuZar: number;
+  dusmanZar: number;
+  /** Bizim kaybımız (tam sayı) ve kalan er. */
+  olu: number;
+  yarali: number;
+  firar: number;
+  kalanEr: number;
+  /** Düşmanın tahmini kaybı ("~"). */
+  dusmanOlu: number;
+  /** Zaferde savaş sonunda tek seferde gelecek net ganimet tahmini ve beklenen esir (yenilgide 0). */
+  ganimetTahmini: number;
+  esirTahmini: number;
+  /** Talim değişimi (yıl sonunda işlenir). */
+  talim: number;
 }
 
 /** Aktif savaştaki birlik durumu (savaş bitince null). */
@@ -1171,6 +1221,22 @@ export interface BirlikSavasDurumu {
   dusman_orani: number;
   /** Düşmanın baskın birliği (taş-kağıt-makas bonusu için). */
   dusman_tur: BirlikTur | "karma";
+  /** Son karar savaşının dökümü: kıyaslanan güçler (saldırıdaysan senin saldırın ↔ düşman savunması; savunmadaysan tersi) ve iki tarafın zarı (%, ±8). */
+  son_catisma?: {
+    yil: number;
+    inisiyatif: "saldiri" | "savunma";
+    oyuncuGuc: number;
+    dusmanGuc: number;
+    oyuncuZar: number;
+    dusmanZar: number;
+    kanatZafer: boolean;
+    genelZafer: boolean;
+  };
+  /** Savaş Günü yıl içinde pencere onaylanınca hemen çözülür; yıl işleme aynı savaşı tekrar atmaz ve kaybı ikinci kez uygulamaz. */
+  gun_cozuldu_yil?: number;
+  gun_gosterildi?: boolean;
+  gun_catisma?: { kanatZafer: boolean; genelZafer: boolean; oran: number; arazi: BirlikArazi; inisiyatif: "saldiri" | "savunma" };
+  gun_sonucu?: SavasGunuSonucu;
   kanat_zafer: number;
   kanat_yenilgi: number;
   /** Genel savaş sonucu: şimdiye dek kazanılan / kaybedilen yıl sayısı. */
@@ -1180,6 +1246,12 @@ export interface BirlikSavasDurumu {
   emir?: string | null;
   /** Kiralık ordu: savaş süresince tutulan eğitimli paralı sayısı. */
   kiralik_er?: number;
+  /** Savaş planında (ilk yıl) seçilen ikmal; savaş boyu geçerlidir, yalnız Ordu ekranından değiştirilebilir. */
+  ikmal?: BirlikIkmal;
+  /** Esirlerin kaderi (Rütbe 3+): ilk esir çıkınca bir kez sorulur, savaş boyu geçerlidir. Verilene dek "karma". */
+  esir_karari?: BirlikEsirKarari | null;
+  /** İlk esir alındı ve karar bekliyor (Rütbe 3+). */
+  esir_bekliyor?: boolean;
 }
 
 export interface BirlikDurumu {

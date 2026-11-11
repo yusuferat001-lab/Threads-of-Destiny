@@ -26,7 +26,21 @@ const M = {
   yilKisa: { tr: 'yıl', en: 'yr' },
 };
 
-type Etki = { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
+type Etki = { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik' | 'taarruz' | 'savunma' | 'kesif'; deger: number } | null;
+
+/** Asker subayının kısa artı/eksi satırları. */
+function EtkiSatirlari({ satirlar, dil }: { satirlar?: { tr: string; en: string; iyi: boolean }[]; dil: 'tr' | 'en' }) {
+  if (!satirlar || satirlar.length === 0) return null;
+  return (
+    <span className="subay-satirlar">
+      {satirlar.map((x, i) => (
+        <span key={i} className={x.iyi ? 's-arti' : 's-eksi'}>
+          {x.iyi ? '＋' : '－'} {x[dil]}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 /** Çalışanın/adayın işletmeye etkisi, mesleğe göre okunur tek satır (örn. "Alış maliyeti −%12"). */
 function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string | null {
@@ -34,6 +48,8 @@ function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string
   const mod = durum.birlik ? 'birlik' : durum.cemaat ? 'cemaat' : durum.uretim ? 'uretim' : 'ticaret';
   const yuzde = Math.round(etki.deger * 100);
   const tr = dil === 'tr';
+  // Asker subayları: kısa artı/eksi satırları sunucudan gelir (etkiSatirlari); burada tek satır yazılmaz.
+  if (durum.birlik) return null;
   switch (etki.tur) {
     case 'maliyet': {
       const ad = mod === 'birlik' ? (tr ? 'Er ve erzak masrafı' : 'Soldier and supply costs') : mod === 'cemaat' ? (tr ? 'Faaliyet masrafı' : 'Activity costs') : mod === 'uretim' ? (tr ? 'Hammadde gideri' : 'Material costs') : tr ? 'Alış maliyeti' : 'Purchase cost';
@@ -50,6 +66,8 @@ function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string
       const ad = mod === 'birlik' ? (tr ? 'Askerî güç' : 'Military strength') : mod === 'cemaat' ? (tr ? 'Bağışlar' : 'Donations') : mod === 'uretim' ? (tr ? 'Yıllık üretim' : 'Yearly output') : tr ? 'Satışlar' : 'Sales';
       return `${ad} ${formatYuzde(dil, yuzde, true)}`;
     }
+    default:
+      return null;
   }
 }
 
@@ -79,6 +97,7 @@ export function IsletmeOrtak({
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
+  const en = dil === 'en';
   const pb = durum.paraBirimi;
   const sad = d(sadakatAdi);
   const yatirimGoster = goster === 'hepsi' || goster === 'yatirim';
@@ -147,6 +166,7 @@ export function IsletmeOrtak({
           {durum.calisanlar.map((c) => (
             <div key={c.id} className={`isletme-calisan${c.riskli ? ' isletme-calisan-riskli' : ''}`}>
               <strong>{c.isim}</strong> <em>({d(c.rol)})</em>
+              {durum.birlik && <small>{d(c.rolAciklama)}</small>}
               {c.sadik && <span className="isletme-etiket">⭐ {t('sadik')}</span>}
               {c.riskli && (
                 <span className="isletme-etiket" title={d(riskliAciklama)}>
@@ -154,6 +174,7 @@ export function IsletmeOrtak({
                 </span>
               )}
               {etkiMetni(dil, c.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">{etkiMetni(dil, c.etki, durum)}</span>}
+              <EtkiSatirlari satirlar={c.etkiSatirlari} dil={dil} />
               <span>
                 {t('yetenek')} <b className={kademeSinifi(c.yetenek, [40, 65])}>{c.yetenek}</b> · {sad} <b className={kademeSinifi(c.sadakat, [45, 75])}>{c.sadakat}</b> · {t('maas')} {formatPara(c.maas)}
                 {t('yil')}
@@ -175,8 +196,13 @@ export function IsletmeOrtak({
             {durum.adaylar.map((a) => (
               <div key={a.id} className="isletme-calisan isletme-aday">
                 <strong>{a.isim}</strong> <em>({d(a.rol)})</em>
+                {durum.birlik && <small>{d(a.rolAciklama)} · <b>{d(a.tipAdi)}</b></small>}
                 <small>{d(a.gecmis)}</small>
+                {durum.birlik && a.sadakat < 45 && (
+                  <small className="s-eksi">⚠ {en ? 'Low loyalty: may leak secrets, steal or desert.' : 'Sadakati düşük: sır sızdırabilir, çalabilir ya da ayrılabilir.'}</small>
+                )}
                 {etkiMetni(dil, a.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">{etkiMetni(dil, a.etki, durum)}</span>}
+                <EtkiSatirlari satirlar={a.etkiSatirlari} dil={dil} />
                 <span>
                   {t('yetenek')} <b className={kademeSinifi(a.yetenek, [40, 65])}>{a.yetenek}</b> · {sad} <b className={kademeSinifi(a.sadakat, [45, 75])}>{a.sadakat}</b> · {t('maas')} {formatPara(a.maas)}
                   {t('yil')}

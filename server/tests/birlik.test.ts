@@ -69,7 +69,6 @@ import {
   TUR_TANIMLARI,
   DOKTRINLER,
   GOREV_SLOTLARI,
-  GANIMET_GUC_BIRIMI,
   KISLA_ER_LIMITI,
   MIN_CEKIRDEK_ER,
   SOLD,
@@ -170,29 +169,29 @@ describe("askerî güç ve pay", () => {
     expect(d.ham).toBeCloseTo(10 * 1 + 10 * 1.25 + 10 * 1.5, 5);
   });
 
-  it("her açık özel birlik ordunun %25'idir (tek seçenek); üç tür açıkken %75 özel + %25 piyade", () => {
-    expect(TUR_PAYI).toBe(0.25);
+  it("her açık savaş birliği ordunun %20'sidir; dört tür açıkken %80 özel + %20 piyade", () => {
+    expect(TUR_PAYI).toBe(0.2);
     const s = asker();
     const b = birlikAl(s);
     b.birlik_turler = ["okcu"];
     const p1 = turPaylari(b);
     expect(Object.keys(p1)).toHaveLength(1);
-    expect(p1.okcu).toBeCloseTo(0.25);
-    b.birlik_turler = ["okcu", "suvari", "mizrakli"];
+    expect(p1.okcu).toBeCloseTo(0.2);
+    b.birlik_turler = ["okcu", "suvari", "mizrakli", "zirhli"];
     const p3 = turPaylari(b);
-    expect(Object.keys(p3)).toHaveLength(3);
-    expect(Object.values(p3).reduce((t, x) => t + (x ?? 0), 0)).toBeCloseTo(0.75);
-    expect(gucHesapla(s).piyadePayi).toBeCloseTo(0.25);
+    expect(Object.keys(p3)).toHaveLength(4);
+    expect(Object.values(p3).reduce((t, x) => t + (x ?? 0), 0)).toBeCloseTo(0.8);
+    expect(gucHesapla(s).piyadePayi).toBeCloseTo(0.2);
   });
 
-  it("birlik maliyeti: erzak dahil toplam er maliyeti okçu +%30, süvari +%35, mızraklı +%25; kuşatma pay almaz", () => {
-    for (const [tur, x] of [["okcu", 0.3], ["suvari", 0.35], ["mizrakli", 0.25]] as const) {
+  it("birlik maliyeti: er maliyetine eklenen kesir okçu +%46, süvari +%55, mızraklı +%49, zırhlı +%88; gizli kuşatma pay almaz", () => {
+    for (const [tur, x] of [["okcu", 0.46], ["suvari", 0.55], ["mizrakli", 0.49], ["zirhli", 0.88]] as const) {
       expect(TUR_TANIMLARI[tur].bakim).toBeCloseTo(x);
       expect(TUR_TANIMLARI[tur].erzak).toBeCloseTo(1 + x);
     }
     const s = asker();
     const b = birlikAl(s);
-    b.kusatma_seviye = 2;
+    b.birlik_turler = ["kusatma"]; // kuşatma kapalıyken (KUSATMA_ACIK=false) pay almaz
     expect(Object.keys(turPaylari(b))).toHaveLength(0);
   });
 
@@ -559,7 +558,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     rnd.mockRestore();
     const u = d.uyarilar.find((x) => x.kod === "baris_catisma");
     expect(u).toBeTruthy();
-    if (u!.savasSonucu === "yenilgi") expect(u!.tutar ?? 0).toBeLessThan(GANIMET_GUC_BIRIMI * 100);
+    if (u!.savasSonucu === "yenilgi") expect(u!.tutar ?? 0).toBeLessThan(100);
   });
 
   it("tahmini ganimet görünümde güçle büyür", () => {
@@ -628,7 +627,9 @@ describe("savaş", () => {
     expect(karar).not.toContain("arazi"); // S1: arazi seçme ekranı ihtimali %0 → hiç gelmez
     expect(karar).toContain("rol");
     expect(karar).toContain("inisiyatif"); // zar 0,1 < %40: seçim ekranı gelir
-    expect(karar).toContain("ikmal");
+    expect(karar).not.toContain("ikmal"); // ikmal savaş planında (ilk yıl) bir kez seçilir, bir daha sorulmaz
+    expect(karar).not.toContain("seferberlik");
+    expect(karar).not.toContain("emir");
     expect(karar).not.toContain("esir"); // S1: esir yetkisi yok
     expect(savasKarariBekliyorMu(s)).toBe(false);
   });
@@ -650,16 +651,33 @@ describe("savaş", () => {
     expect(kararAdimlari(t)).not.toContain("arazi");
   });
 
-  it("S3'ten itibaren esir kararı adımı karar yılında eklenir", () => {
+  it("S3'ten itibaren esir kararı yalnız ilk esir çıkınca bir kez sorulur ve savaş boyu kalıcıdır", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.1);
     const s = asker();
     s.rutbe_seviye = 3;
     ogretileriTamamla(s);
     savasYili(s);
     kararYilinaGec(s);
-    const adimlar = kararAdimlari(s);
-    expect(adimlar).toContain("esir");
-    expect(adimlar).toContain("arazi");
+    expect(kararAdimlari(s)).not.toContain("esir"); // henüz esir yok
+    const b = birlikAl(s);
+    b.savas!.esir_bekliyor = true; // ilk esir alındı
+    const sonra = kararAdimlari(s);
+    expect(sonra).toEqual(["esir"]);
+    expect(b.savas!.esir_karari).toBeDefined();
+    expect(b.savas!.esir_bekliyor).toBe(false);
+    expect(kararAdimlari(s)).not.toContain("esir"); // bir daha sorulmaz
+  });
+
+  it("ikmal ilk yıl seçilir ve savaş boyu kalıcıdır (yıl sonunda savas_karari silinse de)", () => {
+    const s = asker();
+    savasYili(s);
+    kararYilinaGec(s);
+    const b = birlikAl(s);
+    expect(b.savas!.ikmal).toBeDefined();
+    const secilen = b.savas!.ikmal!;
+    b.savas_karari = null; // yıl sonu
+    expect(birlikHesapla(s, bg(s)).yagmaBrut > 0).toBe(secilen === "yagma");
+    expect(b.savas!.ikmal).toBe(secilen);
   });
 
   it("geçersiz savaş kararı seçimi reddedilir; karar yokken verilemez", () => {
@@ -829,15 +847,16 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(s.kariyer_puani).toBeGreaterThan(once);
   });
 
-  it("özel birlik limiti rütbeye bağlı (1/1/2/2/3)", () => {
+  it("özel birlik limiti rütbeye bağlı (1/2/3/4/4); kuşatma seçilemez (gizli)", () => {
     const s = asker();
     s.rutbe_seviye = 1;
     expect(() => birlikSec(s, ["suvari", "okcu"], bg(s))).toThrow(/en fazla 1/);
-    s.rutbe_seviye = 3;
+    s.rutbe_seviye = 2;
     expect(() => birlikSec(s, ["suvari", "okcu"], bg(s))).not.toThrow();
     expect(() => birlikSec(s, ["suvari", "okcu", "mizrakli"], bg(s))).toThrow(/en fazla 2/);
-    s.rutbe_seviye = 5;
-    expect(() => birlikSec(s, ["suvari", "okcu", "mizrakli"], bg(s))).not.toThrow();
+    s.rutbe_seviye = 4;
+    expect(() => birlikSec(s, ["suvari", "okcu", "mizrakli", "zirhli"], bg(s))).not.toThrow();
+    expect(() => birlikSec(s, ["kusatma"], bg(s))).toThrow(/Geçersiz birlik/);
   });
 
   it("birlik seçimi: açık/kapalı tür kümesi (her biri %25); fiyat er sayısıyla ölçeklenir; küçültünce %35 iade; saf ekleme kilide takılmaz", () => {
@@ -865,13 +884,9 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(birlikAl(s).birlik_turler).toHaveLength(3);
   });
 
-  it("kuşatma: er sayısına göre fiyat, geri küçültünce %35 iade", () => {
+  it("kuşatma kodda duruyor ama oyunda kapalı (KUSATMA_ACIK=false): ayar reddedilir", () => {
     const s = asker();
-    const r = kusatmaAyarla(s, 2, bg(s));
-    expect(r.maliyet).toBeGreaterThan(0);
-    const geri = kusatmaAyarla(s, 0, bg(s));
-    expect(geri.iade).toBeCloseTo(r.maliyet * 0.35, 1);
-    expect(() => kusatmaAyarla(s, 3, bg(s))).toThrow();
+    expect(() => kusatmaAyarla(s, 1, bg(s))).toThrow(/kapalı/);
   });
 
   it("terhis: en az 6 er kalmalı, savaşta kapalı", () => {
@@ -981,8 +996,7 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     await expect(birlikTechizatSec(st.id, "yuksek")).rejects.toThrow(/5 yılda bir/);
     const b = await birlikBirlikSec(st.id, ["okcu"]);
     expect(b.durum.birlik!.birlik.seciliTurler).toEqual(["okcu"]);
-    const ku = await birlikKusatma(st.id, 1);
-    expect(ku.durum.birlik!.birlik.kusatma.seviye).toBe(1);
+    await expect(birlikKusatma(st.id, 1)).rejects.toThrow(/kapalı/);
     const t = await birlikTerhis(st.id, 5);
     expect(t.durum.birlik!.er).toBe(15);
     await expect(birlikTerhis(st.id, 15)).rejects.toThrow();

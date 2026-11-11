@@ -169,7 +169,7 @@ describe("kayıp: ölü – yaralı – firar", () => {
     expect(yarali).toBe(40);
     expect(gucHesapla(s).guc).toBeLessThan(g0);
     const h1 = birlikHesapla(s, bg(s));
-    expect(h1.yaraliGideri).toBeCloseTo(20 * 0.25 * bg(s).giderEnflasyon, 4);
+    expect(h1.yaraliGideri).toBeCloseTo(20 * 0.3 * bg(s).giderEnflasyon, 4);
     expect(h0.yaraliGideri).toBe(0);
     expect(h1.gorevGeliri).toBeLessThan(h0.gorevGeliri);
   });
@@ -362,11 +362,11 @@ function birlikYilKos(s: CharacterState) {
 }
 
 describe("barış çatışması (haydut / sınır): ölü – yaralı – firar", () => {
-  it("tablo: zafer ölü %2–3 firar 0; yenilgi ölü %5–6 firar %2–3", () => {
-    expect(BARIS_KAYBI.zafer.olu).toEqual([2, 3]);
+  it("tablo: zafer ölü %0,5–1,5 firar 0; yenilgi ölü %2–4 firar %1–2", () => {
+    expect(BARIS_KAYBI.zafer.olu).toEqual([0.5, 1.5]);
     expect(BARIS_KAYBI.zafer.firar).toEqual([0, 0]);
-    expect(BARIS_KAYBI.yenilgi.olu).toEqual([5, 6]);
-    expect(BARIS_KAYBI.yenilgi.firar).toEqual([2, 3]);
+    expect(BARIS_KAYBI.yenilgi.olu).toEqual([2, 4]);
+    expect(BARIS_KAYBI.yenilgi.firar).toEqual([1, 2]);
   });
   it("yıl işleme sayıları tam sayı kalır; ordu çekirdeğin altına inmez", () => {
     for (let n = 0; n < 20; n++) {
@@ -387,20 +387,20 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("her görevin asker başı net kazancı 1,10–1,80 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
+  it("her görevin asker başı net kazancı 1,10–1,90 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
       expect(g.erBasi).toBeGreaterThanOrEqual(1.1 - 1e-6);
-      expect(g.erBasi).toBeLessThanOrEqual(1.8 + 1e-6);
+      expect(g.erBasi).toBeLessThanOrEqual(1.9 + 1e-6);
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
     expect(sira[0].minGuc).toBe(10);
     expect(sira[sira.length - 1].minGuc).toBe(230);
     expect(sira[0].erBasi).toBe(1.1);
-    expect(sira[sira.length - 1].erBasi).toBe(1.8);
+    expect(sira[sira.length - 1].erBasi).toBe(1.9);
     expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
   });
   it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,15 / 0,30 / 0,45", () => {

@@ -288,10 +288,19 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? '🧾 Your tax reduction has ended.' : '🧾 Vergi indirimin sona erdi.';
       case 'firar':
         return en ? `🏃 ${u.sayi ?? 0} men deserted.` : `🏃 ${u.sayi ?? 0} er firar etti.`;
-      case 'savas_kayip':
-        return en
-          ? `⚰️ ${u.sayi ?? 0} men fell${u.yaralanan ? `, ${u.yaralanan} wounded` : ''}.`
-          : `⚰️ ${u.sayi ?? 0} er düştü${u.yaralanan ? `, ${u.yaralanan} yaralı` : ''}.`;
+      case 'savas_kayip': {
+        const ad = u.kaynakAd ? (en ? u.kaynakAd.en : u.kaynakAd.tr) : '';
+        const kaynakTr = u.kaynak === 'gorev' ? (ad ? `${ad} görevinde` : 'Görevlerde') : u.kaynak === 'catisma' ? 'Çatışmada' : u.kaynak === 'savas' ? 'Savaşta' : '';
+        const kaynakEn = u.kaynak === 'gorev' ? (ad ? `On ${ad} duty:` : 'On duty:') : u.kaynak === 'catisma' ? 'In the clash:' : u.kaynak === 'savas' ? 'In the war:' : '';
+        const sayi = u.sayi ?? 0;
+        const yar = u.yaralanan ?? 0;
+        if (en) {
+          const parts = [sayi > 0 ? `${sayi} men fell` : '', yar > 0 ? `${yar} wounded` : ''].filter(Boolean).join(', ');
+          return `⚰️ ${kaynakEn ? kaynakEn + ' ' : ''}${parts}.`;
+        }
+        const parts = [sayi > 0 ? `${sayi} er düştü` : '', yar > 0 ? `${yar} yaralı` : ''].filter(Boolean).join(', ');
+        return `⚰️ ${kaynakTr ? kaynakTr + ' ' : ''}${parts}.`;
+      }
       case 'yarali_iyilesti':
         return en ? `🩹 ${u.sayi ?? 0} wounded men recovered.` : `🩹 ${u.sayi ?? 0} yaralı er iyileşip saflara döndü.`;
       case 'limit_asimi':
@@ -300,6 +309,36 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
       case 'seferberlik_terhis':
         return en ? `🎖️ ${u.sayi ?? 0} wartime recruits were discharged.` : `🎖️ Savaş devşirmesinden ${u.sayi ?? 0} er terhis edildi.`;
+      case 'kesif_savas': {
+        const tur: Record<string, [string, string]> = { okcu: ['okçu', 'archers'], suvari: ['süvari', 'cavalry'], mizrakli: ['mızraklı', 'spearmen'], zirhli: ['zırhlı', 'armoured knights'], karma: ['karma', 'mixed'] };
+        const t = tur[u.dusmanTur ?? 'karma'] ?? tur.karma;
+        const g = u.gucAralik ? `${u.gucAralik[0]}–${u.gucAralik[1]}` : '?';
+        return en
+          ? `🔭 Scouts report: war with ${u.rakip} comes in ${u.sayi}. Main force: ${t[1]}, strength about ${g}.`
+          : `🔭 Keşif haberi: ${u.rakip} ile savaş ${u.sayi} yılında başlayacak. Baskın birlik: ${t[0]}, tahmini güç ${g}.`;
+      }
+      case 'kazanc_ozet': {
+        const f = (v: number) => `${v >= 0 ? '+' : '−'}${formatPara(Math.abs(v))} ${pb}`;
+        const sebep =
+          u.sebep === 'ganimet'
+            ? en ? 'loot or raid income' : 'ganimet / yağma geliri'
+            : u.sebep === 'kayip'
+              ? en ? 'theft or attack losses' : 'hırsızlık / saldırı kaybı'
+              : en ? 'market swings' : 'piyasa dalgalanması';
+        return en
+          ? `📊 Net income: expected ${f(u.beklenen ?? 0)}, actual ${f(u.tutar ?? 0)} — difference: ${sebep}.`
+          : `📊 Yıllık net: beklenen ${f(u.beklenen ?? 0)}, gerçekleşen ${f(u.tutar ?? 0)} — fark nedeni: ${sebep}.`;
+      }
+      case 'savas_catisma': {
+        const c = u.catisma;
+        if (!c) return '';
+        const ys = (x: number) => `${x >= 0 ? '+' : ''}${x}%`;
+        const yon = c.inisiyatif === 'saldiri' ? (en ? 'attack' : 'saldırı') : (en ? 'defence' : 'savunma');
+        const kars = c.inisiyatif === 'saldiri' ? (en ? 'defence' : 'savunma') : (en ? 'attack' : 'saldırı');
+        return en
+          ? `⚔️ Decisive battle: your ${yon} ${c.oyuncuGuc} (roll ${ys(c.oyuncuZar)}) vs enemy ${kars} ${c.dusmanGuc} (roll ${ys(c.dusmanZar)}) — ${c.genelZafer ? 'victory' : 'defeat'}.`
+          : `⚔️ Karar savaşı: senin ${yon} gücün ${c.oyuncuGuc} (zar ${ys(c.oyuncuZar)}) ↔ düşman ${kars} ${c.dusmanGuc} (zar ${ys(c.dusmanZar)}) — ${c.genelZafer ? 'zafer' : 'yenilgi'}.`;
+      }
       case 'savas_sonu':
         return u.savasSonucu === 'zafer'
           ? (en ? '🏆 The war ended in victory.' : '🏆 Savaş zaferle bitti.')
@@ -308,11 +347,14 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         const hd = u.catismaTur === 'sinir';
         const kazan = u.savasSonucu === 'zafer';
         const ad = en ? (hd ? 'enemy raiders' : 'a band of deserter bandits') : (hd ? 'düşman akıncıları' : 'firari haydutlar');
+        const nasil = u.baskin ? (en ? ' (ambush)' : ' (baskın)') : (en ? ' (hunt)' : ' (av)');
         const ganimet = u.tutar ? (en ? ` Loot: +${formatPara(u.tutar)} ${pb}.` : ` Ganimet: +${formatPara(u.tutar)} ${pb}.`) : '';
         const esir = u.sayi ? (en ? ` ${u.sayi} prisoners.` : ` ${u.sayi} esir.`) : '';
+        const dusman = u.dusmanOlu ? (en ? ` Enemy dead ~${u.dusmanOlu}.` : ` Düşman ölüsü ~${u.dusmanOlu}.`) : '';
+        const hasar = u.nakitYuzde ? (en ? ' The raid cost you coin.' : ' Baskın kesene zarar verdi.') : '';
         return kazan
-          ? `⚔️ ${en ? 'You crushed' : 'Şunu bozguna uğrattın:'} ${ad}.${ganimet}${esir}`
-          : `🩸 ${en ? 'You were beaten back by' : 'Şuna yenildin:'} ${ad}.${ganimet}`;
+          ? `⚔️ ${en ? 'You crushed' : 'Şunu bozguna uğrattın:'} ${ad}${nasil}.${ganimet}${esir}${dusman}`
+          : `🩸 ${en ? 'You were beaten back by' : 'Şuna yenildin:'} ${ad}${nasil}.${dusman}${hasar}`;
       }
       case 'savas_ganimet':
         return en

@@ -148,7 +148,8 @@ const FIYAT_KAPASITE = [20, 45, 90, 160]; // depo ve ibadethane
 const FIYAT_KISLA = [30, 90, 220, 500]; // kışla (tek ordu limiti)
 const FIYAT_OKUL = [20, 30, 45, 65];
 const FIYAT_ASEVI = [8, 15, 24, 36];
-const FIYAT_REVIR = [8, 15, 24, 36];
+const FIYAT_REVIR = [13, 22, 34, 50]; // Asker revir (≈1 yıllık net'ten başlar)
+const FIYAT_KARAKOL = [12, 20, 32, 48];
 const FIYAT_DEVSIRME = [20, 35, 52, 75];
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
@@ -323,13 +324,14 @@ const ASKER_YATIRIMLAR: YatirimTanimi[] = [
       en: "Can block rival raids and sabotage: each tier adds +0.15 protection (max 0.6).",
     },
     etki: "koruma",
-    fiyatlar: FIYAT_GUVENLIK,
+    fiyatlar: FIYAT_KARAKOL,
   },
 ];
 
 const ASKER_ROLLER: RolTanimi[] = [
-  { tur: "ana", ad: { tr: "Harp subayı", en: "War officer" } },
-  { tur: "maliyet", ad: { tr: "Levazım subayı", en: "Quartermaster" } },
+  { tur: "taarruz", ad: { tr: "Taarruz komutanı", en: "Assault commander" } },
+  { tur: "savunma", ad: { tr: "Savunma komutanı", en: "Defence commander" } },
+  { tur: "kesif", ad: { tr: "Keşif subayı", en: "Scout officer" } },
   { tur: "musteri", ad: { tr: "Devşirme subayı", en: "Recruiting officer" } },
   { tur: "guvenlik", ad: { tr: "Tabip subayı", en: "Surgeon officer" } },
 ];
@@ -352,26 +354,38 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat" | "birlik"
   birlik: {
     ana: { tr: "Askerî gücü artırır", en: "Raises military strength" },
     maliyet: { tr: "Er ve erzak masrafını düşürür", en: "Lowers soldier and supply costs" },
-    musteri: { tr: "Yılda +1…+5 er çeker", en: "Brings +1…+5 men a year" },
-    guvenlik: { tr: "Ölüm ve firarı azaltır, saldırılara karşı korur", en: "Reduces deaths and desertion, guards against attacks" },
+    musteri: { tr: "Yılda +2…+5 er çeker", en: "Brings +2…+5 men a year" },
+    guvenlik: { tr: "Ölü, firar ve yaralıyı azaltır", en: "Cuts deaths, desertion and wounded" },
+    taarruz: { tr: "Saldırıyı ve ganimeti artırır, kaybı da artırır", en: "Raises attack and loot, also raises losses" },
+    savunma: { tr: "Savunmayı güçlendirir, ölümü azaltır, ganimeti azaltır", en: "Strengthens defence, cuts deaths, trims loot" },
+    kesif: { tr: "Arazi seçmeyi ve düşman tahminini iyileştirir, savaşı önceden bildirir", en: "Improves terrain choice and enemy estimates, warns of war ahead" },
   },
   cemaat: {
     ana: { tr: "Bağışları artırır", en: "Raises donations" },
     maliyet: { tr: "Faaliyet masraflarını düşürür", en: "Lowers activity costs" },
     musteri: { tr: "Yılda +1…+5 inanan kazandırır", en: "Brings +1…+5 worshippers a year" },
     guvenlik: { tr: "Kumbarayı ve ibadethaneyi korur", en: "Protects the offering box and sanctuary" },
+    taarruz: { tr: "Saldırıyı ve ganimeti artırır, kaybı da artırır", en: "Raises attack and loot, also raises losses" },
+    savunma: { tr: "Savunmayı güçlendirir, ölümü azaltır, ganimeti azaltır", en: "Strengthens defence, cuts deaths, trims loot" },
+    kesif: { tr: "Arazi seçmeyi ve düşman tahminini iyileştirir, savaşı önceden bildirir", en: "Improves terrain choice and enemy estimates, warns of war ahead" },
   },
   ticaret: {
     ana: { tr: "Yıllık satışı artırır", en: "Raises yearly sales" },
     maliyet: { tr: "Mal alış maliyetini düşürür", en: "Lowers purchase costs" },
     musteri: { tr: "Yılda +1…+5 müşteri kazandırır", en: "Brings +1…+5 customers a year" },
     guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
+    taarruz: { tr: "Saldırıyı ve ganimeti artırır, kaybı da artırır", en: "Raises attack and loot, also raises losses" },
+    savunma: { tr: "Savunmayı güçlendirir, ölümü azaltır, ganimeti azaltır", en: "Strengthens defence, cuts deaths, trims loot" },
+    kesif: { tr: "Arazi seçmeyi ve düşman tahminini iyileştirir, savaşı önceden bildirir", en: "Improves terrain choice and enemy estimates, warns of war ahead" },
   },
   uretim: {
     ana: { tr: "Yıllık üretimi artırır", en: "Raises yearly production" },
     maliyet: { tr: "Hammadde giderini düşürür", en: "Lowers material costs" },
     musteri: { tr: "Yılda +1…+5 müşteri kazandırır", en: "Brings +1…+5 customers a year" },
     guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
+    taarruz: { tr: "Saldırıyı ve ganimeti artırır, kaybı da artırır", en: "Raises attack and loot, also raises losses" },
+    savunma: { tr: "Savunmayı güçlendirir, ölümü azaltır, ganimeti azaltır", en: "Strengthens defence, cuts deaths, trims loot" },
+    kesif: { tr: "Arazi seçmeyi ve düşman tahminini iyileştirir, savaşı önceden bildirir", en: "Improves terrain choice and enemy estimates, warns of war ahead" },
   },
 };
 

@@ -67,6 +67,7 @@ import {
   birlikKiralik,
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
+  birlikIkmalDegistir,
   isletmeUrunSec,
   isletmeYatirimYap,
   isletmeYatirimDusur,
@@ -428,6 +429,16 @@ gameRouter.post("/:id/birlik/terhis", async (req, res) => {
 gameRouter.get("/:id/birlik/savas-karari", async (req, res) => {
   try {
     res.json({ karar: await birlikSavasKarariGetir(req.params.id) });
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/ikmal", async (req, res) => {
+  const { id } = req.body ?? {};
+  if (typeof id !== "string") return res.status(400).json({ hata: "Geçersiz ikmal seçimi." });
+  try {
+    res.json(await birlikIkmalDegistir(req.params.id, id));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

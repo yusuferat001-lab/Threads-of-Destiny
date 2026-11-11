@@ -117,7 +117,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
 
   // Subay: devşirme > harp > levazım > tabip; maaşı yıllık net taşıyorsa.
   adaylariGerekirseYenile(s);
-  const oncelik = ["musteri", "ana", "maliyet", "guvenlik"];
+  const oncelik = ["musteri", "taarruz", "guvenlik", "savunma", "kesif"];
   while (s.ekip.length < calisanLimiti(s) && is.adaylar.length > 0) {
     const sirali = [...is.adaylar].sort((a, b2) => oncelik.indexOf(a.rolTuru) - oncelik.indexOf(b2.rolTuru) || b2.yetenek - a.yetenek);
     const a = sirali[0];
@@ -147,8 +147,8 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   }
   if ((tarz === "aktif" || tarz === "tam")) {
     try {
-      const hedef = tarz === "tam" ? 3 : Math.min(3, 1 + Math.floor(s.rutbe_seviye / 2));
-      const sira = ["mizrakli", "okcu", "suvari"] as const;
+      const hedef = tarz === "tam" ? 4 : Math.min(4, s.rutbe_seviye);
+      const sira = ["mizrakli", "okcu", "suvari", "zirhli"] as const;
       if (b.birlik_turler.length < hedef && s.para > rezerv * 3 + er * 0.5 * genf) {
         const sonraki = sira.find((t) => !b.birlik_turler.includes(t));
         if (sonraki) birlikSec(s, [...b.birlik_turler, sonraki], bgl);
@@ -181,9 +181,14 @@ interface Omur {
   ganimetOrani: number[];
   rutbeYas: (number | null)[];
   batti: boolean;
+  /** Şu an üst üste kaç yıldır para < −150 (enflasyon ayarlı). */
+  borcYili: number;
   savasKaybi: number[];
   zafer: Record<"haydut" | "sinir" | "savas", [number, number]>;
   gucRutbe: number[][];
+  /** Yıl sonu kariyer puanı ve şöhret (rütbe kapılarının hangisinin sınırlayıcı olduğunu görmek için). */
+  puan: number[];
+  un: number[];
   sonEr: number;
   olduYil: number;
 }
@@ -192,7 +197,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, "Asker");
-  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], sonEr: 0, olduYil: YIL };
+  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, borcYili: 0, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], puan: [], un: [], sonEr: 0, olduYil: YIL };
   let savasOncesi = 0;
   let savasta = false;
   for (let y = 0; y < YIL; y++) {
@@ -257,11 +262,15 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
     o.er.push(erSayisi(s));
     o.pay.push(pazarPayiHesapla(s) * 100);
     o.guc.push(birlikAl(s).guc);
+    o.puan.push(s.kariyer_puani);
+    o.un.push(s.un);
     o.gucRutbe[Math.max(0, Math.min(4, s.rutbe_seviye - 1))].push(birlikAl(s).guc);
     const gel = d?.satis ?? 0;
     o.ganimetOrani.push(gel > 0 ? ((d?.birlik?.ganimetPara ?? 0) - (d?.birlik?.devletPayi ?? 0)) / gel : 0);
     for (let r = 1; r < 5; r++) if (o.rutbeYas[r] == null && s.rutbe_seviye >= r + 1) o.rutbeYas[r] = s.yas;
-    if (s.para < -60 * enflasyonCarpani(s) && !o.batti) {
+    // Batma tanımı (v39): para −150'nin altında (reel) ve üst üste 5 yıldan fazla.
+    o.borcYili = s.para < -150 * enflasyonCarpani(s) ? o.borcYili + 1 : 0;
+    if (o.borcYili > 5 && !o.batti) {
       o.batti = true;
       if (process.env.SIM_BATMA) console.log(`  BATTI y${y + 1} ${tarz} R${s.rutbe_seviye} er=${erSayisi(s)} para=${s.para.toFixed(0)} net=${d?.net} savas=${s.ulke.savasta} kredi=${s.kredi?.kalanBorc ?? 0} ekip=${s.ekip.length} kalite=${JSON.stringify(birlikAl(s).kalite)} birlik=${birlikAl(s).birlik_turler.length}`);
     }
@@ -302,6 +311,9 @@ for (const cag of CAGLAR) {
     );
     console.log(
       `  güç yaşa göre (medyan/ort) @25/35/45/55/65: ${[25, 35, 45, 55, 65].map((yas) => { const v = omurler.map((o) => o.guc[yas - 15 - 1]).filter((x): x is number => typeof x === "number"); return v.length ? `${f(med(v), 0)}/${f(ort(v), 0)}` : "-"; }).join(" · ")}`
+    );
+    console.log(
+      `  kariyer puanı / şöhret (ort) @25/30/35/40/45/55: ${[25, 30, 35, 40, 45, 55].map((yas) => { const p = omurler.map((o) => o.puan[yas - 15 - 1]).filter((x): x is number => typeof x === "number"); const u = omurler.map((o) => o.un[yas - 15 - 1]).filter((x): x is number => typeof x === "number"); return p.length ? `${f(ort(p), 0)}/${f(ort(u), 0)}` : "-"; }).join(" · ")}`
     );
     console.log(
       `  zafer% haydut/sınır/savaş = ${(["haydut", "sinir", "savas"] as const).map((k) => { const z = omurler.reduce((t, o) => t + o.zafer[k][0], 0); const n = omurler.reduce((t, o) => t + o.zafer[k][1], 0); return n ? `${f((z / n) * 100, 0)} (n=${n})` : "-"; }).join(" / ")}`

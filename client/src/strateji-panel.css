@@ -911,3 +911,23 @@
     padding: 3px 9px;
   }
 }
+
+/* ---- Savaş kararı penceresi (Savaş Planı / Savaş Günü / Esir): bölümlü, seçenek kartları ---- */
+.savas-kutu { width: min(960px, 100%); }
+.savas-bolum { margin-top: 0.7rem; text-align: center; }
+.savas-bolum h3 { margin: 0; font-size: 1.05rem; }
+.savas-kiyas { margin: 0.6rem auto 0; padding: 0.5rem 0.8rem; max-width: 640px; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 8px; background: rgba(255, 255, 255, 0.05); font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.2rem; }
+.savas-secenek { cursor: pointer; text-align: center; font: inherit; color: inherit; }
+.savas-secenek.secili { border: 2px solid #d4af37; background: rgba(212, 175, 55, 0.16); }
+.savas-onay { margin-top: 0.9rem; }
+.savas-ikmal-sec { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.blok-gorev.savas-aktif .blok-savas { order: -1; } /* savaş sürerken savaş kartı görevlerin üstünde */
+
+/* Asker subayı artı/eksi satırları (v39) */
+.subay-satirlar { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: .92em; }
+.subay-satirlar > span { white-space: nowrap; }
+
+/* Savaş Sonucu ekranı (v39) */
+.savas-sonuc { text-align: center; }
+.savas-sonuc-baslik { font-size: 1.8rem; font-weight: 900; letter-spacing: 0.08em; margin: 0.3rem 0; }
+.savas-sonuc .savas-kiyas { text-align: left; }

@@ -215,19 +215,24 @@ export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
   ],
 
   "Asker|Orta Çağ": [
-    // ana = Harp subayı
-    a("ana", "serseri", "kavgadan kavgaya koşan, disiplinsiz bir paralı", "a brawling, undisciplined sellsword"),
-    a("ana", "sadik_cirak", "ordugâhta öğrenmeye hevesli, genç bir silahtar", "a young squire eager to learn in the camp"),
-    a("ana", "siradan", "birkaç seferde bulunmuş, sıradan bir onbaşı", "an ordinary corporal who has seen a few campaigns"),
-    a("ana", "siradan", "emirleri harfiyen uygulayan, hırssız bir çavuş", "a plodding sergeant who follows orders to the letter"),
-    a("ana", "usta_guvenilmez", "savaş meydanında parlayan ama ganimeti kollayan bir şövalye", "a knight who shines in battle but eyes the loot"),
-    a("ana", "usta_sadik", "kırk seferden sağ çıkmış, sözünün eri gazi", "a veteran of forty campaigns who always keeps his word"),
-    a("ana", "usta_sadik", "ölen komutanının sancağını taşımaya yemin etmiş bir muhafız", "a guard who swore to carry his fallen captain's banner"),
-    // maliyet = Levazım subayı
-    a("maliyet", "serseri", "erzak çuvallarını ucuza kapatıp pahalıya yazan bir yağmacı", "a scavenger who buys sacks cheap and writes them down dear"),
-    a("maliyet", "siradan", "ambar hesabını tutan, vasat bir kâtip", "a middling clerk who keeps the storehouse accounts"),
-    a("maliyet", "usta_guvenilmez", "tüccarlarla gizli komisyon anlaşması olan usta bir levazımcı", "a skilled quartermaster with secret commissions from merchants"),
-    a("maliyet", "usta_sadik", "yıllardır aynı değirmencilerle çalışan, güvenilir levazım ustası", "a trusted quartermaster who has worked with the same millers for years"),
+    // taarruz = Taarruz komutanı
+    a("taarruz", "serseri", "kavgadan kavgaya koşan, disiplinsiz bir paralı", "a brawling, undisciplined sellsword"),
+    a("taarruz", "sadik_cirak", "ordugâhta öğrenmeye hevesli, genç bir silahtar", "a young squire eager to learn in the camp"),
+    a("taarruz", "siradan", "birkaç seferde bulunmuş, sıradan bir onbaşı", "an ordinary corporal who has seen a few campaigns"),
+    a("taarruz", "usta_guvenilmez", "savaş meydanında parlayan ama ganimeti kollayan bir şövalye", "a knight who shines in battle but eyes the loot"),
+    a("taarruz", "usta_sadik", "kırk seferden sağ çıkmış, sözünün eri gazi", "a veteran of forty campaigns who always keeps his word"),
+    // savunma = Savunma komutanı
+    a("savunma", "serseri", "surda nöbet tutarken uyuyakalan, kaba bir kapıcı", "a coarse gatekeeper who dozes on the wall"),
+    a("savunma", "siradan", "kale burcunda yıllar geçirmiş vasat bir çavuş", "a middling sergeant who has spent years in the keep"),
+    a("savunma", "usta_guvenilmez", "kuşatmalarda duvar gibi duran ama ikmali kendine ayıran bir kale muhafızı", "a keep warden who holds like a wall but skims the stores"),
+    a("savunma", "usta_sadik", "üç kuşatmada kapıyı açmayan, sözünün eri bir muhafız", "a loyal warden who never opened the gate in three sieges"),
+    a("savunma", "sadik_cirak", "kalkan duvarında ilk saf olmaya heveslenen genç bir mızrakçı", "a young spearman eager to stand in the front of the shield wall"),
+    // kesif = Keşif subayı
+    a("kesif", "serseri", "sınır köylerinde dedikodu satan, güvenilmez bir izci", "an unreliable scout who peddles gossip in border villages"),
+    a("kesif", "sadik_cirak", "ormanı avuç içi gibi bilen, hevesli bir avcı çırağı", "an eager hunter's apprentice who knows the forest like his palm"),
+    a("kesif", "siradan", "birkaç seferde öncülük yapmış sıradan bir atlı izci", "an ordinary mounted scout who has led a few columns"),
+    a("kesif", "usta_guvenilmez", "düşman hatlarını çıplak gözle sayan ama iki tarafa da haber taşıyan bir casus", "a spy who counts enemy lines by eye but carries word to both sides"),
+    a("kesif", "usta_sadik", "dağ geçitlerini çocukluğundan bilen, sözünün eri kıdemli bir izci", "a loyal veteran scout who has known the passes since childhood"),
     // musteri = Devşirme subayı
     a("musteri", "serseri", "köy meydanında içki karşılığı asker toplayan şüpheli biri", "a dubious fellow who recruits at the village green for a round of drinks"),
     a("musteri", "sadik_cirak", "davul çalıp gençleri sancağa çağıran gayretli bir çırak", "an eager lad who drums the young to the colours"),
@@ -238,19 +243,24 @@ export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
   ],
 
   "Asker|Sanayi Devrimi": [
-    // ana = Harp subayı
-    a("ana", "serseri", "rom kokulu, disiplinsiz bir ocak eri", "a rum-soaked, undisciplined private"),
-    a("ana", "sadik_cirak", "okuma yazması iyi, hevesli bir harp okulu öğrencisi", "an eager, literate cadet from the military school"),
-    a("ana", "siradan", "siperlerde yıllarını geçirmiş, vasat bir çavuş", "a middling sergeant who has spent years in the trenches"),
-    a("ana", "siradan", "nizamnameyi ezbere bilen ama cesareti sınanmamış bir teğmen", "a lieutenant who knows the drill book by heart but is untested"),
-    a("ana", "usta_guvenilmez", "cephede parlayan ama ikmal paralarına göz diken bir yüzbaşı", "a captain who shines at the front but eyes the supply money"),
-    a("ana", "usta_sadik", "kırım ve sömürge savaşlarından sağ çıkmış, sözünün eri bir binbaşı", "a major who survived the Crimea and colonial wars and keeps his word"),
-    a("ana", "usta_sadik", "ölen alay komutanının bayrağına yemin etmiş bir bayraktar", "a standard-bearer sworn to his fallen colonel's colours"),
-    // maliyet = Levazım subayı
-    a("maliyet", "serseri", "ikmal vagonlarından kömür ve konserve çalan bir ambar eri", "a storeman who pilfers coal and tins from the supply wagons"),
-    a("maliyet", "siradan", "defter tutan, hırssız bir levazım memuru", "an unambitious supply clerk who keeps the ledgers"),
-    a("maliyet", "usta_guvenilmez", "tedarikçilerden gizli pay alan usta bir levazımcı", "a skilled quartermaster who takes secret kickbacks from suppliers"),
-    a("maliyet", "usta_sadik", "ordunun aşçılarını yıllardır tanıyan, güvenilir levazım ustası", "a trusted quartermaster who has known the army cooks for years"),
+    // taarruz = Taarruz komutanı
+    a("taarruz", "serseri", "rom kokulu, disiplinsiz bir ocak eri", "a rum-soaked, undisciplined private"),
+    a("taarruz", "sadik_cirak", "okuma yazması iyi, hevesli bir harp okulu öğrencisi", "an eager, literate cadet from the military school"),
+    a("taarruz", "siradan", "siperlerde yıllarını geçirmiş, vasat bir çavuş", "a middling sergeant who has spent years in the trenches"),
+    a("taarruz", "usta_guvenilmez", "cephede parlayan ama ikmal paralarına göz diken bir yüzbaşı", "a captain who shines at the front but eyes the supply money"),
+    a("taarruz", "usta_sadik", "kırım ve sömürge savaşlarından sağ çıkmış, sözünün eri bir binbaşı", "a major who survived the Crimea and colonial wars and keeps his word"),
+    // savunma = Savunma komutanı
+    a("savunma", "serseri", "nöbette uyuyan, nizamnameyi çiğneyen bir istihkâm eri", "a sapper who sleeps on watch and flouts the drill book"),
+    a("savunma", "siradan", "tabyada yıllarını geçirmiş vasat bir topçu çavuşu", "a middling artillery sergeant who has spent years in the redoubt"),
+    a("savunma", "usta_guvenilmez", "siperde taş gibi duran ama cephane kaydını şişiren bir yüzbaşı", "a captain who holds the trench like stone but inflates the ammunition ledger"),
+    a("savunma", "usta_sadik", "üç muharebede hattı bırakmamış, sözünün eri bir tabya komutanı", "a loyal redoubt commander who never gave up the line in three battles"),
+    a("savunma", "sadik_cirak", "siper kazmayı ve tahkimatı seven genç bir istihkâm teğmeni", "a young engineer lieutenant who loves digging and fortifying"),
+    // kesif = Keşif subayı
+    a("kesif", "serseri", "sınır köylerinde dedikodu satan, güvenilmez bir haberci", "an unreliable courier who peddles gossip in border villages"),
+    a("kesif", "sadik_cirak", "haritaya meraklı, hevesli bir keşif eri", "an eager scout with a passion for maps"),
+    a("kesif", "siradan", "birkaç seferde öncülük yapmış sıradan bir süvari çavuşu", "an ordinary cavalry sergeant who has scouted a few campaigns"),
+    a("kesif", "usta_guvenilmez", "düşman hatlarını dürbünle sayan ama iki tarafa da haber taşıyan bir casus", "a spy who counts enemy lines by telescope but carries word to both sides"),
+    a("kesif", "usta_sadik", "bölgenin haritasını kafasında taşıyan, sözünün eri kıdemli bir keşif subayı", "a loyal veteran scout who carries the whole region's map in his head"),
     // musteri = Devşirme subayı
     a("musteri", "serseri", "meyhanelerde gönüllü avlayan şüpheli bir çavuş", "a dubious sergeant who trawls taverns for volunteers"),
     a("musteri", "sadik_cirak", "genç işçilere bando eşliğinde orduyu anlatan gayretli bir onbaşı", "an earnest corporal who sells the army to young workers with a brass band"),

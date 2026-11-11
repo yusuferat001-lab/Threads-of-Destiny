@@ -82,6 +82,7 @@ interface StratejiSayfasiProps {
   onBirlikKusatma?: (seviye: number) => void;
   onBirlikTerhis?: (adet: number) => void;
   onBirlikKiralik?: () => void;
+  onBirlikIkmal?: (id: string) => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeYatirimDusur?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
@@ -257,10 +258,39 @@ function iliskiKademe(v: number, en: boolean): string {
  * yığılmış çubukta; altında maaşa etkisi, yıllık kariyer puanı katkısı ve
  * (varsa) sıradaki rütbenin pazar şartı.
  */
-function PazarKarti({ pazar, meslek }: { pazar: PazarDurumu; meslek: string }) {
+function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; meslek: string; birlik?: IsletmeGorunumu['birlik'] }) {
   const { dil } = useDil();
   const en = dil === 'en';
   const kitle = kitleSozlugu(meslek, en ? 'en' : 'tr');
+  // Asker: pazar payı yok — yerine askerî güç ve rakip komutanların gücü gösterilir.
+  if (birlik) {
+    const siralama = [...birlik.rakipler].sort((a, b) => b.guc - a.guc);
+    return (
+      <div className="aile-koken-karti pazar-karti">
+        <h3>⚔️ {en ? 'Military Strength' : 'Askerî Güç'}</h3>
+        <ul className="pazar-satirlari">
+          <li>
+            <span className="pazar-nokta pazar-nokta-sen" /> {en ? 'You' : 'Sen'} — ⚔️ {birlik.guc.saldiri} · 🛡️ {birlik.guc.savunma} · <strong className="s-durum">{birlik.guc.toplam}</strong>
+          </li>
+          {siralama.map((r) => (
+            <li key={r.ad}>
+              <span className="pazar-nokta pazar-nokta-rakip" /> {r.ad} · <strong className={r.guc > birlik.guc.toplam ? 's-eksi' : 's-arti'}>{r.guc}</strong>
+              <small> · {en ? 'enmity' : 'husumet'} {r.husumet}</small>
+            </li>
+          ))}
+          {siralama.length === 0 && <li>{en ? 'No known rival commanders right now.' : 'Şu an tanınan rakip komutan yok.'}</li>}
+        </ul>
+        <p className="pazar-etki">
+          🎖️ {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
+        </p>
+        <p className="pazar-ipucu">
+          {en
+            ? 'Your strength drives rank and career points; rival commanders only raid you when they are strong.'
+            : 'Gücün rütbeyi ve kariyer puanını belirler; rakip komutanlar güçlendikçe sana baskın ve sabotaj düzenler.'}
+        </p>
+      </div>
+    );
+  }
   const yuzde = (v: number) => formatYuzde(dil, v);
   const isaretli = (v: number) => (v > 0 ? '+' : v < 0 ? '−' : '') + formatYuzde(dil, Math.abs(v));
   return (
@@ -562,6 +592,7 @@ export function StratejiSayfasi({
   onBirlikKusatma,
   onBirlikTerhis,
   onBirlikKiralik,
+  onBirlikIkmal,
   onIsletmeKarar,
   onIsletmeYatirim,
   onIsletmeYatirimDusur,
@@ -910,6 +941,7 @@ export function StratejiSayfasi({
               onKusatma={onBirlikKusatma}
               onTerhis={onBirlikTerhis}
               onKiralik={onBirlikKiralik}
+              onIkmal={onBirlikIkmal}
               onYatirim={onIsletmeYatirim}
               onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}
@@ -1015,7 +1047,7 @@ export function StratejiSayfasi({
         </div>
 
         <aside className="kariyer-yan-sutun">
-          {gor('cevre') && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} meslek={meslek} />}
+          {gor('cevre') && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} meslek={meslek} birlik={isletme?.birlik ?? null} />}
           {gor('isletme') && meslekGucSatirlari.length > 0 && (
             <div className="aile-koken-karti">
               <h3>{m.geMeslekGucu}</h3>

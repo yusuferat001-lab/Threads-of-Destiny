@@ -79,6 +79,8 @@ function tuslar(meslek: string): TusTanimi[] {
 export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, onMusteriTikla, onGelirTikla, onIlerle, yilNotu, onNotKapat, sayfaAcik = null, kompakt = false }: AnaEkranProps) {
   const { dil } = useDil();
   const [donemAcik, setDonemAcik] = useState(false);
+  const [rakipAcik, setRakipAcik] = useState(false);
+  const [savasAcik, setSavasAcik] = useState(false);
   const tr = dil !== 'en';
   const dokum = isletme?.sonDokum ?? null;
   const birim = karakter.para_birimi;
@@ -94,11 +96,14 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
-  // "Elde kalan" paneli: yıllık tahmini bütçe (işletme) ya da maaş − gider; tüm gelir ve tüm gider altında.
-  const tumGelir = isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
-  const eldeKalan = isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
-  const tumGider = Math.max(0, tumGelir - eldeKalan);
-  const krediTaksit = isletme ? isletme.butce.krediTaksit : (finans?.krediTaksit ?? 0);
+  // "Kazanç": sunucudaki tek kaynak (finans.kazanc) — her şey dahil (maaş, kredi, yaşam, kira…) ve ± aralık. Henüz yüklenmediyse eski tahmine düşer.
+  const kz = finans?.kazanc ?? null;
+  const tumGelir = kz ? kz.gelir : isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
+  const eldeKalan = kz ? kz.net : isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
+  const tumGider = kz ? kz.gider : Math.max(0, tumGelir - eldeKalan);
+  const aralikGenis = kz ? kz.ust - kz.alt : 0;
+  const aralikGoster = !!kz && aralikGenis >= Math.max(0.5, 0.06 * Math.abs(kz.net));
+  const isaretli = (v: number) => `${v >= 0 ? '+' : '−'}${formatPara(Math.abs(Math.round(v * 10) / 10))}`;
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
   const donem = donemAnahtar ? DONEM_ADLARI[donemAnahtar] : null;
@@ -151,9 +156,9 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
           <span className="ana-alt">
             {tr ? 'Gider' : 'Costs'}: <b className={Math.round(tumGider) > 0 ? 'ana-kotu' : ''}>{formatPara(Math.round(tumGider))}</b>
           </span>
-          {krediTaksit > 0 && (
-            <span className="ana-alt ana-alt-kredi">
-              {tr ? 'Kredi taksidi dahil' : 'incl. loan'}: <b className="ana-kotu">{formatPara(Math.round(krediTaksit * 10) / 10)}</b>
+          {aralikGoster && kz && (
+            <span className="ana-alt" title={tr ? 'Yıllık rastgelelik payı (talep, bağış, görev)' : 'Yearly variance (demand, donations, duty)'}>
+              ≈ {isaretli(kz.alt)} … {isaretli(kz.ust)}
             </span>
           )}
         </button>
@@ -168,7 +173,15 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         </button>
       </div>
 
-      {pay !== null && (
+      {isletme?.birlik ? (
+        <button type="button" className="ana-cam ana-pay ana-cam-tikla" onClick={() => setRakipAcik(true)} title={tr ? 'Rakip komutanların gücünü gör' : 'See rival commanders\' strength'}>
+          <span className="ana-etiket">{tr ? 'Askerî Güç' : 'Military Strength'}</span>
+          <b>{isletme.birlik.guc.toplam}</b>
+          <span className="ana-alt">
+            ⚔️ {isletme.birlik.guc.saldiri} · 🛡️ {isletme.birlik.guc.savunma}
+          </span>
+        </button>
+      ) : pay !== null && (
         <div className="ana-cam ana-pay">
           <span className="ana-etiket">{karakter.meslek === 'Din Adamı' ? (tr ? 'Cemaat Payı' : 'Flock Share') : tr ? 'Pazar Payı' : 'Market Share'}</span>
           <div className="ana-cubuk" role="progressbar" aria-valuenow={pay} aria-valuemin={0} aria-valuemax={100}>
@@ -176,6 +189,26 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
           </div>
           <b>%{Math.round(pay)}</b>
         </div>
+      )}
+
+      {isletme?.birlik?.savas.aktif && isletme.birlik.savas.plan && (
+        <button type="button" className="ana-cam ana-savas-serit ana-cam-tikla" onClick={() => setSavasAcik(true)} title={tr ? 'Savaş ayrıntıları' : 'War details'}>
+          <b>⚔️ {tr ? 'Savaş' : 'War'} {isletme.birlik.savas.plan.yil}/{isletme.birlik.savas.plan.toplamYil}</b>
+          {isletme.birlik.emir && (
+            <span>
+              {isletme.birlik.emir.simge} {isletme.birlik.emir.ad[dil === 'en' ? 'en' : 'tr']}
+            </span>
+          )}
+          {isletme.birlik.savas.plan.ikmal && (
+            <span>
+              🍞 {isletme.birlik.savas.plan.ikmal.ad[dil === 'en' ? 'en' : 'tr']}
+            </span>
+          )}
+          {isletme.birlik.savas.araziAd && <span>🏞️ {isletme.birlik.savas.araziAd[dil === 'en' ? 'en' : 'tr']}</span>}
+          <span>
+            🎯 {isletme.birlik.savas.kiyas.dusman.guc[0]}–{isletme.birlik.savas.kiyas.dusman.guc[1]}
+          </span>
+        </button>
       )}
 
       <div className="ana-bosluk">
@@ -207,6 +240,101 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         <b>{tr ? 'İLERLE' : 'ADVANCE'}</b>
         <small>▸ {tr ? '1 yıl' : '1 year'}</small>
       </button>
+
+      {savasAcik && isletme?.birlik?.savas.plan && (() => {
+        const sv = isletme.birlik!.savas;
+        const p = sv.plan!;
+        const k = sv.kiyas;
+        const L = dil === 'en' ? 'en' : 'tr';
+        const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
+        return (
+          <div className="kariyer-sonuc-katman" onClick={() => setSavasAcik(false)}>
+            <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <h3>⚔️ {tr ? 'Savaş' : 'War'} {p.yil}/{p.toplamYil}</h3>
+              <ul className="ana-donem-liste">
+                {p.seferberlik && (
+                  <li>
+                    <b>🎖️ {tr ? 'Seferberlik' : 'Mobilisation'}: {p.seferberlik.ad[L]}</b>
+                    <small> — {p.seferberlik.aciklama[L]}</small>
+                  </li>
+                )}
+                {isletme.birlik!.emir && (
+                  <li>
+                    <b>{isletme.birlik!.emir.simge} {tr ? 'Komutan emri' : "Commander's order"}: {isletme.birlik!.emir.ad[L]}</b>
+                    <small> — {isletme.birlik!.emir.aciklama[L]}</small>
+                  </li>
+                )}
+                {p.ikmal && (
+                  <li>
+                    <b>🍞 {tr ? 'İkmal' : 'Supply'}: {p.ikmal.ad[L]}</b>
+                    <small> — {p.ikmal.aciklama[L]}</small>
+                  </li>
+                )}
+                {sv.araziAd && (
+                  <li>
+                    <b>🏞️ {tr ? 'Arazi' : 'Terrain'}: {sv.araziAd[L]}</b>
+                  </li>
+                )}
+                <li>
+                  <b>🎯 {tr ? 'Düşmanın tahmini gücü' : 'Estimated enemy strength'}: {aralik(k.dusman.guc)}</b>
+                  <ul>
+                    <li>
+                      ⚔️ {tr ? 'Saldırıdaysan' : 'If you attack'}: <span className="s-durum">{k.oyuncu.saldiri}</span> ↔ 🛡️ {aralik(k.dusman.savunma)}
+                    </li>
+                    <li>
+                      🛡️ {tr ? 'Savunmadaysan' : 'If you defend'}: <span className="s-durum">{k.oyuncu.savunma}</span> ↔ ⚔️ {aralik(k.dusman.saldiri)}
+                    </li>
+                  </ul>
+                </li>
+                {k.son && (
+                  <li>
+                    <b>📜 {tr ? 'Son karar savaşı' : 'Last decisive battle'} ({k.son.yil})</b>
+                    <small>
+                      {' '}
+                      {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} {k.son.oyuncuGuc} ({k.son.oyuncuZar >= 0 ? '+' : ''}{k.son.oyuncuZar}%) ↔ {k.son.dusmanGuc} ({k.son.dusmanZar >= 0 ? '+' : ''}{k.son.dusmanZar}%) →{' '}
+                    </small>
+                    <b className={k.son.genelZafer ? 's-arti' : 's-eksi'}>{k.son.genelZafer ? (tr ? 'zafer' : 'victory') : tr ? 'yenilgi' : 'defeat'}</b>
+                  </li>
+                )}
+              </ul>
+              <button type="button" onClick={() => setSavasAcik(false)}>
+                {tr ? 'Tamam' : 'OK'}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
+      {rakipAcik && isletme?.birlik && (
+        <div className="kariyer-sonuc-katman" onClick={() => setRakipAcik(false)}>
+          <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <h3>⚔️ {tr ? 'Askerî Güç' : 'Military Strength'}</h3>
+            <ul className="ana-donem-liste">
+              <li>
+                <b>
+                  {tr ? 'Sen' : 'You'}: <span className="s-durum">{isletme.birlik.guc.toplam}</span>
+                </b>
+                <small> (⚔️ {isletme.birlik.guc.saldiri} · 🛡️ {isletme.birlik.guc.savunma})</small>
+              </li>
+              {isletme.birlik.rakipler.length === 0 ? (
+                <li>{tr ? 'Şu an tanınan rakip komutan yok.' : 'No known rival commanders right now.'}</li>
+              ) : (
+                [...isletme.birlik.rakipler]
+                  .sort((a, b) => b.guc - a.guc)
+                  .map((r) => (
+                    <li key={r.ad}>
+                      <b>{r.ad}</b>: <span className={r.guc > isletme.birlik!.guc.toplam ? 's-eksi' : 's-arti'}>{r.guc}</span>
+                      <small> · {tr ? 'husumet' : 'enmity'} {r.husumet}</small>
+                    </li>
+                  ))
+              )}
+            </ul>
+            <button type="button" onClick={() => setRakipAcik(false)}>
+              {tr ? 'Tamam' : 'OK'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {donemAcik && (
         <div className="kariyer-sonuc-katman" onClick={() => setDonemAcik(false)}>

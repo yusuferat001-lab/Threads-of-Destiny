@@ -12,7 +12,9 @@ import {
   kusatmaAyarla,
   savasKarariBekliyorMu,
   savasKarariDurumu,
+  ikmalDegistir,
   savasKarariVer,
+  savasGunuSonucuAl,
   terhisEt,
   kiralikOrduTut,
   type BirlikGorunumu,
@@ -21,6 +23,7 @@ import {
 } from "./birlikIslem";
 import { birlikSenkron, doktrinBekliyorMu, erSayisi } from "./birlik";
 import { KISLA_ER_LIMITI } from "../data/birlik";
+import { subayEtkiSatirlari, type SubayEtkiSatiri } from "./subay";
 import { yeniErEkle } from "./birlikYil";
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
@@ -2733,6 +2736,14 @@ export interface FinansOzeti {
   /** v11: yıllık kredi taksidi tahmini (hiç kredi yoksa 0) ve gelirin işletme neti olup olmadığı. */
   krediTaksit: number;
   isletmeli: boolean;
+  /** İşletmeli mesleklerde çalışan (Asker'de subay) maaşlarının yıllık toplamı — maasYillik (işletme neti) bunu ZATEN düşmüş içerir; bilgi satırı. */
+  isletmeCalisanMaasi: number;
+  /**
+   * "Kazanç" (ana ekran, sol panel, Bütçen) TEK KAYNAK: bu yılın beklenen, HER ŞEY dahil durumu.
+   * gelir = meslek geliri + mülk geliri; net = işletme neti − subay/çalışan maaşı − yaşam − kira − hayvan − savaş vergisi − kredi taksidi + mülk geliri;
+   * gider = gelir − net; alt/ust = net'in yıllık rastgelelik aralığı (talep gürültüsü, bağış, görev).
+   */
+  kazanc: { gelir: number; gider: number; net: number; alt: number; ust: number };
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez, iç kullanım/uyum için. */
   enflasyonYuzdesi: number;
@@ -2822,6 +2833,22 @@ export async function dunyaGecmisiGetir(id: string): Promise<DunyaGecmisi> {
   return dunyaGecmisiUret(oturum.state);
 }
 
+/** "Kazanç" tek kaynak: bkz. FinansOzeti.kazanc. İşletmeli mesleklerde bu yılın beklenen bütçesi, yoksa maaş − gider. */
+function kazancHesapla(state: CharacterState, maasYillik: number, toplamGider: number, krediTaksit: number): FinansOzeti["kazanc"] {
+  const gay = gayrimenkulYillikGelirHesapla(state);
+  if (!isletmeAktif(state)) {
+    const net = paraYuvarla(maasYillik - toplamGider - krediTaksit + gay);
+    const gelir = paraYuvarla(maasYillik + Math.max(0, gay));
+    return { gelir, gider: paraYuvarla(gelir - net), net, alt: net, ust: net };
+  }
+  const butce = butceVeCebineKalan(state, isletmeBaglami(state));
+  const net = paraYuvarla(butce.cebineKalan + gay);
+  const gelir = paraYuvarla(butce.gelir + Math.max(0, gay));
+  const alt = Math.min(net, paraYuvarla(butce.cebineKalan - (butce.net - butce.netAlt) + gay));
+  const ust = Math.max(net, paraYuvarla(butce.cebineKalan + (butce.netUst - butce.net) + gay));
+  return { gelir, gider: paraYuvarla(gelir - net), net, alt, ust };
+}
+
 export async function finansGetir(id: string): Promise<FinansOzeti> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -2841,6 +2868,8 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     giderKalemleri,
     krediTaksit,
     isletmeli: isletmeAktif(state),
+    isletmeCalisanMaasi: isletmeAktif(state) ? paraYuvarla(state.ekip.reduce((t, u) => t + u.maas, 0)) : 0,
+    kazanc: kazancHesapla(state, maasYillik, toplamGider, krediTaksit),
     netYillik: paraYuvarla(maasYillik - toplamGider - krediTaksit),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
     giderEnflasyonYuzdesi: giderEnflasyonYuzdesiHesapla(state),
@@ -4905,6 +4934,8 @@ export interface IsletmeYatirimGorunumu {
 }
 
 export interface IsletmeCalisanGorunumu {
+  /** Asker subayı: kısa artı/eksi satırları (iyi=yeşil, değilse kırmızı). */
+  etkiSatirlari?: SubayEtkiSatiri[];
   id: string;
   isim: string;
   rol: IkiDilMetin;
@@ -4922,6 +4953,7 @@ export interface IsletmeCalisanGorunumu {
 }
 
 export interface IsletmeAdayGorunumu {
+  etkiSatirlari?: SubayEtkiSatiri[];
   id: string;
   isim: string;
   rol: IkiDilMetin;
@@ -5054,6 +5086,12 @@ export interface IsletmeGorunumu {
   paraBirimi: string;
 }
 
+/** Asker subaylarının etkisi artık `etkiSatirlari` (kısa artı/eksi cümleleri) olarak gider; diğer mesleklerde bonus aynen döner. */
+function subayEtkisi(profilMod: string | undefined, etki: { tur: IsletmeRolTuru; deger: number } | null): { tur: IsletmeRolTuru; deger: number } | null {
+  if (!etki || profilMod === "birlik") return null;
+  return etki;
+}
+
 function rolAciklamasi(_state: CharacterState, profilMod: string | undefined, tur: IsletmeRolTuru): IkiDilMetin {
   const m = ROL_ACIKLAMALARI[profilMod === "uretim" ? "uretim" : profilMod === "cemaat" ? "cemaat" : profilMod === "birlik" ? "birlik" : "ticaret"][tur];
   return { tr: m.tr, en: m.en };
@@ -5154,7 +5192,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
-      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0 },
+      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, gelir: 0, netAlt: 0, netUst: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
       otorite: null, otoriteIliski: state.yonetim_iliski ?? 0, imtiyazlar: [],
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
@@ -5233,7 +5271,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       maas: paraYuvarla(e.maas),
       sadik: e.sadakat >= SADIK_ESIGI,
       riskli: e.sadakat < SADAKAT_RISK_ESIGI,
-      etki: calisanBonusu(e),
+      etki: subayEtkisi(profil.mod, calisanBonusu(e)),
+      ...(profil.mod === "birlik" ? { etkiSatirlari: subayEtkiSatirlari(rt, e.gercekKalite, e.sadakat) } : {}),
     };
   });
   const adaylar: IsletmeAdayGorunumu[] = is.adaylar.map((a) => {
@@ -5251,7 +5290,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       yetenek: a.yetenek,
       sadakat: a.sadakat,
       maas: paraYuvarla(a.maas_taban * genf),
-      etki: calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as EkipUyesi),
+      etki: subayEtkisi(profil.mod, calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as EkipUyesi)),
+      ...(profil.mod === "birlik" ? { etkiSatirlari: subayEtkiSatirlari(a.rolTuru, a.yetenek, a.sadakat) } : {}),
     };
   });
   const unvan = sehirYoneticisiUnvani(state.cag, state.bolge, state.meslek);
@@ -5469,13 +5509,17 @@ export function birlikTerhis(id: string, adet: number) {
 export async function birlikSavasKarariGetir(id: string): Promise<SavasKarariDurumu | null> {
   const { state } = await oturumGetir(id);
   if (state.meslek !== "Asker" || !state.isletme?.birlik) return null;
-  return savasKarariDurumu(state);
+  return savasKarariDurumu(state, isletmeBaglami(state));
 }
 export function birlikSavasKarariVer(id: string, secim: string) {
   return birlikEylemi(id, (state, bg) => {
     savasKarariVer(state, secim, bg);
-    return { sonraki: savasKarariDurumu(state) };
+    return { sonraki: savasKarariDurumu(state, bg), gunSonucu: savasGunuSonucuAl(state) };
   });
+}
+/** Savaş sürerken ikmali değiştirir (Ordu ekranı; pencere açmaz). */
+export function birlikIkmalDegistir(id: string, ikmalId: string) {
+  return birlikEylemi(id, (state, bg) => ({ ikmal: ikmalDegistir(state, ikmalId, bg) }));
 }
 
 /** Rütbeyle açılan öğreti seçimi (seçilmeden oyun devam etmez). Turu tüketmez. */

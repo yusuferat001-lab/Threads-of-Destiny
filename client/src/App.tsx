@@ -27,6 +27,7 @@ import type {
   BirlikKararGirdisi,
   BirlikTur,
   SavasKarariDurumu,
+  SavasGunuSonucu,
 } from './types';
 import {
   mesleklerGetir,
@@ -97,6 +98,7 @@ import {
   birlikKusatma,
   birlikTerhis,
   birlikKiralik,
+  birlikIkmalDegistir,
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
   isletmeYatirimYap,
@@ -147,6 +149,7 @@ import { ogretiBekliyor, vergiBekliyor, doktrinBekliyor, savasKarariOlasi } from
 import { OgretiSecimi } from './components/OgretiSecimi';
 import { DoktrinSecimi } from './components/DoktrinSecimi';
 import { SavasKararlari } from './components/SavasKararlari';
+import { SavasSonucu } from './components/SavasSonucu';
 import { VergiTalebi } from './components/VergiTalebi';
 import { UrunSecimi } from './components/UrunSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
@@ -383,6 +386,7 @@ function App() {
   const [isletme, setIsletme] = useState<IsletmeGorunumu | null>(null);
   /** Asker savaş yılında sıradaki zorunlu karar adımı (yoksa null). */
   const [savasKarari, setSavasKarari] = useState<SavasKarariDurumu | null>(null);
+  const [savasGunuSonucu, setSavasGunuSonucu] = useState<SavasGunuSonucu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
@@ -1741,19 +1745,24 @@ function App() {
     }
   }
 
-  /** Asker: savaş yılı karar zincirinin bir adımını verir. */
-  async function savasKarariVerHandler(secim: string) {
+  /** Asker: savaş kararı penceresindeki seçimleri (plan / savaş günü / esir) sırayla sunucuya verir. */
+  async function savasKarariVerHandler(secimler: string[]) {
     if (!karakter) return;
     setHata(null);
     setYukleniyor(true);
     try {
-      const sonuc = await birlikSavasKarariVer(karakter.id, secim);
-      setKarakter(sonuc.state);
-      setIsletme(sonuc.durum);
-      setSavasKarari(sonuc.sonraki);
+      let son: Awaited<ReturnType<typeof birlikSavasKarariVer>> | null = null;
+      for (const secim of secimler) {
+        son = await birlikSavasKarariVer(karakter.id, secim);
+        setKarakter(son.state);
+        setIsletme(son.durum);
+      }
+      if (!son) return;
+      setSavasKarari(son.sonraki);
+      if (son.gunSonucu) setSavasGunuSonucu(son.gunSonucu);
       // Karar zinciri bitti ve bekleyen bir olay varsa (savaş yılı olayla başladıysa) şimdi çek.
-      if (!sonuc.sonraki && !senaryo && sonuc.state.olay_bekliyor) {
-        const yeni = await senaryoGerekirseCek(sonuc.state);
+      if (!son.sonraki && !senaryo && son.state.olay_bekliyor) {
+        const yeni = await senaryoGerekirseCek(son.state);
         if (yeni) {
           setSenaryo(yeni);
           setTepkiModu(false);
@@ -1766,6 +1775,9 @@ function App() {
       setYukleniyor(false);
     }
   }
+
+  /** Asker: savaş sürerken ikmali değiştirir (Ordu ekranındaki savaş kartı; pencere açmaz). */
+  const birlikIkmalHandler = (id: string) => birlikEylemHandler(() => birlikIkmalDegistir(karakter!.id, id));
 
   /** Asker birlik eylemleri (görev/politika/kalite/birlik/kuşatma/terhis): sonuç mesajı Kariyer ekranında gösterilir. */
   async function birlikEylemHandler(calistir: () => Promise<{ state: CharacterState; durum: IsletmeGorunumu }>) {
@@ -2123,6 +2135,7 @@ function App() {
         onBirlikKusatma={birlikKusatmaHandler}
         onBirlikTerhis={birlikTerhisHandler}
         onBirlikKiralik={birlikKiralikHandler}
+        onBirlikIkmal={birlikIkmalHandler}
         onIsletmeYatirim={isletmeYatirimHandler}
         onIsletmeYatirimDusur={isletmeYatirimDusurHandler}
         onIsletmeCalisanAl={isletmeCalisanAlHandler}
@@ -2232,6 +2245,7 @@ function App() {
 
       {karakter && vergiBekliyor(karakter) && karakter.yonetim_talep && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <VergiTalebi
+          meslek={karakter.meslek}
           talep={karakter.yonetim_talep}
           paraBirimi={karakter.para_birimi}
           yukleniyor={yukleniyor}
@@ -2259,6 +2273,10 @@ function App() {
 
       {karakter && savasKarari && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <SavasKararlari karar={savasKarari} yukleniyor={yukleniyor} onSec={savasKarariVerHandler} />
+      )}
+
+      {karakter && savasGunuSonucu && (
+        <SavasSonucu sonuc={savasGunuSonucu} paraBirimi={karakter.para_birimi} onKapat={() => setSavasGunuSonucu(null)} />
       )}
 
       {ayarlarAcik && (

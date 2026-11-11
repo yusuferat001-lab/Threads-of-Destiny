@@ -18,6 +18,7 @@ interface Props {
   onKusatma: (seviye: number) => void;
   onTerhis: (adet: number) => void;
   onKiralik?: () => void;
+  onIkmal?: (id: string) => void;
   onYatirim: (yatirimId: string) => void;
   onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
@@ -50,7 +51,7 @@ const M = {
   ham: { tr: 'Ham güç (kalite × er)', en: 'Raw strength (quality × men)' },
   birlikCarpani: { tr: 'Özel birlik çarpanı (saldırı / savunma)', en: 'Special-unit multiplier (attack / defence)' },
   toplamGuc: { tr: 'Toplam güç', en: 'Total strength' },
-  gucNot: { tr: 'Pay = senin gücün / (senin gücün + rakipler + diğer ordular).', en: 'Share = your strength / (yours + rivals + other armies).' },
+  gucNot: { tr: 'Güç = (saldırı + savunma) / 2. Rütben, kariyer puanın ve görev şartların buna bağlıdır; düşman gücü yaşınla artar.', en: 'Strength = (attack + defence) / 2. Your rank, career points and duty requirements depend on it; enemy strength grows with your age.' },
   gorevBaslik: { tr: 'Görevler', en: 'Duties' },
   gorevNot: {
     tr: 'Ordu açık görevlere eşit bölünür; her görev yıllık düzenli gelir getirir.',
@@ -78,14 +79,16 @@ const M = {
   yilKisa: { tr: 'yıl', en: 'yr' },
   birlikBaslik: { tr: 'Özel birlikler', en: 'Special units' },
   birlikNot: {
-    tr: 'Açtığın her birlik ordunun %25\'i olur; yeni erler oransal katılır ve geçiş ücretini kendiliğinden öder. Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini eklemek serbest.',
-    en: 'Each unit you open takes 25% of the army; new men join proportionally and pay the transfer fee automatically. Units can be swapped once every 5 years; adding a new one is free.',
+    tr: 'Açtığın her birlik ordunun %20\'si olur; yeni erler oransal katılır ve geçiş ücretini kendiliğinden öder. Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini eklemek serbest.',
+    en: 'Each unit you open takes 20% of the army; new men join proportionally and pay the transfer fee automatically. Units can be swapped once every 5 years; adding a new one is free.',
   },
   maliyetArti: { tr: 'yıllık maliyet', en: 'upkeep' },
   gucEsik: { tr: 'askeri güç', en: 'military strength' },
   toplamPay: { tr: 'toplam pay', en: 'total share' },
   uygula: { tr: 'Uygula', en: 'Apply' },
   kusatma: { tr: 'Kuşatma', en: 'Siege' },
+  guclu: { tr: 'Güçlü', en: 'Strong' },
+  zayif: { tr: 'Zayıf', en: 'Weak' },
   kusatmaNot: { tr: 'Kuşatma kolu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında etkisi yoktur); zaferden sonra kale alınıp alınamayacağını belirler.', en: 'A siege train adds an attack bonus only when besieging a FORT (no effect on the open battlefield); it decides whether a fort can be taken after a victory.' },
   terhisBaslik: { tr: 'Terhis', en: 'Discharge' },
   terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler kendiliğinden döner; diğer erleri sen terhis edersin.', en: 'You cannot discharge during a war. Wartime recruits go home on their own when it ends; you discharge the rest yourself.' },
@@ -107,6 +110,18 @@ const M = {
   arazi: { tr: 'Arazi', en: 'Terrain' },
   araziIhtimali: { tr: 'arazi seçme ihtimalin', en: 'chance to pick the terrain' },
   kanat: { tr: 'Kanat sonuçları (zafer / yenilgi)', en: 'Wing results (wins / losses)' },
+  dusmanTahmin: { tr: 'Düşmanın tahmini gücü', en: 'Estimated enemy strength' },
+  kiyasSaldiri: { tr: 'Saldırıdaysan', en: 'If you attack' },
+  kiyasSavunma: { tr: 'Savunmadaysan', en: 'If you defend' },
+  kiyasNot: { tr: 'Saldırıda senin saldırı gücün düşmanın savunmasıyla, savunmada senin savunma gücün düşmanın saldırısıyla yarışır; iki tarafa da küçük zar (±%8) eklenir.', en: 'Attacking, your attack power meets the enemy defence; defending, your defence meets their attack. Both sides add a small roll (±8%).' },
+  sonSavas: { tr: 'Son karar savaşı', en: 'Last decisive battle' },
+  zafer: { tr: 'zafer', en: 'victory' },
+  savasYili: { tr: 'Savaş', en: 'War' },
+  yilK: { tr: 'yıl', en: 'year' },
+  seferberlikAd: { tr: 'Seferberlik', en: 'Mobilisation' },
+  ikmalAd: { tr: 'İkmal', en: 'Supply' },
+  ikmalDegistir: { tr: 'İkmali değiştir (ücretsiz)', en: 'Change supply (free)' },
+  yenilgi: { tr: 'yenilgi', en: 'defeat' },
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
   sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
   erBasi: { tr: 'Er başı gelir', en: 'Per-man income' },
@@ -148,7 +163,7 @@ const M = {
   limitDolu: { tr: 'Rütben en fazla', en: 'Your rank allows only' },
   limitDoluSon: { tr: 'özel birliğe izin veriyor', en: 'special units' },
   kilitTerhis: { tr: '5 yıl kilidi sürüyor', en: '5-year lock is active' },
-  birlikNotYeni: { tr: 'Açtığın her birlik ordunun %25\'i olur; geçiş ücretini yeni erler kendiliğinden öder. Yeni birlik açmak serbest, kapatmak 5 yılda bir.', en: 'Each unit you open takes 25% of the army; the transfer fee is paid as men join. Opening a unit is free any time; disbanding is once every 5 years.' },
+  birlikNotYeni: { tr: 'Açtığın her birlik ordunun %20\'si olur; geçiş ücretini yeni erler kendiliğinden öder. Yeni birlik açmak serbest, kapatmak 5 yılda bir.', en: 'Each unit you open takes 20% of the army; the transfer fee is paid as men join. Opening a unit is free any time; disbanding is once every 5 years.' },
   kur: { tr: 'Kur', en: 'Build' },
   yukseltKusatma: { tr: 'Yükselt', en: 'Upgrade' },
   sok: { tr: 'Sök', en: 'Dismantle' },
@@ -213,6 +228,7 @@ export function BirlikPaneli({
   onKusatma,
   onTerhis,
   onKiralik,
+  onIkmal,
   onYatirim,
   onYatirimDusur,
   onCalisanAl,
@@ -472,7 +488,7 @@ export function BirlikPaneli({
 
       </div>
       <div className="sayfa-sutun ordu-kol">
-        <div className="sayfa-sutun blok-gorev">
+        <div className={`sayfa-sutun blok-gorev${b.savas.aktif ? ' savas-aktif' : ''}`}>
           {gorevlerBlok}
           <div className="sayfa-blok blok-savas">
             <h4>{t('savasBaslik')}</h4>
@@ -488,10 +504,62 @@ export function BirlikPaneli({
                 <span>
                   ⚔️ {t('kanat')}: <strong>{b.savas.kanatZafer} / {b.savas.kanatYenilgi}</strong>
                 </span>
+                {(() => {
+                  const k = b.savas.kiyas;
+                  const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen < a[0] ? 's-eksi' : 's-durum');
+                  const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
+                  return (
+                    <>
+                      <span>
+                        🎯 {t('dusmanTahmin')}: <strong>{aralik(k.dusman.guc)}</strong>
+                      </span>
+                      <span>
+                        ⚔️ {t('kiyasSaldiri')}: <strong className={renk(k.oyuncu.saldiri, k.dusman.savunma)}>{k.oyuncu.saldiri}</strong> ↔ 🛡️ <strong>{aralik(k.dusman.savunma)}</strong>
+                      </span>
+                      <span>
+                        🛡️ {t('kiyasSavunma')}: <strong className={renk(k.oyuncu.savunma, k.dusman.saldiri)}>{k.oyuncu.savunma}</strong> ↔ ⚔️ <strong>{aralik(k.dusman.saldiri)}</strong>
+                      </span>
+                      <small>{t('kiyasNot')}</small>
+                      {k.son && (
+                        <span>
+                          📜 {t('sonSavas')} ({k.son.yil}): {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} <strong>{k.son.oyuncuGuc}</strong> ({k.son.oyuncuZar >= 0 ? '+' : ''}{k.son.oyuncuZar}%) ↔ <strong>{k.son.dusmanGuc}</strong> ({k.son.dusmanZar >= 0 ? '+' : ''}{k.son.dusmanZar}%) →{' '}
+                          <strong className={k.son.genelZafer ? 's-arti' : 's-eksi'}>{k.son.genelZafer ? t('zafer') : t('yenilgi')}</strong>
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
                 {b.emir && (
                   <span title={d(b.emir.aciklama)}>
                     {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>
                   </span>
+                )}
+                {b.savas.plan && (
+                  <>
+                    <span>
+                      📅 {t('savasYili')}: <strong>{b.savas.plan.yil}/{b.savas.plan.toplamYil}. {t('yilK')}</strong>
+                    </span>
+                    {b.savas.plan.seferberlik && (
+                      <span title={d(b.savas.plan.seferberlik.aciklama)}>
+                        🎖️ {t('seferberlikAd')}: <strong>{d(b.savas.plan.seferberlik.ad)}</strong>
+                      </span>
+                    )}
+                    {b.savas.plan.ikmal && (
+                      <span title={d(b.savas.plan.ikmal.aciklama)}>
+                        🍞 {t('ikmalAd')}: <strong>{d(b.savas.plan.ikmal.ad)}</strong> — <small>{d(b.savas.plan.ikmal.aciklama)}</small>
+                      </span>
+                    )}
+                    {onIkmal && b.savas.plan.ikmal && (
+                      <span className="savas-ikmal-sec">
+                        <small>{t('ikmalDegistir')}:</small>{' '}
+                        {b.savas.plan.ikmalSecenekleri.map((o) => (
+                          <button key={o.id} type="button" className="ikincil" disabled={yukleniyor || o.id === b.savas.plan!.ikmal!.id} title={d(o.aciklama)} onClick={() => onIkmal(o.id)}>
+                            {d(o.ad)}
+                          </button>
+                        ))}
+                      </span>
+                    )}
+                  </>
                 )}
                 {b.kiralik.aktif && (
                   <span>
@@ -592,12 +660,17 @@ export function BirlikPaneli({
               <div className="birlik-kart-etki">
                 ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · <span className="s-gider">{formatPara(tur.ucret)} {pb}{erBirim}</span> · {t('maliyetArti')} <span className="s-gider">+%{Math.round(tur.bakim * 100)}</span>
               </div>
+              <div className="birlik-arazi">
+                {tur.guclu.length > 0 && <span className="s-arti">▲ {t('guclu')}: {tur.guclu.map(d).join(', ')}</span>}
+                {tur.zayif.length > 0 && <span className="s-eksi">▼ {t('zayif')}: {tur.zayif.map(d).join(', ')}</span>}
+              </div>
               <small>
                 ＋ {d(tur.arti)} · － {d(tur.eksi)}
               </small>
             </div>
           );
         })}
+        {b.birlik.kusatmaAcik && (
         <div className={`birlik-kart birlik-kart-kusatma${kusatma.seviye > 0 ? ' birlik-kart-acik' : ''}`}>
           <div className="birlik-kart-ust">
             <strong>
@@ -622,6 +695,7 @@ export function BirlikPaneli({
           </div>
           <small>{t('kusatmaOzel')}</small>
         </div>
+        )}
       </div>
       <div className="isletme-fiyat-not">{t('birlikNotYeni')}</div>
     </div>
