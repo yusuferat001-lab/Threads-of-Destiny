@@ -21,7 +21,8 @@ import {
   type SavasKarariDurumu,
 } from "./birlikIslem";
 import { birlikSenkron, doktrinBekliyorMu, erSayisi } from "./birlik";
-import { KISLA_ER_LIMITI, HARP_GUC_KATSAYISI, TABIP_KAYIP_AZALTMA } from "../data/birlik";
+import { KISLA_ER_LIMITI } from "../data/birlik";
+import { subayEtkiSatirlari, type SubayEtkiSatiri } from "./subay";
 import { yeniErEkle } from "./birlikYil";
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
@@ -4932,6 +4933,8 @@ export interface IsletmeYatirimGorunumu {
 }
 
 export interface IsletmeCalisanGorunumu {
+  /** Asker subayı: kısa artı/eksi satırları (iyi=yeşil, değilse kırmızı). */
+  etkiSatirlari?: SubayEtkiSatiri[];
   id: string;
   isim: string;
   rol: IkiDilMetin;
@@ -4949,6 +4952,7 @@ export interface IsletmeCalisanGorunumu {
 }
 
 export interface IsletmeAdayGorunumu {
+  etkiSatirlari?: SubayEtkiSatiri[];
   id: string;
   isim: string;
   rol: IkiDilMetin;
@@ -5081,15 +5085,9 @@ export interface IsletmeGorunumu {
   paraBirimi: string;
 }
 
-/**
- * Asker subaylarının ekranda gösterilen GERÇEK etkisi: Harp subayı güce `bonus × HARP_GUC_KATSAYISI`, Tabip subayı kayıp ve firara
- * `koruma × TABIP_KAYIP_AZALTMA` yansıtır (toplam tavanlar HARP_GUC_TAVAN / TABIP_KAYIP_TAVAN); Levazım ve Devşirme doğrudan.
- * Diğer mesleklerde bonus aynen döner.
- */
+/** Asker subaylarının etkisi artık `etkiSatirlari` (kısa artı/eksi cümleleri) olarak gider; diğer mesleklerde bonus aynen döner. */
 function subayEtkisi(profilMod: string | undefined, etki: { tur: IsletmeRolTuru; deger: number } | null): { tur: IsletmeRolTuru; deger: number } | null {
-  if (!etki || profilMod !== "birlik") return etki;
-  if (etki.tur === "ana") return { tur: etki.tur, deger: etki.deger * HARP_GUC_KATSAYISI };
-  if (etki.tur === "guvenlik") return { tur: etki.tur, deger: etki.deger * TABIP_KAYIP_AZALTMA };
+  if (!etki || profilMod === "birlik") return null;
   return etki;
 }
 
@@ -5273,6 +5271,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       sadik: e.sadakat >= SADIK_ESIGI,
       riskli: e.sadakat < SADAKAT_RISK_ESIGI,
       etki: subayEtkisi(profil.mod, calisanBonusu(e)),
+      ...(profil.mod === "birlik" ? { etkiSatirlari: subayEtkiSatirlari(rt, e.gercekKalite, e.sadakat) } : {}),
     };
   });
   const adaylar: IsletmeAdayGorunumu[] = is.adaylar.map((a) => {
@@ -5291,6 +5290,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       sadakat: a.sadakat,
       maas: paraYuvarla(a.maas_taban * genf),
       etki: subayEtkisi(profil.mod, calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as EkipUyesi)),
+      ...(profil.mod === "birlik" ? { etkiSatirlari: subayEtkiSatirlari(a.rolTuru, a.yetenek, a.sadakat) } : {}),
     };
   });
   const unvan = sehirYoneticisiUnvani(state.cag, state.bolge, state.meslek);

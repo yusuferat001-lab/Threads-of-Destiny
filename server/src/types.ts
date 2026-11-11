@@ -50,6 +50,9 @@ export interface DunyaYaklasan {
   tur: "savas" | "veba";
   yil: number;
   dusman?: string;
+  /** Savaş zarı tutunca belirlenen düşman baskın birliği ve güç oranı (savaş başlayınca aynen kullanılır; Keşif subayı önceden bilir). */
+  dusmanTur?: string;
+  dusmanOrani?: number;
 }
 
 /** Tekrarlayan büyük savaş mekaniği: state.ulke.savasta=true olduğunda aktif; süre/vergi/gıda çarpanı savaş başlarken bir kere rastgele belirlenir. */
@@ -70,6 +73,9 @@ export interface BuyukSavas {
   gidaCarpani: number;
   /** Talep/fiyat/maaş etkileri (eski kayıtlarda yok). */
   etki?: DonemEtkisi;
+  /** Savaş zarında belirlenen düşman birliği/oranı (varsa `savasBaslat` bunu kullanır). */
+  dusmanTur?: string;
+  dusmanOrani?: number;
 }
 
 /** Ömürde bir kez tetiklenebilen veba: aktif fazda ölüm riski taşır, aktif+iz süresi boyunca kira/maaş etkisi kalıcıdır. */
@@ -902,7 +908,7 @@ export interface EkipUyesi {
 }
 
 /** İşletme motorunda çalışanın rolü (meslek×çağ'a göre ad değişir, etkisi aynı). */
-export type IsletmeRolTuru = "ana" | "maliyet" | "musteri" | "guvenlik";
+export type IsletmeRolTuru = "ana" | "maliyet" | "musteri" | "guvenlik" | "taarruz" | "savunma" | "kesif";
 
 /** Aday tipi: Yetenek/Sadakat aralığını ve maaş bandını belirler (data/meslekProfilleri.ts ADAY_TIP_ARALIKLARI). */
 export type IsletmeAdayTipi = "serseri" | "sadik_cirak" | "siradan" | "usta_guvenilmez" | "usta_sadik";
@@ -977,6 +983,7 @@ export interface IsletmeUyari {
     | "savas_kayip"
     | "savas_catisma"
     | "kazanc_ozet"
+    | "kesif_savas"
     | "yarali_iyilesti"
     | "limit_asimi";
   hat?: string;
@@ -1000,6 +1007,9 @@ export interface IsletmeUyari {
   sayi?: number;
   /** savas_kayip: aynı olayda yaralanan er sayısı. */
   yaralanan?: number;
+  /** kesif_savas: düşmanın baskın birliği ve tahmini güç aralığı (rakip = düşman adı, sayi = savaşın başlayacağı yıl). */
+  dusmanTur?: string;
+  gucAralik?: [number, number];
   /** savas_kayip: kaybın kaynağı (görev / çatışma / savaş) ve görev adları. */
   kaynak?: "gorev" | "catisma" | "savas";
   kaynakAd?: { tr: string; en: string };

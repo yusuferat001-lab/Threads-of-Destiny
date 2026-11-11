@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCharacter, mesleğiSec, isletmeBaglami } from "../src/game/stateManager";
-import { birlikAl, birlikHesapla, erSayisi } from "../src/game/birlik";
+import { birlikAl, birlikHesapla, birlikHazirla, erSayisi } from "../src/game/birlik";
+import { subayDegeri, subayToplami } from "../src/game/subay";
+import { araziIhtimali } from "../src/game/birlikIslem";
+import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula } from "../src/game/birlikYil";
 import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
@@ -107,5 +110,59 @@ describe("v39 ganimet", () => {
     expect(birlikHesapla(s, bg(s)).yagmaBrut).toBe(0);
     sv.sonuc = null;
     expect(birlikHesapla(s, bg(s)).gorevler.every((g) => g.ganimet === 0)).toBe(true);
+  });
+});
+
+describe("v39 subaylar", () => {
+  it("Taarruz/Savunma/Keşif/Devşirme/Tabip değerleri Y30/60/90 noktalarından geçer ve tavanlıdır", () => {
+    const e = (rol: "taarruz" | "savunma" | "kesif" | "musteri" | "guvenlik", y: number) => subayDegeri({ rol_turu: rol, gercekKalite: y, sadakat: 50 });
+    expect(e("taarruz", 30).saldiri).toBeCloseTo(0.09, 6);
+    expect(e("taarruz", 60).saldiri).toBeCloseTo(0.15, 6);
+    expect(e("taarruz", 90).saldiri).toBeCloseTo(0.2, 6);
+    expect(e("taarruz", 60).ganimet).toBeCloseTo(0.07, 6);
+    expect(e("taarruz", 60).kayip).toBeCloseTo(0.04, 6);
+    expect(e("savunma", 60).savunma).toBeCloseTo(0.15, 6);
+    expect(e("savunma", 60).kayip).toBeCloseTo(-0.07, 6);
+    expect(e("savunma", 60).ganimet).toBeCloseTo(-0.04, 6);
+    expect(e("kesif", 30).arazi).toBeCloseTo(0.22, 6);
+    expect(e("kesif", 90).tahminAralik).toBeCloseTo(0.023, 6);
+    expect(e("kesif", 60).pusuAzalt).toBeCloseTo(0.48, 6);
+    expect(e("musteri", 30).devsirme).toBe(2);
+    expect(e("musteri", 90).devsirme).toBe(5);
+    expect(e("guvenlik", 60).oluFirarAzalt).toBeCloseTo(0.22, 6);
+    expect(e("guvenlik", 60).yaraliAzalt).toBeCloseTo(0.14, 6);
+    // sadık ×1,05
+    expect(subayDegeri({ rol_turu: "taarruz", gercekKalite: 60, sadakat: 90 }).saldiri).toBeCloseTo(0.15 * 1.05, 6);
+  });
+
+  it("toplam tavanlıdır: çok Taarruz komutanı saldırıyı en çok +%30 yapar", () => {
+    const s = asker();
+    for (let i = 0; i < 4; i++) s.ekip.push({ id: `t${i}`, isim: `T${i}`, rol: "Taarruz komutanı", gercekKalite: 90, tahminiMin: 80, tahminiMax: 90, maas: 5, sadakat: 90, kisilik: "Sadık", rol_turu: "taarruz" });
+    expect(subayToplami(s).saldiri).toBeCloseTo(0.3, 6);
+  });
+
+  it("eski Harp/Levazım rolleri Taarruz/Savunma'ya taşınır; Asker rolleri 5'tir", () => {
+    const s = asker();
+    s.ekip.push({ id: "h1", isim: "Eski", rol: "Harp subayı", gercekKalite: 60, tahminiMin: 50, tahminiMax: 70, maas: 4, sadakat: 60, kisilik: "Sıradan", rol_turu: "ana" });
+    s.ekip.push({ id: "h2", isim: "Eski2", rol: "Levazım subayı", gercekKalite: 60, tahminiMin: 50, tahminiMax: 70, maas: 4, sadakat: 60, kisilik: "Sıradan", rol_turu: "maliyet" });
+    birlikHazirla(s);
+    expect(s.ekip[0].rol_turu).toBe("taarruz");
+    expect(s.ekip[1].rol_turu).toBe("savunma");
+  });
+
+  it("Keşif subayı arazi seçme ihtimalini artırır (en çok %95) ve tahmin aralığını daraltır", () => {
+    const s = asker();
+    s.rutbe_seviye = 2;
+    const taban = araziIhtimali(s);
+    s.ekip.push({ id: "k1", isim: "Kâşif", rol: "Keşif subayı", gercekKalite: 90, tahminiMin: 80, tahminiMax: 90, maas: 5, sadakat: 50, kisilik: "Sıradan", rol_turu: "kesif" });
+    expect(araziIhtimali(s)).toBeCloseTo(Math.min(0.95, taban + 0.46), 6);
+    expect(subayToplami(s).tahminAralik).toBeCloseTo(0.023, 6);
+  });
+
+  it("yatırım fiyatları: Karakol 12/20/32/48, Revir 13/22/34/50", () => {
+    const profil = isletmeProfiliGetir("Asker", "Orta Çağ")!;
+    expect(profil.yatirimlar.find((y) => y.id === "karakol")!.fiyatlar).toEqual([12, 20, 32, 48]);
+    expect(profil.yatirimlar.find((y) => y.id === "revir")!.fiyatlar).toEqual([13, 22, 34, 50]);
+    expect(profil.roller.map((r) => r.tur)).toEqual(["taarruz", "savunma", "kesif", "musteri", "guvenlik"]);
   });
 });

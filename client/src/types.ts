@@ -772,7 +772,7 @@ export interface EkipUyesi {
   rol_turu?: IsletmeRolTuru;
 }
 
-export type IsletmeRolTuru = 'ana' | 'maliyet' | 'musteri' | 'guvenlik';
+export type IsletmeRolTuru = 'ana' | 'maliyet' | 'musteri' | 'guvenlik' | 'taarruz' | 'savunma' | 'kesif';
 export type IsletmeFiyat = 'eksi20' | 'eksi10' | 'normal' | 'arti10' | 'arti20';
 
 export interface IsletmeUyari {
@@ -804,6 +804,7 @@ export interface IsletmeUyari {
     | 'savas_kayip'
     | 'savas_catisma'
     | 'kazanc_ozet'
+    | 'kesif_savas'
     | 'yarali_iyilesti'
     | 'limit_asimi';
   hat?: string;
@@ -826,6 +827,9 @@ export interface IsletmeUyari {
   sayi?: number;
   /** savas_kayip: aynı olayda yaralanan er sayısı. */
   yaralanan?: number;
+  /** kesif_savas: düşmanın baskın birliği ve tahmini güç aralığı (rakip = düşman adı, sayi = savaşın başlayacağı yıl). */
+  dusmanTur?: string;
+  gucAralik?: [number, number];
   /** savas_kayip: kaybın kaynağı (görev / çatışma / savaş) ve görev adları. */
   kaynak?: 'gorev' | 'catisma' | 'savas';
   kaynakAd?: { tr: string; en: string };
@@ -962,7 +966,9 @@ export interface IsletmeCalisanGorunumu {
   sadik: boolean;
   riskli: boolean;
   /** Çalışanın işletmeye etkisi: maliyet/ana/güvenlik kesir (0-1), müşteri yıllık sayı. */
-  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
+  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik' | 'taarruz' | 'savunma' | 'kesif'; deger: number } | null;
+  /** Asker subayı: kısa artı/eksi satırları (iyi=yeşil, değilse kırmızı). */
+  etkiSatirlari?: { tr: string; en: string; iyi: boolean }[];
 }
 
 export interface IsletmeAdayGorunumu {
@@ -978,7 +984,9 @@ export interface IsletmeAdayGorunumu {
   sadakat: number;
   maas: number;
   /** İşe alınırsa getireceği etki. */
-  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
+  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik' | 'taarruz' | 'savunma' | 'kesif'; deger: number } | null;
+  /** Asker subayı: kısa artı/eksi satırları (iyi=yeşil, değilse kırmızı). */
+  etkiSatirlari?: { tr: string; en: string; iyi: boolean }[];
 }
 
 export interface CemaatPolitikaSecenegi {

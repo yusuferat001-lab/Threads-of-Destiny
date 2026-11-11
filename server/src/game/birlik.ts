@@ -5,6 +5,7 @@ import type {
   BirlikSavasKarari,
   BirlikTur,
   CharacterState,
+  IsletmeRolTuru,
 } from "../types";
 import {
   ARAZI_CARPANLARI,
@@ -33,8 +34,6 @@ import {
   YAGMA_GANIMET,
   YAGMA_YIL,
   GOREV_GELIR_CARPANI,
-  HARP_GUC_KATSAYISI,
-  HARP_GUC_TAVAN,
   IKMAL_TANIMLARI,
   KALITE_BAKIM,
   KALITE_CARPANI,
@@ -51,8 +50,6 @@ import {
   SOLD,
   SUBAY_KISLA_BONUSU,
   SUBAY_RUTBE_TABANI,
-  TABIP_KAYIP_AZALTMA,
-  TABIP_KAYIP_TAVAN,
   TALIM_GUC_KATSAYISI,
   TALIM_KAYIP_KATSAYISI,
   TALIM_TANIMLARI,
@@ -68,6 +65,7 @@ import {
   BARIS_CATISMA_ILK_YIL,
   KALE_GELIR,
 } from "../data/birlik";
+import { subayToplami } from "./subay";
 import { adaylariYenile, ekipBonuslari, imtiyazAktifMi, korumaHesapla, type IsletmeBaglami } from "./isletme";
 
 /**
@@ -190,6 +188,27 @@ export function birlikHazirla(state: CharacterState): void {
   }
   const b = is.birlik!;
   b.kalite = b.kalite ?? { dusuk: erSayisi(state), orta: 0, yuksek: 0 };
+  // v39: Harp → Taarruz, Levazım → Savunma komutanı (eski kayıt göçü).
+  {
+    const yeniRol: Record<string, { tur: IsletmeRolTuru; ad: string }> = {
+      ana: { tur: "taarruz", ad: "Taarruz komutanı" },
+      maliyet: { tur: "savunma", ad: "Savunma komutanı" },
+    };
+    for (const a of is.adaylar ?? []) {
+      const y = yeniRol[a.rolTuru as string];
+      if (y) {
+        a.rolTuru = y.tur;
+        a.rol = y.ad;
+      }
+    }
+    for (const uye of state.ekip) {
+      const y = uye.rol_turu ? yeniRol[uye.rol_turu as string] : undefined;
+      if (y) {
+        uye.rol_turu = y.tur;
+        uye.rol = y.ad;
+      }
+    }
+  }
   if (!Array.isArray(b.gorevler)) b.gorevler = ["devriye"];
   if (!Array.isArray(b.doktrinler)) b.doktrinler = [];
   if (!Array.isArray(b.birlik_turler)) b.birlik_turler = [];
@@ -379,12 +398,13 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   };
   const doktrin = doktrinToplami(b.doktrinler);
   const yol = yolEtkisi(state);
-  const bon = ekipBonuslari(state);
+  const sub = subayToplami(state);
   ekle("moral", moralGucEtkisi(b.moral));
   ekle("talim", Math.min(0.2, b.talim * TALIM_GUC_KATSAYISI));
   ekle("doktrin", doktrin.guc);
   ekle("yol", yol.guc ?? 0);
-  ekle("harp", Math.min(HARP_GUC_TAVAN, bon.ana * HARP_GUC_KATSAYISI));
+  ekle("taarruz_subay", sub.saldiri, "saldiri");
+  ekle("savunma_subay", sub.savunma, "savunma");
   const emir = emirGetir(b.savas?.emir);
   if (emir && state.ulke.savasta) ekle("emir", emir.guc);
   if (doktrin.saldiri) ekle("doktrin_saldiri", doktrin.saldiri, "saldiri");
@@ -497,10 +517,11 @@ export function kayipCarpani(state: CharacterState): number {
   const b = birlikAl(state);
   const doktrin = doktrinToplami(b.doktrinler);
   const revir = clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * REVIR_KAYIP_KADEME;
-  const tabip = Math.min(TABIP_KAYIP_TAVAN, korumaHesapla(state).calisan * TABIP_KAYIP_AZALTMA);
+  const sub = subayToplami(state);
+  const tabip = sub.oluFirarAzalt;
   const talim = Math.min(0.15, b.talim * TALIM_KAYIP_KATSAYISI);
   const emir = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;
-  return Math.max(0.3, 1 - talim - revir - tabip + doktrin.kayip + (emir?.kayip ?? 0));
+  return Math.max(0.3, 1 - talim - revir - tabip + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
 }
 /** Levazım subayı + doktrin: er masrafı ve erzak çarpanı. */
 export function masrafCarpani(state: CharacterState): number {
@@ -577,7 +598,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const mizrakliAkin = (turPaylari(b).mizrakli ?? 0) > 0 ? 1 - 0.1 * clamp((turPaylari(b).mizrakli ?? 0) / 0.15, 0, 1.67) : 1;
   const gelirC = (1 + doktrin.gelir + (yol.gelir ?? 0)) * sertlikGelirCarpani(b) * moralC * bg.satisCarpani;
   const ganimetC =
-    (1 + doktrin.ganimet + (yol.ganimet ?? 0) + (savasta ? emirGetir(b.savas?.emir)?.ganimet ?? 0 : 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani * (imtiyazAktifMi(state, "sefer_emri") ? 1.25 : 1);
+    (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (savasta ? emirGetir(b.savas?.emir)?.ganimet ?? 0 : 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani * (imtiyazAktifMi(state, "sefer_emri") ? 1.25 : 1);
   const mC = masrafCarpani(state);
   const soldTam = SOLD[rutbe] * bg.enflasyon * (1 + doktrin.sold + (yol.sold ?? 0));
   // Maaş kalemi tek: sabit kısım (savaşta aynen) + asker başı ödeme (savaşta devlet %30 fazla öder, oyuncuya gelir).

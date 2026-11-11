@@ -1,3 +1,4 @@
+import { subayToplami, SUBAY_TAVANLARI, TAHMIN_ARALIGI_TABAN } from "./subay";
 import type {
   BirlikArazi,
   BirlikDurumu,
@@ -205,6 +206,11 @@ export function techizatSec(state: CharacterState, seviye: BirlikKalite, bg: Isl
   return { maliyet, iade: 0, adet: degisecek };
 }
 
+/** Seçtiğin arazinin gerçekleşme ihtimali: rütbe tabanı + Keşif subayı (en çok %95). */
+export function araziIhtimali(state: CharacterState): number {
+  return Math.min(SUBAY_TAVANLARI.arazi, ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] + subayToplami(state).arazi);
+}
+
 // ── Özel birlik ─────────────────────────────────────────────────────────────
 const araziAdiMetin = (a: BirlikArazi, cag: string) => (cag === "Sanayi Devrimi" ? ARAZI_ADLARI[a].sanayi : ARAZI_ADLARI[a].orta);
 function turErSayilari(er: number, turler: BirlikTur[]): Record<BirlikTur, number> {
@@ -344,7 +350,7 @@ export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | n
   let zorunlu: "saldiri" | "savunma" | null = null;
   if (kararYili) {
     // Arazi seçme ekranı yalnız rütbenin verdiği ihtimalle gelir (S1'de hiç); seçilen arazi kesin geçerlidir.
-    if (Math.random() < ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)]) adimlar.push("arazi");
+    if (Math.random() < araziIhtimali(state)) adimlar.push("arazi");
     adimlar.push("rol");
     const r = Math.random();
     if (r >= INISIYATIF_OYUNCU_SECER) zorunlu = r < INISIYATIF_OYUNCU_SECER + INISIYATIF_ZORUNLU_SALDIRI ? "saldiri" : "savunma";
@@ -605,6 +611,8 @@ export const GUC_ETIKETLERI: Record<string, { tr: string; en: string }> = {
   doktrin_savunma: { tr: "Doktrin (savunma)", en: "Doctrine (defence)" },
   yol: { tr: "Yol dalı", en: "Career path" },
   harp: { tr: "Harp subayı", en: "War officer" },
+  taarruz_subay: { tr: "Taarruz komutanı", en: "Assault commander" },
+  savunma_subay: { tr: "Savunma komutanı", en: "Defence commander" },
   erzak: { tr: "Erzak", en: "Supplies" },
   odenmeyen_maas: { tr: "Ödenmeyen maaş", en: "Unpaid wages" },
   odenmeyen_erzak: { tr: "Erzak karşılanamadı", en: "Supplies unpaid" },
@@ -761,7 +769,12 @@ export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): S
   const arazi = sv?.arazi ?? null;
   const dagilim = dusmanSaldiriSavunma(tur);
   const araziC = arazi ? dusmanAraziCarpani(arazi, tur) : 1;
-  const aralik = (taban: number): [number, number] => [Math.round(taban * DUSMAN_ORAN[0]), Math.round(taban * DUSMAN_ORAN[1])];
+  // Keşif subayı tahmin aralığını daraltır (±%5 → ±%4,1…%2,3) ve aralığı gerçek değere ortalar; yoksa referans × [0,95; 1,05].
+  const kesifAralik = subayToplami(state).tahminAralik;
+  const daralt = kesifAralik < TAHMIN_ARALIGI_TABAN && !!sv;
+  const oran = sv?.dusman_orani ?? 1;
+  const aralik = (taban: number): [number, number] =>
+    daralt ? [Math.round(taban * oran * (1 - kesifAralik)), Math.round(taban * oran * (1 + kesifAralik))] : [Math.round(taban * DUSMAN_ORAN[0]), Math.round(taban * DUSMAN_ORAN[1])];
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(sv && arazi ? { savas: { arazi, dusmanTur: tur, inisiyatif: "savunma" as const } } : {}) });
   return {
     dusman: { guc: aralik(ref * araziC), saldiri: aralik(ref * dagilim.saldiri * araziC), savunma: aralik(ref * dagilim.savunma * araziC) },
@@ -900,7 +913,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kanatZafer: b.savas?.kanat_zafer ?? 0,
       kanatYenilgi: b.savas?.kanat_yenilgi ?? 0,
       kararBekliyor: !!k && k.adim < k.adimlar.length,
-      araziIhtimali: Math.round(ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] * 100),
+      araziIhtimali: Math.round(araziIhtimali(state) * 100),
       kiyas: savasKiyasiHesapla(state, bg),
       plan:
         state.ulke.savasta && b.savas

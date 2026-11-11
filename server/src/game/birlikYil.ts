@@ -22,8 +22,6 @@ import {
   YARALI_ORAN,
   YARALI_ORAN_TABAN,
   YARALI_REVIR_DUSUS,
-  YARALI_TABIP_DUSUS_TAVAN,
-  YARALI_TABIP_KATSAYI,
   YARALI_IYILESME_YIL,
   YARALI_REVIR_SURE_KISALTMA,
   YARALI_IYILESME_MIN_YIL,
@@ -58,6 +56,7 @@ import {
   BOLGE_ARAZI_AGIRLIGI,
   DEVSIRME_BUROSU_ER,
   DUSMAN_ORAN,
+  dusmanReferansGucuYas,
   ER_TAVANI,
   ESIR_FIDYE,
   ESIR_FIDYE_IHTIMALI,
@@ -147,6 +146,7 @@ import {
   type IsletmeBaglami,
   type IsletmeYilSonucu,
 } from "./isletme";
+import { subayToplami, TAHMIN_ARALIGI_TABAN } from "./subay";
 import { musteriAktar, rakipGrubu } from "./piyasa";
 import {
   birlikAl,
@@ -185,6 +185,32 @@ export function bolgeAraziSec(bolge: string): BirlikArazi {
   return "ova";
 }
 
+/** Savaş zarı tutunca düşman baskın birliği ve güç oranı önceden çekilir (savaş başlayınca aynen kullanılır). */
+export function savasZariDusmani(): { dusmanTur: string; dusmanOrani: number } {
+  const turler = ["okcu", "suvari", "mizrakli", "zirhli", "karma"];
+  return { dusmanTur: turler[Math.floor(Math.random() * turler.length)], dusmanOrani: r2(rnd(DUSMAN_ORAN[0], DUSMAN_ORAN[1])) };
+}
+
+/**
+ * Keşif subayı varsa yaklaşan savaşı 1 yıl önce somut bildirir (düşman, baskın birlik, tahmini güç aralığı); takvim değişmez.
+ * Bildirim bu yılın işletme dökümüne eklenir. Keşif yoksa normal oyuncu yalnız dünya dedikodusunu görür.
+ */
+export function kesifSavasHaberi(state: CharacterState, yaklasan: { yil: number; dusman?: string; dusmanTur?: string; dusmanOrani?: number }): void {
+  const is = state.isletme;
+  if (!is?.birlik || !is.son_dokum) return;
+  const sub = subayToplami(state);
+  if (!sub.kesifVar || !yaklasan.dusmanTur || yaklasan.dusmanOrani == null) return;
+  const E = dusmanReferansGucuYas(state.yas + 1) * yaklasan.dusmanOrani;
+  const r = Math.min(sub.tahminAralik, TAHMIN_ARALIGI_TABAN);
+  is.son_dokum.uyarilar.push({
+    kod: "kesif_savas",
+    rakip: yaklasan.dusman ?? "",
+    dusmanTur: yaklasan.dusmanTur,
+    gucAralik: [Math.round(E * (1 - r)), Math.round(E * (1 + r))],
+    sayi: yaklasan.yil,
+  });
+}
+
 export function savasBaslat(state: CharacterState): BirlikSavasDurumu {
   const b = birlikAl(state);
   const turler: (BirlikTur | "karma")[] = ["okcu", "suvari", "mizrakli", "zirhli", "karma"];
@@ -199,8 +225,8 @@ export function savasBaslat(state: CharacterState): BirlikSavasDurumu {
     firar_toplam: 0,
     arazi: bolgeAraziSec(state.bolge),
     inisiyatif: "savunma",
-    dusman_orani: r2(rnd(DUSMAN_ORAN[0], DUSMAN_ORAN[1])),
-    dusman_tur: turler[Math.floor(Math.random() * turler.length)],
+    dusman_orani: state.buyuk_savas?.dusmanOrani ?? r2(rnd(DUSMAN_ORAN[0], DUSMAN_ORAN[1])),
+    dusman_tur: (state.buyuk_savas?.dusmanTur as BirlikTur | "karma" | undefined) ?? turler[Math.floor(Math.random() * turler.length)],
     kanat_zafer: 0,
     kanat_yenilgi: 0,
     genel_zafer: 0,
@@ -360,8 +386,8 @@ export function dagit(toplam: number, agirlik: number[], ust?: number[]): number
 /** Yaralı oranı (ölü × oran): taban aralığı − revir − tabip; alt sınır 1. */
 export function yaraliOrani(state: CharacterState): number {
   const revir = clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4);
-  const tabip = Math.min(YARALI_TABIP_DUSUS_TAVAN, korumaHesapla(state).calisan * YARALI_TABIP_KATSAYI);
-  return Math.max(YARALI_ORAN_TABAN, aralikCek(YARALI_ORAN) - revir * YARALI_REVIR_DUSUS - tabip);
+  const azalt = subayToplami(state).yaraliAzalt;
+  return Math.max(YARALI_ORAN_TABAN, (aralikCek(YARALI_ORAN) - revir * YARALI_REVIR_DUSUS) * (1 - azalt));
 }
 /** Yaralı iyileşme süresi (yıl): taban 3, her revir kademesi −0,5 (K4 = 1). */
 export function yaraliIyilesmeSuresi(state: CharacterState): number {
@@ -641,7 +667,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     const doktrin = doktrinToplami(b.doktrinler);
     const yol = yolEtkisi(state);
     const emir = emirGetir(sv.emir);
-    const carpan = (1 + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
+    const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
     const guc = b.guc;
     sonuc.brut = r2(guc * aralikCek(SAVAS_ZAFER_GANIMET) * bg.enflasyon * carpan);
     sonuc.erPayi = r2(sonuc.brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
@@ -714,7 +740,7 @@ function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBa
   const dusmanEff = Math.max(1e-6, dusman * (1 + (d20() - 10.5) / ZAR_BOLEN));
   const R = oyuncuEff / dusmanEff;
   const zafer = R >= 1;
-  const carpan = (1 + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
+  const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
   const brut = zafer ? guc * aralikCek(BARIS_GANIMET_ARALIK) * bg.enflasyon * carpan : 0;
   const devlet = 0; // askerde devlet payı yok
   const erPayi = brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
@@ -967,7 +993,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const sohret = sohretMusteriSayisi(state.un);
   let buyume =
     BARIS_YILLIK_ER +
-    Math.max(0, bon.musteri) +
+    subayToplami(state).devsirme +
     DEVSIRME_BUROSU_ER[clamp(yatirimKademesi(state, "devsirme"), 0, DEVSIRME_BUROSU_ER.length - 1)] +
     Math.max(0, sohret) +
     doktrin.devsirme +

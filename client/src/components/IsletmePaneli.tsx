@@ -302,6 +302,14 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
       case 'seferberlik_terhis':
         return en ? `🎖️ ${u.sayi ?? 0} wartime recruits were discharged.` : `🎖️ Savaş devşirmesinden ${u.sayi ?? 0} er terhis edildi.`;
+      case 'kesif_savas': {
+        const tur: Record<string, [string, string]> = { okcu: ['okçu', 'archers'], suvari: ['süvari', 'cavalry'], mizrakli: ['mızraklı', 'spearmen'], zirhli: ['zırhlı', 'armoured knights'], karma: ['karma', 'mixed'] };
+        const t = tur[u.dusmanTur ?? 'karma'] ?? tur.karma;
+        const g = u.gucAralik ? `${u.gucAralik[0]}–${u.gucAralik[1]}` : '?';
+        return en
+          ? `🔭 Scouts report: war with ${u.rakip} comes in ${u.sayi}. Main force: ${t[1]}, strength about ${g}.`
+          : `🔭 Keşif haberi: ${u.rakip} ile savaş ${u.sayi} yılında başlayacak. Baskın birlik: ${t[0]}, tahmini güç ${g}.`;
+      }
       case 'kazanc_ozet': {
         const f = (v: number) => `${v >= 0 ? '+' : '−'}${formatPara(Math.abs(v))} ${pb}`;
         const sebep =

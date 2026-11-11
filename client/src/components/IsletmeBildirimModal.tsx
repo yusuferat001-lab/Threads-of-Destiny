@@ -4,7 +4,7 @@ import { gecenYilBaslik } from '../isletmeAdi';
 import { isletmeUyariMetni } from './IsletmePaneli';
 
 /** Geçen yıl işletmede olan önemli olaylar: hırsızlık, rakip saldırısı, sızdırma, ayrılan çalışan, biten imtiyaz. (Stok yetmemesi ayrı pencerede: stokUyari.ts) */
-const ONEMLI_KODLAR: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'baris_catisma', 'savas_sonu', 'seferberlik_terhis', 'savas_ganimet', 'kale', 'madalya', 'yagma', 'savas_kayip', 'savas_catisma', 'kazanc_ozet'];
+const ONEMLI_KODLAR: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'baris_catisma', 'savas_sonu', 'seferberlik_terhis', 'savas_ganimet', 'kale', 'madalya', 'yagma', 'savas_kayip', 'savas_catisma', 'kazanc_ozet', 'kesif_savas'];
 
 const ANAHTAR = 'kader-carki-isletme-bildirim-yili';
 
