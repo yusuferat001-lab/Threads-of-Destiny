@@ -169,7 +169,7 @@ describe("kayıp: ölü – yaralı – firar", () => {
     expect(yarali).toBe(40);
     expect(gucHesapla(s).guc).toBeLessThan(g0);
     const h1 = birlikHesapla(s, bg(s));
-    expect(h1.yaraliGideri).toBeCloseTo(20 * 0.25 * bg(s).giderEnflasyon, 4);
+    expect(h1.yaraliGideri).toBeCloseTo(20 * 0.3 * bg(s).giderEnflasyon, 4);
     expect(h0.yaraliGideri).toBe(0);
     expect(h1.gorevGeliri).toBeLessThan(h0.gorevGeliri);
   });

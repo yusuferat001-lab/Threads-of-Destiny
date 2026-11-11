@@ -281,10 +281,19 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? '🧾 Your tax reduction has ended.' : '🧾 Vergi indirimin sona erdi.';
       case 'firar':
         return en ? `🏃 ${u.sayi ?? 0} men deserted.` : `🏃 ${u.sayi ?? 0} er firar etti.`;
-      case 'savas_kayip':
-        return en
-          ? `⚰️ ${u.sayi ?? 0} men fell${u.yaralanan ? `, ${u.yaralanan} wounded` : ''}.`
-          : `⚰️ ${u.sayi ?? 0} er düştü${u.yaralanan ? `, ${u.yaralanan} yaralı` : ''}.`;
+      case 'savas_kayip': {
+        const ad = u.kaynakAd ? (en ? u.kaynakAd.en : u.kaynakAd.tr) : '';
+        const kaynakTr = u.kaynak === 'gorev' ? (ad ? `${ad} görevinde` : 'Görevlerde') : u.kaynak === 'catisma' ? 'Çatışmada' : u.kaynak === 'savas' ? 'Savaşta' : '';
+        const kaynakEn = u.kaynak === 'gorev' ? (ad ? `On ${ad} duty:` : 'On duty:') : u.kaynak === 'catisma' ? 'In the clash:' : u.kaynak === 'savas' ? 'In the war:' : '';
+        const sayi = u.sayi ?? 0;
+        const yar = u.yaralanan ?? 0;
+        if (en) {
+          const parts = [sayi > 0 ? `${sayi} men fell` : '', yar > 0 ? `${yar} wounded` : ''].filter(Boolean).join(', ');
+          return `⚰️ ${kaynakEn ? kaynakEn + ' ' : ''}${parts}.`;
+        }
+        const parts = [sayi > 0 ? `${sayi} er düştü` : '', yar > 0 ? `${yar} yaralı` : ''].filter(Boolean).join(', ');
+        return `⚰️ ${kaynakTr ? kaynakTr + ' ' : ''}${parts}.`;
+      }
       case 'yarali_iyilesti':
         return en ? `🩹 ${u.sayi ?? 0} wounded men recovered.` : `🩹 ${u.sayi ?? 0} yaralı er iyileşip saflara döndü.`;
       case 'limit_asimi':

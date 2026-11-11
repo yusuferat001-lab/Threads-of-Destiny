@@ -826,6 +826,9 @@ export interface IsletmeUyari {
   sayi?: number;
   /** savas_kayip: aynı olayda yaralanan er sayısı. */
   yaralanan?: number;
+  /** savas_kayip: kaybın kaynağı (görev / çatışma / savaş) ve görev adları. */
+  kaynak?: 'gorev' | 'catisma' | 'savas';
+  kaynakAd?: { tr: string; en: string };
   savasSonucu?: 'zafer' | 'yenilgi';
   catismaTur?: 'haydut' | 'sinir';
   /** kazanc_ozet: yıl başında beklenen net ve fark nedeni (gerçekleşen `tutar`). */

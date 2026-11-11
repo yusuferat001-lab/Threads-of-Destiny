@@ -21,7 +21,6 @@ import {
   GOREVLER,
   GOREV_DONEM_CARPANI,
   GOREV_SLOTLARI,
-  GANIMET_GUC_BIRIMI,
   KALE_KOMUTA_BONUSU,
   KIRALIK_KALITE_CARPANI,
   KIRALIK_YILLIK,
@@ -32,6 +31,8 @@ import {
   YAGMA_ERZAK_CARPANI,
   YAGMA_ESIR,
   YAGMA_GANIMET,
+  YAGMA_YIL,
+  GOREV_GELIR_CARPANI,
   HARP_GUC_KATSAYISI,
   HARP_GUC_TAVAN,
   IKMAL_TANIMLARI,
@@ -558,6 +559,8 @@ export interface BirlikHesabi {
 export interface HesapSecenekleri {
   /** Ganimet çarpanı (genel savaş sonucu: zafer ×1,3 / yenilgi ×0,3; barışta 1). */
   ganimetCarpani?: number;
+  /** Savaşın kaçıncı yılı (1 tabanlı). Verilmezse bir sonraki yıl (önizleme) sayılır. */
+  savasYili?: number;
 }
 
 export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: HesapSecenekleri = {}): BirlikHesabi {
@@ -583,13 +586,14 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const sold = r2(soldTam + erBasiOdeme);
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
-  const kazancC = 1;
+  const kazancC = GOREV_GELIR_CARPANI;
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const akinC = g.tur === "akin" ? mizrakliAkin : 1;
     const gelir = p * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
-    const ganCarpan = g.yalnizSavas ? 1 : savasta ? 2.5 : 0.3;
+    // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
+    const ganCarpan = savasta ? 0 : 0.3;
     const ganimet = g.ganimet > 0 ? p * g.ganimet * ganCarpan * bg.enflasyon * ganimetC : 0;
     const esir = g.ganimet > 0 ? p * g.ganimet * ganCarpan * 0.04 * ganimetC : 0;
     return { id: g.id, er: p, aktif, gelir, ganimet, esir };
@@ -597,8 +601,8 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const gorevGeliri = gorevler.reduce((t, x) => t + x.gelir, 0);
   const ganimetBrut = gorevler.reduce((t, x) => t + x.ganimet, 0);
   // Yağma (yalnız savaşta, ikmal kararı): güçle orantılı yıllık ganimet; esir ve yeni er de getirir.
-  const yagma = savasta && karar.ikmal === "yagma";
-  const yagmaBrut = yagma ? b.guc * GANIMET_GUC_BIRIMI * YAGMA_GANIMET * bg.enflasyon * ganimetC : 0;
+  const yagma = savasta && karar.ikmal === "yagma" && b.savas?.sonuc !== "yenilgi" && (sec.savasYili ?? (b.savas?.yil_sayac ?? 0) + 1) <= YAGMA_YIL;
+  const yagmaBrut = yagma ? b.guc * YAGMA_GANIMET * bg.enflasyon * ganimetC : 0;
   const toplamBrut = ganimetBrut + yagmaBrut;
   const devletPayi = 0; // askerde devlet payı/vergi yok
   const erPayi = toplamBrut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;

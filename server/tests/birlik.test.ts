@@ -69,7 +69,6 @@ import {
   TUR_TANIMLARI,
   DOKTRINLER,
   GOREV_SLOTLARI,
-  GANIMET_GUC_BIRIMI,
   KISLA_ER_LIMITI,
   MIN_CEKIRDEK_ER,
   SOLD,
@@ -559,7 +558,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     rnd.mockRestore();
     const u = d.uyarilar.find((x) => x.kod === "baris_catisma");
     expect(u).toBeTruthy();
-    if (u!.savasSonucu === "yenilgi") expect(u!.tutar ?? 0).toBeLessThan(GANIMET_GUC_BIRIMI * 100);
+    if (u!.savasSonucu === "yenilgi") expect(u!.tutar ?? 0).toBeLessThan(100);
   });
 
   it("tahmini ganimet görünümde güçle büyür", () => {
