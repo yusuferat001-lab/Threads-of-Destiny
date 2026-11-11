@@ -1,14 +1,15 @@
 import type { PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
-import { formatMusteri } from '../format';
+import { formatMusteri, kitleSozlugu } from '../format';
 
 /**
  * "📰 Piyasada Neler Oluyor": rakibin hamleleri, küçük esnaf olayları ve müşteri dağılımının
  * son yıldaki değişimi (§45 v8.1). Sayılar yalnız `sayilarGoster` iken (işletmeli meslekler) görünür.
  */
-export function PiyasaHaberleri({ pazar, sayilarGoster, adet = 4 }: { pazar: PazarDurumu; sayilarGoster: boolean; adet?: number }) {
+export function PiyasaHaberleri({ pazar, sayilarGoster, adet = 4, meslek }: { pazar: PazarDurumu; sayilarGoster: boolean; adet?: number; meslek?: string }) {
   const { dil } = useDil();
   const en = dil === 'en';
+  const kitle = kitleSozlugu(meslek, dil === 'en' ? 'en' : 'tr');
   const isaret = (v: number) => formatMusteri(dil, v, true);
   const dg = pazar.dagilim;
   const satir = (ad: string, n: number, degisim: number) => (
@@ -22,9 +23,9 @@ export function PiyasaHaberleri({ pazar, sayilarGoster, adet = 4 }: { pazar: Paz
       <h4>📰 {en ? 'What is happening in the market' : 'Piyasada neler oluyor'}</h4>
       {sayilarGoster && (
         <div className="piyasa-dagilim">
-          {satir(en ? 'Your customers' : 'Müşterilerin', dg.oyuncu, dg.oyuncuDegisim)}
+          {satir(kitle.sahip, dg.oyuncu, dg.oyuncuDegisim)}
           {pazar.rakipler.length > 0 && satir(pazar.rakipler.length > 1 ? (en ? 'Rivals' : 'Rakipler') : (en ? 'Rival' : 'Rakip'), dg.rakip, dg.rakipDegisim)}
-          {satir(en ? 'Small traders' : 'Küçük esnaflar', dg.kucuk, dg.kucukDegisim)}
+          {satir(kitle.kucuk, dg.kucuk, dg.kucukDegisim)}
         </div>
       )}
       {pazar.haberler.length === 0 ? (
@@ -39,7 +40,7 @@ export function PiyasaHaberleri({ pazar, sayilarGoster, adet = 4 }: { pazar: Paz
                 {sayilarGoster && h.musteri !== 0 && (
                   <small className={h.musteri > 0 ? 'piyasa-art' : 'piyasa-eksi'}>
                     {' '}
-                    ({isaret(h.musteri)} {en ? 'customers' : 'müşteri'})
+                    ({isaret(h.musteri)} {kitle.birim})
                   </small>
                 )}
               </span>

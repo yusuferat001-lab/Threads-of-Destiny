@@ -963,12 +963,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   {
     id: "ekonomi_kriz_donemi_v2",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     gerekliUlke: {
       ekonomi: "kotu",
     },
     gorsel: "📉",
     baslik: "Krizin Pençesinde",
-    metin: "Ekonomi çöktü, para toprak bile etmiyor. {es} ve çocukların aç. Dükkân için paraya, ailen için ekmeğe ihtiyacın var.",
+    metin: "Ekonomi çöktü, para toprak bile etmiyor. Evde sofra boş. Dükkân için paraya, ailen için ekmeğe ihtiyacın var.",
     secenekler: [
       {
         metin: "Son paramla karaborsadan yiyecek al.",

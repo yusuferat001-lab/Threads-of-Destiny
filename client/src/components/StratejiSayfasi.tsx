@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import type { KrediConfig, FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, BirlikKararGirdisi, BirlikTur, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi } from '../format';
+import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi, kitleSozlugu } from '../format';
 import { bic } from '../i18n';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
 import { IsletmePaneli } from './IsletmePaneli';
@@ -258,9 +258,10 @@ function iliskiKademe(v: number, en: boolean): string {
  * yığılmış çubukta; altında maaşa etkisi, yıllık kariyer puanı katkısı ve
  * (varsa) sıradaki rütbenin pazar şartı.
  */
-function PazarKarti({ pazar, birlik = null }: { pazar: PazarDurumu; birlik?: IsletmeGorunumu['birlik'] }) {
+function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; meslek: string; birlik?: IsletmeGorunumu['birlik'] }) {
   const { dil } = useDil();
   const en = dil === 'en';
+  const kitle = kitleSozlugu(meslek, en ? 'en' : 'tr');
   // Asker: pazar payı yok — yerine askerî güç ve rakip komutanların gücü gösterilir.
   if (birlik) {
     const siralama = [...birlik.rakipler].sort((a, b) => b.guc - a.guc);
@@ -307,12 +308,12 @@ function PazarKarti({ pazar, birlik = null }: { pazar: PazarDurumu; birlik?: Isl
       <ul className="pazar-satirlari">
         <li>
           <span className="pazar-nokta pazar-nokta-sen" /> {en ? 'You' : 'Sen'}
-          {pazar.musteri > 0 ? ` — ${formatMusteri(dil, pazar.musteri)} ${en ? 'customers' : 'müşteri'}` : ''} · <strong>{yuzde(pazar.pazarPayi)}</strong>
+          {pazar.musteri > 0 ? ` — ${formatMusteri(dil, pazar.musteri)} ${kitle.birim}` : ''} · <strong>{yuzde(pazar.pazarPayi)}</strong>
         </li>
         {pazar.rakipler.map((r) => (
           <li key={r.ad}>
             <span className="pazar-nokta pazar-nokta-rakip" /> {r.ad}
-            {pazar.pazarMusteri > 0 ? ` — ${formatMusteri(dil, r.musteri)} ${en ? 'customers' : 'müşteri'}` : ''} · {yuzde(r.pay)}
+            {pazar.pazarMusteri > 0 ? ` — ${formatMusteri(dil, r.musteri)} ${kitle.birim}` : ''} · {yuzde(r.pay)}
           </li>
         ))}
         <li>
@@ -320,8 +321,12 @@ function PazarKarti({ pazar, birlik = null }: { pazar: PazarDurumu; birlik?: Isl
         </li>
       </ul>
       <p className="pazar-etki">
-        💰 {en ? 'Salary effect' : 'Maaşa etkisi'}: <strong>{isaretli(pazar.maasEtkisi)}</strong> · 🎖️{' '}
-        {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
+        {pazar.pazarMusteri > 0 ? null : (
+          <>
+            💰 {en ? 'Salary effect' : 'Maaşa etkisi'}: <strong>{isaretli(pazar.maasEtkisi)}</strong> ·{' '}
+          </>
+        )}
+        🎖️ {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
       </p>
       {pazar.pazarMusteri > 0 && (
         <p className="pazar-etki">
@@ -335,11 +340,19 @@ function PazarKarti({ pazar, birlik = null }: { pazar: PazarDurumu; birlik?: Isl
             : `Şimdilik rakibin yok — ~${pazar.yeniRakipKalanYil} yıl içinde yenisi çıkar.`}
         </p>
       )}
-      <PiyasaHaberleri pazar={pazar} sayilarGoster={pazar.pazarMusteri > 0 && pazar.musteri > 0} adet={3} />
+      <PiyasaHaberleri pazar={pazar} sayilarGoster={pazar.pazarMusteri > 0 && pazar.musteri > 0} adet={3} meslek={meslek} />
       <p className="pazar-ipucu">
-        {en
-          ? 'Your share grows with successes in your trade, fair prices and good staff; every blow to a rival hands you their customers.'
-          : 'Payın mesleğindeki başarılarla, uygun fiyatla ve iyi çalışanlarla büyür; rakibe indirdiğin her darbe onun müşterisini sana geçirir.'}
+        {meslek === 'Asker'
+          ? en
+            ? 'Your standing grows with victories, a strong army and good officers; every blow to a rival commander lifts you above them.'
+            : 'Payın zaferlerle, güçlü bir orduyla ve iyi subaylarla büyür; rakip komutana indirdiğin her darbe seni onun önüne geçirir.'
+          : meslek === 'Din Adamı'
+            ? en
+              ? 'Your share grows with your good works, generous donations and good clergy; every blow to a rival hands you their believers.'
+              : 'Payın hayırlarla, cömert bağışlarla ve iyi hizmetlilerle büyür; rakibe indirdiğin her darbe onun inananını sana geçirir.'
+            : en
+              ? 'Your share grows with successes in your trade, fair prices and good staff; every blow to a rival hands you their customers.'
+              : 'Payın mesleğindeki başarılarla, uygun fiyatla ve iyi çalışanlarla büyür; rakibe indirdiğin her darbe onun müşterisini sana geçirir.'}
       </p>
     </div>
   );
@@ -1025,6 +1038,7 @@ export function StratejiSayfasi({
                 yukleniyor={yukleniyor}
                 dinKultur={dinKultur}
                 sucSeviyesi={sucSeviyesi}
+                meslek={meslek}
                 rakipPay={(ad) => pazarDurum?.rakipler.find((x) => x.ad === ad)?.pay ?? 0}
                 onKotuIs={onKotuIs}
               />
@@ -1033,7 +1047,7 @@ export function StratejiSayfasi({
         </div>
 
         <aside className="kariyer-yan-sutun">
-          {gor('cevre') && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} birlik={isletme?.birlik ?? null} />}
+          {gor('cevre') && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} meslek={meslek} birlik={isletme?.birlik ?? null} />}
           {gor('isletme') && meslekGucSatirlari.length > 0 && (
             <div className="aile-koken-karti">
               <h3>{m.geMeslekGucu}</h3>

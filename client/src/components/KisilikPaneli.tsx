@@ -3,7 +3,7 @@ import { kategoriAdi } from '../bolgeTema';
 import { RenkliEtki } from './Renkli';
 import { useDil } from '../DilContext';
 import { aileKokAdi } from '../aileAdi';
-import { formatYuzde } from '../format';
+import { formatYuzde, yatkinlikKitleMetni } from '../format';
 
 function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> {
   const grup = new Map<string, YatkinlikKaynagi[]>();
@@ -16,7 +16,8 @@ function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> 
 }
 
 
-const MUSTERI_BUYUMESI: Record<number, number> = { 1: -0.4, 2: 0, 3: 0.3, 4: 0.6, 5: 1 };
+// Sunucu data/meslekYatkinlik.ts musteriBuyumesi aynası (yıllık tam sayı).
+const MUSTERI_BUYUMESI: Record<number, number> = { 1: -1, 2: 0, 3: 1, 4: 1, 5: 2 };
 
 export function KisilikPaneli({
   kisilik,
@@ -27,7 +28,6 @@ export function KisilikPaneli({
   meslekYatkinlikSeviyesi,
   meslek,
   meslekZarBonusu,
-  meslekMaasCarpani,
   meslekTecrubeHizi,
 }: {
   kisilik: [string, string];
@@ -68,9 +68,7 @@ export function KisilikPaneli({
           <span className="kisilik-rozet-ad">🎯 {kt(meslekYatkinlikUnvani)}</span>
           <span className="kisilik-rozet-etki">
             {m.kpYatkinlikZar} {fmtYuzde(meslekZarBonusu ?? 0)} ·{' '}
-            {meslek === 'Asker'
-              ? `${m.kpYatkinlikMaas} ${fmtYuzde(meslekMaasCarpani ?? 0)}`
-              : `${m.kpYatkinlikMusteri} ${formatYuzde(dil, MUSTERI_BUYUMESI[meslekYatkinlikSeviyesi] ?? 0, true)}${m.kpYatkinlikYillik}`}{' '}·{' '}
+            {yatkinlikKitleMetni(meslek, dil === 'en' ? 'en' : 'tr', MUSTERI_BUYUMESI[meslekYatkinlikSeviyesi] ?? 0)} ·{' '}
             {m.kpYatkinlikTecrube} {fmtYuzde(meslekTecrubeHizi ?? 0)}
           </span>
         </div>

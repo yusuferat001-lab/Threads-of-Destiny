@@ -1847,6 +1847,6 @@ export interface AranmaDurumu {
   paraBirimi: string;
   hapiste: boolean;
   bekleyenBaskin: boolean;
-  /** Aranma ekranındaki ipucu için kısa meslek etiketi ("pazar payın", "müşterilerin"…). */
+  /** Aranmanın mesleğe etkisini anlatan hazır cümle (sunucu dilinde): müşteri/inanan kaybı ya da Asker'de firar. */
   debuffEtiketi: string;
 }

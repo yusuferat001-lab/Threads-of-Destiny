@@ -492,6 +492,7 @@ export const OLAY_BOLGESEL_SANAYI: OlayTanimi[] = [
   {
     id: "bolge_osmanli_02",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Sanayi Devrimi",
     bolgeler: ["Osmanlı"],
     baslik: "Esnaf Loncası Zorluğu",
@@ -537,6 +538,7 @@ export const OLAY_BOLGESEL_SANAYI: OlayTanimi[] = [
   {
     id: "bolge_osmanli_04",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Sanayi Devrimi",
     bolgeler: ["Osmanlı"],
     baslik: "Avrupa Malları Rekabeti",
@@ -898,6 +900,7 @@ export const OLAY_BOLGESEL_SANAYI: OlayTanimi[] = [
   {
     id: "bolge_rusya_10",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Sanayi Devrimi",
     bolgeler: ["Rusya"],
     baslik: "Volga Kıyısında Ticaret",

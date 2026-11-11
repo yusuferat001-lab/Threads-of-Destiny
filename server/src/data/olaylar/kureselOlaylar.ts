@@ -54,7 +54,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
         },
       },
       {
-        metin: "Tedbirli çalış: az müşteri, temizlik, mesafe.",
+        metin: "Tedbirli çalış: az kişiyle, temizlik, mesafe.",
         baseBasariSansi: 80,
         maliyet: 5,
         kilitAciklamasi: "Tedbir için ayıracak paran yok.",
@@ -86,7 +86,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           veba_koruma: 0,
           durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.85 },
           mesaj:
-            "Dükkân açık; ama korkan halk az geliyor. Salgın herkesi eşit vuruyor.",
+            "İşin sürüyor; ama korkan halk yaklaşmıyor. Salgın herkesi eşit vuruyor.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
@@ -94,7 +94,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           saglik: -10,
           durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.85 },
           mesaj:
-            "Çarşıda bir gün yetti; ateşle uyandın ama atlattın. Müşteri iyice azaldı.",
+            "Çarşıda bir gün yetti; ateşle uyandın ama atlattın. İş iyice azaldı.",
         },
       },
     ],

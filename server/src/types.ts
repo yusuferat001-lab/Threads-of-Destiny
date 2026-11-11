@@ -1623,5 +1623,6 @@ export interface AranmaDurumu {
   paraBirimi: string;
   hapiste: boolean;
   bekleyenBaskin: boolean;
+  /** Aranmanın mesleğe etkisini anlatan hazır cümle (sunucu dilinde): müşteri/inanan kaybı ya da Asker'de firar. */
   debuffEtiketi: string;
 }

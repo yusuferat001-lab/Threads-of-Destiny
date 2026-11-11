@@ -175,7 +175,7 @@ const TR = {
 
   // ---- Meslek seçimi ----
   meslekSecBaslik: 'Mesleğini Seç',
-  meslekSecAlt: 'Ailenin mesleğini sürdürürsen hazır bir müşteri ve tanıdık ağı devralırsın.',
+  meslekSecAlt: 'Ailenin mesleğini sürdürürsen hazır bir çevre ve tanıdık ağı devralırsın.',
   acilisSkorIpucu:
     'Skorun; servetin, şöhretin, ahlakın, mutluluğun ve rütbenin toplamından oluşur. Sarayda bulunmak, büyük bir yolculuğu tamamlamak ve esrarengiz bir eşyaya sahip olmak ekstra puan katar; hayat amaçlarını tamamlamak skoru katlar.',
   meslekAciklamaAsker: 'Savaş, sadakat ve rütbe. Yüksek risk, hızlı ün.',
@@ -910,7 +910,7 @@ const EN: Metinler = {
 
   // ---- Profession selection ----
   meslekSecBaslik: 'Choose Your Profession',
-  meslekSecAlt: "If you continue your family's trade, you inherit a ready network of clients and contacts.",
+  meslekSecAlt: "If you continue your family's trade, you inherit a ready circle of contacts and standing.",
   acilisSkorIpucu:
     'Your score is the sum of your wealth, fame, morality, happiness and rank. Being received at court, completing a great journey, and owning a mysterious item all add extra points; completing your life goals multiplies your score.',
   meslekAciklamaAsker: 'War, loyalty and rank. High risk, quick fame.',

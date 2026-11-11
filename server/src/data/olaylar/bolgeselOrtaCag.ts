@@ -13,6 +13,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_fransa_oc_01",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Fransa"],
     baslik: "Şampanya Panayırı",
@@ -80,6 +81,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_fransa_oc_04",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Fransa"],
     baslik: "Loncalar Arası Rekabet",
@@ -193,6 +195,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_fransa_oc_09",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Fransa"],
     baslik: "Seyyar Kervan",
@@ -243,6 +246,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_kutsalroma_01",
     kategori: "ticaret",
+    meslekler: ["Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Kutsal Roma"],
     baslik: "Usta-Çırak Anlaşmazlığı",
@@ -288,6 +292,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_kutsalroma_03",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Kutsal Roma"],
     baslik: "Ren Nehri Gümrüğü",
@@ -356,6 +361,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_kutsalroma_06",
     kategori: "ticaret",
+    meslekler: ["Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Kutsal Roma"],
     baslik: "Demirci Ustasının Sınavı",
@@ -472,6 +478,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_bizans_01",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Bizans"],
     baslik: "İpek Pazarı",
@@ -632,6 +639,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_bizans_08",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Bizans"],
     baslik: "Venedikli Rakip",
@@ -771,6 +779,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_selcuklu_04",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Selçuklu"],
     baslik: "Kervansarayda Pazarlık",
@@ -837,6 +846,7 @@ export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
   {
     id: "bolge_selcuklu_07",
     kategori: "ticaret",
+    meslekler: ["Tüccar", "Zanaatkâr"],
     cag: "Orta Çağ",
     bolgeler: ["Selçuklu"],
     baslik: "Ahilik Teşkilatı",

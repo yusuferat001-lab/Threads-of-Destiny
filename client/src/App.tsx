@@ -167,7 +167,7 @@ import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
 import { goldBakiyeGetir, olumGoldHesapla, goldEkle, olumGoldOdendiMi, olumGoldOdendiIsaretle } from './gold';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, meslekYatkinlikOnizleme } from './bolgeTema';
-import { formatPara, formatYuzde } from './format';
+import { formatPara, formatYuzde, yatkinlikKitleMetni } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
@@ -2756,7 +2756,7 @@ function App() {
                       >
                         {onizleme.seviye === 2
                           ? m.kpYatkinlikYok
-                          : `🎯 ${m.kpYatkinlikZar} ${yuzde(onizleme.zar)} · ${meslek === 'Asker' ? `${m.kpYatkinlikMaas} ${yuzde(onizleme.maas)}` : `${m.kpYatkinlikMusteri} ${yuzde(onizleme.musteri)}${m.kpYatkinlikYillik}`} · ${m.kpYatkinlikTecrube} ${yuzde(onizleme.tecrube)}${
+                          : `🎯 ${m.kpYatkinlikZar} ${yuzde(onizleme.zar)} · ${yatkinlikKitleMetni(meslek, dil === 'en' ? 'en' : 'tr', onizleme.musteri)} · ${m.kpYatkinlikTecrube} ${yuzde(onizleme.tecrube)}${
                               onizleme.sohret > 0 ? ` · ${m.kpYatkinlikSohret} +${onizleme.sohret}` : ''
                             }`}
                       </span>

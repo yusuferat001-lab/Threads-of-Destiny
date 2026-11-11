@@ -505,7 +505,7 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
   ekonomi_kriz_donemi_v2: {
     baslik: "In the Grip of the Crisis",
     metin:
-      "The economy collapsed; money is worth dirt. {es} and your children are hungry. You need money for the shop, bread for the family.",
+      "The economy collapsed; money is worth dirt. The table at home is bare. You need money for the shop, bread for the family.",
     secenekler: [
       {
         metin: "Buy food on the black market with my last money.",
