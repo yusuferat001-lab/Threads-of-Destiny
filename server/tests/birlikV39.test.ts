@@ -249,3 +249,42 @@ describe("v39 Savaş Günü hemen çözülür", () => {
     expect(sv2.olu_toplam).toBe(oluOnce);
   });
 });
+
+describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
+  it("5 yıllık savaşta ikmal yalnız ilk yıl sorulur; toplam ≤ 3 pencere (plan, savaş günü, esir)", async () => {
+    const { savasKarariHazirla, savasKarariVer, savasGunuSonucuAl, savasKarariDurumu } = await import("../src/game/birlikIslem");
+    const s = asker();
+    s.rutbe_seviye = 3;
+    s.yas = 40;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 100;
+    birlikAl(s).kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+    s.ulke.savasta = true;
+    s.buyuk_savas = { dusman: "Test", baslangicYili: s.yil, bitisYili: s.yil + 5, vergiOrani: 0.08, gidaCarpani: 1.1 };
+    const pencereler: string[][] = [];
+    for (let yil = 1; yil <= 5; yil++) {
+      let k = savasKarariHazirla(s);
+      let guard = 0;
+      const buYil: string[] = [];
+      while (k && k.adim < k.adimlar.length && guard++ < 12) {
+        const adim = k.adimlar[k.adim];
+        buYil.push(adim);
+        const d = savasKarariDurumu(s, bg(s))!;
+        const tercih: Record<string, string> = { seferberlik: "dengeli", ikmal: "yeterli", rol: "ana" };
+        const secim = d.secenekler.find((o) => o.id === tercih[adim])?.id ?? d.secenekler[0].id;
+        savasKarariVer(s, secim, bg(s));
+        k = savasKarariHazirla(s);
+      }
+      savasGunuSonucuAl(s);
+      pencereler.push(buYil);
+      birlikYilIsle(s, bg(s));
+      s.yil += 1;
+      if (!birlikAl(s).savas) break;
+    }
+    const ikmalYili = pencereler.filter((p) => p.includes("ikmal")).length;
+    expect(ikmalYili).toBe(1);
+    expect(pencereler[0]).toContain("ikmal");
+    expect(pencereler.slice(1).every((p) => !p.includes("ikmal") && !p.includes("seferberlik") && !p.includes("emir"))).toBe(true);
+    expect(pencereler.filter((p) => p.length > 0).length).toBeLessThanOrEqual(3);
+  });
+});

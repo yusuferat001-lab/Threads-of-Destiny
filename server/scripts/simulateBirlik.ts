@@ -117,7 +117,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
 
   // Subay: devşirme > harp > levazım > tabip; maaşı yıllık net taşıyorsa.
   adaylariGerekirseYenile(s);
-  const oncelik = ["musteri", "ana", "maliyet", "guvenlik"];
+  const oncelik = ["musteri", "taarruz", "guvenlik", "savunma", "kesif"];
   while (s.ekip.length < calisanLimiti(s) && is.adaylar.length > 0) {
     const sirali = [...is.adaylar].sort((a, b2) => oncelik.indexOf(a.rolTuru) - oncelik.indexOf(b2.rolTuru) || b2.yetenek - a.yetenek);
     const a = sirali[0];
@@ -147,8 +147,8 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   }
   if ((tarz === "aktif" || tarz === "tam")) {
     try {
-      const hedef = tarz === "tam" ? 3 : Math.min(3, 1 + Math.floor(s.rutbe_seviye / 2));
-      const sira = ["mizrakli", "okcu", "suvari"] as const;
+      const hedef = tarz === "tam" ? 4 : Math.min(4, s.rutbe_seviye);
+      const sira = ["mizrakli", "okcu", "suvari", "zirhli"] as const;
       if (b.birlik_turler.length < hedef && s.para > rezerv * 3 + er * 0.5 * genf) {
         const sonraki = sira.find((t) => !b.birlik_turler.includes(t));
         if (sonraki) birlikSec(s, [...b.birlik_turler, sonraki], bgl);
@@ -181,6 +181,8 @@ interface Omur {
   ganimetOrani: number[];
   rutbeYas: (number | null)[];
   batti: boolean;
+  /** Şu an üst üste kaç yıldır para < −150 (enflasyon ayarlı). */
+  borcYili: number;
   savasKaybi: number[];
   zafer: Record<"haydut" | "sinir" | "savas", [number, number]>;
   gucRutbe: number[][];
@@ -195,7 +197,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, "Asker");
-  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], puan: [], un: [], sonEr: 0, olduYil: YIL };
+  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, borcYili: 0, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], puan: [], un: [], sonEr: 0, olduYil: YIL };
   let savasOncesi = 0;
   let savasta = false;
   for (let y = 0; y < YIL; y++) {
@@ -266,7 +268,9 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
     const gel = d?.satis ?? 0;
     o.ganimetOrani.push(gel > 0 ? ((d?.birlik?.ganimetPara ?? 0) - (d?.birlik?.devletPayi ?? 0)) / gel : 0);
     for (let r = 1; r < 5; r++) if (o.rutbeYas[r] == null && s.rutbe_seviye >= r + 1) o.rutbeYas[r] = s.yas;
-    if (s.para < -60 * enflasyonCarpani(s) && !o.batti) {
+    // Batma tanımı (v39): para −150'nin altında (reel) ve üst üste 5 yıldan fazla.
+    o.borcYili = s.para < -150 * enflasyonCarpani(s) ? o.borcYili + 1 : 0;
+    if (o.borcYili > 5 && !o.batti) {
       o.batti = true;
       if (process.env.SIM_BATMA) console.log(`  BATTI y${y + 1} ${tarz} R${s.rutbe_seviye} er=${erSayisi(s)} para=${s.para.toFixed(0)} net=${d?.net} savas=${s.ulke.savasta} kredi=${s.kredi?.kalanBorc ?? 0} ekip=${s.ekip.length} kalite=${JSON.stringify(birlikAl(s).kalite)} birlik=${birlikAl(s).birlik_turler.length}`);
     }
