@@ -37,6 +37,7 @@ const DUSMAN_TUR: Record<string, { tr: string; en: string }> = {
   okcu: { tr: 'okçu', en: 'archers' },
   suvari: { tr: 'süvari', en: 'cavalry' },
   mizrakli: { tr: 'mızraklı', en: 'spearmen' },
+  zirhli: { tr: 'zırhlı', en: 'armoured knights' },
   karma: { tr: 'karma', en: 'mixed' },
 };
 

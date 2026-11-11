@@ -65,11 +65,17 @@ export function techizatAdi(cag: string): DilliMetin {
 }
 
 // ── Özel birlikler ──────────────────────────────────────────────────────────
-export const TUR_SIRASI: BirlikTur[] = ["okcu", "suvari", "mizrakli"];
-/** Açık her özel birlik türü ordunun bu kesrini oluşturur (tek seçenek; üç tür açıksa %75 özel + %25 piyade). */
-export const TUR_PAYI = 0.25;
-/** Rütbeye (S1..S5) göre aynı anda açık tutulabilecek özel birlik sayısı. */
-export const OZEL_BIRLIK_LIMITI = [1, 1, 2, 2, 3];
+/**
+ * Kuşatma birliği kodda duruyor ama oyunda GİZLİ (kapalıyken seçim listesinde yok, birlikSec reddeder, kale eşiğine katkısı yok).
+ * Açılırsa: ordunun %10'u, savaşta piyade sayılır, tek etkisi kale ele geçirme eşiğini KUSATMA_KALE_ESIGI_CARPANI kadar indirir.
+ */
+export const KUSATMA_ACIK = false;
+export const KUSATMA_KALE_ESIGI_CARPANI = 1.25;
+export const TUR_SIRASI: BirlikTur[] = ["okcu", "suvari", "mizrakli", "zirhli", ...(KUSATMA_ACIK ? (["kusatma"] as BirlikTur[]) : [])];
+/** Açık her savaş birliği ordunun bu kesrini oluşturur (kuşatma ayrı: TUR_TANIMLARI.kusatma.pay). En çok 4×%20 + %10 = %90 özel, en az %10 piyade. */
+export const TUR_PAYI = 0.2;
+/** Rütbeye (S1..S5) göre aynı anda açık tutulabilecek özel birlik sayısı (görünür sınıf sayısı 4). */
+export const OZEL_BIRLIK_LIMITI = [1, 2, 3, 4, 4];
 /** Birlik seviyesi yükseltme/değiştirme kilidi (yıl). */
 export const BIRLIK_KILIT_YIL = 5;
 /** Birliği küçültme / terhis iadesi. */
@@ -79,8 +85,13 @@ export interface TurTanimi {
   /** Saldırı / savunma çarpanı (o payın erlerine uygulanır). */
   saldiri: number;
   savunma: number;
-  /** Birliğe geçen er başına tek seferlik ücret (enflasyonsuz); bakım = erzak − 1 = yıllık toplam er maliyetine (masraf + erzak) eklenen kesir (+%25–35). */
+  /** Ordunun bu birliğe ayrılan kesri. */
+  pay: number;
+  /** Savaşta kendi arazi çarpanı (ova / dağ geçidi / sık orman). Ortalama değil, birlik başına farklı; ≥1,15 güçlü, ≤0,90 zayıf sayılır. */
+  arazi: Record<BirlikArazi, number>;
+  /** Birliğe geçen er başına tek seferlik ücret (enflasyonsuz). */
   ucret: number;
+  /** Bakım: o payın er maliyetine (masraf + erzak) EKLENEN kesir (genel bakımla çarpılır; teçhizat bakımı ayrı kalem). */
   bakim: number;
   /** Erzak tüketimi çarpanı. */
   erzak: number;
@@ -91,36 +102,53 @@ export interface TurTanimi {
 }
 export const TUR_TANIMLARI: Record<BirlikTur, TurTanimi> = {
   okcu: {
-    saldiri: 1.35, savunma: 1.7, ucret: 0.5, bakim: 0.3, erzak: 1.3, simge: "🏹",
+    saldiri: 2.1, savunma: 1.4, pay: TUR_PAYI, arazi: { ova: 0.8, dag: 1.25, orman: 1.35 }, ucret: 0.7, bakim: 0.46, erzak: 1.46, simge: "🏹",
     ad: { orta: { tr: "Okçu", en: "Archers" }, sanayi: { tr: "Nişancı", en: "Riflemen" } },
-    arti: { tr: "Güçlü savunma, dağ ve orman, sınır olaylarında üstün", en: "Strong defence, hills and forest, excels in border clashes" },
-    eksi: { tr: "Ovada ve atlı hücumuna karşı zayıf", en: "Weak on open ground and against cavalry charges" },
+    arti: { tr: "Güçlü saldırı ve iyi savunma; dağda ve ormanda üstün", en: "Strong attack, good defence; excels in hills and forest" },
+    eksi: { tr: "Açık ovada zayıf", en: "Weak on open ground" },
   },
   suvari: {
-    saldiri: 2.1, savunma: 0.9, ucret: 1.3, bakim: 0.35, erzak: 1.35, simge: "🐎",
+    saldiri: 3, savunma: 0.8, pay: TUR_PAYI, arazi: { ova: 1.6, dag: 0.85, orman: 0.85 }, ucret: 0.85, bakim: 0.55, erzak: 1.55, simge: "🐎",
     ad: { orta: { tr: "Ağır Süvari", en: "Heavy Cavalry" }, sanayi: { tr: "Süvari", en: "Cavalry" } },
-    arti: { tr: "En güçlü saldırı, ova, haydut takibi ve bozguna uğrayanı kovalama", en: "Strongest attack, open ground, bandit pursuit and running down a rout" },
-    eksi: { tr: "Zayıf savunma, kale ve dağda cılız, pahalı ve erzak tüketir", en: "Weak defence, poor in forts and hills, costly and eats supplies" },
+    arti: { tr: "En güçlü saldırı; ovada ezici", en: "Strongest attack; crushing on open ground" },
+    eksi: { tr: "Zayıf savunma; dağ ve ormanda zayıf, pahalı", en: "Weak defence; poor in hills and forest, costly" },
   },
   mizrakli: {
-    saldiri: 1.15, savunma: 1.85, ucret: 0.4, bakim: 0.25, erzak: 1.25, simge: "🛡️",
+    saldiri: 1.3, savunma: 2.3, pay: TUR_PAYI, arazi: { ova: 1.1, dag: 1.5, orman: 0.85 }, ucret: 0.75, bakim: 0.49, erzak: 1.49, simge: "🛡️",
     ad: { orta: { tr: "Kalkan-Mızrak", en: "Shield & Spear" }, sanayi: { tr: "Süngülü Piyade", en: "Bayonet Infantry" } },
-    arti: { tr: "Çok güçlü savunma, atlıya karşı etkili, ucuz", en: "Very strong defence, effective against cavalry, cheap" },
-    eksi: { tr: "Saldırısı düşük; akın ve baskın görevlerinde yavaş", en: "Weak attack; slow on raids" },
+    arti: { tr: "Çok güçlü savunma; dağ geçidinde duvar gibi", en: "Very strong defence; a wall in mountain passes" },
+    eksi: { tr: "Saldırısı düşük; sık ormanda zayıf", en: "Weak attack; poor in dense forest" },
+  },
+  zirhli: {
+    saldiri: 1.9, savunma: 2.9, pay: TUR_PAYI, arazi: { ova: 1.3, dag: 1.2, orman: 1.25 }, ucret: 1.35, bakim: 0.88, erzak: 1.88, simge: "⚔️",
+    ad: { orta: { tr: "Zırhlı Şövalye", en: "Armoured Knights" }, sanayi: { tr: "Zırhlı Birlik", en: "Armoured Corps" } },
+    arti: { tr: "En güçlü savunma ve güçlü saldırı; her arazide iyi", en: "Strongest defence and strong attack; good everywhere" },
+    eksi: { tr: "En pahalı bakım", en: "Costliest upkeep" },
+  },
+  kusatma: {
+    saldiri: 1, savunma: 1.1, pay: 0.1, arazi: { ova: 1, dag: 1, orman: 1 }, ucret: 0.5, bakim: 0.4, erzak: 1.4, simge: "🏰",
+    ad: { orta: { tr: "Kuşatma Kolu", en: "Siege Train" }, sanayi: { tr: "Topçu Bataryası", en: "Artillery Battery" } },
+    arti: { tr: "Kale kuşatmasında eşiği düşürür", en: "Lowers the bar for taking a fort" },
+    eksi: { tr: "Savaş ve çatışmada piyade sayılır", en: "Counts as infantry in battle" },
   },
 };
 export const PIYADE = { saldiri: 1, savunma: 1.1 };
 export function turAdi(tur: BirlikTur, cag: string): DilliMetin {
   return cag === "Sanayi Devrimi" ? TUR_TANIMLARI[tur].ad.sanayi : TUR_TANIMLARI[tur].ad.orta;
 }
+/** Oyuncuya görünen güçlü / zayıf arazi listesi (eşikler ≥1,15 / ≤0,90). */
+export function turGucluZayif(tur: BirlikTur): { guclu: BirlikArazi[]; zayif: BirlikArazi[] } {
+  const a = TUR_TANIMLARI[tur].arazi;
+  const ids = Object.keys(a) as BirlikArazi[];
+  return { guclu: ids.filter((x) => a[x] >= 1.15), zayif: ids.filter((x) => a[x] <= 0.9) };
+}
 
-/** Kuşatma kolu / topçu bataryası: seviye 0..2, pay almaz. */
+/** Eski kuşatma seviyesi (kullanımdan kalktı; kuşatma artık gizli bir birlik türü). Veri uyumu için sabitler duruyor. */
 export const KUSATMA_SALDIRI_BONUSU = [0, 0.12, 0.25];
-/** Seviye başına er sayısına göre fiyat (kümülatif, enflasyonsuz): L1 0,5 · L2 1,1 (toplam). */
 export const KUSATMA_ER_FIYATI = [0, 0.5, 1.1];
 export const KUSATMA_BAKIM_ORANI = 0.06;
 export function kusatmaAdi(cag: string): DilliMetin {
-  return cag === "Sanayi Devrimi" ? { tr: "Topçu Bataryası", en: "Artillery Battery" } : { tr: "Kuşatma Kolu", en: "Siege Train" };
+  return TUR_TANIMLARI.kusatma.ad[cag === "Sanayi Devrimi" ? "sanayi" : "orta"];
 }
 
 // ── Talim / tecrübe ─────────────────────────────────────────────────────────
@@ -490,16 +518,27 @@ export const ARAZI_ADLARI: Record<BirlikArazi, { orta: DilliMetin; sanayi: Dilli
  * Ova: süvari alanı · Dağ geçidi: dar cephe, okçu üstün, süvari felç · Sık orman: yakın dövüş, piyade üstün, atlı ve atış kısıtlı.
  * Satır ortalaması ≈ 1 (ova 1,06 · dağ 1,01 · orman 0,94) → hiçbir arazi herkese birden avantaj vermez. "karma" = dört satırın ortalaması.
  */
-export type AraziBirimi = "piyade" | "mizrakli" | "okcu" | "suvari";
-export const ARAZI_CARPANLARI: Record<BirlikArazi, Record<AraziBirimi, number>> = {
-  ova: { piyade: 1, mizrakli: 1.05, okcu: 0.95, suvari: 1.25 },
-  dag: { piyade: 1.05, mizrakli: 1.1, okcu: 1.2, suvari: 0.7 },
-  orman: { piyade: 1.2, mizrakli: 0.95, okcu: 0.9, suvari: 0.7 },
+export type AraziBirimi = "piyade" | BirlikTur;
+const araziSatiri = (arazi: BirlikArazi): Record<AraziBirimi, number> => {
+  const r = { piyade: 1 } as Record<AraziBirimi, number>;
+  for (const t of Object.keys(TUR_TANIMLARI) as BirlikTur[]) r[t] = TUR_TANIMLARI[t].arazi[arazi];
+  return r;
 };
+export const ARAZI_CARPANLARI: Record<BirlikArazi, Record<AraziBirimi, number>> = {
+  ova: araziSatiri("ova"),
+  dag: araziSatiri("dag"),
+  orman: araziSatiri("orman"),
+};
+/** Karma düşmanın arazi ortalaması üç arazide ortalama 1 olsun diye bölünen sabit (karma hiçbir arazide kendiliğinden avantaj almaz). */
+const KARMA_ARAZI_NORMU =
+  (["ova", "dag", "orman"] as BirlikArazi[]).reduce((t, ar) => {
+    const a = ARAZI_CARPANLARI[ar];
+    return t + (a.piyade + a.mizrakli + a.okcu + a.suvari + a.zirhli) / 5;
+  }, 0) / 3;
 /** Düşmanın baskın türüne göre arazi çarpanı ("karma" = ortalama). */
 export function dusmanAraziCarpani(arazi: BirlikArazi, tur: BirlikTur | "karma"): number {
   const a = ARAZI_CARPANLARI[arazi];
-  if (tur === "karma") return (a.piyade + a.mizrakli + a.okcu + a.suvari) / 4;
+  if (tur === "karma") return (a.piyade + a.mizrakli + a.okcu + a.suvari + a.zirhli) / 5 / KARMA_ARAZI_NORMU;
   return a[tur];
 }
 /** Düşmanın saldırı/savunma dağılımı (baskın türe göre; ikisinin ortalaması 1 → toplam güç değişmez). */
@@ -560,7 +599,8 @@ export function dusmanReferansGucuYas(yas: number): number {
 export const ZAR_BOLEN = 40;
 /** Düşman baskın türüne karşı doğru birliğin (payı %15'i doldurunca) güç bonusu. */
 export const KARSI_TUR_BONUSU = 0.1;
-export const KARSI_TUR: Record<BirlikTur, BirlikTur> = { suvari: "mizrakli", okcu: "suvari", mizrakli: "okcu" };
+/** Düşmanın baskın türü → ona karşı etkili birlik (zincir: mızraklı → süvari → okçu → zırhlı → mızraklı). */
+export const KARSI_TUR: Partial<Record<BirlikTur, BirlikTur>> = { suvari: "mizrakli", okcu: "suvari", zirhli: "okcu", mizrakli: "zirhli" };
 
 export const ROL_TANIMLARI: Record<BirlikRol, { ganimet: number; kayip: number; zar: number; moral: number; ad: DilliMetin; aciklama: DilliMetin }> = {
   onc: {

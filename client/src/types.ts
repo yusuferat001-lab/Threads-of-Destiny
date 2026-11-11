@@ -1080,7 +1080,7 @@ export interface IsletmeButcesi {
 
 // ── Asker (birlik modu) — sunucudaki game/birlikIslem.ts ile elle senkron ──
 export type BirlikKalite = 'dusuk' | 'orta' | 'yuksek';
-export type BirlikTur = 'okcu' | 'suvari' | 'mizrakli';
+export type BirlikTur = 'okcu' | 'suvari' | 'mizrakli' | 'zirhli' | 'kusatma';
 export type BirlikGanimetPayi = 'az' | 'dengeli' | 'comert';
 export type BirlikTalim = 'hafif' | 'orta' | 'agir';
 export type BirlikTon = 'merhametli' | 'dengeli' | 'sert';
@@ -1129,7 +1129,9 @@ export interface BirlikGorunumu {
     toplamPay: number;
     /** Rütbeye göre açık tutulabilecek özel birlik sayısı. */
     limit: number;
-    turler: { id: BirlikTur; simge: string; ad: DilMetni; saldiri: number; savunma: number; ucret: number; bakim: number; arti: DilMetni; eksi: DilMetni; secili: boolean }[];
+    turler: { id: BirlikTur; simge: string; ad: DilMetni; saldiri: number; savunma: number; ucret: number; bakim: number; arti: DilMetni; eksi: DilMetni; guclu: DilMetni[]; zayif: DilMetni[]; secili: boolean }[];
+    /** Kuşatma birimi oyunda şimdilik gizli (false). */
+    kusatmaAcik: boolean;
     kusatma: { seviye: number; ad: DilMetni; bonuslar: number[]; fiyatlar: number[] };
   };
   talim: {

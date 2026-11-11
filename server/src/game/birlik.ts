@@ -9,7 +9,7 @@ import type {
 import {
   ARAZI_CARPANLARI,
   BASLANGIC_ER,
-  TUR_PAYI,
+  KUSATMA_ACIK,
   dusmanReferansGucuYas,
   DOKTRINLER,
   ER_BASI_GELIR,
@@ -43,8 +43,6 @@ import {
   KARSI_TUR_BONUSU,
   KISLA_BAKIM,
   KISLA_ER_LIMITI,
-  KUSATMA_BAKIM_ORANI,
-  KUSATMA_ER_FIYATI,
   MORAL_BASLANGIC,
   PIYADE,
   REVIR_KAYIP_KADEME,
@@ -198,8 +196,9 @@ export function birlikHazirla(state: CharacterState): void {
   // Eski "seviye" sistemi: yalnız seviye kadar tür açıktı; artık her açık tür %25. Tekrarları ve geçersizleri ayıkla.
   {
     const eskiSeviye = typeof b.birlik_seviye === "number" ? b.birlik_seviye : b.birlik_turler.length;
-    const temiz = [...new Set(b.birlik_turler.slice(0, Math.max(0, eskiSeviye)))].filter((t) => t in TUR_TANIMLARI);
+    const temiz = [...new Set(b.birlik_turler.slice(0, Math.max(0, eskiSeviye)))].filter((t) => t in TUR_TANIMLARI && (KUSATMA_ACIK || t !== "kusatma"));
     b.birlik_turler = temiz;
+    b.kusatma_seviye = 0; // eski kuşatma seviyesi kalktı (kuşatma artık gizli bir birlik türü)
     b.birlik_seviye = temiz.length;
   }
   if (typeof b.moral !== "number") b.moral = MORAL_BASLANGIC;
@@ -300,9 +299,9 @@ export function subayLimiti(rutbe: number, kisla: number): number {
 
 // ── Özel birlik payları ─────────────────────────────────────────────────────
 export function turPaylari(b: BirlikDurumu): Partial<Record<BirlikTur, number>> {
-  // Açık her tür ordunun %25'idir (tek seçenek); üç tür açıksa %75 özel + %25 piyade.
+  // Açık her savaş birliği ordunun %20'si, kuşatma %10'u (en çok %90 özel, en az %10 piyade).
   const sonuc: Partial<Record<BirlikTur, number>> = {};
-  for (const t of b.birlik_turler) if (t in TUR_TANIMLARI) sonuc[t] = TUR_PAYI;
+  for (const t of b.birlik_turler) if (t in TUR_TANIMLARI && (KUSATMA_ACIK || t !== "kusatma")) sonuc[t] = TUR_TANIMLARI[t].pay;
   return sonuc;
 }
 export function toplamTurPayi(b: BirlikDurumu): number {
@@ -340,7 +339,7 @@ export interface GucDokumu {
 /** Savaşta ya da kaos yıllarında geçerli senaryo bonusu: tür payı/%15 × tablo. */
 const SENARYO_TABLOSU: Record<"haydut" | "sinir", Partial<Record<BirlikTur, number>>> = {
   haydut: { suvari: 0.15, okcu: 0.05 },
-  sinir: { okcu: 0.1, mizrakli: 0.08, suvari: 0.05 },
+  sinir: { okcu: 0.1, mizrakli: 0.08, suvari: 0.05, zirhli: 0.06 },
 };
 export function senaryoBonusu(b: BirlikDurumu, senaryo: "haydut" | "sinir"): number {
   const paylar = turPaylari(b);
@@ -409,7 +408,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
     if (sS > 0) ekle("arazi", s1 / sS - 1, "savunma");
     if (ctx.savas.dusmanTur !== "karma") {
       const karsi = KARSI_TUR[ctx.savas.dusmanTur];
-      const pay = paylar[karsi] ?? 0;
+      const pay = karsi ? paylar[karsi] ?? 0 : 0;
       if (pay > 0) ekle("karsi_tur", KARSI_TUR_BONUSU * clamp(pay / 0.15, 0, 1.67));
     }
   }
@@ -622,7 +621,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const techizatBakim = (b.kalite.dusuk * KALITE_BAKIM.dusuk + b.kalite.orta * KALITE_BAKIM.orta + b.kalite.yuksek * KALITE_BAKIM.yuksek) * bg.giderEnflasyon;
   const yaraliGideri = yaraliSayisi(state) * YARALI_TEDAVI_GIDERI * bg.giderEnflasyon;
   const birlikBakim = 0; // türlerin bakımı er masrafına (turBakim) işlenir
-  const kusatmaBakim = er * KUSATMA_ER_FIYATI[clamp(b.kusatma_seviye, 0, 2)] * KUSATMA_BAKIM_ORANI * bg.giderEnflasyon;
+  const kusatmaBakim = 0; // kuşatma artık bir birlik türü: bakımı er masrafındaki tür bakımına işlenir
   const talimMasrafi = er * TALIM_TANIMLARI[b.talim_politikasi].masraf * bg.giderEnflasyon;
   const kiralikMasrafi = savasta ? (b.savas?.kiralik_er ?? 0) * KIRALIK_YILLIK * bg.giderEnflasyon : 0;
   const kaleGeliri = r2(kaleGelirToplami(b) * bg.enflasyon);

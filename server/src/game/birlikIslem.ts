@@ -25,6 +25,7 @@ import {
   SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
   BARIS_GANIMET_ARALIK,
+  KUSATMA_ACIK,
   TUR_PAYI,
   OZEL_BIRLIK_LIMITI,
   ER_TAVANI,
@@ -62,6 +63,7 @@ import {
   TON_TANIMLARI,
   TUR_SIRASI,
   TUR_TANIMLARI,
+  turGucluZayif,
   EMIRLER,
   KIRALIK_ORAN,
   MIN_CEKIRDEK_ER,
@@ -204,14 +206,15 @@ export function techizatSec(state: CharacterState, seviye: BirlikKalite, bg: Isl
 }
 
 // ── Özel birlik ─────────────────────────────────────────────────────────────
+const araziAdiMetin = (a: BirlikArazi, cag: string) => (cag === "Sanayi Devrimi" ? ARAZI_ADLARI[a].sanayi : ARAZI_ADLARI[a].orta);
 function turErSayilari(er: number, turler: BirlikTur[]): Record<BirlikTur, number> {
-  const sonuc: Record<BirlikTur, number> = { okcu: 0, suvari: 0, mizrakli: 0 };
-  for (const t of turler) sonuc[t] = Math.round(er * TUR_PAYI);
+  const sonuc: Record<BirlikTur, number> = { okcu: 0, suvari: 0, mizrakli: 0, zirhli: 0, kusatma: 0 };
+  for (const t of turler) sonuc[t] = Math.round(er * TUR_TANIMLARI[t].pay);
   return sonuc;
 }
 
 /**
- * Özel birlikler: açık her tür ordunun %25'idir (tek seçenek). Yeni açılan tür er başına geçiş ücreti öder, kapatılan
+ * Özel birlikler: açık her savaş birliği ordunun %20'sidir (tek seçenek). Yeni açılan tür er başına geçiş ücreti öder, kapatılan
  * %35 iade eder; yeni gelen erler `yeniErEkle` ile oransal girer ve ücreti otomatik ödenir.
  * 5 yıl kilidi: kilitliyken yalnız yeni tür eklenebilir (kapatmak/değiştirmek için beklenir).
  */
@@ -258,6 +261,7 @@ export function birlikSec(state: CharacterState, turler: BirlikTur[], bg: Isletm
 export function kusatmaAyarla(state: CharacterState, seviye: number, bg: IsletmeBaglami): IslemSonucu {
   const b = birlikAl(state);
   hapisYolculuk(state);
+  if (!KUSATMA_ACIK) throw new Error("Kuşatma birimi şimdilik kapalı.");
   if (!Number.isInteger(seviye) || seviye < 0 || seviye > 2) throw new Error("Geçersiz kuşatma seviyesi.");
   const er = erSayisi(state);
   const fark = (KUSATMA_ER_FIYATI[seviye] - KUSATMA_ER_FIYATI[b.kusatma_seviye]) * er * bg.giderEnflasyon;
@@ -655,8 +659,13 @@ export interface BirlikGorunumu {
       bakim: number;
       arti: { tr: string; en: string };
       eksi: { tr: string; en: string };
+      /** Güçlü ve zayıf olduğu araziler (yalnız adlar; sayılar güç dökümünde). */
+      guclu: { tr: string; en: string }[];
+      zayif: { tr: string; en: string }[];
       secili: boolean;
     }[];
+    /** Kuşatma birimi oyunda şimdilik gizli (false). */
+    kusatmaAcik: boolean;
     kusatma: { seviye: number; ad: { tr: string; en: string }; bonuslar: number[]; fiyatlar: number[] };
   };
   talim: {
@@ -834,8 +843,11 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         bakim: TUR_TANIMLARI[id].bakim,
         arti: TUR_TANIMLARI[id].arti,
         eksi: TUR_TANIMLARI[id].eksi,
+        guclu: turGucluZayif(id).guclu.map((a) => araziAdiMetin(a, cag)),
+        zayif: turGucluZayif(id).zayif.map((a) => araziAdiMetin(a, cag)),
         secili: id in paylar,
       })),
+      kusatmaAcik: KUSATMA_ACIK,
       kusatma: { seviye: b.kusatma_seviye, ad: kusatmaAdi(cag), bonuslar: KUSATMA_SALDIRI_BONUSU, fiyatlar: KUSATMA_ER_FIYATI.map((x) => r2(x * er * bg.giderEnflasyon)) },
     },
     talim: {

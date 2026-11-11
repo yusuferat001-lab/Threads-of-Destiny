@@ -1123,7 +1123,7 @@ export interface CemaatDurumu {
 // ── Asker "birlik" modu (2026-11) ─────────────────────────────────────────────
 export type BirlikKalite = "dusuk" | "orta" | "yuksek";
 /** Orduda pay alan özel birlik türleri (kuşatma ayrı bir seviyedir). */
-export type BirlikTur = "okcu" | "suvari" | "mizrakli";
+export type BirlikTur = "okcu" | "suvari" | "mizrakli" | "zirhli" | "kusatma";
 export type BirlikGanimetPayi = "az" | "dengeli" | "comert";
 export type BirlikTalim = "hafif" | "orta" | "agir";
 export type BirlikTon = "merhametli" | "dengeli" | "sert";

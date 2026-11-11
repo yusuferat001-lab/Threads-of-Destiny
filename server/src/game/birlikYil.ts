@@ -39,7 +39,8 @@ import {
   BARIS_YILLIK_ER,
   EMIRLER,
   KALE_GUC_ESIGI,
-  KUSATMA_SALDIRI_BONUSU,
+  KUSATMA_ACIK,
+  KUSATMA_KALE_ESIGI_CARPANI,
   KALE_MAKS,
   MADALYALAR,
   MADALYA_MORAL,
@@ -186,7 +187,7 @@ export function bolgeAraziSec(bolge: string): BirlikArazi {
 
 export function savasBaslat(state: CharacterState): BirlikSavasDurumu {
   const b = birlikAl(state);
-  const turler: (BirlikTur | "karma")[] = ["okcu", "suvari", "mizrakli", "karma"];
+  const turler: (BirlikTur | "karma")[] = ["okcu", "suvari", "mizrakli", "zirhli", "karma"];
   const sv: BirlikSavasDurumu = {
     baslangic_yili: state.yil,
     seferberlik: null,
@@ -650,7 +651,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     madalyaVer(state, b, "zafer", uyarilar);
     // Kale: yeterli askerî güç ve genel zafer.
     // Kuşatma kolu / topçu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında değil).
-    if (guc * (1 + KUSATMA_SALDIRI_BONUSU[clamp(b.kusatma_seviye, 0, 2)]) >= KALE_GUC_ESIGI && b.kale < KALE_MAKS) {
+    if (guc * (KUSATMA_ACIK && b.birlik_turler.includes("kusatma") ? KUSATMA_KALE_ESIGI_CARPANI : 1) >= KALE_GUC_ESIGI && b.kale < KALE_MAKS) {
       b.kale += 1;
       (b.kale_gelir ??= []).push(Math.round((KALE_GELIR[0] + Math.random() * (KALE_GELIR[1] - KALE_GELIR[0])) * 100) / 100);
       sonuc.kale = true;

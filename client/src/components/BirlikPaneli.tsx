@@ -79,14 +79,16 @@ const M = {
   yilKisa: { tr: 'yıl', en: 'yr' },
   birlikBaslik: { tr: 'Özel birlikler', en: 'Special units' },
   birlikNot: {
-    tr: 'Açtığın her birlik ordunun %25\'i olur; yeni erler oransal katılır ve geçiş ücretini kendiliğinden öder. Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini eklemek serbest.',
-    en: 'Each unit you open takes 25% of the army; new men join proportionally and pay the transfer fee automatically. Units can be swapped once every 5 years; adding a new one is free.',
+    tr: 'Açtığın her birlik ordunun %20\'si olur; yeni erler oransal katılır ve geçiş ücretini kendiliğinden öder. Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini eklemek serbest.',
+    en: 'Each unit you open takes 20% of the army; new men join proportionally and pay the transfer fee automatically. Units can be swapped once every 5 years; adding a new one is free.',
   },
   maliyetArti: { tr: 'yıllık maliyet', en: 'upkeep' },
   gucEsik: { tr: 'askeri güç', en: 'military strength' },
   toplamPay: { tr: 'toplam pay', en: 'total share' },
   uygula: { tr: 'Uygula', en: 'Apply' },
   kusatma: { tr: 'Kuşatma', en: 'Siege' },
+  guclu: { tr: 'Güçlü', en: 'Strong' },
+  zayif: { tr: 'Zayıf', en: 'Weak' },
   kusatmaNot: { tr: 'Kuşatma kolu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında etkisi yoktur); zaferden sonra kale alınıp alınamayacağını belirler.', en: 'A siege train adds an attack bonus only when besieging a FORT (no effect on the open battlefield); it decides whether a fort can be taken after a victory.' },
   terhisBaslik: { tr: 'Terhis', en: 'Discharge' },
   terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler kendiliğinden döner; diğer erleri sen terhis edersin.', en: 'You cannot discharge during a war. Wartime recruits go home on their own when it ends; you discharge the rest yourself.' },
@@ -161,7 +163,7 @@ const M = {
   limitDolu: { tr: 'Rütben en fazla', en: 'Your rank allows only' },
   limitDoluSon: { tr: 'özel birliğe izin veriyor', en: 'special units' },
   kilitTerhis: { tr: '5 yıl kilidi sürüyor', en: '5-year lock is active' },
-  birlikNotYeni: { tr: 'Açtığın her birlik ordunun %25\'i olur; geçiş ücretini yeni erler kendiliğinden öder. Yeni birlik açmak serbest, kapatmak 5 yılda bir.', en: 'Each unit you open takes 25% of the army; the transfer fee is paid as men join. Opening a unit is free any time; disbanding is once every 5 years.' },
+  birlikNotYeni: { tr: 'Açtığın her birlik ordunun %20\'si olur; geçiş ücretini yeni erler kendiliğinden öder. Yeni birlik açmak serbest, kapatmak 5 yılda bir.', en: 'Each unit you open takes 20% of the army; the transfer fee is paid as men join. Opening a unit is free any time; disbanding is once every 5 years.' },
   kur: { tr: 'Kur', en: 'Build' },
   yukseltKusatma: { tr: 'Yükselt', en: 'Upgrade' },
   sok: { tr: 'Sök', en: 'Dismantle' },
@@ -658,12 +660,17 @@ export function BirlikPaneli({
               <div className="birlik-kart-etki">
                 ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · <span className="s-gider">{formatPara(tur.ucret)} {pb}{erBirim}</span> · {t('maliyetArti')} <span className="s-gider">+%{Math.round(tur.bakim * 100)}</span>
               </div>
+              <div className="birlik-arazi">
+                {tur.guclu.length > 0 && <span className="s-arti">▲ {t('guclu')}: {tur.guclu.map(d).join(', ')}</span>}
+                {tur.zayif.length > 0 && <span className="s-eksi">▼ {t('zayif')}: {tur.zayif.map(d).join(', ')}</span>}
+              </div>
               <small>
                 ＋ {d(tur.arti)} · － {d(tur.eksi)}
               </small>
             </div>
           );
         })}
+        {b.birlik.kusatmaAcik && (
         <div className={`birlik-kart birlik-kart-kusatma${kusatma.seviye > 0 ? ' birlik-kart-acik' : ''}`}>
           <div className="birlik-kart-ust">
             <strong>
@@ -688,6 +695,7 @@ export function BirlikPaneli({
           </div>
           <small>{t('kusatmaOzel')}</small>
         </div>
+        )}
       </div>
       <div className="isletme-fiyat-not">{t('birlikNotYeni')}</div>
     </div>
