@@ -209,9 +209,46 @@ export const SAVAS_KAYIP_TAVANI: Record<"zafer" | "yenilgi", { olu: number; fira
 };
 /** Haydut ve sınır çatışması (tek olay). */
 export const BARIS_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
-  zafer: { olu: [2, 3], firar: [0, 0] },
-  yenilgi: { olu: [5, 6], firar: [2, 3] },
+  zafer: { olu: [0.5, 1.5], firar: [0, 0] },
+  yenilgi: { olu: [2, 4], firar: [1, 2] },
 };
+/** Barış çatışmasında yaralı = ölü × bu (savaşta 1,4–1,5 kalır); revir ve Tabip düşürür. */
+export const BARIS_YARALI_ORAN = 2.5;
+/** Düşmanın tahmini kaybı (gücünün kesri): bizim zaferimizde / yenilgimizde. */
+export const BARIS_DUSMAN_KAYBI = { zafer: [0.12, 0.2], yenilgi: [0.03, 0.06] } as const;
+/** Baskın: oyuncunun savunması pusu cezasıyla düşer (Keşif subayı, Karakol azaltır); yenilgide yıllık gelirin bu kesri nakit hasarı. */
+export const BASKIN_PUSU_CEZASI = 0.1;
+export const BASKIN_NAKIT_HASARI = 0.04;
+/** Çatışmanın baskın (oyuncu savunmada) olma ihtimali; kalanı av (oyuncu saldırıda). */
+export const BASKIN_IHTIMALI = 0.5;
+/** Haydut/sınır düşmanının yaşa göre mutlak gücü (savaş tablosundan YAVAŞ artar); sınır × SINIR_CARPANI. ±%5 sapma, zar ±%8 (SAVAS_ZAR_BOLEN). */
+export const BARIS_DUSMAN_YAS: [number, number][] = [
+  [15, 20],
+  [25, 28],
+  [35, 50],
+  [45, 80],
+  [55, 120],
+  [65, 170],
+  [80, 250],
+];
+export const BARIS_SINIR_CARPANI = 1.3;
+export const BARIS_DUSMAN_SAPMA: [number, number] = [0.95, 1.05];
+export function barisDusmanGucuYas(yas: number, tur: "haydut" | "sinir"): number {
+  const t = BARIS_DUSMAN_YAS;
+  let g = t[t.length - 1][1];
+  if (yas <= t[0][0]) g = t[0][1];
+  else {
+    for (let i = 1; i < t.length; i++) {
+      if (yas <= t[i][0]) {
+        const [y0, g0] = t[i - 1];
+        const [y1, g1] = t[i];
+        g = g0 + ((g1 - g0) * (yas - y0)) / (y1 - y0);
+        break;
+      }
+    }
+  }
+  return g * (tur === "sinir" ? BARIS_SINIR_CARPANI : 1);
+}
 /** Firar ayarlayıcıları (puan, %): moral < 40 → (40 − moral) × 0,05; erzak < 0,7 → +0,5; sertlik × 0,005. */
 export const FIRAR_MORAL_ESIGI = 40;
 export const FIRAR_MORAL_KATSAYI = 0.05;

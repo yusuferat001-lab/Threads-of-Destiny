@@ -166,3 +166,38 @@ describe("v39 subaylar", () => {
     expect(profil.roller.map((r) => r.tur)).toEqual(["taarruz", "savunma", "kesif", "musteri", "guvenlik"]);
   });
 });
+
+describe("v39 haydut / sınır çatışması", () => {
+  it("haydut tablosu yaşa göre yavaş artar, sınır ×1,3; savaş tablosundan düşüktür", async () => {
+    const { barisDusmanGucuYas, dusmanReferansGucuYas } = await import("../src/data/birlik");
+    expect(barisDusmanGucuYas(25, "haydut")).toBe(28);
+    expect(barisDusmanGucuYas(45, "haydut")).toBe(80);
+    expect(barisDusmanGucuYas(80, "haydut")).toBe(250);
+    expect(barisDusmanGucuYas(35, "sinir")).toBeCloseTo(50 * 1.3, 6);
+    for (const y of [25, 35, 45, 55, 65, 80]) expect(barisDusmanGucuYas(y, "haydut")).toBeLessThan(dusmanReferansGucuYas(y));
+  });
+
+  it("çatışma uyarısı baskın/av, düşman kaybı ve bizim kaybımız (yaralı ≥ ölü) içerir; yenilgide ganimet yok", () => {
+    const sonuclar: IsletmeUyari[] = [];
+    for (let n = 0; n < 60; n++) {
+      const s = asker();
+      s.yas = 40;
+      s.rutbe_seviye = 3;
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = 100;
+      birlikAl(s).kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+      birlikAl(s).baris_bekleme = 0;
+      vi.spyOn(Math, "random").mockRestore();
+      const u = birlikYilIsle(s, bg(s)).dokum.uyarilar ?? [];
+      sonuclar.push(...u);
+    }
+    const c = sonuclar.filter((x) => x.kod === "baris_catisma");
+    expect(c.length).toBeGreaterThan(10);
+    expect(c.some((x) => x.baskin === true)).toBe(true);
+    expect(c.some((x) => x.baskin === false)).toBe(true);
+    expect(c.every((x) => typeof x.dusmanOlu === "number")).toBe(true);
+    expect(c.filter((x) => x.savasSonucu === "yenilgi").every((x) => (x.tutar ?? 0) === 0)).toBe(true);
+    const kayiplar = sonuclar.filter((x) => x.kod === "savas_kayip" && x.kaynak === "catisma");
+    for (const k of kayiplar) expect((k.yaralanan ?? 0)).toBeGreaterThanOrEqual(k.sayi ?? 0);
+  });
+});

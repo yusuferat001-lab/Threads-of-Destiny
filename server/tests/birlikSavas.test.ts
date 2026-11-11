@@ -362,11 +362,11 @@ function birlikYilKos(s: CharacterState) {
 }
 
 describe("barış çatışması (haydut / sınır): ölü – yaralı – firar", () => {
-  it("tablo: zafer ölü %2–3 firar 0; yenilgi ölü %5–6 firar %2–3", () => {
-    expect(BARIS_KAYBI.zafer.olu).toEqual([2, 3]);
+  it("tablo: zafer ölü %0,5–1,5 firar 0; yenilgi ölü %2–4 firar %1–2", () => {
+    expect(BARIS_KAYBI.zafer.olu).toEqual([0.5, 1.5]);
     expect(BARIS_KAYBI.zafer.firar).toEqual([0, 0]);
-    expect(BARIS_KAYBI.yenilgi.olu).toEqual([5, 6]);
-    expect(BARIS_KAYBI.yenilgi.firar).toEqual([2, 3]);
+    expect(BARIS_KAYBI.yenilgi.olu).toEqual([2, 4]);
+    expect(BARIS_KAYBI.yenilgi.firar).toEqual([1, 2]);
   });
   it("yıl işleme sayıları tam sayı kalır; ordu çekirdeğin altına inmez", () => {
     for (let n = 0; n < 20; n++) {

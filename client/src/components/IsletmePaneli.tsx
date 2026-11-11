@@ -340,11 +340,14 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         const hd = u.catismaTur === 'sinir';
         const kazan = u.savasSonucu === 'zafer';
         const ad = en ? (hd ? 'enemy raiders' : 'a band of deserter bandits') : (hd ? 'düşman akıncıları' : 'firari haydutlar');
+        const nasil = u.baskin ? (en ? ' (ambush)' : ' (baskın)') : (en ? ' (hunt)' : ' (av)');
         const ganimet = u.tutar ? (en ? ` Loot: +${formatPara(u.tutar)} ${pb}.` : ` Ganimet: +${formatPara(u.tutar)} ${pb}.`) : '';
         const esir = u.sayi ? (en ? ` ${u.sayi} prisoners.` : ` ${u.sayi} esir.`) : '';
+        const dusman = u.dusmanOlu ? (en ? ` Enemy dead ~${u.dusmanOlu}.` : ` Düşman ölüsü ~${u.dusmanOlu}.`) : '';
+        const hasar = u.nakitYuzde ? (en ? ' The raid cost you coin.' : ' Baskın kesene zarar verdi.') : '';
         return kazan
-          ? `⚔️ ${en ? 'You crushed' : 'Şunu bozguna uğrattın:'} ${ad}.${ganimet}${esir}`
-          : `🩸 ${en ? 'You were beaten back by' : 'Şuna yenildin:'} ${ad}.${ganimet}`;
+          ? `⚔️ ${en ? 'You crushed' : 'Şunu bozguna uğrattın:'} ${ad}${nasil}.${ganimet}${esir}${dusman}`
+          : `🩸 ${en ? 'You were beaten back by' : 'Şuna yenildin:'} ${ad}${nasil}.${dusman}${hasar}`;
       }
       case 'savas_ganimet':
         return en

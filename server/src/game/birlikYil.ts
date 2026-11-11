@@ -12,6 +12,13 @@ import {
   KALE_GELIR,
   KALE_SOHRET,
   BARIS_KAYBI,
+  BARIS_YARALI_ORAN,
+  BARIS_DUSMAN_KAYBI,
+  BASKIN_PUSU_CEZASI,
+  BASKIN_NAKIT_HASARI,
+  BASKIN_IHTIMALI,
+  BARIS_DUSMAN_SAPMA,
+  barisDusmanGucuYas,
   SAVAS_KARAR_YILI,
   SAVAS_ON_YIL_OLAYLARI,
   SAVAS_KARAR_KAYBI,
@@ -438,6 +445,8 @@ export interface KayipGirdisi {
   firarPct: number;
   /** Ek ölü (savaş yılı görev kayıpları), tam sayı. */
   ekOlu?: number;
+  /** Verilirse yaralı = ölü × bu (barış çatışması: 2,5; Tabip ve revir düşürür); yoksa savaş oranı. */
+  yaraliOran?: number;
   /** Ek yaralı (barış yılı görev kayıpları: ölüye değil doğrudan yaralıya gider), tam sayı. */
   ekYarali?: number;
   /** Seferberlik erlerinin firar çarpanı (genel çağrının ilk yılı). */
@@ -509,7 +518,7 @@ export function kayipUygula(state: CharacterState, b: BirlikDurumu, g: KayipGird
   const levyYar = Math.min(sv?.seferberlik_yarali ?? 0, levyKalan, b.yarali);
   const saglamL = Math.max(0, levyKalan - levyYar);
   const saglamR = Math.max(0, erSon - levyKalan - (b.yarali - levyYar));
-  const yaralananOlu = Math.min(Math.round((oluR + oluL) * yaraliOrani(state)), saglamR + saglamL);
+  const yaralananOlu = Math.min(Math.round((oluR + oluL) * (g.yaraliOran ?? yaraliOrani(state))), saglamR + saglamL);
   const yaralanan = Math.min(yaralananOlu + ekYar, saglamR + saglamL);
   const [yR, yL] = dagit(yaralanan, [saglamR, saglamL], [saglamR, saglamL]);
   b.yarali += yR + yL;
@@ -706,6 +715,12 @@ export interface BarisCatismaSonucu {
   /** Ordu % kayıp oranları (aralıktan çekildi); kayıp ortak boruda (kayipUygula) uygulanır. */
   oluPct: number;
   firarPct: number;
+  /** Baskın (oyuncu savunmada) mı, av (oyuncu saldırıda) mı. */
+  baskin: boolean;
+  /** Düşmanın tahmini ölüsü (gösterimde "~"). */
+  dusmanOlu: number;
+  /** Baskın yenilgisinde yıllık gelirin % kesri olarak nakit hasarı (yoksa 0). */
+  nakitYuzde: number;
 }
 
 /**
@@ -733,14 +748,22 @@ function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBa
   const t = BARIS_CATISMALARI[tur];
   const doktrin = doktrinToplami(b.doktrinler);
   const yol = yolEtkisi(state);
+  const sub = subayToplami(state);
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: tur });
   const guc = d.guc;
-  const dusman = dusmanReferansGucu(state) * rnd(t.dusman[0], t.dusman[1]);
-  const oyuncuEff = guc * (1 + (d20() - 10.5) / ZAR_BOLEN + b.zar_bonusu);
-  const dusmanEff = Math.max(1e-6, dusman * (1 + (d20() - 10.5) / ZAR_BOLEN));
-  const R = oyuncuEff / dusmanEff;
-  const zafer = R >= 1;
-  const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
+  // Baskın (oyuncu savunmada: savunma ↔ düşman saldırısı, pusu cezasıyla) ya da av (oyuncu saldırıda: saldırı ↔ düşman savunması).
+  const baskin = Math.random() < BASKIN_IHTIMALI;
+  const dtur = (["okcu", "suvari", "mizrakli", "zirhli", "karma"] as const)[Math.floor(Math.random() * 5)];
+  const dagilim = dusmanSaldiriSavunma(dtur);
+  const E = barisDusmanGucuYas(state.yas, tur) * rnd(BARIS_DUSMAN_SAPMA[0], BARIS_DUSMAN_SAPMA[1]);
+  const karakol = KARAKOL_KORUMA[clamp(yatirimKademesi(state, "koruma"), 0, KARAKOL_KORUMA.length - 1)];
+  const pusu = baskin ? BASKIN_PUSU_CEZASI * (1 - clamp(sub.pusuAzalt + karakol, 0, 1)) : 0;
+  const oyuncuTaraf = (baskin ? d.savunma : d.saldiri) * (1 - pusu);
+  const dusmanTaraf = Math.max(1e-6, E * (baskin ? dagilim.saldiri : dagilim.savunma));
+  const oyuncuEff = oyuncuTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN + b.zar_bonusu);
+  const dusmanEff = dusmanTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN);
+  const zafer = oyuncuEff >= dusmanEff;
+  const carpan = (1 + sub.ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
   const brut = zafer ? guc * aralikCek(BARIS_GANIMET_ARALIK) * bg.enflasyon * carpan : 0;
   const devlet = 0; // askerde devlet payı yok
   const erPayi = brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
@@ -748,7 +771,13 @@ function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBa
   const esir = zafer ? olasilikliYuvarla(guc * t.esir) : 0;
   const kayip = BARIS_KAYBI[zafer ? "zafer" : "yenilgi"];
   b.talim = clamp(b.talim + (zafer ? BARIS_TALIM_ZAFER : BARIS_TALIM_YENILGI), 0, 100);
-  return { tur, zafer, brut: r2(brut), devlet: r2(devlet), erPayi: r2(erPayi), net: r2(net), esir, oluPct: aralikCek(kayip.olu), firarPct: aralikCek(kayip.firar) };
+  const dk = BARIS_DUSMAN_KAYBI[zafer ? "zafer" : "yenilgi"];
+  return {
+    tur, zafer, baskin, brut: r2(brut), devlet: r2(devlet), erPayi: r2(erPayi), net: r2(net), esir,
+    oluPct: aralikCek(kayip.olu), firarPct: aralikCek(kayip.firar),
+    dusmanOlu: Math.round(E * rnd(dk[0], dk[1])),
+    nakitYuzde: baskin && !zafer ? BASKIN_NAKIT_HASARI * 100 : 0,
+  };
 }
 
 // ── Rakip komutan saldırıları ───────────────────────────────────────────────
@@ -843,7 +872,8 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   // 2b. Barış çatışması (savaş dışında 3–5 yılda bir): güçle orantılı ganimet.
   const baris = barisCatismaVadesi(b, savasta) ? barisCatismasiCoz(state, b, bg) : null;
   if (baris) {
-    uyarilar.push({ kod: "baris_catisma", catismaTur: baris.tur, savasSonucu: baris.zafer ? "zafer" : "yenilgi", tutar: baris.net, sayi: baris.esir });
+    uyarilar.push({ kod: "baris_catisma", catismaTur: baris.tur, savasSonucu: baris.zafer ? "zafer" : "yenilgi", tutar: baris.net, sayi: baris.esir, baskin: baris.baskin, dusmanOlu: baris.dusmanOlu, ...(baris.nakitYuzde > 0 ? { nakitYuzde: baris.nakitYuzde } : {}) });
+    if (baris.nakitYuzde > 0) nakitHasar += r2(gelirTaban * (baris.nakitYuzde / 100));
     if (baris.zafer) madalyaVer(state, b, "haydut", uyarilar);
   }
 
@@ -912,6 +942,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     firarPct,
     ekOlu: gorevOlu,
     ekYarali: gorevYarali,
+    ...(baris && !savasta ? { yaraliOran: Math.max(1, (BARIS_YARALI_ORAN - clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * YARALI_REVIR_DUSUS) * (1 - subayToplami(state).yaraliAzalt)) } : {}),
     levyFirarCarpani: ilkYilGenelCagri ? FIRAR_GENEL_CAGRI_ILK_YIL : 1,
     oluTavan: tavan?.olu,
     firarTavan: tavan?.firar,

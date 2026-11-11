@@ -830,6 +830,9 @@ export interface IsletmeUyari {
   /** kesif_savas: düşmanın baskın birliği ve tahmini güç aralığı (rakip = düşman adı, sayi = savaşın başlayacağı yıl). */
   dusmanTur?: string;
   gucAralik?: [number, number];
+  /** baris_catisma: baskın (savunmada) mı av mı; düşmanın tahmini ölüsü. */
+  baskin?: boolean;
+  dusmanOlu?: number;
   /** savas_kayip: kaybın kaynağı (görev / çatışma / savaş) ve görev adları. */
   kaynak?: 'gorev' | 'catisma' | 'savas';
   kaynakAd?: { tr: string; en: string };
