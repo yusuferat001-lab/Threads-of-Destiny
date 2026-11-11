@@ -47,6 +47,7 @@ import {
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
+import { BARIS_GANIMET_ARALIK, GANIMET_PAYI_TANIMLARI } from "../data/birlik";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
 import { birlikYilIsle } from "./birlikYil";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
@@ -795,6 +796,14 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
   }
 }
 
+/** Barış çatışması zaferinde olası en yüksek net ganimet (er payı düşülmüş); çatışma vadesi gelmediyse ya da savaştaysa 0. */
+function barisGanimetiUst(state: CharacterState, b: IsletmeBaglami): number {
+  const bd = state.isletme?.birlik;
+  if (!bd || state.ulke.savasta || Math.round(bd.baris_bekleme ?? 0) > 0) return 0;
+  const brut = bd.guc * BARIS_GANIMET_ARALIK[1] * b.enflasyon;
+  return r2(brut * (1 - GANIMET_PAYI_TANIMLARI[bd.ganimet_payi].oran));
+}
+
 /** Bu yılın dürüst tahmini bütçesi (ticaret/üretim modu): satış, alım (çürüme dahil), depo, aidat, vergi, borç ödemesi. */
 export interface IsletmeButcesi {
   satis: number;
@@ -846,7 +855,8 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
       maas,
       gelir: r2(h.toplamGelir),
       netAlt: r2(brut - maas - 0.03 * h.toplamGelir),
-      netUst: r2(brut - maas + 0.03 * h.toplamGelir),
+      // Barışta çatışma vadesi gelmişse (bekleme bitti) yıl içinde haydut/sınır ganimeti de çıkabilir: aralığın üst ucuna eklenir.
+      netUst: r2(brut - maas + 0.03 * h.toplamGelir + barisGanimetiUst(state, b)),
     };
   }
   const curume = curumeOrani(is);
@@ -858,13 +868,19 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
   const hesaplar = acik
     .map((hat) => ({ tanim: hatTanimiGetir(profil, hat.id), hat }))
     .filter((x): x is { tanim: NonNullable<typeof x.tanim>; hat: typeof x.hat } => !!x.tanim)
-    .map(({ tanim, hat }) => ({ h: hatHesapla(state, hat, tanim, b) }));
-  const toplamTalep = hesaplar.reduce((t, x) => t + x.h.talep, 0);
-  const olcek = tavan !== null && toplamTalep > tavan ? tavan / toplamTalep : 1;
-  for (const { h } of hesaplar) {
+    .map(({ tanim, hat }) => ({ h: hatHesapla(state, hat, tanim, b), hat }));
+  // Gerçek yıl işlemeyle aynı sıra: önce toplam talep müşteri sayısını aşamaz (TALEP_TAVAN_ORANI), sonra üretim tavanı.
+  const hamTalep = hesaplar.reduce((t, x) => t + x.h.talep, 0);
+  const musteriTavani = musteriSayisi(state) * TALEP_TAVAN_ORANI;
+  const musteriOlcek = hamTalep > musteriTavani && hamTalep > 0 ? musteriTavani / hamTalep : 1;
+  const toplamTalep = hamTalep * musteriOlcek;
+  const olcek = musteriOlcek * (tavan !== null && toplamTalep > tavan ? tavan / toplamTalep : 1);
+  for (const { h, hat } of hesaplar) {
     const talep = h.talep * olcek;
     satis += talep * h.birimFiyat;
-    const kayip = talep * curume * h.birimMaliyet;
+    // Çürüme gerçek yıl işlemedeki gibi SATIŞTAN SONRA kalan stoğa (ana ürün çürüme bonusuyla) uygulanır; alım = satılan + çürüyen.
+    const kalan = Math.max(0, hat.stok - talep);
+    const kayip = kalan * curume * (anaUrunBonusu(state, hat.id)?.curumeCarpani ?? 1) * h.birimMaliyet;
     curumeKaybi += kayip;
     alim += talep * h.birimMaliyet + kayip;
   }
