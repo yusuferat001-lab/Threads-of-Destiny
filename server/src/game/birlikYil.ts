@@ -56,7 +56,7 @@ import {
   SAVAS_ZAFER_GANIMET,
   SEFER_DONUS_MORAL,
   SEFER_DONUS_TALIM,
-  YAGMA_AHLAK,
+  ERZAK_DALGA,
   YAGMA_ER_ORANI,
   emirGetir,
   ASKER_PAZAR_YAKINSAMA,
@@ -949,7 +949,9 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   if (savasta && h.yagmaBrut > 0) {
     const gonullu = olasilikliYuvarla(erSayisi(state) * YAGMA_ER_ORANI);
     if (gonullu > 0) yeniErEkle(state, gonullu, bg, { kalite: "dusuk", bedava: true, talim: 0 });
-    state.ahlak = clamp(state.ahlak + YAGMA_AHLAK, 0, 100);
+    const yt = IKMAL_TANIMLARI[ikmalId].yagma;
+    state.ahlak = clamp(state.ahlak + (yt?.ahlak ?? 0), 0, 100);
+    state.mutluluk = clamp(state.mutluluk + (yt?.mutluluk ?? 0), 0, 100);
     uyarilar.push({ kod: "yagma", tutar: r2(h.yagmaBrut - h.yagmaBrut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran), sayi: gonullu });
   }
 
@@ -1121,6 +1123,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   // 9. Moral: yıllık etkenler + bir kerelik olaylar + 60'a yönelim.
   let moral = GANIMET_PAYI_TANIMLARI[b.ganimet_payi].moral + TON_TANIMLARI[b.ton].moral + talimT.moral + (doktrin.moral + (yol.moral ?? 0));
   moral += savasta ? MORAL_SAVAS_YILLIK : MORAL_BARIS_YILLIK;
+  if (savasta && h.yagmaBrut > 0) moral += IKMAL_TANIMLARI[ikmalId].yagma?.moral ?? 0; // yağma türü: sert ordu morali artırır, yumuşak düşürür
   moral += kaliteKatsayi(KALITE_MORAL);
   if (savasta) moral += emirGetir(b.savas?.emir)?.moral ?? 0;
   const donem = state.ulke.donem?.tur;
@@ -1164,6 +1167,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   b.savas_karari = null;
   b.zar_bonusu = 0;
   b.erzak_oran = 1;
+  b.erzak_dalga = r2(aralikCek(ERZAK_DALGA)); // bir sonraki yılın erzak gideri çarpanı (0,9–1,1)
   doktrinBekleyenSeviye(state);
   birlikSenkron(state, bg.enflasyon);
 

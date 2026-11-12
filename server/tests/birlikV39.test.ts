@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DALGA } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -83,9 +83,9 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut/sınır 1,5–1,9, savaş zaferi 6–8, yaralı 0,30, ganimet politikası morali −8/0/+6", () => {
+  it("sabitler: haydut/sınır 1,5–1,9, savaş zaferi 5–7, yaralı 0,30, ganimet politikası morali −8/0/+6", () => {
     expect(BARIS_GANIMET_ARALIK).toEqual([1.5, 1.9]);
-    expect(SAVAS_ZAFER_GANIMET).toEqual([6, 8]);
+    expect(SAVAS_ZAFER_GANIMET).toEqual([5, 7]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.3);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
   });
@@ -322,5 +322,72 @@ describe("v40 görev geliri ve birim küçük artıları", () => {
     b.birlik_turler = ["suvari"];
     const g1 = birlikHesapla(s, bg(s)).gorevGeliri;
     expect(g1 / g0).toBeCloseTo(1.1, 6);
+  });
+});
+
+describe("yağma türleri ve erzak dalgası", () => {
+  function savasAskeri() {
+    const s = asker();
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 100;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+    s.rutbe_seviye = 3;
+    s.ulke.savasta = true;
+    const sv = savasBaslat(s);
+    seferberlikUygula(s, "secme", bg(s));
+    sv.yil_sayac = 0;
+    return { s, b, sv };
+  }
+
+  it("üç yağma türü gücün 0,7 / 0,5 / 0,3'ü kadar yağma getirir", () => {
+    const { s, b, sv } = savasAskeri();
+    const brut: Record<string, number> = {};
+    for (const id of ["yagma_sert", "yagma_orta", "yagma_yumusak"] as const) {
+      sv.ikmal = id;
+      brut[id] = birlikHesapla(s, bg(s)).yagmaBrut;
+      expect(brut[id] / (b.guc * bg(s).enflasyon)).toBeGreaterThan(IKMAL_TANIMLARI[id].yagma!.gucOrani * 0.9);
+    }
+    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.7 / 0.5, 6);
+    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.3 / 0.5, 6);
+    sv.ikmal = "yagma"; // eski kayıt = ölçülü yağma
+    expect(birlikHesapla(s, bg(s)).yagmaBrut).toBeCloseTo(brut.yagma_orta, 6);
+    expect(IKMAL_SIRASI).toEqual(["yeterli", "kit", "yagma_sert", "yagma_orta", "yagma_yumusak"]);
+  });
+
+  it("sert yağma ahlak ve oyuncu morali düşürür, ordu morali artırır; yumuşak tam tersi", () => {
+    const sonuc: Record<string, { ahlak: number; mutluluk: number; moral: number }> = {};
+    for (const id of ["yagma_sert", "yagma_yumusak"] as const) {
+      const { s, b, sv } = savasAskeri();
+      sv.ikmal = id;
+      sv.yil_sayac = 0;
+      s.ahlak = 50;
+      s.mutluluk = 50;
+      b.moral = 50;
+      vi.spyOn(Math, "random").mockReturnValue(0.5);
+      birlikYilIsle(s, bg(s));
+      sonuc[id] = { ahlak: s.ahlak, mutluluk: s.mutluluk, moral: b.moral };
+      vi.restoreAllMocks();
+    }
+    expect(sonuc.yagma_sert.ahlak).toBeLessThan(sonuc.yagma_yumusak.ahlak);
+    expect(sonuc.yagma_sert.mutluluk).toBeLessThan(sonuc.yagma_yumusak.mutluluk);
+    expect(sonuc.yagma_sert.moral).toBeGreaterThan(sonuc.yagma_yumusak.moral);
+  });
+
+  it("erzak gideri her yıl sonu 0,9–1,1 arası bir dalgayla çarpılır", () => {
+    const { s, b } = savasAskeri();
+    s.ulke.savasta = false;
+    birlikAl(s).savas = null;
+    b.erzak_dalga = undefined;
+    const taban = birlikHesapla(s, bg(s)).erzak;
+    b.erzak_dalga = ERZAK_DALGA[0];
+    expect(birlikHesapla(s, bg(s)).erzak).toBeCloseTo(taban * 0.9, 6);
+    b.erzak_dalga = ERZAK_DALGA[1];
+    expect(birlikHesapla(s, bg(s)).erzak).toBeCloseTo(taban * 1.1, 6);
+    for (let i = 0; i < 20; i++) {
+      birlikYilIsle(s, bg(s));
+      expect(b.erzak_dalga!).toBeGreaterThanOrEqual(0.9);
+      expect(b.erzak_dalga!).toBeLessThanOrEqual(1.1);
+    }
   });
 });

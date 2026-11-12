@@ -1142,7 +1142,8 @@ export type BirlikTalim = "hafif" | "orta" | "agir";
 export type BirlikTon = "merhametli" | "dengeli" | "sert";
 export type BirlikArazi = "ova" | "dag" | "orman";
 export type BirlikRol = "onc" | "ana" | "yedek";
-export type BirlikIkmal = "yeterli" | "kit" | "yagma";
+/** "yagma" yalnız eski kayıtlar içindir (ölçülü yağma gibi çalışır); yeni seçimler yagma_sert / yagma_orta / yagma_yumusak. */
+export type BirlikIkmal = "yeterli" | "kit" | "yagma_sert" | "yagma_orta" | "yagma_yumusak" | "yagma";
 export type BirlikEsirKarari = "idam" | "serbest" | "sat" | "karma";
 export type BirlikSeferberlik = "genel" | "secme" | "dengeli";
 
@@ -1295,6 +1296,8 @@ export interface BirlikDurumu {
   zar_bonusu: number;
   /** Erzak karşılama oranı (0-1): 1 = yeterli. Savaş kararları/kıtlık düşürür, yıllık çözümde yeniden hesaplanır. */
   erzak_oran: number;
+  /** Bu yılın erzak gideri çarpanı (0,9–1,1); yıl sonunda bir sonraki yıl için yeniden çekilir. Yoksa 1. */
+  erzak_dalga?: number;
   /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
   baris_bekleme?: number;
   /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */

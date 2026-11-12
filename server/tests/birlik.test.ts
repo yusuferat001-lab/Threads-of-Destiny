@@ -676,7 +676,7 @@ describe("savaş", () => {
     expect(b.savas!.ikmal).toBeDefined();
     const secilen = b.savas!.ikmal!;
     b.savas_karari = null; // yıl sonu
-    expect(birlikHesapla(s, bg(s)).yagmaBrut > 0).toBe(secilen === "yagma");
+    expect(birlikHesapla(s, bg(s)).yagmaBrut > 0).toBe(secilen.startsWith("yagma"));
     expect(b.savas!.ikmal).toBe(secilen);
   });
 

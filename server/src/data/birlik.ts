@@ -391,6 +391,8 @@ export const SUVARI_GOREV_GELIRI = 0.1;
 export const SAVAS_ER_BASI_CARPANI = 3;
 export const ER_MASRAFI = 0.25;
 export const ERZAK_BIRIMI = 0.15;
+/** Erzak giderinin yıllık dalgası: her yıl sonu bir sonraki yıl için U(0,9; 1,1) çarpan çekilir (`BirlikDurumu.erzak_dalga`). */
+export const ERZAK_DALGA: Aralik = [0.9, 1.1];
 /** Barış çatışması (haydut / sınır) zafer ganimeti = askerî güç × U(a; b) (yenilgide ganimet yok). */
 export const BARIS_GANIMET_ARALIK: Aralik = [1.5, 1.9];
 /** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
@@ -663,7 +665,17 @@ export const ROL_TANIMLARI: Record<BirlikRol, { ganimet: number; kayip: number; 
 };
 export const ROL_SIRASI: BirlikRol[] = ["onc", "ana", "yedek"];
 
-export const IKMAL_TANIMLARI: Record<BirlikIkmal, { erzakOran: number; maliyet: number; sertlik: number; ganimet: number; ad: DilliMetin; aciklama: DilliMetin }> = {
+/** Yağma türü: yıllık yağma geliri = askerî güç × gucOrani; ahlak/mutluluk (oyuncu) ve ordu morali o yağma yılı için bir kerelik değişir. */
+export interface YagmaTuru {
+  gucOrani: number;
+  ahlak: number;
+  mutluluk: number;
+  moral: number;
+}
+export const IKMAL_TANIMLARI: Record<
+  BirlikIkmal,
+  { erzakOran: number; maliyet: number; sertlik: number; ganimet: number; yagma?: YagmaTuru; ad: DilliMetin; aciklama: DilliMetin }
+> = {
   yeterli: {
     erzakOran: 0, maliyet: 1.15, sertlik: 0, ganimet: 1,
     ad: { tr: "Tam ikmal", en: "Full supply" },
@@ -674,13 +686,34 @@ export const IKMAL_TANIMLARI: Record<BirlikIkmal, { erzakOran: number; maliyet: 
     ad: { tr: "Kıt ikmal", en: "Short supply" },
     aciklama: { tr: "Erzak %30 eksik kalır; masraf −%15, firar ve güç kaybı.", en: "Supplies run 30% short; cost −15%, desertion and weaker force." },
   },
+  // Üç yağma türü (2026-11): sert en çok para ve ordu morali, ama ahlak ve oyuncu morali düşer; yumuşak tam tersi.
+  yagma_sert: {
+    erzakOran: 0, maliyet: 0.9, sertlik: 2.5, ganimet: 1,
+    yagma: { gucOrani: 0.7, ahlak: -3, mutluluk: -3, moral: 4 },
+    ad: { tr: "Acımasız yağma", en: "Ruthless plunder" },
+    aciklama: { tr: "Köyleri soyarsın: en çok para, esir ve gönüllü; ordu coşar ama halk ezilir, vicdanın ve keyfin kaçar.", en: "You strip the villages bare: the most coin, prisoners and recruits; the men are exalted, but the people suffer and your conscience and spirits sink." },
+  },
+  yagma_orta: {
+    erzakOran: 0, maliyet: 0.9, sertlik: 1.5, ganimet: 1,
+    yagma: { gucOrani: 0.5, ahlak: 0, mutluluk: 0, moral: 0 },
+    ad: { tr: "Ölçülü yağma", en: "Measured plunder" },
+    aciklama: { tr: "Köylerden ölçülü ganimet; ne ordunun ne senin moralin değişir.", en: "Measured loot from the villages; neither the army's morale nor yours shifts." },
+  },
+  yagma_yumusak: {
+    erzakOran: 0, maliyet: 0.9, sertlik: 0.5, ganimet: 1,
+    yagma: { gucOrani: 0.3, ahlak: 3, mutluluk: 3, moral: -4 },
+    ad: { tr: "Yumuşak yağma", en: "Gentle foraging" },
+    aciklama: { tr: "Az para toplarsın; halka kıymazsın, vicdanın ve keyfin yerinde olur ama ordu söylenir.", en: "You gather little; you spare the people and your conscience and spirits stay light, but the men grumble." },
+  },
+  // Eski kayıtlar ("yagma" = eski tek tür): ölçülü yağma gibi çalışır, seçenek olarak sunulmaz.
   yagma: {
     erzakOran: 0, maliyet: 0.9, sertlik: 1.5, ganimet: 1,
-    ad: { tr: "Yağma ile geçin", en: "Live off the land" },
-    aciklama: { tr: "Erzak köylerden gelir; her yıl para, esir ve gönüllü kazanırsın. Halk ezilir: sertlik ve ahlak düşer.", en: "Supplies come from the villages; you gain coin, prisoners and recruits each year. The people suffer: harshness up, morality down." },
+    yagma: { gucOrani: 0.5, ahlak: 0, mutluluk: 0, moral: 0 },
+    ad: { tr: "Ölçülü yağma", en: "Measured plunder" },
+    aciklama: { tr: "Köylerden ölçülü ganimet; ne ordunun ne senin moralin değişir.", en: "Measured loot from the villages; neither the army's morale nor yours shifts." },
   },
 };
-export const IKMAL_SIRASI: BirlikIkmal[] = ["yeterli", "kit", "yagma"];
+export const IKMAL_SIRASI: BirlikIkmal[] = ["yeterli", "kit", "yagma_sert", "yagma_orta", "yagma_yumusak"];
 
 export const SEFERBERLIK_TANIMLARI: Record<
   BirlikSeferberlik,
@@ -885,15 +918,13 @@ export const ASKER_SALDIRI_HASARLARI = {
 
 // ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
 /** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım ×SAVAS_ER_BASI_CARPANI. */
-/** Yağma ikmali (yıllık): ganimet = askerî güç × bu; yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı bu çarpanla; esir/yeni er oranları. */
-export const YAGMA_GANIMET = 0.5;
+/** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,7 / ölçülü 0,5 / yumuşak 0,3); yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı bu çarpanla; esir/yeni er oranları. */
 export const YAGMA_YIL = 2;
 export const YAGMA_ERZAK_CARPANI = 0.6;
 export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
-export const YAGMA_AHLAK = -1.5;
-/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(6; 8); esir = güç × bu × yıl. Yenilgide ganimet yok. */
-export const SAVAS_ZAFER_GANIMET: Aralik = [6, 8];
+/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(5; 7); esir = güç × bu × yıl. Yenilgide ganimet yok. */
+export const SAVAS_ZAFER_GANIMET: Aralik = [5, 7];
 export const SAVAS_ZAFER_ESIR = 0.015;
 /** Kiralık ordu: ordunun bu kesri kadar, savaş süresince; eğitimli ve pahalı. */
 export const KIRALIK_ORAN = 0.4;

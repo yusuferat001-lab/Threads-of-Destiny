@@ -532,6 +532,69 @@ async function askerYonet(id: string): Promise<void> {
   } catch { /* kilitli */ }
 }
 
+
+// SIM_DOKUM=1: Asker gelir/gider kalemlerinin 15-65 yaş (50 yıl) ortalama dağılımı (turun son yılı × tur yılı; ≈ örnekleme).
+const DOKUM: Record<string, number> = {};
+let dokumYil = 0;
+const DOKUM_OMURLER: Record<string, number>[] = [];
+function dokumEkle(state: CharacterState, na: any, yil: number, omur: Record<string, number>): void {
+  const d = state.isletme?.son_dokum as any;
+  const bd = d?.birlik;
+  if (!bd || !na) return;
+  const ekle = (k: string, v: number) => { const x = (Number.isFinite(v) ? v : 0) * yil; DOKUM[k] = (DOKUM[k] ?? 0) + x; omur[k] = (omur[k] ?? 0) + x; };
+  const esir = d.satis - bd.sold - bd.gorevGeliri - bd.kaleGeliri - (bd.ganimetPara - bd.erPayi);
+  ekle("G sabit maaş + asker başı ödenek (sold)", bd.sold);
+  ekle("G görev geliri", bd.gorevGeliri);
+  ekle("G ganimet (görev+barış çatışması+savaş zaferi, brüt)", bd.ganimetPara - bd.yagmaPara);
+  ekle("G yağma (brüt)", bd.yagmaPara);
+  ekle("G kale geliri", bd.kaleGeliri);
+  ekle("G esir geliri", Math.max(0, esir));
+  ekle("G olay geliri", na.olayGeliri ?? 0);
+  ekle("G mülk net getiri", Math.max(0, na.mulkNet ?? 0));
+  ekle("g er payı (ganimetten askere)", bd.erPayi);
+  ekle("g er masrafı", bd.erMasrafi);
+  ekle("g erzak", bd.erzak);
+  ekle("g teçhizat bakımı", bd.techizatBakimi);
+  ekle("g kışla/yapı bakımı", d.depoMasrafi - bd.techizatBakimi);
+  ekle("g talim", (d.alim ?? 0) - bd.erMasrafi - bd.erzak - bd.tedaviGideri);
+  ekle("g yaralı tedavi", bd.tedaviGideri);
+  ekle("g kiralık ordu", bd.kiralikMasrafi);
+  ekle("g subay maaşı", d.calisanMaasi);
+  ekle("g yeni er maliyeti/ekstra", d.ekstraGider);
+  ekle("g nakit hasarı (olay/yağma vb.)", d.nakitHasar);
+  ekle("g yaşam gideri", na.giderYasam ?? 0);
+  ekle("g konut/kira", na.giderKonut ?? 0);
+  ekle("g faiz", na.faiz ?? 0);
+  ekle("g olay gideri", na.olayGideri ?? 0);
+  dokumYil += yil;
+}
+function dokumOmurAgirlikli(): void {
+  const kalemler = Array.from(new Set(DOKUM_OMURLER.flatMap((o) => Object.keys(o))));
+  const pay: Record<string, number[]> = {};
+  for (const o of DOKUM_OMURLER) {
+    const tG = Object.entries(o).filter(([k]) => k[0] === "G").reduce((t, [, v]) => t + v, 0);
+    const tg = Object.entries(o).filter(([k]) => k[0] === "g").reduce((t, [, v]) => t + v, 0);
+    if (tG <= 0 || tg <= 0) continue;
+    for (const k of kalemler) (pay[k] ??= []).push(((o[k] ?? 0) / (k[0] === "G" ? tG : tg)) * 100);
+  }
+  console.log(`\n[DÖKÜM, ÖMÜR AĞIRLIKLI] her ömrün kendi gelir/gider payı, ömürler arası ortalama (${DOKUM_OMURLER.length} ömür; zengin ordular ortalamayı domine etmez)`);
+  for (const t of ["G", "g"]) {
+    console.log(t === "G" ? "  GELİR" : "  GİDER");
+    for (const k of kalemler.filter((k) => k[0] === t).sort((a, b) => ortala(pay[b] ?? [0]) - ortala(pay[a] ?? [0]))) console.log(`    ${k.slice(2).padEnd(58)} %${y2(ortala(pay[k] ?? [0]))}`);
+  }
+}
+function dokumYazdir(): void {
+  const topG = Object.entries(DOKUM).filter(([k]) => k[0] === "G").reduce((t, [, v]) => t + v, 0);
+  const topg = Object.entries(DOKUM).filter(([k]) => k[0] === "g").reduce((t, [, v]) => t + v, 0);
+  console.log(`\n[DÖKÜM] Asker, 15-65 yaş, yıl başına ortalama (toplam ${dokumYil.toFixed(0)} ömür-yılı): gelir ${y2(topG / dokumYil)}, gider ${y2(topg / dokumYil)}`);
+  for (const t of ["G", "g"]) {
+    console.log(t === "G" ? "  GELİR" : "  GİDER");
+    for (const [k, v] of Object.entries(DOKUM).filter(([k]) => k[0] === t).sort((a, b) => b[1] - a[1])) {
+      console.log(`    ${k.slice(2).padEnd(58)} ${String(y2(v / dokumYil)).padStart(8)}/yıl  %${y2((v / (t === "G" ? topG : topg)) * 100)}`);
+    }
+  }
+}
+
 const savasTutarsizGorulen = new Set<string>();
 async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
   const bolge = rastgele(BOLGELER_BY_CAG[cag]);
@@ -544,6 +607,7 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
     sosyallesmeSayisi: 0, kendiIsHarcanan: 0, mulkHarcanan: 0, enYuksekPara: state.para,
   };
   const tur: TurKaydi[] = [];
+  const omurDokum: Record<string, number> = {};
   let takiliSavasYili = 0;
   let hataMi = false;
   let guard = 0;
@@ -566,6 +630,7 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
       }
       if (state.ulke.savasta && !state.buyuk_savas) takiliSavasYili += Math.max(0, state.yas - yasBas);
       const na = sonuc?.nakitAkisi;
+      if (process.env.SIM_DOKUM && meslek === "Asker" && yasBas < 65) dokumEkle(state, na, Math.max(1, Math.round(state.yas - yasBas)), omurDokum);
       if (process.env.SIM_DEBUG && state.isletme?.birlik) {
         const h = birlikHesapla(state, isletmeBaglami(state));
         console.log(`yas ${state.yas.toFixed(0)} r${state.rutbe_seviye} er ${erSayisi(state)}/${kislaLimiti(state)} para ${state.para.toFixed(0)} | sold ${h.sold.toFixed(0)} gorev ${h.gorevGeliri.toFixed(0)} gan ${h.ganimetNet.toFixed(0)} | erM ${h.erMasrafi.toFixed(0)} erzak ${h.erzak.toFixed(0)} kisla ${h.kislaBakim.toFixed(0)} tech ${h.techizatBakim.toFixed(0)} talim ${h.talimMasrafi.toFixed(0)} yarali ${h.yaraliGideri.toFixed(0)} | net ${h.net.toFixed(0)} | nakit: maas ${na?.maasBrut?.toFixed(0)} yasam ${na?.giderYasam?.toFixed(0)} konut ${na?.giderKonut?.toFixed(0)} ekip ${na?.giderEkip?.toFixed(0)} faiz ${na?.faiz?.toFixed(0)} svVergi ${na?.savasVergisi?.toFixed(0)} olay ${((na?.olayGeliri ?? 0) - (na?.olayGideri ?? 0)).toFixed(0)} diger ${na?.digerNet?.toFixed(0)} savas ${state.ulke.savasta} yil ${state.yil} bs ${state.buyuk_savas ? "VAR" : "yok"} | gorevler ${state.isletme?.birlik?.gorevler} guc ${gucHesapla(state).guc.toFixed(1)} bonus ${gucHesapla(state).bonuslar.map((x) => x.kod + ":" + x.deger.toFixed(2)).join(",")} moral ${state.isletme?.birlik?.moral} etk ${state.etiketler.filter((e) => /savas|cephe|tarihi/.test(e)).join(",")}`);
@@ -587,6 +652,7 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
     hataMi = true;
     console.error(`  [HATA] ${cag}/${meslek}: ${(err as Error).message}`);
   }
+  if (process.env.SIM_DOKUM && Object.keys(omurDokum).length) DOKUM_OMURLER.push(omurDokum);
   const son = await stateGetir(id);
   return { cag, meslek, olumYasi: son.yas, tur, sonPara: son.para, hataMi, takiliSavasYili };
 }
@@ -691,6 +757,7 @@ async function main(): Promise<void> {
       console.log(`[TAKILI SAVAŞ] ${meslek}: ömrün %${y2((takili.length / g.length) * 100)}'inde var; takılı yıl ort ${y2(ortala(takili.map((i) => i.takiliSavasYili)))}, medyan ${medyan(takili.map((i) => i.takiliSavasYili))}; ömrün ort. %${y2((ortala(g.map((i) => i.takiliSavasYili)) / ortala(g.map((i) => Math.max(1, i.olumYasi - 15)))) * 100)}'i takılı savaşta`);
     }
   }
+  if (process.env.SIM_DOKUM) { dokumYazdir(); dokumOmurAgirlikli(); }
   const rapor: any[] = [];
   for (const meslek of meslekler) rapor.push(meslekRapor(`MESLEK: ${meslek} (tüm çağlar)`, tum.filter((i) => i.meslek === meslek)));
   for (const cag of caglar) for (const meslek of meslekler)
