@@ -1153,7 +1153,7 @@ export interface BirlikGorunumu {
     politikalar: { id: BirlikTalim; ad: DilMetni; delta: number; tavan: number; masraf: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[];
   };
   politikalar: {
-    ganimetPayi: { secili: BirlikGanimetPayi; secenekler: { id: BirlikGanimetPayi; ad: DilMetni; oran: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };
+    ganimetPayi: { secili: BirlikGanimetPayi; kilitKalanYil: number; secenekler: { id: BirlikGanimetPayi; ad: DilMetni; oran: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };
     ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: DilMetni; aciklama: DilMetni; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };
   };
   moral: { deger: number; gucYuzde: number; sertlik: number };

@@ -384,6 +384,9 @@ interface TurKaydi {
   olay: number;
   mulk: number;
   gider: number;
+  er: number;
+  guc: number;
+  savas: boolean;
 }
 interface OyunIzi {
   cag: Cag;
@@ -392,6 +395,7 @@ interface OyunIzi {
   tur: TurKaydi[];
   sonPara: number;
   hataMi: boolean;
+  sonRutbe: number;
   /** Olayla ilan edilen (buyuk_savas kaydı olmayan) savaşta geçen yıl; bitişi olmayan savaş tutarsızlığını ölçer. */
   takiliSavasYili: number;
 }
@@ -619,6 +623,7 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
       state = await stateGetir(id);
       if (!state.aktif) break;
       const yasBas = state.yas;
+      const savasBas = state.ulke.savasta;
       const senaryo = await senaryoUret(id);
       const idx = secenekSec(senaryo.secenekler, state);
       let sonuc: any = await secimUygula(id, idx);
@@ -645,6 +650,9 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
           olay: (na.olayGeliri ?? 0) + Math.max(0, na.digerNet ?? 0),
           mulk: Math.max(0, na.mulkNet ?? 0),
           gider,
+          er: state.isletme?.birlik ? erSayisi(state) : 0,
+          guc: state.isletme?.birlik?.guc ?? 0,
+          savas: savasBas,
         });
       }
     }
@@ -654,7 +662,7 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
   }
   if (process.env.SIM_DOKUM && Object.keys(omurDokum).length) DOKUM_OMURLER.push(omurDokum);
   const son = await stateGetir(id);
-  return { cag, meslek, olumYasi: son.yas, tur, sonPara: son.para, hataMi, takiliSavasYili };
+  return { cag, meslek, olumYasi: son.yas, tur, sonPara: son.para, hataMi, takiliSavasYili, sonRutbe: son.rutbe_seviye };
 }
 
 /** Her turun gelirini, kapsadığı yaş yıllarına eşit yayar -> yıl başına dizi. */
@@ -670,6 +678,40 @@ function yilaYay(iz: OyunIzi): { yas: number; maas: number; olay: number; mulk: 
 }
 
 const DEKADLAR: [number, number][] = [[15, 19], [20, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 79], [80, 120]];
+
+
+/** Asker: yaş dekadına göre er sayısı ve askerî güç (yaşayanlar), ömür ortalaması/maksimumu, mutlak maksimum, rütbe dağılımı. */
+function askerOrdu(izler: OyunIzi[]): void {
+  const q = (a: number[], p: number) => { const x = [...a].sort((m, n) => m - n); return x.length ? x[Math.min(x.length - 1, Math.floor((x.length - 1) * p))] : 0; };
+  console.log("\n  ORDU (yaşayanlar): dekad | er ort / medyan / p90 / max | güç ort / medyan / p90 / max");
+  for (const [a, b] of DEKADLAR) {
+    const er: number[] = [], guc: number[] = [];
+    for (const iz of izler) for (const t of iz.tur) { const yas = Math.floor(t.yasSon); if (yas >= a && yas <= b) { er.push(t.er); guc.push(t.guc); } }
+    if (!er.length) continue;
+    console.log(`   ${(a === 80 ? "80+" : `${a}-${b}`).padEnd(6)} | ${y2(ortala(er)).toFixed(0).padStart(5)} / ${q(er, 0.5).toFixed(0).padStart(4)} / ${q(er, 0.9).toFixed(0).padStart(5)} / ${Math.max(...er).toFixed(0).padStart(5)} | ${y2(ortala(guc)).toFixed(0).padStart(5)} / ${q(guc, 0.5).toFixed(0).padStart(4)} / ${q(guc, 0.9).toFixed(0).padStart(5)} / ${Math.max(...guc).toFixed(0).padStart(6)}`);
+  }
+  const omurOrtEr = izler.map((i) => ortala(i.tur.map((t) => t.er)));
+  const omurMaksEr = izler.map((i) => Math.max(0, ...i.tur.map((t) => t.er)));
+  const omurOrtGuc = izler.map((i) => ortala(i.tur.map((t) => t.guc)));
+  const omurMaksGuc = izler.map((i) => Math.max(0, ...i.tur.map((t) => t.guc)));
+  console.log(`  Ömür başına: er ortalaması ${y2(ortala(omurOrtEr))} (medyan ${y2(medyan(omurOrtEr))}) · ömür zirvesi ort ${y2(ortala(omurMaksEr))} (medyan ${y2(medyan(omurMaksEr))}, p90 ${q(omurMaksEr, 0.9)}) · MUTLAK MAKS ${Math.max(...omurMaksEr)}`);
+  console.log(`  Ömür başına: güç ortalaması ${y2(ortala(omurOrtGuc))} (medyan ${y2(medyan(omurOrtGuc))}) · ömür zirvesi ort ${y2(ortala(omurMaksGuc))} (medyan ${y2(medyan(omurMaksGuc))}, p90 ${y2(q(omurMaksGuc, 0.9))}) · MUTLAK MAKS ${y2(Math.max(...omurMaksGuc))}`);
+  // Savaş yılı vs barış yılı: ordu büyüklüğü bandına göre yıl başına gelir/gider/net (turun yıl sayısına bölünerek).
+  console.log("\n  SAVAŞ vs BARIŞ (yıl başına, er bandına göre): band | barış gelir/gider/net (n tur) | savaş gelir/gider/net (n tur)");
+  for (const [lo, hi] of [[0, 40], [40, 100], [100, 200], [200, 451]]) {
+    const f = (sv: boolean) => {
+      const ts = izler.flatMap((i) => i.tur).filter((t) => t.savas === sv && t.er >= lo && t.er < hi && t.yasSon > t.yasBas);
+      if (!ts.length) return "-";
+      const yil = ts.reduce((a, t) => a + (t.yasSon - t.yasBas), 0);
+      const g = ts.reduce((a, t) => a + t.maas + t.olay + t.mulk, 0) / yil, d = ts.reduce((a, t) => a + t.gider, 0) / yil;
+      return `${g.toFixed(0)}/${d.toFixed(0)}/${(g - d).toFixed(0)} (${ts.length})`;
+    };
+    console.log(`   er ${String(lo).padStart(3)}-${String(hi - 1).padEnd(3)} | ${f(false).padEnd(22)} | ${f(true)}`);
+  }
+  const rd: Record<number, number> = {};
+  for (const i of izler) rd[i.sonRutbe] = (rd[i.sonRutbe] ?? 0) + 1;
+  console.log(`  Ölüm anı rütbe dağılımı: ${Object.entries(rd).sort().map(([k, v]) => `S${k} %${y2((v / izler.length) * 100)}`).join(" · ")}`);
+}
 
 function meslekRapor(baslik: string, izler: OyunIzi[]): any {
   console.log(`\n################  ${baslik}  (${izler.length} ömür)  ################`);
@@ -704,6 +746,7 @@ function meslekRapor(baslik: string, izler: OyunIzi[]): any {
       `${row.dekad.padEnd(8)} | ${String(row.yasayanYuzde).padStart(6)} | ${String(row.maas).padStart(8)} | ${String(row.olay).padStart(8)} | ${String(row.mulk).padStart(8)} | ${String(row.toplamGelir).padStart(10)} | ${String(row.gider).padStart(8)} | ${String(row.net).padStart(8)} | ${row.dekadToplam} | ${row.medyanYillik}`
     );
   }
+  if (izler.length && izler[0].meslek === "Asker") askerOrdu(izler);
   const omurGelir = yillar.map((yy) => yy.reduce((s, r) => s + r.maas + r.olay + r.mulk, 0));
   const omurMaas = yillar.map((yy) => yy.reduce((s, r) => s + r.maas, 0));
   const omurGider = yillar.map((yy) => yy.reduce((s, r) => s + r.gider, 0));

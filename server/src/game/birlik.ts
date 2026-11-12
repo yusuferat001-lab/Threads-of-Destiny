@@ -103,6 +103,7 @@ export function birlikVarsayilan(er: number): BirlikDurumu {
     talim: 0,
     talim_politikasi: "orta",
     ganimet_payi: "dengeli",
+    ganimet_kilit_bitis: null,
     ton: "dengeli",
     moral: MORAL_BASLANGIC,
     sertlik: 0,

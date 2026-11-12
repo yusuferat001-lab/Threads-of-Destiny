@@ -412,13 +412,13 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
 });
 
 describe("güce göre kesintisiz ganimet çarpanı", () => {
-  it("max(0,30; 1 − 0,0012 × güç): 0 → 1 · 100 → 0,88 · 300 → 0,64 · 500 → 0,40 · 583+ → 0,30", () => {
+  it("max(0,25; 1 − 0,0012 × güç): 0 → 1 · 100 → 0,88 · 300 → 0,64 · 500 → 0,40 · 625+ → 0,25", () => {
     expect(ganimetGucCarpani(0)).toBe(1);
     expect(ganimetGucCarpani(100)).toBeCloseTo(0.88, 10);
     expect(ganimetGucCarpani(300)).toBeCloseTo(0.64, 10);
     expect(ganimetGucCarpani(500)).toBeCloseTo(0.4, 10);
-    expect(ganimetGucCarpani(583.4)).toBeCloseTo(0.3, 3);
-    expect(ganimetGucCarpani(5000)).toBe(0.3);
+    expect(ganimetGucCarpani(625)).toBeCloseTo(0.25, 10);
+    expect(ganimetGucCarpani(5000)).toBe(0.25);
     // kesintisiz: 99 ile 100 arasında sıçrama yok
     expect(Math.abs(ganimetGucCarpani(99) - ganimetGucCarpani(100))).toBeLessThan(0.002);
   });
@@ -445,5 +445,37 @@ describe("güce göre kesintisiz ganimet çarpanı", () => {
     const buyuk = hesap(500);
     // aynı rastgelelik, aynı bonuslar: birim başı ganimet oranı çarpan oranına eşit
     expect(buyuk.brut / buyuk.guc / (kucuk.brut / kucuk.guc)).toBeCloseTo(ganimetGucCarpani(500) / ganimetGucCarpani(100), 1);
+  });
+});
+
+describe("ganimet payı 5 yılda bir değişir", () => {
+  it("ilk değişiklik serbest, sonra 5 yıl kilitli; aynı değeri seçmek kilit koymaz", async () => {
+    const { birlikKararUygula } = await import("../src/game/birlikIslem");
+    const s = asker();
+    s.rutbe_seviye = 2;
+    const b = birlikAl(s);
+    birlikKararUygula(s, { ganimet_payi: "dengeli" }); // aynı değer: kilit yok
+    expect(b.ganimet_kilit_bitis ?? null).toBeNull();
+    birlikKararUygula(s, { ganimet_payi: "comert" });
+    expect(b.ganimet_payi).toBe("comert");
+    expect(b.ganimet_kilit_bitis).toBe(s.yil + 5);
+    expect(() => birlikKararUygula(s, { ganimet_payi: "az" })).toThrow(/5 yılda bir/);
+    expect(b.ganimet_payi).toBe("comert");
+    s.yil += 4;
+    expect(() => birlikKararUygula(s, { ganimet_payi: "az" })).toThrow(/5 yılda bir/);
+    s.yil += 1;
+    birlikKararUygula(s, { ganimet_payi: "az" });
+    expect(b.ganimet_payi).toBe("az");
+    expect(b.ganimet_kilit_bitis).toBe(s.yil + 5);
+  });
+
+  it("kilit durumunda diğer politikalar (talim/ton) yine değişir", async () => {
+    const { birlikKararUygula } = await import("../src/game/birlikIslem");
+    const s = asker();
+    s.rutbe_seviye = 2;
+    birlikKararUygula(s, { ganimet_payi: "az" });
+    birlikKararUygula(s, { talim: "agir", ton: "sert" });
+    expect(birlikAl(s).talim_politikasi).toBe("agir");
+    expect(birlikAl(s).ton).toBe("sert");
   });
 });

@@ -1272,6 +1272,8 @@ export interface BirlikDurumu {
   talim: number;
   talim_politikasi: BirlikTalim;
   ganimet_payi: BirlikGanimetPayi;
+  /** Ganimet payı en erken bu oyun yılında yeniden değiştirilebilir (5 yılda bir); yoksa/null = serbest. */
+  ganimet_kilit_bitis?: number | null;
   ton: BirlikTon;
   moral: number;
   sertlik: number;

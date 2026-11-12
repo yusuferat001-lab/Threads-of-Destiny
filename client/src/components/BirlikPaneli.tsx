@@ -149,6 +149,7 @@ const M = {
   artilar: { tr: 'Artılar', en: 'Pros' },
   eksiler: { tr: 'Eksiler', en: 'Cons' },
   techUyari: { tr: '⚠ Seçtikten sonra 5 yıl boyunca değiştirilemez', en: '⚠ Once chosen, it cannot be changed for 5 years' },
+  ganimetUyari: { tr: '⚠ Ganimet payı 5 yılda bir değiştirilebilir', en: '⚠ The loot share can be changed once every 5 years' },
   techKilitli: { tr: '🔒 Değiştirmek için beklemelisin:', en: '🔒 You must wait to change it:' },
   techGuc: { tr: 'Güç', en: 'Strength' },
   techTalim: { tr: 'talim', en: 'drill' },
@@ -263,7 +264,8 @@ export function BirlikPaneli({
     baslik: string,
     secili: T,
     secenekler: { id: T; ad: D; arti: D[]; eksi: D[] }[],
-    onSec: (id: T) => void
+    onSec: (id: T) => void,
+    kilit?: { kalanYil: number; uyari: string; kilitli: string }
   ) => {
     const gosterilen = secenekler.find((s) => s.id === (onizle[anahtar] ?? secili)) ?? secenekler[0];
     return (
@@ -275,7 +277,7 @@ export function BirlikPaneli({
               key={s.id}
               type="button"
               className={s.id === secili ? 'ordu-politika-secili' : 'ikincil'}
-              disabled={yukleniyor || s.id === secili}
+              disabled={yukleniyor || s.id === secili || (kilit?.kalanYil ?? 0) > 0}
               onClick={() => onSec(s.id)}
               onMouseEnter={() => setOnizle({ ...onizle, [anahtar]: s.id })}
               onFocus={() => setOnizle({ ...onizle, [anahtar]: s.id })}
@@ -284,6 +286,11 @@ export function BirlikPaneli({
             </button>
           ))}
         </div>
+        {kilit && (
+          <div className={`techizat-uyari${kilit.kalanYil > 0 ? ' techizat-uyari-kilit' : ''}`}>
+            {kilit.kalanYil > 0 ? `${kilit.kilitli} ${kilit.kalanYil} ${t('yilSonra')}` : kilit.uyari}
+          </div>
+        )}
         <div className="ordu-politika-detay">
           <ul className="ordu-arti" aria-label={t('artilar')}>
             {gosterilen.arti.map((x, i) => (
@@ -446,7 +453,8 @@ export function BirlikPaneli({
             t('ganimetPayi'),
             b.politikalar.ganimetPayi.secili,
             b.politikalar.ganimetPayi.secenekler,
-            (id) => onBirlikKarar({ ganimet_payi: id })
+            (id) => onBirlikKarar({ ganimet_payi: id }),
+            { kalanYil: b.politikalar.ganimetPayi.kilitKalanYil, uyari: t('ganimetUyari'), kilitli: t('techKilitli') }
           )}
           {politika('talim', t('talimPol'), b.talim.politika, b.talim.politikalar, (id) => onBirlikKarar({ talim: id }))}
           {politika('ton', t('tonPol'), b.politikalar.ton.secili, b.politikalar.ton.secenekler, (id) => onBirlikKarar({ ton: id }))}

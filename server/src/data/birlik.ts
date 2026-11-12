@@ -393,11 +393,13 @@ export const ER_MASRAFI = 0.25;
 export const ERZAK_BIRIMI = 0.15;
 /**
  * Güce göre kesintisiz ganimet çarpanı (haydut/sınır çatışması ve savaş zaferi): ordu büyüdükçe ganimet birimi azalır.
- * çarpan = max(GANIMET_GUC_TABAN; 1 − GANIMET_GUC_AZALMA × güç): güç 100 → 0,88 · 300 → 0,64 · 500 → 0,40 · ≥583 → 0,30.
+ * çarpan = max(GANIMET_GUC_TABAN; 1 − GANIMET_GUC_AZALMA × güç): güç 100 → 0,88 · 300 → 0,64 · 500 → 0,40 · ≥625 → 0,25.
  * Yağma bundan etkilenmez.
  */
 export const GANIMET_GUC_AZALMA = 0.0012;
-export const GANIMET_GUC_TABAN = 0.3;
+/** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
+export const GANIMET_PAYI_KILIT_YIL = 5;
+export const GANIMET_GUC_TABAN = 0.25;
 export function ganimetGucCarpani(guc: number): number {
   return Math.max(GANIMET_GUC_TABAN, 1 - GANIMET_GUC_AZALMA * Math.max(0, guc));
 }

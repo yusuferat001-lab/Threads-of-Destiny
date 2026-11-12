@@ -27,6 +27,7 @@ import {
   SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
   BARIS_GANIMET_ARALIK,
+  GANIMET_PAYI_KILIT_YIL,
   ganimetGucCarpani,
   KUSATMA_ACIK,
   TUR_PAYI,
@@ -149,12 +150,15 @@ export function birlikKararUygula(state: CharacterState, k: BirlikKararGirdisi):
     }
   }
   if (k.ganimet_payi !== undefined && !GANIMET_SIRASI.includes(k.ganimet_payi as BirlikGanimetPayi)) throw new Error("Geçersiz ganimet payı.");
+  const ganimetDegisiyor = k.ganimet_payi !== undefined && k.ganimet_payi !== b.ganimet_payi;
+  if (ganimetDegisiyor && rutbeIndeksi(state) < 1) throw new Error("Ganimet payını ancak ikinci rütbeden itibaren belirleyebilirsin.");
+  if (ganimetDegisiyor && kilitKalan(state, b.ganimet_kilit_bitis ?? null) > 0) throw new Error("Ganimet payı 5 yılda bir değiştirilebilir.");
   if (k.talim !== undefined && !TALIM_SIRASI.includes(k.talim as BirlikTalim)) throw new Error("Geçersiz talim politikası.");
   if (k.ton !== undefined && !TON_SIRASI.includes(k.ton as BirlikTon)) throw new Error("Geçersiz komuta tonu.");
   if (k.gorevler !== undefined) b.gorevler = [...k.gorevler];
-  if (k.ganimet_payi !== undefined) {
-    if (rutbeIndeksi(state) < 1 && k.ganimet_payi !== b.ganimet_payi) throw new Error("Ganimet payını ancak ikinci rütbeden itibaren belirleyebilirsin.");
+  if (ganimetDegisiyor) {
     b.ganimet_payi = k.ganimet_payi as BirlikGanimetPayi;
+    b.ganimet_kilit_bitis = state.yil + GANIMET_PAYI_KILIT_YIL;
   }
   if (k.talim !== undefined) b.talim_politikasi = k.talim as BirlikTalim;
   if (k.ton !== undefined) b.ton = k.ton as BirlikTon;
@@ -697,7 +701,7 @@ export interface BirlikGorunumu {
     politikalar: { id: BirlikTalim; ad: { tr: string; en: string }; delta: number; tavan: number; masraf: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[];
   };
   politikalar: {
-    ganimetPayi: { secili: BirlikGanimetPayi; secenekler: { id: BirlikGanimetPayi; ad: { tr: string; en: string }; oran: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
+    ganimetPayi: { secili: BirlikGanimetPayi; kilitKalanYil: number; secenekler: { id: BirlikGanimetPayi; ad: { tr: string; en: string }; oran: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
     ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
   };
   moral: { deger: number; gucYuzde: number; sertlik: number };
@@ -888,6 +892,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
     politikalar: {
       ganimetPayi: {
         secili: b.ganimet_payi,
+        kilitKalanYil: kilitKalan(state, b.ganimet_kilit_bitis ?? null),
         secenekler: GANIMET_SIRASI.map((id) => ({ id, ad: GANIMET_PAYI_TANIMLARI[id].ad, oran: GANIMET_PAYI_TANIMLARI[id].oran, moral: GANIMET_PAYI_TANIMLARI[id].moral, ...ganimetArtiEksi(id) })),
       },
       ton: { secili: b.ton, secenekler: TON_SIRASI.map((id) => ({ id, ad: TON_TANIMLARI[id].ad, aciklama: TON_TANIMLARI[id].aciklama, moral: TON_TANIMLARI[id].moral, ...tonArtiEksi(id) })) },
