@@ -58,7 +58,6 @@ import { FAALIYETLER } from "../src/data/cemaat";
 import { doktrinBekleyenSeviye } from "../src/game/birlik";
 import { doktrinSecenekleri } from "../src/data/birlik";
 import { yolDali } from "../src/game/birlik";
-import { tarihiSavasKontrol } from "../src/data/tarihiSavaslar";
 import { giderEnflasyonCarpani, isletmeBaglami } from "../src/game/stateManager";
 import { birlikHesapla, erSayisi, kislaLimiti, gorevSlotSayisi, gucHesapla, komutaLimiti } from "../src/game/birlik";
 import { GOREVLER } from "../src/data/birlik";
@@ -565,12 +564,6 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
         savasTutarsizGorulen.add(id);
         console.log(`[TUTARSIZ] ${cag}/${meslek} yas ${state.yas} yil ${state.yil} ulke.savasta=${state.ulke.savasta} buyuk_savas=${JSON.stringify(state.buyuk_savas)} sonDonem=${JSON.stringify(state.ulke.donem)?.slice(0, 80)} sonBitis=${state.son_buyuk_savas_bitis_yili} olay=${(senaryo as any)?.olay_basligi}`);
       }
-      // SIM_SAVAS_DUZELT=1: olayla ilan edilen savaşın (buyuk_savas kaydı yok) tarihi pencere kapanınca bitmesini taklit eder
-      // (motorda böyle bir bitiş yok; bkz. dunya_savas_ilani). Oyun koduna dokunmadan düzeltmenin etkisini ölçmek içindir.
-      if (process.env.SIM_SAVAS_DUZELT && state.ulke.savasta && !state.buyuk_savas && !state.etiketler.some((e) => /savasinda/.test(e)) && !tarihiSavasKontrol(state.bolge, state.yil, state.cag)) {
-        state.ulke.savasta = false;
-        state.son_buyuk_savas_bitis_yili = state.yil;
-      }
       if (state.ulke.savasta && !state.buyuk_savas) takiliSavasYili += Math.max(0, state.yas - yasBas);
       const na = sonuc?.nakitAkisi;
       if (process.env.SIM_DEBUG && state.isletme?.birlik) {
@@ -702,7 +695,7 @@ async function main(): Promise<void> {
   for (const meslek of meslekler) rapor.push(meslekRapor(`MESLEK: ${meslek} (tüm çağlar)`, tum.filter((i) => i.meslek === meslek)));
   for (const cag of caglar) for (const meslek of meslekler)
     rapor.push(meslekRapor(`${cag} / ${meslek}`, tum.filter((i) => i.meslek === meslek && i.cag === cag)));
-  fs.writeFileSync(path.join(__dirname, `simulateMeslekGelir.${MOD}${process.env.SIM_SAVAS_DUZELT ? ".duzelt" : ""}.sonuc.json`), JSON.stringify(rapor, null, 2), "utf-8");
+  fs.writeFileSync(path.join(__dirname, `simulateMeslekGelir.${MOD}.sonuc.json`), JSON.stringify(rapor, null, 2), "utf-8");
   console.log(`\nBitti: ${tum.length} ömür, ${((Date.now() - t0) / 1000).toFixed(0)}sn, hatalı ${tum.filter((i) => i.hataMi).length}`);
 }
 main().catch((e) => { console.error(e); process.exit(1); });
