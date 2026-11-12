@@ -337,7 +337,7 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("askerde devlet payı yok; ganimetin askerlere giden payı politikayla %20/%40/%60", () => {
+  it("askerde devlet payı yok; ganimetin askerlere giden payı politikayla %30/%45/%60", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -351,11 +351,11 @@ describe("gelir ve gider", () => {
     const co = birlikHesapla(s, bg(s));
     s.ulke.savasta = true;
     b.ganimet_payi = "az";
-    b.savas_karari = { yil: s.yil, adimlar: [], adim: 0, inisiyatif_zorunlu: null, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma", esir: "karma" };
+    b.savas_karari = { yil: s.yil, adimlar: [], adim: 0, inisiyatif_zorunlu: null, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma_orta", esir: "karma" };
     const y = birlikHesapla(s, bg(s));
     expect(y.devletPayi).toBe(0);
     expect(y.yagmaBrut).toBeGreaterThan(0);
-    expect(y.erPayi / y.ganimetBrut).toBeCloseTo(0.2, 6);
+    expect(y.erPayi / y.ganimetBrut).toBeCloseTo(0.3, 6);
     b.ganimet_payi = "comert";
     const yc = birlikHesapla(s, bg(s));
     expect(yc.erPayi / yc.ganimetBrut).toBeCloseTo(0.6, 6);
@@ -398,7 +398,7 @@ describe("gelir ve gider", () => {
     const sonuc = savasiBitir(s, b, bg(s), uyar);
     expect(sonuc.zafer).toBe(true);
     expect(sonuc.brut).toBeGreaterThan(0);
-    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.4), 1);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.45), 1);
     expect(sonuc.kale).toBe(true);
     expect(b.kale).toBe(1);
     expect(s.unvanlar).toContain("Zafer Madalyası");
@@ -676,7 +676,8 @@ describe("savaş", () => {
     expect(b.savas!.ikmal).toBeDefined();
     const secilen = b.savas!.ikmal!;
     b.savas_karari = null; // yıl sonu
-    expect(birlikHesapla(s, bg(s)).yagmaBrut > 0).toBe(secilen.startsWith("yagma"));
+    expect(secilen.startsWith("yagma")).toBe(true); // ikmal yalnız yağma türleri
+    expect(birlikHesapla(s, bg(s)).yagmaBrut).toBe(0); // karar yılında (3. yıl) yağma geliri yok
     expect(b.savas!.ikmal).toBe(secilen);
   });
 

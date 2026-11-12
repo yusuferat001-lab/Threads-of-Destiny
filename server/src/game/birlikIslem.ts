@@ -360,7 +360,7 @@ export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | n
   // ESİR: Rütbe 3+ ilk esir çıkınca bir kez sorulur (savaş boyu geçerli).
   if (b.savas?.esir_bekliyor && !b.savas.esir_karari && rutbeIndeksi(state) + 1 >= ESIR_YETKI_RUTBE) adimlar.push("esir");
   b.savas_karari = {
-    yil: state.yil, adimlar, adim: 0, inisiyatif_zorunlu: zorunlu, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yeterli", esir: "karma",
+    yil: state.yil, adimlar, adim: 0, inisiyatif_zorunlu: zorunlu, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma_orta", esir: "karma",
   };
   return b.savas_karari;
 }
