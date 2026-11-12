@@ -290,12 +290,12 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("er başı görev geliri 1,00–1,80 arası (ek çarpan yok)", async () => {
+  it("er başı görev geliri 1,00–1,50 arası (ek çarpan yok)", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
     expect(GOREV_GELIR_CARPANI).toBe(1);
     const v = GOREVLER.map((g) => g.erBasi);
     expect(Math.min(...v)).toBeCloseTo(1.0, 6);
-    expect(Math.max(...v)).toBeCloseTo(1.8, 6);
+    expect(Math.max(...v)).toBeCloseTo(1.5, 6);
     for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
   });
 
@@ -371,6 +371,27 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     expect(sonuc.yagma_sert.ahlak).toBeLessThan(sonuc.yagma_yumusak.ahlak);
     expect(sonuc.yagma_sert.mutluluk).toBeLessThan(sonuc.yagma_yumusak.mutluluk);
     expect(sonuc.yagma_sert.moral).toBeGreaterThan(sonuc.yagma_yumusak.moral);
+  });
+
+  it("yağma türlerinin sertliği farklıdır; erzak gideri yalnız savaşta, türe göre %75/55/35 düşer", () => {
+    expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].sertlik)).toEqual([2.5, 1.5, 0.5]);
+    expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].yagma.erzakIndirimi)).toEqual([0.75, 0.55, 0.35]);
+    const { s, sv } = savasAskeri();
+    const savasErzak: Record<string, number> = {};
+    for (const id of IKMAL_SIRASI) {
+      sv.ikmal = id;
+      sv.yil_sayac = 2; // yağma yılı dışında da (3. yıl) indirim sürer: savaş boyu
+      savasErzak[id] = birlikHesapla(s, bg(s)).erzak;
+    }
+    expect(savasErzak.yagma_sert).toBeLessThan(savasErzak.yagma_orta);
+    expect(savasErzak.yagma_orta).toBeLessThan(savasErzak.yagma_yumusak);
+    expect(savasErzak.yagma_sert / savasErzak.yagma_orta).toBeCloseTo(0.25 / 0.45, 6);
+    expect(savasErzak.yagma_yumusak / savasErzak.yagma_orta).toBeCloseTo(0.65 / 0.45, 6);
+    // barışta indirim yok: seçilen yağma türü erzak giderini değiştirmez
+    s.ulke.savasta = false;
+    birlikAl(s).savas = null;
+    const baris = birlikHesapla(s, bg(s)).erzak;
+    expect(baris).toBeGreaterThan(savasErzak.yagma_yumusak / 1.07); // savaş dönem çarpanı 1,07 ve indirim yokken
   });
 
   it("erzak dönem çarpanı 0,9–1,1 bandında (bolluk 0,9 · durgunluk 1 · kıtlık 1,1)", () => {

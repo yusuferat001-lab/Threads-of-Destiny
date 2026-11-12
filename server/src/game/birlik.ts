@@ -29,7 +29,6 @@ import {
   LIMIT_ASIM_GIDER_CARPANI,
   YARALI_TEDAVI_GIDERI,
   SEFER_ORDU_ORANI,
-  YAGMA_ERZAK_CARPANI,
   YAGMA_ESIR,
   YAGMA_YIL,
   GOREV_GELIR_CARPANI,
@@ -535,7 +534,7 @@ export function kayipCarpani(state: CharacterState): number {
   const zirhli = ZIRHLI_OLU_AZALTMA * turOrani(b, "zirhli");
   return Math.max(0.3, 1 - talim - revir - tabip - zirhli + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
 }
-/** Levazım subayı + doktrin: er masrafı ve erzak çarpanı. */
+/** Doktrin (Levazım Disiplini vb.) + yol + ekip bonusu: er masrafı ve erzak çarpanı. */
 export function masrafCarpani(state: CharacterState): number {
   const b = birlikAl(state);
   const doktrin = doktrinToplami(b.doktrinler);
@@ -651,7 +650,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const erMasrafi = giderEri * ER_MASRAFI * bg.giderEnflasyon * (1 + turBakim) * mC;
   const donem = state.ulke.savasta ? "savas" : state.veba?.aktif ? "veba" : state.ulke.donem?.tur ?? "durgunluk";
   const seferEk = b.savas?.seferberlik ? { genel: 0.2, dengeli: 0.08, secme: 0 }[b.savas.seferberlik] : 0;
-  const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (yagma ? YAGMA_ERZAK_CARPANI : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
+  const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (savasta ? 1 - ikmal.yagma.erzakIndirimi : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
   const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon;
   const techizatBakim = (b.kalite.dusuk * KALITE_BAKIM.dusuk + b.kalite.orta * KALITE_BAKIM.orta + b.kalite.yuksek * KALITE_BAKIM.yuksek) * bg.giderEnflasyon;
   const yaraliGideri = yaraliSayisi(state) * YARALI_TEDAVI_GIDERI * bg.giderEnflasyon;

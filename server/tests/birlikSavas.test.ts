@@ -387,20 +387,20 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("her görevin asker başı net kazancı 1,00–1,80 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
+  it("her görevin asker başı net kazancı 1,00–1,50 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
       expect(g.erBasi).toBeGreaterThanOrEqual(1.0 - 1e-6);
-      expect(g.erBasi).toBeLessThanOrEqual(1.8 + 1e-6);
+      expect(g.erBasi).toBeLessThanOrEqual(1.5 + 1e-6);
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
     expect(sira[0].minGuc).toBe(10);
     expect(sira[sira.length - 1].minGuc).toBe(230);
     expect(sira[0].erBasi).toBe(1);
-    expect(sira[sira.length - 1].erBasi).toBe(1.8);
+    expect(sira[sira.length - 1].erBasi).toBe(1.5);
     expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
   });
   it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,15 / 0,30 / 0,45", () => {

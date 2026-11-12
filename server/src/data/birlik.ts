@@ -484,43 +484,43 @@ export const GOREVLER: GorevTanimi[] = [
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 25, erBasi: 1.11, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 25, erBasi: 1.07, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.01, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
   },
   {
-    id: "haydut", tur: "haydut", simge: "🗡️", minGuc: 45, erBasi: 1.23, yalnizSavas: false, ganimet: 0.1,
+    id: "haydut", tur: "haydut", simge: "🗡️", minGuc: 45, erBasi: 1.14, yalnizSavas: false, ganimet: 0.1,
     kayipBaris: 0.01, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1, senaryo: "haydut",
     ad: { orta: { tr: "Haydut Avı", en: "Bandit Hunt" }, sanayi: { tr: "Eşkıya Avı", en: "Outlaw Hunt" } },
     aciklama: { tr: "Küçük ganimet ve esir; süvari ve okçu işe yarar.", en: "Small loot and prisoners; cavalry and archers help." },
   },
   {
-    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 70, erBasi: 1.34, yalnizSavas: false, ganimet: 0,
+    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 70, erBasi: 1.21, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.005, kayipSavas: 0.01, sertlik: 1.2, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Haraç ve Vergi Tahsilatı", en: "Tribute & Tax Collection" }, sanayi: { tr: "Jandarma ve Vergi Tahsilatı", en: "Gendarmerie & Tax Collection" } },
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "akin", tur: "akin", simge: "🔥", minGuc: 100, erBasi: 1.46, yalnizSavas: false, ganimet: 0.15,
+    id: "akin", tur: "akin", simge: "🔥", minGuc: 100, erBasi: 1.29, yalnizSavas: false, ganimet: 0.15,
     kayipBaris: 0.02, kayipSavas: 0.08, sertlik: 0.6, savasCarpani: 2, senaryo: "savas",
     ad: { orta: { tr: "Akın ve Baskın", en: "Raid & Foray" }, sanayi: { tr: "İsyan Bastırma", en: "Suppressing Revolt" } },
     aciklama: { tr: "Barışta zayıf; savaşta geliri ikiye katlar, ganimet getirir ama kayıp yüksektir.", en: "Weak in peace; doubles income in war and brings loot, but losses are heavy." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 140, erBasi: 1.57, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 140, erBasi: 1.36, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "Düşük kayıp, istikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Low losses, steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "muhafiz", tur: "muhafiz", simge: "👑", minGuc: 185, erBasi: 1.69, sohret: 0.5, yalnizSavas: false, ganimet: 0,
+    id: "muhafiz", tur: "muhafiz", simge: "👑", minGuc: 185, erBasi: 1.43, sohret: 0.5, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.005, sertlik: -0.3, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Saray ve Kale Muhafızlığı", en: "Court & Castle Guard" }, sanayi: { tr: "Liman ve Kale Komutanlığı", en: "Harbour & Fort Command" } },
     aciklama: { tr: "Düşük kayıp, iyi ödeme; şöhret getirir.", en: "Low losses, good pay; brings renown." },
   },
   {
-    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 230, erBasi: 1.80, sohret: 1.0, yalnizSavas: false, ganimet: 0.05,
+    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 230, erBasi: 1.50, sohret: 1.0, yalnizSavas: false, ganimet: 0.05,
     kayipBaris: 0.005, kayipSavas: 0.03, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
     aciklama: { tr: "Büyük ordu ister; yüksek ve düzenli kazanç, şöhret getirir.", en: "Needs a big army; high, steady earnings and renown." },
@@ -667,6 +667,8 @@ export const ROL_SIRASI: BirlikRol[] = ["onc", "ana", "yedek"];
 /** Yağma türü: yıllık yağma geliri = askerî güç × gucOrani (savaşın ilk YAGMA_YIL yılı); ahlak/mutluluk (oyuncu) ve ordu morali o yağma yılı için bir kerelik değişir. */
 export interface YagmaTuru {
   gucOrani: number;
+  /** Savaş boyunca (yalnız savaşta) erzak giderinden düşen oran: sert %75, orta %55, yumuşak %35. */
+  erzakIndirimi: number;
   ahlak: number;
   mutluluk: number;
   moral: number;
@@ -677,20 +679,20 @@ export const IKMAL_TANIMLARI: Record<
   { erzakOran: number; maliyet: number; sertlik: number; ganimet: number; yagma: YagmaTuru; ad: DilliMetin; aciklama: DilliMetin }
 > = {
   yagma_sert: {
-    erzakOran: 0, maliyet: 1, sertlik: 1.5, ganimet: 1,
-    yagma: { gucOrani: 0.7, ahlak: -3, mutluluk: -3, moral: 4 },
+    erzakOran: 0, maliyet: 1, sertlik: 2.5, ganimet: 1,
+    yagma: { gucOrani: 0.7, erzakIndirimi: 0.75, ahlak: -3, mutluluk: -3, moral: 4 },
     ad: { tr: "Sert yağma", en: "Harsh plunder" },
     aciklama: { tr: "Köyleri soyarsın: en çok para; ordu coşar ama halk ezilir, vicdanın ve keyfin kaçar.", en: "You strip the villages bare: the most coin; the men are exalted, but the people suffer and your conscience and spirits sink." },
   },
   yagma_orta: {
     erzakOran: 0, maliyet: 1, sertlik: 1.5, ganimet: 1,
-    yagma: { gucOrani: 0.5, ahlak: 0, mutluluk: 0, moral: 0 },
+    yagma: { gucOrani: 0.5, erzakIndirimi: 0.55, ahlak: 0, mutluluk: 0, moral: 0 },
     ad: { tr: "Orta yağma", en: "Moderate plunder" },
     aciklama: { tr: "Köylerden ölçülü ganimet; ne ordunun ne senin moralin değişir.", en: "Measured loot from the villages; neither the army's morale nor yours shifts." },
   },
   yagma_yumusak: {
-    erzakOran: 0, maliyet: 1, sertlik: 1.5, ganimet: 1,
-    yagma: { gucOrani: 0.3, ahlak: 3, mutluluk: 3, moral: -4 },
+    erzakOran: 0, maliyet: 1, sertlik: 0.5, ganimet: 1,
+    yagma: { gucOrani: 0.3, erzakIndirimi: 0.35, ahlak: 3, mutluluk: 3, moral: -4 },
     ad: { tr: "Yumuşak yağma", en: "Gentle plunder" },
     aciklama: { tr: "Az para toplarsın; halka kıymazsın, vicdanın ve keyfin yerinde olur ama ordu söylenir.", en: "You gather little; you spare the people and your conscience and spirits stay light, but the men grumble." },
   },
@@ -900,9 +902,8 @@ export const ASKER_SALDIRI_HASARLARI = {
 
 // ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
 /** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım ×SAVAS_ER_BASI_CARPANI. */
-/** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,7 / ölçülü 0,5 / yumuşak 0,3); yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı bu çarpanla; esir/yeni er oranları. */
+/** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,7 / ölçülü 0,5 / yumuşak 0,3); yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %75/55/35 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
 export const YAGMA_YIL = 2;
-export const YAGMA_ERZAK_CARPANI = 0.6;
 export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
 /** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(5; 7); esir = güç × bu × yıl. Yenilgide ganimet yok. */
