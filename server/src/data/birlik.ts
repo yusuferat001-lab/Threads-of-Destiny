@@ -391,8 +391,18 @@ export const SUVARI_GOREV_GELIRI = 0.1;
 export const SAVAS_ER_BASI_CARPANI = 3;
 export const ER_MASRAFI = 0.25;
 export const ERZAK_BIRIMI = 0.15;
-/** Barış çatışması (haydut / sınır) zafer ganimeti = askerî güç × U(a; b) (yenilgide ganimet yok). */
-export const BARIS_GANIMET_ARALIK: Aralik = [1.5, 1.9];
+/**
+ * Güce göre kesintisiz ganimet çarpanı (haydut/sınır çatışması ve savaş zaferi): ordu büyüdükçe ganimet birimi azalır.
+ * çarpan = max(GANIMET_GUC_TABAN; 1 − GANIMET_GUC_AZALMA × güç): güç 100 → 0,88 · 300 → 0,64 · 500 → 0,40 · ≥583 → 0,30.
+ * Yağma bundan etkilenmez.
+ */
+export const GANIMET_GUC_AZALMA = 0.0012;
+export const GANIMET_GUC_TABAN = 0.3;
+export function ganimetGucCarpani(guc: number): number {
+  return Math.max(GANIMET_GUC_TABAN, 1 - GANIMET_GUC_AZALMA * Math.max(0, guc));
+}
+/** Barış çatışması (haydut / sınır) zafer ganimeti = askerî güç × U(a; b) × ganimetGucCarpani(güç) (yenilgide ganimet yok). */
+export const BARIS_GANIMET_ARALIK: Aralik = [1.6, 2];
 /** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
 export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
 export const ASKER_KARIYER_GUC_TAVANI = 2.5;
@@ -906,8 +916,8 @@ export const ASKER_SALDIRI_HASARLARI = {
 export const YAGMA_YIL = 2;
 export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
-/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(5; 7); esir = güç × bu × yıl. Yenilgide ganimet yok. */
-export const SAVAS_ZAFER_GANIMET: Aralik = [5, 7];
+/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(5,8; 6,8) × ganimetGucCarpani(güç); esir = güç × bu × yıl. Yenilgide ganimet yok. */
+export const SAVAS_ZAFER_GANIMET: Aralik = [5.8, 6.8];
 export const SAVAS_ZAFER_ESIR = 0.015;
 /** Kiralık ordu: ordunun bu kesri kadar, savaş süresince; eğitimli ve pahalı. */
 export const KIRALIK_ORAN = 0.4;

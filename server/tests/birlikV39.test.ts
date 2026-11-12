@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -77,15 +77,15 @@ describe("v39 ganimet", () => {
       const guc = b.guc;
       const sonuc = savasiBitir(s, b, bg(s), []);
       if (zafer) {
-        expect(sonuc.brut).toBeGreaterThanOrEqual(guc * SAVAS_ZAFER_GANIMET[0] * 0.5);
-        expect(sonuc.brut).toBeLessThanOrEqual(guc * SAVAS_ZAFER_GANIMET[1] * 3);
+        expect(sonuc.brut).toBeGreaterThanOrEqual(guc * SAVAS_ZAFER_GANIMET[0] * ganimetGucCarpani(guc) * 0.5);
+        expect(sonuc.brut).toBeLessThanOrEqual(guc * SAVAS_ZAFER_GANIMET[1] * ganimetGucCarpani(guc) * 3);
       } else expect(sonuc.brut).toBe(0);
     }
   });
 
-  it("sabitler: haydut/sınır 1,5–1,9, savaş zaferi 5–7, yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
-    expect(BARIS_GANIMET_ARALIK).toEqual([1.5, 1.9]);
-    expect(SAVAS_ZAFER_GANIMET).toEqual([5, 7]);
+  it("sabitler: haydut/sınır 1,6–2,0, savaş zaferi 5,8–6,8, yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
+    expect(BARIS_GANIMET_ARALIK).toEqual([1.6, 2]);
+    expect(SAVAS_ZAFER_GANIMET).toEqual([5.8, 6.8]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
   });
@@ -408,5 +408,42 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     b.savas_karari = null;
     birlikHazirla(s);
     expect(birlikAl(s).savas!.ikmal).toBe("yagma_orta");
+  });
+});
+
+describe("güce göre kesintisiz ganimet çarpanı", () => {
+  it("max(0,30; 1 − 0,0012 × güç): 0 → 1 · 100 → 0,88 · 300 → 0,64 · 500 → 0,40 · 583+ → 0,30", () => {
+    expect(ganimetGucCarpani(0)).toBe(1);
+    expect(ganimetGucCarpani(100)).toBeCloseTo(0.88, 10);
+    expect(ganimetGucCarpani(300)).toBeCloseTo(0.64, 10);
+    expect(ganimetGucCarpani(500)).toBeCloseTo(0.4, 10);
+    expect(ganimetGucCarpani(583.4)).toBeCloseTo(0.3, 3);
+    expect(ganimetGucCarpani(5000)).toBe(0.3);
+    // kesintisiz: 99 ile 100 arasında sıçrama yok
+    expect(Math.abs(ganimetGucCarpani(99) - ganimetGucCarpani(100))).toBeLessThan(0.002);
+  });
+
+  it("barış çatışması ve savaş zaferi ganimeti çarpanı uygular; yağma uygulamaz", () => {
+    const hesap = (guc: number) => {
+      const s = asker();
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = 300;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 300, orta: 0, yuksek: 0 };
+      b.guc = guc;
+      s.ulke.savasta = true;
+      const sv = savasBaslat(s);
+      sv.genel_zafer = 3;
+      sv.genel_yenilgi = 1;
+      b.guc = guc;
+      vi.spyOn(Math, "random").mockReturnValue(0.5);
+      const sonuc = savasiBitir(s, b, bg(s), []);
+      vi.restoreAllMocks();
+      return { brut: sonuc.brut, guc };
+    };
+    const kucuk = hesap(100);
+    const buyuk = hesap(500);
+    // aynı rastgelelik, aynı bonuslar: birim başı ganimet oranı çarpan oranına eşit
+    expect(buyuk.brut / buyuk.guc / (kucuk.brut / kucuk.guc)).toBeCloseTo(ganimetGucCarpani(500) / ganimetGucCarpani(100), 1);
   });
 });

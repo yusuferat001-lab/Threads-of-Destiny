@@ -54,6 +54,7 @@ import {
   MADALYA_SOHRET,
   SAVAS_ZAFER_ESIR,
   SAVAS_ZAFER_GANIMET,
+  ganimetGucCarpani,
   SEFER_DONUS_MORAL,
   SEFER_DONUS_TALIM,
   YAGMA_ER_ORANI,
@@ -618,7 +619,7 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
   const emir = emirGetir(sv.emir);
   const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
   const ortGanimet = (SAVAS_ZAFER_GANIMET[0] + SAVAS_ZAFER_GANIMET[1]) / 2;
-  const brut = zafer ? gucOnce * ortGanimet * bg.enflasyon * carpan : 0;
+  const brut = zafer ? gucOnce * ortGanimet * ganimetGucCarpani(gucOnce) * bg.enflasyon * carpan : 0;
   const net = brut * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
   const yilSayisi = Math.max(1, (sv.yil_sayac ?? 0) + 1);
   const sonuc: SavasGunuSonucu = {
@@ -738,7 +739,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     const emir = emirGetir(sv.emir);
     const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
     const guc = b.guc;
-    sonuc.brut = r2(guc * aralikCek(SAVAS_ZAFER_GANIMET) * bg.enflasyon * carpan);
+    sonuc.brut = r2(guc * aralikCek(SAVAS_ZAFER_GANIMET) * ganimetGucCarpani(guc) * bg.enflasyon * carpan);
     sonuc.erPayi = r2(sonuc.brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
     sonuc.net = r2(sonuc.brut - sonuc.erPayi);
     sonuc.esir = olasilikliYuvarla(guc * SAVAS_ZAFER_ESIR * Math.max(1, sv.yil_sayac ?? state.yil - sv.baslangic_yili));
@@ -824,7 +825,7 @@ function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBa
   const dusmanEff = dusmanTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN);
   const zafer = oyuncuEff >= dusmanEff;
   const carpan = (1 + sub.ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
-  const brut = zafer ? guc * aralikCek(BARIS_GANIMET_ARALIK) * bg.enflasyon * carpan : 0;
+  const brut = zafer ? guc * aralikCek(BARIS_GANIMET_ARALIK) * ganimetGucCarpani(guc) * bg.enflasyon * carpan : 0;
   const devlet = 0; // askerde devlet payı yok
   const erPayi = brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
   const net = brut - erPayi;
