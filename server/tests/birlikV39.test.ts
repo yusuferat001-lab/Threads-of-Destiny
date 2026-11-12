@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani, GOREV_GUC_KATSAYISI, BARIS_GANIMET_TABAN, SAVAS_ZAFER_GANIMET_TABAN, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani, BARIS_GANIMET_TABAN, SAVAS_ZAFER_GANIMET_TABAN, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -170,13 +170,21 @@ describe("v39 subaylar", () => {
 });
 
 describe("v39 haydut / sınır çatışması", () => {
-  it("haydut tablosu yaşa göre yavaş artar, sınır ×1,3; savaş tablosundan düşüktür", async () => {
-    const { barisDusmanGucuYas, dusmanReferansGucuYas } = await import("../src/data/birlik");
-    expect(barisDusmanGucuYas(25, "haydut")).toBe(28);
-    expect(barisDusmanGucuYas(45, "haydut")).toBe(80);
-    expect(barisDusmanGucuYas(80, "haydut")).toBe(250);
-    expect(barisDusmanGucuYas(35, "sinir")).toBeCloseTo(50 * 1.3, 6);
-    for (const y of [25, 35, 45, 55, 65, 80]) expect(barisDusmanGucuYas(y, "haydut")).toBeLessThan(dusmanReferansGucuYas(y));
+  it("düşman tabloları: ilk 7–8 yıl (15–22 yaş) kolay ve düz, sonra hızlı artar; sınır ×1,1; her iki tablo yaşla azalmaz", async () => {
+    const { barisDusmanGucuYas, savasDusmanGucuYas, BARIS_DUSMAN_YAS, SAVAS_DUSMAN_YAS, BARIS_SINIR_CARPANI } = await import("../src/data/birlik");
+    expect(BARIS_SINIR_CARPANI).toBe(1.1);
+    expect(barisDusmanGucuYas(22, "haydut")).toBeLessThan(25); // ilk yıllar zorlamaz (oyuncu ≈ 25 güçle başlar)
+    expect(savasDusmanGucuYas(22)).toBeLessThan(30);
+    // 22 yaştan 40'a ve 40'tan 65'e hızlı artış: eski tablo ([25→28, 45→80, 65→170]) çok altında kalırdı
+    expect(barisDusmanGucuYas(65, "haydut")).toBeGreaterThan(200);
+    expect(savasDusmanGucuYas(80)).toBeGreaterThan(600);
+    expect(barisDusmanGucuYas(35, "sinir")).toBeCloseTo(barisDusmanGucuYas(35, "haydut") * 1.1, 6);
+    for (const tablo of [BARIS_DUSMAN_YAS, SAVAS_DUSMAN_YAS]) {
+      for (let i = 1; i < tablo.length; i++) {
+        expect(tablo[i][0]).toBeGreaterThan(tablo[i - 1][0]);
+        expect(tablo[i][1]).toBeGreaterThanOrEqual(tablo[i - 1][1]);
+      }
+    }
   });
 
   it("çatışma uyarısı baskın/av, düşman kaybı ve bizim kaybımız (yaralı ≥ ölü) içerir; yenilgide ganimet yok", () => {
@@ -292,12 +300,12 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("er başı görev geliri 1,00–1,50 arası (ek çarpan yok)", async () => {
+  it("güç başı görev geliri 0,70–1,05 arası (ek çarpan yok)", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
     expect(GOREV_GELIR_CARPANI).toBe(1);
     const v = GOREVLER.map((g) => g.erBasi);
-    expect(Math.min(...v)).toBeCloseTo(1.0, 6);
-    expect(Math.max(...v)).toBeCloseTo(1.5, 6);
+    expect(Math.min(...v)).toBeCloseTo(0.7, 6);
+    expect(Math.max(...v)).toBeCloseTo(1.05, 6);
     for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
   });
 
@@ -497,14 +505,13 @@ describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indiri
     return { s, b };
   }
 
-  it("görev geliri barışta yaralı olmayan erlerin toplam gücü × görev erBasi × katsayı (0,7)", () => {
+  it("görev geliri barışta yaralı olmayan erlerin toplam gücü × görev erBasi (0,70 devriye)", () => {
     const { s } = ordu(100);
     const h = birlikHesapla(s, bg(s));
     const guc = gucHesapla(s).guc;
-    expect(GOREV_GUC_KATSAYISI).toBe(0.7);
-    // devriye erBasi 1,00: gelir = güç × 1,00 × 0,6 × enflasyon × dönem çarpanı × bonuslar (savaş yok)
+    // devriye erBasi 0,70: gelir = güç × 0,70 × enflasyon × dönem çarpanı × bonuslar (savaş yok)
     expect(h.gorevGeliri).toBeGreaterThan(0);
-    expect(h.gorevGeliri / (guc * 0.6 * bg(s).enflasyon)).toBeGreaterThan(0.5);
+    expect(h.gorevGeliri / (guc * 0.7 * bg(s).enflasyon)).toBeGreaterThan(0.5);
     // aynı er sayısı, daha iyi teçhizat = daha çok güç = daha çok görev geliri
     const iyi = ordu(100, "yuksek");
     expect(birlikHesapla(iyi.s, bg(iyi.s)).gorevGeliri).toBeGreaterThan(h.gorevGeliri);

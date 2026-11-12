@@ -11,7 +11,7 @@ import {
   ARAZI_CARPANLARI,
   BASLANGIC_ER,
   KUSATMA_ACIK,
-  dusmanReferansGucuYas,
+  savasDusmanGucuYas,
   DOKTRINLER,
   ER_BASI_GELIR,
   ER_MASRAFI,
@@ -31,7 +31,6 @@ import {
   SEFER_ORDU_ORANI,
   YAGMA_ESIR,
   YAGMA_YIL,
-  GOREV_GUC_KATSAYISI,
   SAVAS_KISLA_INDIRIMI,
   GOREV_GELIR_CARPANI,
   SUVARI_GOREV_GELIRI,
@@ -483,7 +482,8 @@ export function doktrinBekliyorMu(state: CharacterState): boolean {
 
 // ── Düşman gücü (mutlak; bizim gücümüzden bağımsız) ─────────────────────────
 /** Karakterin yaşına göre düşman referans gücü (rütbeden bağımsız: rütbe zaten güçten türer). */
-export const dusmanReferansGucu = (state: CharacterState) => dusmanReferansGucuYas(state.yas);
+/** Büyük savaştaki düşmanın yaşa göre mutlak gücü (SAVAS_DUSMAN_YAS). */
+export const dusmanReferansGucu = (state: CharacterState) => savasDusmanGucuYas(state.yas);
 // ── Görevler ────────────────────────────────────────────────────────────────
 export const gorevSlotSayisi = (state: CharacterState) => GOREV_SLOTLARI[rutbeIndeksi(state)];
 
@@ -626,7 +626,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const akinC = (g.tur === "akin" ? mizrakliAkin : 1) * (g.tur === "akin" || g.tur === "haydut" ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1);
-    const gelir = gucPay * g.erBasi * GOREV_GUC_KATSAYISI * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
+    const gelir = gucPay * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;
@@ -643,9 +643,9 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const yagmaBrut = yagma ? b.guc * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
   const toplamBrut = ganimetBrut + yagmaBrut;
   const devletPayi = 0; // askerde devlet payı/vergi yok
-  // Yağma doğrudan hazineye girer: yalnız görev ganimetinden askere pay düşülür.
-  const erPayi = ganimetBrut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
-  const ganimetNet = toplamBrut - erPayi;
+  // Er payı YALNIZ haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (olay anında, birlikYil). Görev ganimeti ve yağma doğrudan hazineye girer.
+  const erPayi = 0;
+  const ganimetNet = toplamBrut;
   const esirBeklenen = gorevler.reduce((t, x) => t + x.esir, 0) + (yagma ? b.guc * YAGMA_ESIR * ganimetC : 0);
   const paylar = turPaylari(b);
   const turBakim = (Object.entries(paylar) as [BirlikTur, number][]).reduce((t, [tur, pay]) => t + pay * TUR_TANIMLARI[tur].bakim, 0);

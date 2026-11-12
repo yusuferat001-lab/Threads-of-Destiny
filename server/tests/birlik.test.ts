@@ -338,30 +338,42 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("askerde devlet payı yok; görev ganimetinden askerlere giden pay politikayla %30/%45/%60; yağmadan pay düşülmez", () => {
+  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%30/%45/%60); görev ganimeti ve yağma doğrudan hazineye", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
     b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
     b.gorevler = ["haydut"];
-    b.ganimet_payi = "az";
-    const az = birlikHesapla(s, bg(s));
-    b.ganimet_payi = "dengeli";
-    const de = birlikHesapla(s, bg(s));
-    b.ganimet_payi = "comert";
-    const co = birlikHesapla(s, bg(s));
-    expect(az.erPayi / az.ganimetBrut).toBeCloseTo(0.3, 6);
-    expect(de.erPayi / de.ganimetBrut).toBeCloseTo(0.45, 6);
-    expect(co.erPayi / co.ganimetBrut).toBeCloseTo(0.6, 6);
+    for (const id of ["az", "dengeli", "comert"] as const) {
+      b.ganimet_payi = id;
+      const h = birlikHesapla(s, bg(s));
+      expect(h.devletPayi).toBe(0);
+      expect(h.erPayi).toBe(0); // görev ganimetinden pay düşülmez
+      expect(h.ganimetNet).toBeCloseTo(h.ganimetBrut, 6);
+    }
     s.ulke.savasta = true;
-    b.ganimet_payi = "comert";
     b.savas_karari = { yil: s.yil, adimlar: [], adim: 0, inisiyatif_zorunlu: null, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma_orta", esir: "karma" };
     const y = birlikHesapla(s, bg(s));
-    expect(y.devletPayi).toBe(0);
     expect(y.yagmaBrut).toBeGreaterThan(0);
-    expect(y.erPayi).toBe(0); // yağma direkt hazineye: er payı yok (savaşta görev ganimeti de yok)
+    expect(y.erPayi).toBe(0); // yağma direkt hazineye
     expect(y.ganimetNet).toBeCloseTo(y.yagmaBrut, 6);
-    expect(az.devletPayi + de.devletPayi + co.devletPayi).toBe(0);
+    // savaş zaferi ganimetinden politikaya göre pay düşer
+    const oranlar: Record<string, number> = { az: 0.3, dengeli: 0.45, comert: 0.6 };
+    for (const id of ["az", "dengeli", "comert"] as const) {
+      const z = asker();
+      z.meslek_musteri = 200;
+      const bz = birlikAl(z);
+      bz.kalite = { dusuk: 0, orta: 0, yuksek: 200 };
+      bz.guc = 400;
+      bz.ganimet_payi = id;
+      z.ulke.savasta = true;
+      const sv = savasBaslat(z);
+      sv.genel_zafer = 3;
+      sv.genel_yenilgi = 1;
+      const sonuc = savasiBitir(z, bz, bg(z), []);
+      expect(sonuc.zafer).toBe(true);
+      expect(sonuc.erPayi / sonuc.brut).toBeCloseTo(oranlar[id], 3);
+    }
   });
 
   it("savaşta görevlerden gelir yok; sabit maaş aynen, asker başı kısım ×1,30; maaşın adı çağ+ülkeye göre", () => {

@@ -29,7 +29,6 @@ import {
   BARIS_GANIMET_ARALIK,
   BARIS_GANIMET_TABAN,
   GANIMET_PAYI_KILIT_YIL,
-  GOREV_GUC_KATSAYISI,
   ganimetBrutTemel,
   KUSATMA_ACIK,
   TUR_PAYI,
@@ -907,7 +906,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         const pay = gp.find((x) => x.gorev.id === g.id);
         const hs = h.gorevler.find((x) => x.id === g.id);
         return {
-          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GUC_KATSAYISI * bg.enflasyon),
+          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * bg.enflasyon),
           yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
           erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0),
         };

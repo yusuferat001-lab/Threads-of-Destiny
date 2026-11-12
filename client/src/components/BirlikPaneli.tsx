@@ -65,7 +65,7 @@ const M = {
   gelir: { tr: 'gelir', en: 'income' },
   ganimet: { tr: 'ganimet', en: 'loot' },
   politikaBaslik: { tr: 'Politikalar', en: 'Policies' },
-  ganimetPayi: { tr: 'Ganimet payı (erlere)', en: 'Loot share (to the men)' },
+  ganimetPayi: { tr: 'Ganimet payı (erlere; yalnız haydut, sınır ve savaş ganimeti)', en: 'Loot share (to the men; only bandit, border and war loot)' },
   talimPol: { tr: 'Talim', en: 'Drill' },
   tonPol: { tr: 'Komuta tonu', en: 'Command tone' },
   donatimBaslik: { tr: 'Teçhizat', en: 'Equipment' },

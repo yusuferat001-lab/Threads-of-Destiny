@@ -769,6 +769,37 @@ function catismaRapor(): void {
   }
 }
 
+/**
+ * Kalibrasyon: her tür ve yaş düğümü (15,20,…,80; ±2,5 yıl) için gözlenen kazanma % ve YAŞA BAĞLI hedef kazanma oranını verecek düşman tablo değeri.
+ * Bir çatışmanın yenebildiği en büyük tablo değeri T0 = oyuncuEtkin × tablo / dusmanEtkin; tablo = T0'ların (1−hedef(yaş)) kantili; ardından yaşla azalmayan
+ * (izotonik) düzeltme. Hedef: ilk yıllar kolay (SIM_HEDEF_ILK, vars. 0,83) → 35 yaşında SIM_HEDEF (vars. 0,66).
+ */
+function kalibrasyonYazdir(): void {
+  const hedefOrta = Number(process.env.SIM_HEDEF ?? 0.66);
+  const hedefIlk = Number(process.env.SIM_HEDEF_ILK ?? 0.83);
+  const hedef = (a: number) => (a <= 22 ? hedefIlk : a >= 35 ? hedefOrta : hedefIlk + ((hedefOrta - hedefIlk) * (a - 22)) / 13);
+  const q = (a: number[], p: number) => { const x = [...a].sort((m, n) => m - n); return x.length ? x[Math.min(x.length - 1, Math.max(0, Math.floor((x.length - 1) * p)))] : 0; };
+  const pav = (v: number[]) => { // izotonik regresyon (azalmayan)
+    const bl = v.map((x) => ({ s: x, n: 1 }));
+    for (let i = 0; i < bl.length - 1;) { if (bl[i].s / bl[i].n > bl[i + 1].s / bl[i + 1].n) { bl[i] = { s: bl[i].s + bl[i + 1].s, n: bl[i].n + bl[i + 1].n }; bl.splice(i + 1, 1); i = Math.max(0, i - 1); } else i++; }
+    return bl.flatMap((x) => Array(x.n).fill(x.s / x.n));
+  };
+  console.log(`\n[KALİBRASYON] hedef kazanma: ≤22 yaş %${hedefIlk * 100} → ≥35 yaş %${hedefOrta * 100}`);
+  for (const tur of ["haydut", "sinir", "savas"] as const) {
+    const yaslar: number[] = [], ham: number[] = [], satir: string[] = [];
+    for (let a = 15; a <= 80; a += 5) {
+      const c = CATISMALAR.filter((x) => x.tur === tur && x.yas >= (a === 15 ? 15 : a - 2.5) && x.yas < (a === 80 ? 200 : a + 2.5));
+      if (c.length < 15) continue;
+      const t0 = c.map((x) => (x.oyuncuEtkin * x.tablo) / Math.max(1e-9, x.dusmanEtkin));
+      yaslar.push(a); ham.push(q(t0, 1 - hedef(a)));
+      satir.push(`${a}: n${c.length} %${Math.round((c.filter((x) => x.zafer).length / c.length) * 100)} tablo ${y2(ortala(c.map((x) => x.tablo)))} → ham ${Math.round(ham[ham.length - 1])}`);
+    }
+    const duz = pav(ham);
+    console.log(`  ${tur}: ${satir.join(" | ")}`);
+    console.log(`  ${tur} ÖNERİLEN TABLO: [${yaslar.map((a, i) => `[${a}, ${Math.max(10, Math.round(duz[i]))}]`).join(", ")}]`);
+  }
+}
+
 function meslekRapor(baslik: string, izler: OyunIzi[]): any {
   console.log(`\n################  ${baslik}  (${izler.length} ömür)  ################`);
   const yillar = izler.map(yilaYay);
@@ -858,6 +889,7 @@ async function main(): Promise<void> {
   }
   if (process.env.SIM_DOKUM) { dokumYazdir(); dokumOmurAgirlikli(); dokumBolumYazdir(); }
   catismaRapor();
+  kalibrasyonYazdir();
   const rapor: any[] = [];
   for (const meslek of meslekler) rapor.push(meslekRapor(`MESLEK: ${meslek} (tüm çağlar)`, tum.filter((i) => i.meslek === meslek)));
   for (const cag of caglar) for (const meslek of meslekler)

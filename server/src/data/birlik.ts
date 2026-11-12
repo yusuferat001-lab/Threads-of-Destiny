@@ -221,17 +221,24 @@ export const BASKIN_PUSU_CEZASI = 0.1;
 export const BASKIN_NAKIT_HASARI = 0.04;
 /** Çatışmanın baskın (oyuncu savunmada) olma ihtimali; kalanı av (oyuncu saldırıda). */
 export const BASKIN_IHTIMALI = 0.5;
-/** Haydut/sınır düşmanının yaşa göre mutlak gücü (savaş tablosundan YAVAŞ artar); sınır × SINIR_CARPANI. ±%5 sapma, zar ±%8 (SAVAS_ZAR_BOLEN). */
+/** Haydut/sınır düşmanının yaşa göre mutlak gücü (ilk 7–8 yıl [15–22 yaş] kolay, sonra hızla artar); sınır × SINIR_CARPANI. ±%5 sapma, zar ±%7 (SAVAS_ZAR_BOLEN). */
 export const BARIS_DUSMAN_YAS: [number, number][] = [
-  [15, 20],
-  [25, 28],
-  [35, 50],
-  [45, 80],
-  [55, 120],
-  [65, 170],
-  [80, 250],
+  [15, 16],
+  [22, 21],
+  [25, 36],
+  [30, 63],
+  [35, 78],
+  [40, 95],
+  [45, 130],
+  [50, 167],
+  [55, 210],
+  [60, 229],
+  [65, 267],
+  [70, 366],
+  [75, 567],
+  [80, 729],
 ];
-export const BARIS_SINIR_CARPANI = 1.3;
+export const BARIS_SINIR_CARPANI = 1.1;
 export const BARIS_DUSMAN_SAPMA: [number, number] = [0.95, 1.05];
 export function barisDusmanGucuYas(yas: number, tur: "haydut" | "sinir"): number {
   const t = BARIS_DUSMAN_YAS;
@@ -414,8 +421,6 @@ export function ganimetBrutTemel(guc: number, aralikDegeri: number, taban: numbe
 }
 /** Savaşta kışla/yapı bakımı bu oranda düşer. */
 export const SAVAS_KISLA_INDIRIMI = 0.25;
-/** Görev geliri er başına değil, barışta yaralı olmayan erlerin toplam askerî gücü başına ödenir: gelir = güç payı × görev erBasi × bu katsayı. */
-export const GOREV_GUC_KATSAYISI = 0.7;
 /** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
 export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
 export const ASKER_KARIYER_GUC_TAVANI = 2.5;
@@ -481,7 +486,7 @@ export interface GorevTanimi {
   aciklama: DilliMetin;
   /** Göreve düşen (eşit bölünmüş) askeri güç bu değerin altındaysa görev açılamaz. */
   minGuc: number;
-  /** Göreve düşen er başına yıllık NET kazanç (enflasyonsuz; masraf yok). */
+  /** Güç başına yıllık görev geliri (barışta, yaralı olmayan erlerin toplam gücü × bu); ekranda yazan değer. */
   erBasi: number;
   /** Yıllık şöhret kazancı (yalnız çok yüksek görevler). */
   sohret?: number;
@@ -501,49 +506,49 @@ export interface GorevTanimi {
 }
 export const GOREVLER: GorevTanimi[] = [
   {
-    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 10, erBasi: 1.00, yalnizSavas: false, ganimet: 0,
+    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 10, erBasi: 0.70, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.01, sertlik: 0, savasCarpani: 1.1, senaryo: null,
     ad: { orta: { tr: "Nöbet ve Devriye", en: "Watch & Patrol" }, sanayi: { tr: "Asayiş ve Devriye", en: "Policing & Patrol" } },
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 25, erBasi: 1.07, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 25, erBasi: 0.75, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.01, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
   },
   {
-    id: "haydut", tur: "haydut", simge: "🗡️", minGuc: 45, erBasi: 1.14, yalnizSavas: false, ganimet: 0.1,
+    id: "haydut", tur: "haydut", simge: "🗡️", minGuc: 45, erBasi: 0.80, yalnizSavas: false, ganimet: 0.1,
     kayipBaris: 0.01, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1, senaryo: "haydut",
     ad: { orta: { tr: "Haydut Avı", en: "Bandit Hunt" }, sanayi: { tr: "Eşkıya Avı", en: "Outlaw Hunt" } },
     aciklama: { tr: "Küçük ganimet ve esir; süvari ve okçu işe yarar.", en: "Small loot and prisoners; cavalry and archers help." },
   },
   {
-    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 70, erBasi: 1.21, yalnizSavas: false, ganimet: 0,
+    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 70, erBasi: 0.85, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.005, kayipSavas: 0.01, sertlik: 1.2, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Haraç ve Vergi Tahsilatı", en: "Tribute & Tax Collection" }, sanayi: { tr: "Jandarma ve Vergi Tahsilatı", en: "Gendarmerie & Tax Collection" } },
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "akin", tur: "akin", simge: "🔥", minGuc: 100, erBasi: 1.29, yalnizSavas: false, ganimet: 0.15,
+    id: "akin", tur: "akin", simge: "🔥", minGuc: 100, erBasi: 0.90, yalnizSavas: false, ganimet: 0.15,
     kayipBaris: 0.02, kayipSavas: 0.08, sertlik: 0.6, savasCarpani: 2, senaryo: "savas",
     ad: { orta: { tr: "Akın ve Baskın", en: "Raid & Foray" }, sanayi: { tr: "İsyan Bastırma", en: "Suppressing Revolt" } },
     aciklama: { tr: "Barışta zayıf; savaşta geliri ikiye katlar, ganimet getirir ama kayıp yüksektir.", en: "Weak in peace; doubles income in war and brings loot, but losses are heavy." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 140, erBasi: 1.36, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 140, erBasi: 0.95, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "Düşük kayıp, istikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Low losses, steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "muhafiz", tur: "muhafiz", simge: "👑", minGuc: 185, erBasi: 1.43, sohret: 0.5, yalnizSavas: false, ganimet: 0,
+    id: "muhafiz", tur: "muhafiz", simge: "👑", minGuc: 185, erBasi: 1.00, sohret: 0.5, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.005, sertlik: -0.3, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Saray ve Kale Muhafızlığı", en: "Court & Castle Guard" }, sanayi: { tr: "Liman ve Kale Komutanlığı", en: "Harbour & Fort Command" } },
     aciklama: { tr: "Düşük kayıp, iyi ödeme; şöhret getirir.", en: "Low losses, good pay; brings renown." },
   },
   {
-    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 230, erBasi: 1.50, sohret: 1.0, yalnizSavas: false, ganimet: 0.05,
+    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 230, erBasi: 1.05, sohret: 1.0, yalnizSavas: false, ganimet: 0.05,
     kayipBaris: 0.005, kayipSavas: 0.03, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
     aciklama: { tr: "Büyük ordu ister; yüksek ve düzenli kazanç, şöhret getirir.", en: "Needs a big army; high, steady earnings and renown." },
@@ -633,8 +638,9 @@ export const INISIYATIF_OYUNCU_SECER = 0.4;
 export const INISIYATIF_ZORUNLU_SALDIRI = 0.3;
 /** Büyük savaşta düşman gücü sapması: referans × [0,95; 1,05] (savaş başında bir kez çekilir; oyuncuya ±%5 aralık olarak gösterilir). */
 export const DUSMAN_ORAN: [number, number] = [0.95, 1.05];
-/** Karar savaşı zarı: her taraf güç × (1 ± %8) (d20: (zar − 10,5) / 118,75). */
-export const SAVAS_ZAR_BOLEN = 118.75;
+/** Savaş günü / çatışma zarı: her taraf güç × (1 ± %7) (d20: (zar − 10,5) / SAVAS_ZAR_BOLEN, uçlar ±9,5 → ±%7). */
+export const SAVAS_ZAR_YUZDE = 0.07;
+export const SAVAS_ZAR_BOLEN = 9.5 / SAVAS_ZAR_YUZDE;
 /**
  * Düşmanın MUTLAK gücü (bizim gücümüzden bağımsız). Referans karakterin YAŞINA göre büyür ("zamanla tehlike artar"):
  * rütbeye bağlamak, rütbenin kendisi güçten çıktığı için yatırımın etkisini siler. Büyük savaşta × DUSMAN_ORAN,
@@ -651,6 +657,39 @@ export const DUSMAN_REFERANS_YAS: [number, number][] = [
 ];
 export function dusmanReferansGucuYas(yas: number): number {
   const t = DUSMAN_REFERANS_YAS;
+  if (yas <= t[0][0]) return t[0][1];
+  for (let i = 1; i < t.length; i++) {
+    if (yas <= t[i][0]) {
+      const [y0, g0] = t[i - 1];
+      const [y1, g1] = t[i];
+      return g0 + ((g1 - g0) * (yas - y0)) / (y1 - y0);
+    }
+  }
+  return t[t.length - 1][1];
+}
+
+/**
+ * Büyük savaştaki düşmanın yaşa göre mutlak gücü (kalibrasyon tablosu: [yaş, güç], aralarda doğrusal). `DUSMAN_REFERANS_YAS`
+ * yalnız Asker kariyer puanının ölçeği olarak kalır (rütbe hızı değişmesin); savaş düşmanı bu tablodan gelir.
+ */
+export const SAVAS_DUSMAN_YAS: [number, number][] = [
+  [15, 21],
+  [22, 23],
+  [25, 47],
+  [30, 83],
+  [35, 91],
+  [40, 99],
+  [45, 160],
+  [50, 215],
+  [55, 240],
+  [60, 260],
+  [65, 320],
+  [70, 450],
+  [75, 600],
+  [80, 735],
+];
+export function savasDusmanGucuYas(yas: number): number {
+  const t = SAVAS_DUSMAN_YAS;
   if (yas <= t[0][0]) return t[0][1];
   for (let i = 1; i < t.length; i++) {
     if (yas <= t[i][0]) {

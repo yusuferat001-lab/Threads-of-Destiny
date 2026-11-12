@@ -67,7 +67,7 @@ import {
   BOLGE_ARAZI_AGIRLIGI,
   DEVSIRME_BUROSU_ER,
   DUSMAN_ORAN,
-  dusmanReferansGucuYas,
+  savasDusmanGucuYas,
   ER_TAVANI,
   ESIR_FIDYE,
   ESIR_FIDYE_IHTIMALI,
@@ -212,7 +212,7 @@ export function kesifSavasHaberi(state: CharacterState, yaklasan: { yil: number;
   if (!is?.birlik || !is.son_dokum) return;
   const sub = subayToplami(state);
   if (!sub.kesifVar || !yaklasan.dusmanTur || yaklasan.dusmanOrani == null) return;
-  const E = dusmanReferansGucuYas(state.yas + 1) * yaklasan.dusmanOrani;
+  const E = savasDusmanGucuYas(state.yas + 1) * yaklasan.dusmanOrani;
   const r = Math.min(sub.tahminAralik, TAHMIN_ARALIGI_TABAN);
   is.son_dokum.uyarilar.push({
     kod: "kesif_savas",
@@ -546,6 +546,8 @@ export interface CatismaIzi {
   dusmanGuc: number;
   oyuncuEtkin: number;
   dusmanEtkin: number;
+  /** Düşman tablo değeri (sapma/dağılım/arazi öncesi): kalibrasyon için. */
+  tablo: number;
 }
 export const catismaIzleyici: { fn: ((k: CatismaIzi) => void) | null } = { fn: null };
 
@@ -610,7 +612,7 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   if (genelZafer) sv.genel_zafer += 1;
   else sv.genel_yenilgi += 1;
   sv.sonuc = genelZafer ? "zafer" : "yenilgi";
-  catismaIzleyici.fn?.({ tur: "savas", zafer: genelZafer, yas: state.yas, oyuncuGuc: d.guc, dusmanGuc: E, oyuncuEtkin: oyuncuG, dusmanEtkin: dusmanG });
+  catismaIzleyici.fn?.({ tur: "savas", zafer: genelZafer, yas: state.yas, oyuncuGuc: d.guc, dusmanGuc: E, oyuncuEtkin: oyuncuG, dusmanEtkin: dusmanG, tablo: dusmanReferansGucu(state) });
   return { kanatZafer, genelZafer, oran: R, arazi, inisiyatif };
 }
 
@@ -843,7 +845,7 @@ function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBa
   const oyuncuEff = oyuncuTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN + b.zar_bonusu);
   const dusmanEff = dusmanTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN);
   const zafer = oyuncuEff >= dusmanEff;
-  catismaIzleyici.fn?.({ tur, zafer, yas: state.yas, oyuncuGuc: guc, dusmanGuc: E, oyuncuEtkin: oyuncuTaraf, dusmanEtkin: dusmanTaraf });
+  catismaIzleyici.fn?.({ tur, zafer, yas: state.yas, oyuncuGuc: guc, dusmanGuc: E, oyuncuEtkin: oyuncuTaraf, dusmanEtkin: dusmanTaraf, tablo: barisDusmanGucuYas(state.yas, tur) });
   const carpan = (1 + sub.ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
   const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK), BARIS_GANIMET_TABAN) * bg.enflasyon * carpan : 0;
   const devlet = 0; // askerde devlet payı yok
