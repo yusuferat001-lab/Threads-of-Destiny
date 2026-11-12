@@ -90,7 +90,7 @@ describe("v39 ganimet", () => {
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
   });
 
-  it("görev ganimeti savaş yılında yok; yağma yalnız ilk 2 savaş yılında, yenilgiden sonra yok", () => {
+  it("görev ganimeti savaş yılında yok; yağma yalnız ilk 3 savaş yılında, yenilgiden sonra yok", () => {
     const s = asker();
     s.isletme!.yatirimlar.kisla = 4;
     s.meslek_musteri = 100;
@@ -103,7 +103,9 @@ describe("v39 ganimet", () => {
     sv.ikmal = "yagma_orta";
     sv.yil_sayac = 0;
     expect(birlikHesapla(s, bg(s)).yagmaBrut).toBeGreaterThan(0);
-    sv.yil_sayac = 2; // 3. yıl: karar savaşı
+    sv.yil_sayac = 2; // 3. yıl: karar savaşı — yağma hâlâ var
+    expect(birlikHesapla(s, bg(s)).yagmaBrut).toBeGreaterThan(0);
+    sv.yil_sayac = 3; // 4. yıl: sonuç yılı — yağma yok
     expect(birlikHesapla(s, bg(s)).yagmaBrut).toBe(0);
     sv.yil_sayac = 0;
     sv.sonuc = "yenilgi";

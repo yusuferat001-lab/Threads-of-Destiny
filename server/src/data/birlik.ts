@@ -389,7 +389,7 @@ export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
 export const SUVARI_GOREV_GELIRI = 0.1;
 export const SAVAS_ER_BASI_CARPANI = 3;
-export const ER_MASRAFI = 0.25;
+export const ER_MASRAFI = 0.2;
 export const ERZAK_BIRIMI = 0.15;
 /**
  * Güce göre kesintisiz ganimet çarpanı (haydut/sınır çatışması ve savaş zaferi): ordu büyüdükçe ganimet birimi azalır.
@@ -915,7 +915,7 @@ export const ASKER_SALDIRI_HASARLARI = {
 // ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
 /** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım ×SAVAS_ER_BASI_CARPANI. */
 /** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,7 / ölçülü 0,5 / yumuşak 0,3); yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %75/55/35 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
-export const YAGMA_YIL = 2;
+export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
 /** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(5,8; 6,8) × ganimetGucCarpani(güç); esir = güç × bu × yıl. Yenilgide ganimet yok. */

@@ -677,7 +677,7 @@ describe("savaş", () => {
     const secilen = b.savas!.ikmal!;
     b.savas_karari = null; // yıl sonu
     expect(secilen.startsWith("yagma")).toBe(true); // ikmal yalnız yağma türleri
-    expect(birlikHesapla(s, bg(s)).yagmaBrut).toBe(0); // karar yılında (3. yıl) yağma geliri yok
+    expect(birlikHesapla(s, bg(s)).yagmaBrut).toBeGreaterThan(0); // karar yılında (3. yıl) yağma hâlâ var (YAGMA_YIL=3)
     expect(b.savas!.ikmal).toBe(secilen);
   });
 
