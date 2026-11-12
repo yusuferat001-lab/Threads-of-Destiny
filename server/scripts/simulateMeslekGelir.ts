@@ -542,13 +542,17 @@ async function askerYonet(id: string): Promise<void> {
 const DOKUM: Record<string, number> = {};
 let dokumYil = 0;
 const DOKUM_OMURLER: Record<string, number>[] = [];
+const YAS_BANTLARI: [string, number, number][] = [["erken 15-22", 15, 22], ["orta-erken 23-34", 23, 34], ["orta 35-49", 35, 49], ["geç 50-65", 50, 65]];
+const DOKUM_YAS: Record<string, { kalem: Record<string, number>; yil: number }> = Object.fromEntries(YAS_BANTLARI.map(([a]) => [a, { kalem: {}, yil: 0 }]));
+let dokumYasAnahtari: string | null = null;
 const DOKUM_BOLUM: Record<string, { kalem: Record<string, number>; yil: number }> = { "barış, er≥100": { kalem: {}, yil: 0 }, "savaş, er≥100": { kalem: {}, yil: 0 } };
 function dokumEkle(state: CharacterState, na: any, yil: number, omur: Record<string, number>, savasta: boolean): void {
+  const yasB = YAS_BANTLARI.find(([, a, b]) => state.yas - yil < b + 0.5 && state.yas - yil >= a - 0.5)?.[0] ?? null;
   const bolum = erSayisi(state) >= 100 ? DOKUM_BOLUM[savasta ? "savaş, er≥100" : "barış, er≥100"] : null;
   const d = state.isletme?.son_dokum as any;
   const bd = d?.birlik;
   if (!bd || !na) return;
-  const ekle = (k: string, v: number) => { const x = (Number.isFinite(v) ? v : 0) * yil; DOKUM[k] = (DOKUM[k] ?? 0) + x; omur[k] = (omur[k] ?? 0) + x; if (bolum) bolum.kalem[k] = (bolum.kalem[k] ?? 0) + x; };
+  const ekle = (k: string, v: number) => { const x = (Number.isFinite(v) ? v : 0) * yil; DOKUM[k] = (DOKUM[k] ?? 0) + x; omur[k] = (omur[k] ?? 0) + x; if (bolum) bolum.kalem[k] = (bolum.kalem[k] ?? 0) + x; if (yasB) DOKUM_YAS[yasB].kalem[k] = (DOKUM_YAS[yasB].kalem[k] ?? 0) + x; };
   const esir = d.satis - bd.sold - bd.gorevGeliri - bd.kaleGeliri - (bd.ganimetPara - bd.erPayi);
   ekle("G sabit maaş + asker başı ödenek (sold)", bd.sold);
   ekle("G görev geliri", bd.gorevGeliri);
@@ -575,6 +579,7 @@ function dokumEkle(state: CharacterState, na: any, yil: number, omur: Record<str
   ekle("g olay gideri", na.olayGideri ?? 0);
   dokumYil += yil;
   if (bolum) bolum.yil += yil;
+  if (yasB) DOKUM_YAS[yasB].yil += yil;
 }
 function dokumOmurAgirlikli(): void {
   const kalemler = Array.from(new Set(DOKUM_OMURLER.flatMap((o) => Object.keys(o))));
@@ -589,6 +594,22 @@ function dokumOmurAgirlikli(): void {
   for (const t of ["G", "g"]) {
     console.log(t === "G" ? "  GELİR" : "  GİDER");
     for (const k of kalemler.filter((k) => k[0] === t).sort((a, b) => ortala(pay[b] ?? [0]) - ortala(pay[a] ?? [0]))) console.log(`    ${k.slice(2).padEnd(58)} %${y2(ortala(pay[k] ?? [0]))}`);
+  }
+}
+function dokumYasYazdir(): void {
+  console.log("\n[DÖKÜM YAŞ BANTLARI] bant | ömür-yılı | gelir/yıl | gider/yıl | net/yıl | gelir payları (görev / sold / ganimet / yağma / diğer) | gider payları (ordu bakımı [er+erzak+teçhizat+kışla+talim] / er payı / yaşam+konut / faiz / diğer)");
+  for (const [ad] of YAS_BANTLARI) {
+    const { kalem, yil } = DOKUM_YAS[ad];
+    if (!yil) continue;
+    const g = (k: string) => kalem[k] ?? 0;
+    const topG = Object.entries(kalem).filter(([k]) => k[0] === "G").reduce((t, [, v]) => t + v, 0);
+    const topg = Object.entries(kalem).filter(([k]) => k[0] === "g").reduce((t, [, v]) => t + v, 0);
+    const pg = (v: number) => `${y2((v / Math.max(1e-9, topG)) * 100)}%`;
+    const pd = (v: number) => `${y2((v / Math.max(1e-9, topg)) * 100)}%`;
+    const sold = g("G sabit maaş + asker başı ödenek (sold)"), gorev = g("G görev geliri"), gan = g("G ganimet (görev+barış çatışması+savaş zaferi, brüt)"), yag = g("G yağma (brüt)");
+    const ordu = g("g er masrafı") + g("g erzak") + g("g teçhizat bakımı") + g("g kışla/yapı bakımı") + g("g talim") + g("g yaralı tedavi");
+    const yasam = g("g yaşam gideri") + g("g konut/kira");
+    console.log(`  ${ad.padEnd(18)} | ${yil.toFixed(0).padStart(6)} | ${y2(topG / yil).toFixed(1).padStart(7)} | ${y2(topg / yil).toFixed(1).padStart(7)} | ${y2((topG - topg) / yil).toFixed(1).padStart(7)} | ${pg(gorev)} / ${pg(sold)} / ${pg(gan)} / ${pg(yag)} / ${pg(topG - gorev - sold - gan - yag)} | ${pd(ordu)} / ${pd(g("g er payı (ganimetten askere)"))} / ${pd(yasam)} / ${pd(g("g faiz"))} / ${pd(topg - ordu - g("g er payı (ganimetten askere)") - yasam - g("g faiz"))}`);
   }
 }
 function dokumBolumYazdir(): void {
@@ -887,7 +908,7 @@ async function main(): Promise<void> {
       console.log(`[TAKILI SAVAŞ] ${meslek}: ömrün %${y2((takili.length / g.length) * 100)}'inde var; takılı yıl ort ${y2(ortala(takili.map((i) => i.takiliSavasYili)))}, medyan ${medyan(takili.map((i) => i.takiliSavasYili))}; ömrün ort. %${y2((ortala(g.map((i) => i.takiliSavasYili)) / ortala(g.map((i) => Math.max(1, i.olumYasi - 15)))) * 100)}'i takılı savaşta`);
     }
   }
-  if (process.env.SIM_DOKUM) { dokumYazdir(); dokumOmurAgirlikli(); dokumBolumYazdir(); }
+  if (process.env.SIM_DOKUM) { dokumYazdir(); dokumOmurAgirlikli(); dokumBolumYazdir(); dokumYasYazdir(); }
   catismaRapor();
   kalibrasyonYazdir();
   const rapor: any[] = [];

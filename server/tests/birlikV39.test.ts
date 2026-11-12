@@ -83,9 +83,9 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut/sınır 1,6–2,0, savaş zaferi 5,8–6,8, yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
-    expect(BARIS_GANIMET_ARALIK).toEqual([1.6, 2]);
-    expect(SAVAS_ZAFER_GANIMET).toEqual([5.8, 6.8]);
+  it("sabitler: haydut/sınır 3,2–4,0, savaş zaferi 11,6–13,6, yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
+    expect(BARIS_GANIMET_ARALIK).toEqual([3.2, 4]);
+    expect(SAVAS_ZAFER_GANIMET).toEqual([11.6, 13.6]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
   });
@@ -170,15 +170,15 @@ describe("v39 subaylar", () => {
 });
 
 describe("v39 haydut / sınır çatışması", () => {
-  it("düşman tabloları: ilk 7–8 yıl (15–22 yaş) kolay ve düz, sonra hızlı artar; sınır ×1,1; her iki tablo yaşla azalmaz", async () => {
+  it("düşman tabloları: ilk 7–8 yıl (15–22 yaş) kolay ve düz, sonra hızlı artar; sınır = haydut (×1,0); her iki tablo yaşla azalmaz", async () => {
     const { barisDusmanGucuYas, savasDusmanGucuYas, BARIS_DUSMAN_YAS, SAVAS_DUSMAN_YAS, BARIS_SINIR_CARPANI } = await import("../src/data/birlik");
-    expect(BARIS_SINIR_CARPANI).toBe(1.1);
-    expect(barisDusmanGucuYas(22, "haydut")).toBeLessThan(25); // ilk yıllar zorlamaz (oyuncu ≈ 25 güçle başlar)
-    expect(savasDusmanGucuYas(22)).toBeLessThan(30);
+    expect(BARIS_SINIR_CARPANI).toBe(1);
+    expect(barisDusmanGucuYas(22, "haydut")).toBeLessThan(30); // ilk yıllar zorlamaz (oyuncu ≈ 25–60 güçle başlar)
+    expect(savasDusmanGucuYas(22)).toBeLessThan(40);
     // 22 yaştan 40'a ve 40'tan 65'e hızlı artış: eski tablo ([25→28, 45→80, 65→170]) çok altında kalırdı
     expect(barisDusmanGucuYas(65, "haydut")).toBeGreaterThan(200);
     expect(savasDusmanGucuYas(80)).toBeGreaterThan(600);
-    expect(barisDusmanGucuYas(35, "sinir")).toBeCloseTo(barisDusmanGucuYas(35, "haydut") * 1.1, 6);
+    expect(barisDusmanGucuYas(35, "sinir")).toBeCloseTo(barisDusmanGucuYas(35, "haydut"), 6);
     for (const tablo of [BARIS_DUSMAN_YAS, SAVAS_DUSMAN_YAS]) {
       for (let i = 1; i < tablo.length; i++) {
         expect(tablo[i][0]).toBeGreaterThan(tablo[i - 1][0]);
@@ -300,12 +300,12 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("güç başı görev geliri 0,70–1,05 arası (ek çarpan yok)", async () => {
+  it("güç başı görev geliri 0,49–0,735 arası (ek çarpan yok)", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
     expect(GOREV_GELIR_CARPANI).toBe(1);
     const v = GOREVLER.map((g) => g.erBasi);
-    expect(Math.min(...v)).toBeCloseTo(0.7, 6);
-    expect(Math.max(...v)).toBeCloseTo(1.05, 6);
+    expect(Math.min(...v)).toBeCloseTo(0.49, 6);
+    expect(Math.max(...v)).toBeCloseTo(0.735, 6);
     for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
   });
 
@@ -525,11 +525,11 @@ describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indiri
   });
 
   it("ganimet tabanı: küçük ordu bile haydut/sınır ve savaş zaferinde en az taban kadar alır", () => {
-    expect(BARIS_GANIMET_TABAN).toBe(60);
-    expect(SAVAS_ZAFER_GANIMET_TABAN).toBe(250);
-    expect(ganimetBrutTemel(10, 1.8, BARIS_GANIMET_TABAN)).toBe(60); // 10 güç × 1,8 = 18 < 60
-    expect(ganimetBrutTemel(10, 6.3, SAVAS_ZAFER_GANIMET_TABAN)).toBe(250);
-    expect(ganimetBrutTemel(100, 1.8, BARIS_GANIMET_TABAN)).toBeCloseTo(100 * 1.8 * ganimetGucCarpani(100), 8); // taban devreye girmez
+    expect(BARIS_GANIMET_TABAN).toBe(120);
+    expect(SAVAS_ZAFER_GANIMET_TABAN).toBe(500);
+    expect(ganimetBrutTemel(10, 3.6, BARIS_GANIMET_TABAN)).toBe(120); // 10 güç × 3,6 = 36 < 120
+    expect(ganimetBrutTemel(10, 12.6, SAVAS_ZAFER_GANIMET_TABAN)).toBe(500);
+    expect(ganimetBrutTemel(100, 3.6, BARIS_GANIMET_TABAN)).toBeCloseTo(100 * 3.6 * ganimetGucCarpani(100), 8); // taban devreye girmez // taban devreye girmez
   });
 
   it("savaşta kışla bakımı %25 düşer", () => {
