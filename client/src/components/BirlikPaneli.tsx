@@ -124,7 +124,7 @@ const M = {
   yenilgi: { tr: 'yenilgi', en: 'defeat' },
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
   sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
-  erBasi: { tr: 'Er başı gelir', en: 'Per-man income' },
+  erBasi: { tr: 'Güç başı gelir', en: 'Income per strength' },
   gorevGeliri: { tr: 'Görev kazancı', en: 'Duty earnings' },
   ganimetNet: { tr: 'Ganimet (net)', en: 'Loot (net)' },
   toplamGelir: { tr: 'Toplam gelir', en: 'Total income' },
@@ -244,6 +244,7 @@ export function BirlikPaneli({
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
   const erBirim = dil === 'en' ? '/man' : '/er';
+  const gucBirim = dil === 'en' ? '/strength' : '/güç';
   const [terhis, setTerhis] = useState(1);
   // Politika ayrıntısı: üzerine gelinen (ya da seçili) seçeneğin artı/eksileri gösterilir.
   const [onizle, setOnizle] = useState<Record<string, string | null>>({});
@@ -342,7 +343,7 @@ export function BirlikPaneli({
                 )}
               </div>
               <small>
-                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{erBirim}</span>
+                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{gucBirim}</span>
                 {g.aktif ? <span className="s-gelir"> · {formatPara(g.gelir)} {pb}{g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}</span> : null}
               </small>
             </div>

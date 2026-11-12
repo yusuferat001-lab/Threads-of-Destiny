@@ -56,6 +56,7 @@ import { ogretiBekleyenSeviye, faaliyetSlotSayisi, faaliyetKilitliMi } from "../
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import { FAALIYETLER } from "../src/data/cemaat";
 import { doktrinBekleyenSeviye } from "../src/game/birlik";
+import { catismaIzleyici, CatismaIzi } from "../src/game/birlikYil";
 import { doktrinSecenekleri } from "../src/data/birlik";
 import { yolDali } from "../src/game/birlik";
 import { giderEnflasyonCarpani, isletmeBaglami } from "../src/game/stateManager";
@@ -614,6 +615,8 @@ function dokumYazdir(): void {
   }
 }
 
+const CATISMALAR: CatismaIzi[] = [];
+catismaIzleyici.fn = (k) => { CATISMALAR.push(k); };
 const savasTutarsizGorulen = new Set<string>();
 async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
   const bolge = rastgele(BOLGELER_BY_CAG[cag]);
@@ -747,6 +750,25 @@ function askerOrdu(izler: OyunIzi[]): void {
   console.log(`  Ölüm anı rütbe dağılımı: ${Object.entries(rd).sort().map(([k, v]) => `S${k} %${y2((v / izler.length) * 100)}`).join(" · ")}`);
 }
 
+/** Çatışma istatistikleri: 3 tür (haydut, sınır, genel savaş) için kazanma oranı, ortalama oyuncu ve düşman gücü; 10 yıllık yaş dekadlarında. */
+function catismaRapor(): void {
+  if (!CATISMALAR.length) return;
+  console.log("\n[ÇATIŞMA İSTATİSTİĞİ] tür | n | kazanma % | ort. oyuncu gücü | ort. düşman gücü (mutlak) | etkin oyuncu / etkin düşman");
+  const ort = (a: number[]) => (a.length ? ortala(a) : 0);
+  for (const tur of ["haydut", "sinir", "savas"] as const) {
+    const c = CATISMALAR.filter((x) => x.tur === tur);
+    console.log(`  ${tur.padEnd(7)} | ${String(c.length).padStart(5)} | %${y2((c.filter((x) => x.zafer).length / Math.max(1, c.length)) * 100)} | ${y2(ort(c.map((x) => x.oyuncuGuc)))} | ${y2(ort(c.map((x) => x.dusmanGuc)))} | ${y2(ort(c.map((x) => x.oyuncuEtkin)))} / ${y2(ort(c.map((x) => x.dusmanEtkin)))}`);
+  }
+  for (const tur of ["haydut", "sinir", "savas"] as const) {
+    console.log(`  ${tur.toUpperCase()} — yaş dekadı | n | kazanma % | oyuncu gücü ort / medyan | düşman gücü ort`);
+    for (const [a, b] of DEKADLAR) {
+      const c = CATISMALAR.filter((x) => x.tur === tur && x.yas >= a && x.yas <= b);
+      if (!c.length) continue;
+      console.log(`    ${(a === 80 ? "80+" : `${a}-${b}`).padEnd(6)} | ${String(c.length).padStart(5)} | %${String(y2((c.filter((x) => x.zafer).length / c.length) * 100)).padStart(5)} | ${String(y2(ort(c.map((x) => x.oyuncuGuc)))).padStart(7)} / ${String(y2(medyan(c.map((x) => x.oyuncuGuc)))).padStart(7)} | ${String(y2(ort(c.map((x) => x.dusmanGuc)))).padStart(7)}`);
+    }
+  }
+}
+
 function meslekRapor(baslik: string, izler: OyunIzi[]): any {
   console.log(`\n################  ${baslik}  (${izler.length} ömür)  ################`);
   const yillar = izler.map(yilaYay);
@@ -835,6 +857,7 @@ async function main(): Promise<void> {
     }
   }
   if (process.env.SIM_DOKUM) { dokumYazdir(); dokumOmurAgirlikli(); dokumBolumYazdir(); }
+  catismaRapor();
   const rapor: any[] = [];
   for (const meslek of meslekler) rapor.push(meslekRapor(`MESLEK: ${meslek} (tüm çağlar)`, tum.filter((i) => i.meslek === meslek)));
   for (const cag of caglar) for (const meslek of meslekler)

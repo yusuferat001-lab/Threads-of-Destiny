@@ -47,7 +47,7 @@ import {
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
-import { BARIS_GANIMET_ARALIK, GANIMET_PAYI_TANIMLARI, ganimetGucCarpani } from "../data/birlik";
+import { BARIS_GANIMET_ARALIK, BARIS_GANIMET_TABAN, GANIMET_PAYI_TANIMLARI, ganimetBrutTemel } from "../data/birlik";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
 import { birlikYilIsle } from "./birlikYil";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
@@ -800,7 +800,7 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
 function barisGanimetiUst(state: CharacterState, b: IsletmeBaglami): number {
   const bd = state.isletme?.birlik;
   if (!bd || state.ulke.savasta || Math.round(bd.baris_bekleme ?? 0) > 0) return 0;
-  const brut = bd.guc * BARIS_GANIMET_ARALIK[1] * ganimetGucCarpani(bd.guc) * b.enflasyon;
+  const brut = ganimetBrutTemel(bd.guc, BARIS_GANIMET_ARALIK[1], BARIS_GANIMET_TABAN) * b.enflasyon;
   return r2(brut * (1 - GANIMET_PAYI_TANIMLARI[bd.ganimet_payi].oran));
 }
 

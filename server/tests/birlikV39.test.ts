@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCharacter, mesleğiSec, isletmeBaglami } from "../src/game/stateManager";
-import { birlikAl, birlikHesapla, birlikHazirla, erSayisi } from "../src/game/birlik";
+import { birlikAl, birlikHesapla, birlikHazirla, erSayisi, gucHesapla } from "../src/game/birlik";
 import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani, GOREV_GUC_KATSAYISI, BARIS_GANIMET_TABAN, SAVAS_ZAFER_GANIMET_TABAN, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -320,10 +320,13 @@ describe("v40 görev geliri ve birim küçük artıları", () => {
     b.kalite = { dusuk: 200, orta: 0, yuksek: 0 };
     b.gorevler = ["haydut"];
     b.birlik_turler = [];
+    const guc0 = gucHesapla(s).guc;
     const g0 = birlikHesapla(s, bg(s)).gorevGeliri;
     b.birlik_turler = ["suvari"];
+    const guc1 = gucHesapla(s).guc;
     const g1 = birlikHesapla(s, bg(s)).gorevGeliri;
-    expect(g1 / g0).toBeCloseTo(1.1, 6);
+    // görev geliri güç başına ödenir: süvari hem görev bonusunu (+%10) hem gücü değiştirir
+    expect(g1 / g0).toBeCloseTo(1.1 * (guc1 / guc0), 6);
   });
 });
 
@@ -479,5 +482,55 @@ describe("ganimet payı 5 yılda bir değişir", () => {
     birlikKararUygula(s, { talim: "agir", ton: "sert" });
     expect(birlikAl(s).talim_politikasi).toBe("agir");
     expect(birlikAl(s).ton).toBe("sert");
+  });
+});
+
+describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indirimi", () => {
+  function ordu(er: number, kalite: "dusuk" | "orta" | "yuksek" = "dusuk") {
+    const s = asker();
+    s.rutbe_seviye = 3;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = er;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 0, [kalite]: er } as never;
+    b.gorevler = ["devriye"];
+    return { s, b };
+  }
+
+  it("görev geliri barışta yaralı olmayan erlerin toplam gücü × görev erBasi × katsayı (0,7)", () => {
+    const { s } = ordu(100);
+    const h = birlikHesapla(s, bg(s));
+    const guc = gucHesapla(s).guc;
+    expect(GOREV_GUC_KATSAYISI).toBe(0.7);
+    // devriye erBasi 1,00: gelir = güç × 1,00 × 0,6 × enflasyon × dönem çarpanı × bonuslar (savaş yok)
+    expect(h.gorevGeliri).toBeGreaterThan(0);
+    expect(h.gorevGeliri / (guc * 0.6 * bg(s).enflasyon)).toBeGreaterThan(0.5);
+    // aynı er sayısı, daha iyi teçhizat = daha çok güç = daha çok görev geliri
+    const iyi = ordu(100, "yuksek");
+    expect(birlikHesapla(iyi.s, bg(iyi.s)).gorevGeliri).toBeGreaterThan(h.gorevGeliri);
+    // yaralılar güçten düşer, geliri de düşürür
+    const { s: sy, b: by } = ordu(100);
+    by.yarali = 40;
+    expect(birlikHesapla(sy, bg(sy)).gorevGeliri).toBeLessThan(h.gorevGeliri);
+    // savaşta görev geliri yok
+    s.ulke.savasta = true;
+    expect(birlikHesapla(s, bg(s)).gorevGeliri).toBe(0);
+  });
+
+  it("ganimet tabanı: küçük ordu bile haydut/sınır ve savaş zaferinde en az taban kadar alır", () => {
+    expect(BARIS_GANIMET_TABAN).toBe(60);
+    expect(SAVAS_ZAFER_GANIMET_TABAN).toBe(250);
+    expect(ganimetBrutTemel(10, 1.8, BARIS_GANIMET_TABAN)).toBe(60); // 10 güç × 1,8 = 18 < 60
+    expect(ganimetBrutTemel(10, 6.3, SAVAS_ZAFER_GANIMET_TABAN)).toBe(250);
+    expect(ganimetBrutTemel(100, 1.8, BARIS_GANIMET_TABAN)).toBeCloseTo(100 * 1.8 * ganimetGucCarpani(100), 8); // taban devreye girmez
+  });
+
+  it("savaşta kışla bakımı %25 düşer", () => {
+    const { s } = ordu(100);
+    const baris = birlikHesapla(s, bg(s)).kislaBakim;
+    expect(baris).toBeCloseTo(KISLA_BAKIM[4] * bg(s).giderEnflasyon, 6);
+    s.ulke.savasta = true;
+    expect(SAVAS_KISLA_INDIRIMI).toBe(0.25);
+    expect(birlikHesapla(s, bg(s)).kislaBakim).toBeCloseTo(baris * 0.75, 6);
   });
 });

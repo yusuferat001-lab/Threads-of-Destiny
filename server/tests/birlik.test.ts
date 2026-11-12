@@ -63,7 +63,8 @@ import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir 
 import { askerGucleri, pazarPayiHesapla } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
-  BARIS_BEKLEME,
+  BARIS_BEKLEME_ARALIK,
+  BARIS_YILLIK_IHTIMAL,
   BASLANGIC_ER,
   TUR_PAYI,
   TUR_TANIMLARI,
@@ -337,7 +338,7 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("askerde devlet payı yok; ganimetin askerlere giden payı politikayla %30/%45/%60", () => {
+  it("askerde devlet payı yok; görev ganimetinden askerlere giden pay politikayla %30/%45/%60; yağmadan pay düşülmez", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -349,17 +350,17 @@ describe("gelir ve gider", () => {
     const de = birlikHesapla(s, bg(s));
     b.ganimet_payi = "comert";
     const co = birlikHesapla(s, bg(s));
+    expect(az.erPayi / az.ganimetBrut).toBeCloseTo(0.3, 6);
+    expect(de.erPayi / de.ganimetBrut).toBeCloseTo(0.45, 6);
+    expect(co.erPayi / co.ganimetBrut).toBeCloseTo(0.6, 6);
     s.ulke.savasta = true;
-    b.ganimet_payi = "az";
+    b.ganimet_payi = "comert";
     b.savas_karari = { yil: s.yil, adimlar: [], adim: 0, inisiyatif_zorunlu: null, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma_orta", esir: "karma" };
     const y = birlikHesapla(s, bg(s));
     expect(y.devletPayi).toBe(0);
     expect(y.yagmaBrut).toBeGreaterThan(0);
-    expect(y.erPayi / y.ganimetBrut).toBeCloseTo(0.3, 6);
-    b.ganimet_payi = "comert";
-    const yc = birlikHesapla(s, bg(s));
-    expect(yc.erPayi / yc.ganimetBrut).toBeCloseTo(0.6, 6);
-    expect(yc.ganimetNet).toBeLessThan(y.ganimetNet);
+    expect(y.erPayi).toBe(0); // yağma direkt hazineye: er payı yok (savaşta görev ganimeti de yok)
+    expect(y.ganimetNet).toBeCloseTo(y.yagmaBrut, 6);
     expect(az.devletPayi + de.devletPayi + co.devletPayi).toBe(0);
   });
 
@@ -472,7 +473,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     return b;
   }
 
-  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta 2 yıl beklenir, savaş sonrası en az 1 yıl", () => {
+  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta çatışmalar arası 2–3 yıl, savaş sonrası en az 1 yıl", () => {
     const s = asker();
     const b = birlikAl(s);
     b.baris_bekleme = 2;
@@ -483,20 +484,22 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     // savaş bitti: bekleme bitmiş sayaçla ilk barış yılında (zar tuttu) çatışma çıkar
     b.baris_bekleme = 0;
     b.savas = null;
-    expect(BARIS_BEKLEME).toBe(2);
+    expect(BARIS_BEKLEME_ARALIK).toEqual([1, 2]); // bekleme + 1 = çatışmalar arası 2–3 yıl
+    expect(BARIS_YILLIK_IHTIMAL).toBe(1);
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     const sonuc = birlikYilIsle(s, bg(s));
     rnd.mockRestore();
     expect(sonuc.dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
-    expect(b.baris_bekleme).toBe(BARIS_BEKLEME);
+    expect(b.baris_bekleme).toBeGreaterThanOrEqual(BARIS_BEKLEME_ARALIK[0]);
+    expect(b.baris_bekleme).toBeLessThanOrEqual(BARIS_BEKLEME_ARALIK[1]);
   });
 
-  it("çatışma sonrası 2 yıl çıkmaz; sonra yıllık şansla çıkar", () => {
+  it("çatışma sonrası bekleme boyunca çıkmaz; bekleme biter bitmez çıkar", () => {
     const s = asker();
     const b = birlikAl(s);
-    b.baris_bekleme = BARIS_BEKLEME;
+    b.baris_bekleme = BARIS_BEKLEME_ARALIK[1];
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
-    for (let i = 0; i < BARIS_BEKLEME; i++) {
+    for (let i = 0; i < BARIS_BEKLEME_ARALIK[1]; i++) {
       expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(false);
     }
     expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);

@@ -403,15 +403,26 @@ export const GANIMET_GUC_TABAN = 0.25;
 export function ganimetGucCarpani(guc: number): number {
   return Math.max(GANIMET_GUC_TABAN, 1 - GANIMET_GUC_AZALMA * Math.max(0, guc));
 }
-/** Barış çatışması (haydut / sınır) zafer ganimeti = askerî güç × U(a; b) × ganimetGucCarpani(güç) (yenilgide ganimet yok). */
+/** Barış çatışması (haydut / sınır) zafer ganimeti = max(BARIS_GANIMET_TABAN; askerî güç × U(a; b) × ganimetGucCarpani(güç)) (yenilgide ganimet yok). */
 export const BARIS_GANIMET_ARALIK: Aralik = [1.6, 2];
+/** Ganimet tabanı (brüt, enflasyonsuz): küçük ordu da zaferde en az bu kadar ganimet alır (haydut, sınır ve genel savaş zaferi). */
+export const BARIS_GANIMET_TABAN = 60;
+export const SAVAS_ZAFER_GANIMET_TABAN = 250;
+/** Zafer ganimeti brüt temeli: aralık ortalaması/çekimi × güç × güç çarpanı, ama en az taban. */
+export function ganimetBrutTemel(guc: number, aralikDegeri: number, taban: number): number {
+  return Math.max(taban, guc * aralikDegeri * ganimetGucCarpani(guc));
+}
+/** Savaşta kışla/yapı bakımı bu oranda düşer. */
+export const SAVAS_KISLA_INDIRIMI = 0.25;
+/** Görev geliri er başına değil, barışta yaralı olmayan erlerin toplam askerî gücü başına ödenir: gelir = güç payı × görev erBasi × bu katsayı. */
+export const GOREV_GUC_KATSAYISI = 0.7;
 /** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
 export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
 export const ASKER_KARIYER_GUC_TAVANI = 2.5;
-/** Çatışma sonrası bekleme (yıl; savaşta sayaç durur, savaştan sonra en az 1 yıl) ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
-export const BARIS_BEKLEME = 2;
-/** Bekleme bittikten sonra her yıl çatışma çıkma şansı. */
-export const BARIS_YILLIK_IHTIMAL = 0.5;
+/** Çatışma sonrası bekleme (yıl, bu aralıktan tam sayı çekilir; savaşta sayaç durur, savaştan sonra en az 1 yıl): bekleme + 1 = çatışmalar arası 2–3 yıl. */
+export const BARIS_BEKLEME_ARALIK: [number, number] = [1, 2];
+/** Bekleme bittikten sonra her yıl çatışma çıkma şansı (1 = bekleme biter bitmez çıkar). */
+export const BARIS_YILLIK_IHTIMAL = 1;
 export const BARIS_CATISMA_ILK_YIL = 2;
 export interface BarisCatismaTanimi {
   /** Düşman gücü / DUSMAN_REFERANS_GUC (rütbe) aralığı. */
@@ -918,7 +929,7 @@ export const ASKER_SALDIRI_HASARLARI = {
 export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
-/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(5,8; 6,8) × ganimetGucCarpani(güç); esir = güç × bu × yıl. Yenilgide ganimet yok. */
+/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = max(SAVAS_ZAFER_GANIMET_TABAN; askerî güç × U(5,8; 6,8) × ganimetGucCarpani(güç)); esir = güç × bu × yıl. Yenilgide ganimet yok. */
 export const SAVAS_ZAFER_GANIMET: Aralik = [5.8, 6.8];
 export const SAVAS_ZAFER_ESIR = 0.015;
 /** Kiralık ordu: ordunun bu kesri kadar, savaş süresince; eğitimli ve pahalı. */

@@ -31,6 +31,8 @@ import {
   SEFER_ORDU_ORANI,
   YAGMA_ESIR,
   YAGMA_YIL,
+  GOREV_GUC_KATSAYISI,
+  SAVAS_KISLA_INDIRIMI,
   GOREV_GELIR_CARPANI,
   SUVARI_GOREV_GELIRI,
   ZIRHLI_OLU_AZALTMA,
@@ -488,6 +490,8 @@ export const gorevSlotSayisi = (state: CharacterState) => GOREV_SLOTLARI[rutbeIn
 export interface GorevPayi {
   gorev: GorevTanimi;
   er: number;
+  /** Göreve düşen askerî güç (yaralı olmayanların toplam gücü / görev sayısı); görev geliri bununla ödenir. */
+  guc: number;
   /** Göreve düşen askeri güç minimum güç şartını karşılıyor mu (savaş şartı dahil). */
   aktif: boolean;
 }
@@ -509,7 +513,7 @@ export function gorevPaylari(state: CharacterState): GorevPayi[] {
   return secili.map((g, i) => {
     const pay = taban + (i === 0 ? artik : 0);
     // Savaş sürerken görevlerden gelir yok (savaş ödeneği ve yağma geçerli).
-    return { gorev: g, er: pay, aktif: gucPayi >= g.minGuc && (!g.yalnizSavas || savasta) && !savasta };
+    return { gorev: g, er: pay, guc: gucPayi, aktif: gucPayi >= g.minGuc && (!g.yalnizSavas || savasta) && !savasta };
   });
 }
 
@@ -619,10 +623,10 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
   const kazancC = GOREV_GELIR_CARPANI;
-  const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
+  const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const akinC = (g.tur === "akin" ? mizrakliAkin : 1) * (g.tur === "akin" || g.tur === "haydut" ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1);
-    const gelir = p * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
+    const gelir = gucPay * g.erBasi * GOREV_GUC_KATSAYISI * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;
@@ -639,7 +643,8 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const yagmaBrut = yagma ? b.guc * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
   const toplamBrut = ganimetBrut + yagmaBrut;
   const devletPayi = 0; // askerde devlet payı/vergi yok
-  const erPayi = toplamBrut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
+  // Yağma doğrudan hazineye girer: yalnız görev ganimetinden askere pay düşülür.
+  const erPayi = ganimetBrut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
   const ganimetNet = toplamBrut - erPayi;
   const esirBeklenen = gorevler.reduce((t, x) => t + x.esir, 0) + (yagma ? b.guc * YAGMA_ESIR * ganimetC : 0);
   const paylar = turPaylari(b);
@@ -652,7 +657,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const donem = state.ulke.savasta ? "savas" : state.veba?.aktif ? "veba" : state.ulke.donem?.tur ?? "durgunluk";
   const seferEk = b.savas?.seferberlik ? { genel: 0.2, dengeli: 0.08, secme: 0 }[b.savas.seferberlik] : 0;
   const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (savasta ? 1 - ikmal.yagma.erzakIndirimi : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
-  const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon;
+  const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon * (savasta ? 1 - SAVAS_KISLA_INDIRIMI : 1);
   const techizatBakim = (b.kalite.dusuk * KALITE_BAKIM.dusuk + b.kalite.orta * KALITE_BAKIM.orta + b.kalite.yuksek * KALITE_BAKIM.yuksek) * bg.giderEnflasyon;
   const yaraliGideri = yaraliSayisi(state) * YARALI_TEDAVI_GIDERI * bg.giderEnflasyon;
   const birlikBakim = 0; // türlerin bakımı er masrafına (turBakim) işlenir

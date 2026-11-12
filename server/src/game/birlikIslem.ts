@@ -27,8 +27,10 @@ import {
   SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
   BARIS_GANIMET_ARALIK,
+  BARIS_GANIMET_TABAN,
   GANIMET_PAYI_KILIT_YIL,
-  ganimetGucCarpani,
+  GOREV_GUC_KATSAYISI,
+  ganimetBrutTemel,
   KUSATMA_ACIK,
   TUR_PAYI,
   OZEL_BIRLIK_LIMITI,
@@ -905,7 +907,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         const pay = gp.find((x) => x.gorev.id === g.id);
         const hs = h.gorevler.find((x) => x.id === g.id);
         return {
-          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * bg.enflasyon),
+          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GUC_KATSAYISI * bg.enflasyon),
           yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
           erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0),
         };
@@ -964,7 +966,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim),
       techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
-      barisGanimetTahmini: r2(d.guc * ((BARIS_GANIMET_ARALIK[0] + BARIS_GANIMET_ARALIK[1]) / 2) * ganimetGucCarpani(d.guc) * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
+      barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, (BARIS_GANIMET_ARALIK[0] + BARIS_GANIMET_ARALIK[1]) / 2, BARIS_GANIMET_TABAN) * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
     },
     yol,
   };
