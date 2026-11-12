@@ -83,9 +83,9 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut/sınır 1–1,5, yaralı 0,30, ganimet politikası morali −8/0/+6", () => {
-    expect(BARIS_GANIMET_ARALIK).toEqual([1, 1.5]);
-    expect(SAVAS_ZAFER_GANIMET).toEqual([5, 7]);
+  it("sabitler: haydut/sınır 1,5–1,9, savaş zaferi 6–8, yaralı 0,30, ganimet politikası morali −8/0/+6", () => {
+    expect(BARIS_GANIMET_ARALIK).toEqual([1.5, 1.9]);
+    expect(SAVAS_ZAFER_GANIMET).toEqual([6, 8]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.3);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
   });

@@ -434,7 +434,7 @@ async function meslekYonet(id: string): Promise<void> {
     if (!d || !d.secenekler?.length) break;
     let secim = d.secenekler[0].id;
     if (d.adim === "seferberlik") secim = d.secenekler.find((o: any) => o.id === "dengeli")?.id ?? secim;
-    if (d.adim === "ikmal") secim = d.secenekler.find((o: any) => o.id === "yeterli")?.id ?? secim;
+    if (d.adim === "ikmal") secim = d.secenekler.find((o: any) => o.id === (process.env.SIM_IKMAL ?? "yeterli"))?.id ?? secim;
     try { await birlikSavasKarariVer(id, secim); } catch { break; }
   }
   state = await stateGetir(id);

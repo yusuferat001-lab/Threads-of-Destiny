@@ -418,10 +418,10 @@ describe("görev geliri ve erzak tabloları", () => {
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 6; asker başı 0,20, savaşta ×2", () => {
+  it("sabit maaş 6; asker başı 0,20, savaşta ×3", () => {
     expect(SOLD).toEqual([6, 6, 6, 6, 6]);
     expect(ER_BASI_GELIR).toBe(0.2);
-    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
+    expect(SAVAS_ER_BASI_CARPANI).toBe(3);
     const s = asker();
     ordu(s, 100);
     const baris = birlikHesapla(s, bg(s));
@@ -429,7 +429,7 @@ describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
     const savas = birlikHesapla(s, bg(s));
     const e = bg(s).enflasyon;
     expect(baris.sold).toBeCloseTo(6 * e + 100 * 0.2 * e, 3);
-    expect(savas.sold).toBeCloseTo(6 * e + 100 * 0.4 * e, 3);
+    expect(savas.sold).toBeCloseTo(6 * e + 100 * 0.6 * e, 3);
   });
 
   it("4. yıl (sonuç yılı) kayıpları büyüdü ve beklenen toplam kullanıcı tavanının altında kalır", () => {

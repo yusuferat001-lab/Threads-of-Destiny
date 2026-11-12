@@ -388,11 +388,11 @@ export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
 export const SUVARI_GOREV_GELIRI = 0.1;
-export const SAVAS_ER_BASI_CARPANI = 2;
+export const SAVAS_ER_BASI_CARPANI = 3;
 export const ER_MASRAFI = 0.25;
 export const ERZAK_BIRIMI = 0.15;
 /** Barış çatışması (haydut / sınır) zafer ganimeti = askerî güç × U(a; b) (yenilgide ganimet yok). */
-export const BARIS_GANIMET_ARALIK: Aralik = [1, 1.5];
+export const BARIS_GANIMET_ARALIK: Aralik = [1.5, 1.9];
 /** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
 export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
 export const ASKER_KARIYER_GUC_TAVANI = 2.5;
@@ -892,8 +892,8 @@ export const YAGMA_ERZAK_CARPANI = 0.6;
 export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
 export const YAGMA_AHLAK = -1.5;
-/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(5; 7); esir = güç × bu × yıl. Yenilgide ganimet yok. */
-export const SAVAS_ZAFER_GANIMET: Aralik = [5, 7];
+/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = askerî güç × U(6; 8); esir = güç × bu × yıl. Yenilgide ganimet yok. */
+export const SAVAS_ZAFER_GANIMET: Aralik = [6, 8];
 export const SAVAS_ZAFER_ESIR = 0.015;
 /** Kiralık ordu: ordunun bu kesri kadar, savaş süresince; eğitimli ve pahalı. */
 export const KIRALIK_ORAN = 0.4;
