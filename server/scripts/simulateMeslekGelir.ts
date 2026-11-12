@@ -58,6 +58,7 @@ import { FAALIYETLER } from "../src/data/cemaat";
 import { doktrinBekleyenSeviye } from "../src/game/birlik";
 import { doktrinSecenekleri } from "../src/data/birlik";
 import { yolDali } from "../src/game/birlik";
+import { tarihiSavasKontrol } from "../src/data/tarihiSavaslar";
 import { giderEnflasyonCarpani, isletmeBaglami } from "../src/game/stateManager";
 import { birlikHesapla, erSayisi, kislaLimiti, gorevSlotSayisi, gucHesapla, komutaLimiti } from "../src/game/birlik";
 import { GOREVLER } from "../src/data/birlik";
@@ -392,6 +393,8 @@ interface OyunIzi {
   tur: TurKaydi[];
   sonPara: number;
   hataMi: boolean;
+  /** Olayla ilan edilen (buyuk_savas kaydı olmayan) savaşta geçen yıl; bitişi olmayan savaş tutarsızlığını ölçer. */
+  takiliSavasYili: number;
 }
 
 
@@ -478,7 +481,7 @@ async function meslekYonet(id: string): Promise<void> {
 
   // 3) Çalışan + yatırım (nakit rezervi korunarak)
   const askerMi = profil.mod === "birlik";
-  const rezerv = askerMi ? (20 + erSayisi(state) * 0.25) * enf : (profil.mod === "cemaat" ? 12 : depoKapasitesi(is) * 0.8 + 18) * enf;
+  const rezerv = askerMi ? (ASKER_V === "v0" ? 20 + erSayisi(state) * 0.25 : 6) * enf : (profil.mod === "cemaat" ? 12 : depoKapasitesi(is) * 0.8 + 18) * enf;
   try {
     adaylariGerekirseYenile(state);
     const limit = calisanLimiti(state);
@@ -491,12 +494,13 @@ async function meslekYonet(id: string): Promise<void> {
       await isletmeCalisanAl(id, a.id);
     }
   } catch { /* yok say */ }
-  const sira = askerMi ? ["kisla", "devsirme", "revir", "karakol"] : profil.mod === "cemaat" ? ["bina", "okul", "asevi", "tanitim", "guvenlik"] : ["depo", "tezgah", "dukkan", "vitrin", "guvenlik", "tanitim", "kervan"];
+  const sira = askerMi ? (ASKER_V === "v0" ? ["kisla", "devsirme", "revir", "karakol"] : ["devsirme", "kisla", "revir", "karakol"]) : profil.mod === "cemaat" ? ["bina", "okul", "asevi", "tanitim", "guvenlik"] : ["depo", "tezgah", "dukkan", "vitrin", "guvenlik", "tanitim", "kervan"];
   for (const yid of sira) {
     const t = yatirimTanimiGetir(profil, yid);
     if (!t) continue;
     const k = is.yatirimlar[yid] ?? 0;
     if (k >= t.fiyatlar.length) continue;
+    if (yid === "kisla" && ASKER_V === "v0" && erSayisi(state) < komutaLimiti(state) * 0.75) continue;
     if (yid === "kisla" && erSayisi(state) < komutaLimiti(state) * 0.75) continue;
     if (yid === "depo" && profil.mod !== "cemaat" && !askerMi) {
       const talep = is.hatlar.filter((h) => h.acik).reduce((acc, h) => acc + (h.son_talep || 0), 0);
@@ -509,6 +513,7 @@ async function meslekYonet(id: string): Promise<void> {
 }
 
 /** Asker ("dengeli" bot, simulateBirlik.ts ile aynı mantık): görev + talim + teçhizat; yatırım/subay ortak bloktan. */
+const ASKER_V = process.env.SIM_ASKER ?? "v0"; // v0 = simulateBirlik 'dengeli' kopyası; v1 = devşirme öncelikli + düşük rezerv; v2 = v1 + hafif talim
 async function askerYonet(id: string): Promise<void> {
   const state = await stateGetir(id);
   const b = state.isletme?.birlik;
@@ -521,13 +526,14 @@ async function askerYonet(id: string): Promise<void> {
     const guc = gucHesapla(state).guc;
     const secilen = GOREVLER.filter((g) => !g.yalnizSavas && guc / Math.max(1, slot) >= g.minGuc)
       .sort((x, y) => y.erBasi - x.erBasi).slice(0, slot).map((g) => g.id);
-    await isletmeKararVer(id, [], undefined, { gorevler: secilen.length ? secilen : ["devriye"], talim: "orta", ...(state.rutbe_seviye >= 2 ? { ganimet_payi: "dengeli" } : {}) });
+    await isletmeKararVer(id, [], undefined, { gorevler: secilen.length ? secilen : ["devriye"], talim: ASKER_V === "v2" ? "hafif" : "orta", ...(state.rutbe_seviye >= 2 ? { ganimet_payi: "dengeli" } : {}) });
   } catch { /* uygun görev yok */ }
   try {
     if (b.hedef_kalite === "dusuk" && state.para > rezerv * 4 + er * 0.7 * genf) await birlikTechizatSec(id, "orta");
   } catch { /* kilitli */ }
 }
 
+const savasTutarsizGorulen = new Set<string>();
 async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
   const bolge = rastgele(BOLGELER_BY_CAG[cag]);
   const yerlesim = rastgele(YERLESIMLER).id;
@@ -539,6 +545,7 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
     sosyallesmeSayisi: 0, kendiIsHarcanan: 0, mulkHarcanan: 0, enYuksekPara: state.para,
   };
   const tur: TurKaydi[] = [];
+  let takiliSavasYili = 0;
   let hataMi = false;
   let guard = 0;
   try {
@@ -554,10 +561,21 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
       let sonuc: any = await secimUygula(id, idx);
       if (sonuc && sonuc.ara_tepki) sonuc = await secimUygula(id, tepkiSec(state));
       state = await stateGetir(id);
+      if (process.env.SIM_SAVAS_KONTROL && state.ulke.savasta !== !!state.buyuk_savas && !savasTutarsizGorulen.has(id)) {
+        savasTutarsizGorulen.add(id);
+        console.log(`[TUTARSIZ] ${cag}/${meslek} yas ${state.yas} yil ${state.yil} ulke.savasta=${state.ulke.savasta} buyuk_savas=${JSON.stringify(state.buyuk_savas)} sonDonem=${JSON.stringify(state.ulke.donem)?.slice(0, 80)} sonBitis=${state.son_buyuk_savas_bitis_yili} olay=${(senaryo as any)?.olay_basligi}`);
+      }
+      // SIM_SAVAS_DUZELT=1: olayla ilan edilen savaşın (buyuk_savas kaydı yok) tarihi pencere kapanınca bitmesini taklit eder
+      // (motorda böyle bir bitiş yok; bkz. dunya_savas_ilani). Oyun koduna dokunmadan düzeltmenin etkisini ölçmek içindir.
+      if (process.env.SIM_SAVAS_DUZELT && state.ulke.savasta && !state.buyuk_savas && !state.etiketler.some((e) => /savasinda/.test(e)) && !tarihiSavasKontrol(state.bolge, state.yil, state.cag)) {
+        state.ulke.savasta = false;
+        state.son_buyuk_savas_bitis_yili = state.yil;
+      }
+      if (state.ulke.savasta && !state.buyuk_savas) takiliSavasYili += Math.max(0, state.yas - yasBas);
       const na = sonuc?.nakitAkisi;
       if (process.env.SIM_DEBUG && state.isletme?.birlik) {
         const h = birlikHesapla(state, isletmeBaglami(state));
-        console.log(`yas ${state.yas.toFixed(0)} r${state.rutbe_seviye} er ${erSayisi(state)}/${kislaLimiti(state)} para ${state.para.toFixed(0)} | sold ${h.sold.toFixed(0)} gorev ${h.gorevGeliri.toFixed(0)} gan ${h.ganimetNet.toFixed(0)} | erM ${h.erMasrafi.toFixed(0)} erzak ${h.erzak.toFixed(0)} kisla ${h.kislaBakim.toFixed(0)} tech ${h.techizatBakim.toFixed(0)} talim ${h.talimMasrafi.toFixed(0)} yarali ${h.yaraliGideri.toFixed(0)} | net ${h.net.toFixed(0)} | nakit: maas ${na?.maasBrut?.toFixed(0)} yasam ${na?.giderYasam?.toFixed(0)} konut ${na?.giderKonut?.toFixed(0)} ekip ${na?.giderEkip?.toFixed(0)} faiz ${na?.faiz?.toFixed(0)} svVergi ${na?.savasVergisi?.toFixed(0)} olay ${((na?.olayGeliri ?? 0) - (na?.olayGideri ?? 0)).toFixed(0)} diger ${na?.digerNet?.toFixed(0)} savas ${state.ulke.savasta} yil ${state.yil} bs ${JSON.stringify(state.buyuk_savas)} sv ${JSON.stringify(state.isletme?.birlik?.savas)?.slice(0,200)} sk ${JSON.stringify(state.isletme?.birlik?.savas_karari)?.slice(0,150)}`);
+        console.log(`yas ${state.yas.toFixed(0)} r${state.rutbe_seviye} er ${erSayisi(state)}/${kislaLimiti(state)} para ${state.para.toFixed(0)} | sold ${h.sold.toFixed(0)} gorev ${h.gorevGeliri.toFixed(0)} gan ${h.ganimetNet.toFixed(0)} | erM ${h.erMasrafi.toFixed(0)} erzak ${h.erzak.toFixed(0)} kisla ${h.kislaBakim.toFixed(0)} tech ${h.techizatBakim.toFixed(0)} talim ${h.talimMasrafi.toFixed(0)} yarali ${h.yaraliGideri.toFixed(0)} | net ${h.net.toFixed(0)} | nakit: maas ${na?.maasBrut?.toFixed(0)} yasam ${na?.giderYasam?.toFixed(0)} konut ${na?.giderKonut?.toFixed(0)} ekip ${na?.giderEkip?.toFixed(0)} faiz ${na?.faiz?.toFixed(0)} svVergi ${na?.savasVergisi?.toFixed(0)} olay ${((na?.olayGeliri ?? 0) - (na?.olayGideri ?? 0)).toFixed(0)} diger ${na?.digerNet?.toFixed(0)} savas ${state.ulke.savasta} yil ${state.yil} bs ${state.buyuk_savas ? "VAR" : "yok"} | gorevler ${state.isletme?.birlik?.gorevler} guc ${gucHesapla(state).guc.toFixed(1)} bonus ${gucHesapla(state).bonuslar.map((x) => x.kod + ":" + x.deger.toFixed(2)).join(",")} moral ${state.isletme?.birlik?.moral} etk ${state.etiketler.filter((e) => /savas|cephe|tarihi/.test(e)).join(",")}`);
       }
       if (na) {
         const gider = (na.olayGideri ?? 0) + (na.giderYasam ?? 0) + (na.giderKonut ?? 0) + (na.giderEkip ?? 0) +
@@ -577,7 +595,7 @@ async function birOyun(cag: Cag, meslek: string): Promise<OyunIzi> {
     console.error(`  [HATA] ${cag}/${meslek}: ${(err as Error).message}`);
   }
   const son = await stateGetir(id);
-  return { cag, meslek, olumYasi: son.yas, tur, sonPara: son.para, hataMi };
+  return { cag, meslek, olumYasi: son.yas, tur, sonPara: son.para, hataMi, takiliSavasYili };
 }
 
 /** Her turun gelirini, kapsadığı yaş yıllarına eşit yayar -> yıl başına dizi. */
@@ -673,11 +691,18 @@ async function main(): Promise<void> {
       if ((i + 1) % 25 === 0) console.log(`  ${i + 1}/${N_PER_GROUP} (${((Date.now() - t0) / 1000).toFixed(0)}sn)`);
     }
   }
+  if (process.env.SIM_SAVAS_KONTROL) {
+    for (const meslek of meslekler) {
+      const g = tum.filter((i) => i.meslek === meslek);
+      const takili = g.filter((i) => i.takiliSavasYili > 0);
+      console.log(`[TAKILI SAVAŞ] ${meslek}: ömrün %${y2((takili.length / g.length) * 100)}'inde var; takılı yıl ort ${y2(ortala(takili.map((i) => i.takiliSavasYili)))}, medyan ${medyan(takili.map((i) => i.takiliSavasYili))}; ömrün ort. %${y2((ortala(g.map((i) => i.takiliSavasYili)) / ortala(g.map((i) => Math.max(1, i.olumYasi - 15)))) * 100)}'i takılı savaşta`);
+    }
+  }
   const rapor: any[] = [];
   for (const meslek of meslekler) rapor.push(meslekRapor(`MESLEK: ${meslek} (tüm çağlar)`, tum.filter((i) => i.meslek === meslek)));
   for (const cag of caglar) for (const meslek of meslekler)
     rapor.push(meslekRapor(`${cag} / ${meslek}`, tum.filter((i) => i.meslek === meslek && i.cag === cag)));
-  fs.writeFileSync(path.join(__dirname, `simulateMeslekGelir.${MOD}.sonuc.json`), JSON.stringify(rapor, null, 2), "utf-8");
+  fs.writeFileSync(path.join(__dirname, `simulateMeslekGelir.${MOD}${process.env.SIM_SAVAS_DUZELT ? ".duzelt" : ""}.sonuc.json`), JSON.stringify(rapor, null, 2), "utf-8");
   console.log(`\nBitti: ${tum.length} ömür, ${((Date.now() - t0) / 1000).toFixed(0)}sn, hatalı ${tum.filter((i) => i.hataMi).length}`);
 }
 main().catch((e) => { console.error(e); process.exit(1); });
