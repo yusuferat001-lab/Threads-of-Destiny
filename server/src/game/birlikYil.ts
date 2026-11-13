@@ -46,7 +46,6 @@ import {
   BARIS_TALIM_ZAFER,
   BARIS_GANIMET_ARALIK,
   BARIS_GOREV_YARALI_CARPANI,
-  BARIS_YILLIK_ER,
   EMIRLER,
   KALE_GUC_ESIGI,
   KUSATMA_ACIK,
@@ -1100,10 +1099,9 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   // 6. (Kaldırıldı) Rakip komutan saldırıları/hırsızlık: Asker'de rakip yok; tehdit yalnız düşman çatışması ve savaştır.
 
-  // 7. Büyüme: devşirme subayı, büro, şöhret, doktrin, yatkınlık (savaşta ×2; vebada kısılır).
+  // 7. Büyüme: devşirme subayı, büro, şöhret, doktrin, yatkınlık (savaşta ×2; vebada kısılır). Sabit yıllık +1 gönüllü yok.
   const sohret = sohretMusteriSayisi(state.un);
   let buyume =
-    BARIS_YILLIK_ER +
     subayToplami(state).devsirme +
     DEVSIRME_BUROSU_ER[clamp(yatirimKademesi(state, "devsirme"), 0, DEVSIRME_BUROSU_ER.length - 1)] +
     Math.max(0, sohret) +

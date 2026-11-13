@@ -49,7 +49,7 @@ describe("v39 barış kaybı ve sabit büyüme", () => {
     expect(kaynakli).toBeGreaterThan(0);
   });
 
-  it("her yıl en az +1 er gelir (savaşsız, subaysız, şöhretsiz)", () => {
+  it("sabit yıllık +1 er yok: devşirme kaynağı (subay, büro, şöhret, doktrin) yoksa ordu büyümez", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.99);
     const s = asker();
     s.un = 40; // kötü şöhret devşirmeyi azaltmasın
@@ -57,7 +57,7 @@ describe("v39 barış kaybı ve sabit büyüme", () => {
     s.isletme!.yatirimlar.kisla = 4;
     const once = erSayisi(s);
     birlikYilIsle(s, bg(s));
-    expect(erSayisi(s)).toBeGreaterThanOrEqual(once + 1);
+    expect(erSayisi(s)).toBeLessThanOrEqual(once);
   });
 });
 

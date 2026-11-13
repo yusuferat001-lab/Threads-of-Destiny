@@ -388,8 +388,6 @@ export const ER_BASI_GELIR = 0.15;
 export const GOREV_GELIR_CARPANI = 1.11;
 /** Barış yılı görev kayıpları ölü değil yaralı olur: yaralı = görev er payı × kayipBaris × bu. */
 export const BARIS_GOREV_YARALI_CARPANI = 2.5;
-/** Her rütbede sabit yıllık gönüllü er (savaşta ×2, vebada kısılır, kışla limitine takılır). */
-export const BARIS_YILLIK_ER = 1;
 /** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haydut/akın görev gelirini artırır. */
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
