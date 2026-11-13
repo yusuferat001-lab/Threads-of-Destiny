@@ -169,7 +169,7 @@ describe("kayıp: ölü – yaralı – firar", () => {
     expect(yarali).toBe(40);
     expect(gucHesapla(s).guc).toBeLessThan(g0);
     const h1 = birlikHesapla(s, bg(s));
-    expect(h1.yaraliGideri).toBeCloseTo(20 * 0.3 * bg(s).giderEnflasyon, 4);
+    expect(h1.yaraliGideri).toBeCloseTo(20 * 0.2 * bg(s).giderEnflasyon, 4);
     expect(h0.yaraliGideri).toBe(0);
     expect(h1.gorevGeliri).toBeLessThan(h0.gorevGeliri);
   });
@@ -387,20 +387,20 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("her görevin asker başı net kazancı 1,10–1,90 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
+  it("her görevin güç başı net kazancı 0,49–0,735 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
-      expect(g.erBasi).toBeGreaterThanOrEqual(1.1 - 1e-6);
-      expect(g.erBasi).toBeLessThanOrEqual(1.9 + 1e-6);
+      expect(g.erBasi).toBeGreaterThanOrEqual(0.49 - 1e-6);
+      expect(g.erBasi).toBeLessThanOrEqual(0.735 + 1e-6);
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
     expect(sira[0].minGuc).toBe(10);
     expect(sira[sira.length - 1].minGuc).toBe(230);
-    expect(sira[0].erBasi).toBe(1.1);
-    expect(sira[sira.length - 1].erBasi).toBe(1.9);
+    expect(sira[0].erBasi).toBe(0.49);
+    expect(sira[sira.length - 1].erBasi).toBe(0.735);
     expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
   });
   it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,15 / 0,30 / 0,45", () => {
@@ -418,18 +418,18 @@ describe("görev geliri ve erzak tabloları", () => {
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 6; asker başı 0,20, savaşta ×2", () => {
-    expect(SOLD).toEqual([6, 6, 6, 6, 6]);
-    expect(ER_BASI_GELIR).toBe(0.2);
-    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
+  it("sabit maaş 9; asker başı 0,15, savaşta ×3", () => {
+    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
+    expect(ER_BASI_GELIR).toBe(0.15);
+    expect(SAVAS_ER_BASI_CARPANI).toBe(3);
     const s = asker();
     ordu(s, 100);
     const baris = birlikHesapla(s, bg(s));
     s.ulke.savasta = true;
     const savas = birlikHesapla(s, bg(s));
     const e = bg(s).enflasyon;
-    expect(baris.sold).toBeCloseTo(6 * e + 100 * 0.2 * e, 3);
-    expect(savas.sold).toBeCloseTo(6 * e + 100 * 0.4 * e, 3);
+    expect(baris.sold).toBeCloseTo(9 * e + 100 * 0.15 * e, 3);
+    expect(savas.sold).toBeCloseTo(9 * e + 100 * 0.45 * e, 3);
   });
 
   it("4. yıl (sonuç yılı) kayıpları büyüdü ve beklenen toplam kullanıcı tavanının altında kalır", () => {

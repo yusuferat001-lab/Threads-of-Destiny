@@ -63,7 +63,8 @@ import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir 
 import { askerGucleri, pazarPayiHesapla } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
-  BARIS_BEKLEME,
+  BARIS_BEKLEME_ARALIK,
+  BARIS_YILLIK_IHTIMAL,
   BASLANGIC_ER,
   TUR_PAYI,
   TUR_TANIMLARI,
@@ -308,8 +309,8 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 6 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([6, 6, 6, 6, 6]);
+  it("sabit maaş 9 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -337,30 +338,42 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("askerde devlet payı yok; ganimetin askerlere giden payı politikayla %20/%40/%60", () => {
+  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%30/%45/%60); görev ganimeti ve yağma doğrudan hazineye", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
     b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
     b.gorevler = ["haydut"];
-    b.ganimet_payi = "az";
-    const az = birlikHesapla(s, bg(s));
-    b.ganimet_payi = "dengeli";
-    const de = birlikHesapla(s, bg(s));
-    b.ganimet_payi = "comert";
-    const co = birlikHesapla(s, bg(s));
+    for (const id of ["az", "dengeli", "comert"] as const) {
+      b.ganimet_payi = id;
+      const h = birlikHesapla(s, bg(s));
+      expect(h.devletPayi).toBe(0);
+      expect(h.erPayi).toBe(0); // görev ganimetinden pay düşülmez
+      expect(h.ganimetNet).toBeCloseTo(h.ganimetBrut, 6);
+    }
     s.ulke.savasta = true;
-    b.ganimet_payi = "az";
-    b.savas_karari = { yil: s.yil, adimlar: [], adim: 0, inisiyatif_zorunlu: null, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma", esir: "karma" };
+    b.savas_karari = { yil: s.yil, adimlar: [], adim: 0, inisiyatif_zorunlu: null, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma_orta", esir: "karma" };
     const y = birlikHesapla(s, bg(s));
-    expect(y.devletPayi).toBe(0);
     expect(y.yagmaBrut).toBeGreaterThan(0);
-    expect(y.erPayi / y.ganimetBrut).toBeCloseTo(0.2, 6);
-    b.ganimet_payi = "comert";
-    const yc = birlikHesapla(s, bg(s));
-    expect(yc.erPayi / yc.ganimetBrut).toBeCloseTo(0.6, 6);
-    expect(yc.ganimetNet).toBeLessThan(y.ganimetNet);
-    expect(az.devletPayi + de.devletPayi + co.devletPayi).toBe(0);
+    expect(y.erPayi).toBe(0); // yağma direkt hazineye
+    expect(y.ganimetNet).toBeCloseTo(y.yagmaBrut, 6);
+    // savaş zaferi ganimetinden politikaya göre pay düşer
+    const oranlar: Record<string, number> = { az: 0.3, dengeli: 0.45, comert: 0.6 };
+    for (const id of ["az", "dengeli", "comert"] as const) {
+      const z = asker();
+      z.meslek_musteri = 200;
+      const bz = birlikAl(z);
+      bz.kalite = { dusuk: 0, orta: 0, yuksek: 200 };
+      bz.guc = 400;
+      bz.ganimet_payi = id;
+      z.ulke.savasta = true;
+      const sv = savasBaslat(z);
+      sv.genel_zafer = 3;
+      sv.genel_yenilgi = 1;
+      const sonuc = savasiBitir(z, bz, bg(z), []);
+      expect(sonuc.zafer).toBe(true);
+      expect(sonuc.erPayi / sonuc.brut).toBeCloseTo(oranlar[id], 3);
+    }
   });
 
   it("savaşta görevlerden gelir yok; sabit maaş aynen, asker başı kısım ×1,30; maaşın adı çağ+ülkeye göre", () => {
@@ -398,7 +411,7 @@ describe("gelir ve gider", () => {
     const sonuc = savasiBitir(s, b, bg(s), uyar);
     expect(sonuc.zafer).toBe(true);
     expect(sonuc.brut).toBeGreaterThan(0);
-    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.4), 1);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.45), 1);
     expect(sonuc.kale).toBe(true);
     expect(b.kale).toBe(1);
     expect(s.unvanlar).toContain("Zafer Madalyası");
@@ -472,7 +485,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     return b;
   }
 
-  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta 2 yıl beklenir, savaş sonrası en az 1 yıl", () => {
+  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta çatışmalar arası 2–3 yıl, savaş sonrası en az 1 yıl", () => {
     const s = asker();
     const b = birlikAl(s);
     b.baris_bekleme = 2;
@@ -483,20 +496,22 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     // savaş bitti: bekleme bitmiş sayaçla ilk barış yılında (zar tuttu) çatışma çıkar
     b.baris_bekleme = 0;
     b.savas = null;
-    expect(BARIS_BEKLEME).toBe(2);
+    expect(BARIS_BEKLEME_ARALIK).toEqual([1, 2]); // bekleme + 1 = çatışmalar arası 2–3 yıl
+    expect(BARIS_YILLIK_IHTIMAL).toBe(1);
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     const sonuc = birlikYilIsle(s, bg(s));
     rnd.mockRestore();
     expect(sonuc.dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
-    expect(b.baris_bekleme).toBe(BARIS_BEKLEME);
+    expect(b.baris_bekleme).toBeGreaterThanOrEqual(BARIS_BEKLEME_ARALIK[0]);
+    expect(b.baris_bekleme).toBeLessThanOrEqual(BARIS_BEKLEME_ARALIK[1]);
   });
 
-  it("çatışma sonrası 2 yıl çıkmaz; sonra yıllık şansla çıkar", () => {
+  it("çatışma sonrası bekleme boyunca çıkmaz; bekleme biter bitmez çıkar", () => {
     const s = asker();
     const b = birlikAl(s);
-    b.baris_bekleme = BARIS_BEKLEME;
+    b.baris_bekleme = BARIS_BEKLEME_ARALIK[1];
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
-    for (let i = 0; i < BARIS_BEKLEME; i++) {
+    for (let i = 0; i < BARIS_BEKLEME_ARALIK[1]; i++) {
       expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(false);
     }
     expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
@@ -676,7 +691,8 @@ describe("savaş", () => {
     expect(b.savas!.ikmal).toBeDefined();
     const secilen = b.savas!.ikmal!;
     b.savas_karari = null; // yıl sonu
-    expect(birlikHesapla(s, bg(s)).yagmaBrut > 0).toBe(secilen === "yagma");
+    expect(secilen.startsWith("yagma")).toBe(true); // ikmal yalnız yağma türleri
+    expect(birlikHesapla(s, bg(s)).yagmaBrut).toBeGreaterThan(0); // karar yılında (3. yıl) yağma hâlâ var (YAGMA_YIL=3)
     expect(b.savas!.ikmal).toBe(secilen);
   });
 

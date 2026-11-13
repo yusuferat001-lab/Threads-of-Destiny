@@ -12,6 +12,7 @@ import {
   dusmanAraziCarpani,
   dusmanSaldiriSavunma,
   dusmanReferansGucuYas,
+  savasDusmanGucuYas,
 } from "../src/data/birlik";
 import type { CharacterState } from "../src/types";
 
@@ -83,10 +84,10 @@ describe("arazi üçlüsü: ova / dağ geçidi / sık orman", () => {
 });
 
 describe("düşman gücü: yaşa göre, ±%5, saldırı/savunma ayrımlı", () => {
-  it("savaş sapması ±%5, zar ±%8", () => {
+  it("savaş sapması ±%5, zar ±%7", () => {
     expect(DUSMAN_ORAN).toEqual([0.95, 1.05]);
-    expect((20 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(0.08, 6);
-    expect((1 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(-0.08, 6);
+    expect((20 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(0.07, 6);
+    expect((1 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(-0.07, 6);
   });
 
   it("referans güç yaşla artar", () => {
@@ -113,7 +114,7 @@ describe("düşman gücü: yaşa göre, ±%5, saldırı/savunma ayrımlı", () =
       arazi: "ova", inisiyatif: "savunma", dusman_orani: 1, dusman_tur: "karma", kanat_zafer: 0, kanat_yenilgi: 0, genel_zafer: 0, genel_yenilgi: 0,
     };
     const k = savasKiyasiHesapla(s, isletmeBaglami(s));
-    const ref = dusmanReferansGucuYas(s.yas) * dusmanAraziCarpani("ova", "karma");
+    const ref = savasDusmanGucuYas(s.yas) * dusmanAraziCarpani("ova", "karma");
     expect(k.dusman.guc[0]).toBe(Math.round(ref * 0.95));
     expect(k.dusman.guc[1]).toBe(Math.round(ref * 1.05));
     expect(k.oyuncu.saldiri).toBeGreaterThan(0);
@@ -146,17 +147,17 @@ describe("savaş planı: ikmal sonradan Ordu ekranından değişir", () => {
     const { ikmalDegistir, savasKarariVer, savasKarariDurumu } = await import("../src/game/birlikIslem");
     const s = asker();
     const bg = isletmeBaglami(s);
-    expect(() => ikmalDegistir(s, "kit", bg)).toThrow(/savaş sürerken/);
+    expect(() => ikmalDegistir(s, "yagma_sert", bg)).toThrow(/savaş sürerken/);
     s.ulke.savasta = true;
     // Plan penceresi: seferberlik + emir + ikmal tek grupta.
     const d = savasKarariDurumu(s, bg)!;
     expect(d.grup).toBe("plan");
     expect(d.adimlar.map((a) => a.adim)).toEqual(["seferberlik", "emir", "ikmal"]);
-    expect(() => ikmalDegistir(s, "kit", bg)).toThrow(/savaş sürerken|savaş planını/);
+    expect(() => ikmalDegistir(s, "yagma_sert", bg)).toThrow(/savaş sürerken|savaş planını/);
     for (const a of d.adimlar) savasKarariVer(s, a.secenekler[0].id, bg);
-    expect(birlikAl(s).savas!.ikmal).toBe("yeterli");
-    expect(ikmalDegistir(s, "kit", bg)).toBe("kit");
-    expect(birlikAl(s).savas!.ikmal).toBe("kit");
+    expect(birlikAl(s).savas!.ikmal).toBe("yagma_sert");
+    expect(ikmalDegistir(s, "yagma_yumusak", bg)).toBe("yagma_yumusak");
+    expect(birlikAl(s).savas!.ikmal).toBe("yagma_yumusak");
     expect(() => ikmalDegistir(s, "olmayan", bg)).toThrow(/Geçersiz/);
     // İkinci kez plan penceresi açılmaz.
     expect(savasKarariDurumu(s, bg)).toBeNull();

@@ -1142,7 +1142,8 @@ export type BirlikTalim = "hafif" | "orta" | "agir";
 export type BirlikTon = "merhametli" | "dengeli" | "sert";
 export type BirlikArazi = "ova" | "dag" | "orman";
 export type BirlikRol = "onc" | "ana" | "yedek";
-export type BirlikIkmal = "yeterli" | "kit" | "yagma";
+/** Savaş planındaki ikmal kararı: yalnız üç yağma türü. */
+export type BirlikIkmal = "yagma_sert" | "yagma_orta" | "yagma_yumusak";
 export type BirlikEsirKarari = "idam" | "serbest" | "sat" | "karma";
 export type BirlikSeferberlik = "genel" | "secme" | "dengeli";
 
@@ -1271,6 +1272,8 @@ export interface BirlikDurumu {
   talim: number;
   talim_politikasi: BirlikTalim;
   ganimet_payi: BirlikGanimetPayi;
+  /** Ganimet payı en erken bu oyun yılında yeniden değiştirilebilir (5 yılda bir); yoksa/null = serbest. */
+  ganimet_kilit_bitis?: number | null;
   ton: BirlikTon;
   moral: number;
   sertlik: number;

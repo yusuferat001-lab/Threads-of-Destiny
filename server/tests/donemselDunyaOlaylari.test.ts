@@ -220,6 +220,35 @@ describe("buyukSavasKontrolEt / buyukSavasBitisKontrolEt", () => {
     expect(state.son_buyuk_savas_bitis_yili).toBe(state.yil);
   });
 
+  it("olayla ilan edilen savaş (buyuk_savas kaydı yok) tarihi pencere kapanınca sona erer", () => {
+    const state = taze();
+    state.bolge = "Fransa";
+    state.cag = "Orta Çağ";
+    state.yil = 1170; // Fransa 1159-1189 penceresinde
+    state.ulke.savasta = true;
+    state.buyuk_savas = null;
+    expect(buyukSavasBitisKontrolEt(state)).toBeNull();
+    expect(state.ulke.savasta).toBe(true);
+
+    state.yil = 1190; // pencere kapandı
+    const mesaj = buyukSavasBitisKontrolEt(state);
+    expect(mesaj).not.toBeNull();
+    expect(state.ulke.savasta).toBe(false);
+    expect(state.son_buyuk_savas_bitis_yili).toBe(1190);
+  });
+
+  it("kendi bitiş olayı olan özel savaşlar (*_savasinda etiketi) pencereyle bitmez", () => {
+    const state = taze();
+    state.bolge = "Fransa";
+    state.cag = "Sanayi Devrimi";
+    state.yil = 1870; // tarihi pencere dışı
+    state.ulke.savasta = true;
+    state.buyuk_savas = null;
+    state.etiketler.push("fransa_prusya_savasinda");
+    expect(buyukSavasBitisKontrolEt(state)).toBeNull();
+    expect(state.ulke.savasta).toBe(true);
+  });
+
   it("savaş sırasında yaşam giderine gıda çarpanı ve ayrı bir savaş vergisi kalemi biner", () => {
     // Aynı karakter üzerinde önce/sonra karşılaştırılır (bkz. veba testindeki not).
     // Savaş vergisi ve maaş etkisi yalnız maaşlı (işletmesiz) mesleklerde işler; dört meslek de işletmeli olduğundan tanımsız bir meslek kullanılır.

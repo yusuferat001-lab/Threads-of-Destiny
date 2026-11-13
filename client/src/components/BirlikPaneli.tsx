@@ -65,7 +65,7 @@ const M = {
   gelir: { tr: 'gelir', en: 'income' },
   ganimet: { tr: 'ganimet', en: 'loot' },
   politikaBaslik: { tr: 'Politikalar', en: 'Policies' },
-  ganimetPayi: { tr: 'Ganimet payı (erlere)', en: 'Loot share (to the men)' },
+  ganimetPayi: { tr: 'Ganimet payı (erlere; yalnız haydut, sınır ve savaş ganimeti)', en: 'Loot share (to the men; only bandit, border and war loot)' },
   talimPol: { tr: 'Talim', en: 'Drill' },
   tonPol: { tr: 'Komuta tonu', en: 'Command tone' },
   donatimBaslik: { tr: 'Teçhizat', en: 'Equipment' },
@@ -124,7 +124,7 @@ const M = {
   yenilgi: { tr: 'yenilgi', en: 'defeat' },
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
   sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
-  erBasi: { tr: 'Er başı gelir', en: 'Per-man income' },
+  erBasi: { tr: 'Güç başı gelir', en: 'Income per strength' },
   gorevGeliri: { tr: 'Görev kazancı', en: 'Duty earnings' },
   ganimetNet: { tr: 'Ganimet (net)', en: 'Loot (net)' },
   toplamGelir: { tr: 'Toplam gelir', en: 'Total income' },
@@ -149,6 +149,7 @@ const M = {
   artilar: { tr: 'Artılar', en: 'Pros' },
   eksiler: { tr: 'Eksiler', en: 'Cons' },
   techUyari: { tr: '⚠ Seçtikten sonra 5 yıl boyunca değiştirilemez', en: '⚠ Once chosen, it cannot be changed for 5 years' },
+  ganimetUyari: { tr: '⚠ Ganimet payı 5 yılda bir değiştirilebilir', en: '⚠ The loot share can be changed once every 5 years' },
   techKilitli: { tr: '🔒 Değiştirmek için beklemelisin:', en: '🔒 You must wait to change it:' },
   techGuc: { tr: 'Güç', en: 'Strength' },
   techTalim: { tr: 'talim', en: 'drill' },
@@ -243,6 +244,7 @@ export function BirlikPaneli({
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
   const erBirim = dil === 'en' ? '/man' : '/er';
+  const gucBirim = dil === 'en' ? '/strength' : '/güç';
   const [terhis, setTerhis] = useState(1);
   // Politika ayrıntısı: üzerine gelinen (ya da seçili) seçeneğin artı/eksileri gösterilir.
   const [onizle, setOnizle] = useState<Record<string, string | null>>({});
@@ -263,7 +265,8 @@ export function BirlikPaneli({
     baslik: string,
     secili: T,
     secenekler: { id: T; ad: D; arti: D[]; eksi: D[] }[],
-    onSec: (id: T) => void
+    onSec: (id: T) => void,
+    kilit?: { kalanYil: number; uyari: string; kilitli: string }
   ) => {
     const gosterilen = secenekler.find((s) => s.id === (onizle[anahtar] ?? secili)) ?? secenekler[0];
     return (
@@ -275,7 +278,7 @@ export function BirlikPaneli({
               key={s.id}
               type="button"
               className={s.id === secili ? 'ordu-politika-secili' : 'ikincil'}
-              disabled={yukleniyor || s.id === secili}
+              disabled={yukleniyor || s.id === secili || (kilit?.kalanYil ?? 0) > 0}
               onClick={() => onSec(s.id)}
               onMouseEnter={() => setOnizle({ ...onizle, [anahtar]: s.id })}
               onFocus={() => setOnizle({ ...onizle, [anahtar]: s.id })}
@@ -284,6 +287,11 @@ export function BirlikPaneli({
             </button>
           ))}
         </div>
+        {kilit && (
+          <div className={`techizat-uyari${kilit.kalanYil > 0 ? ' techizat-uyari-kilit' : ''}`}>
+            {kilit.kalanYil > 0 ? `${kilit.kilitli} ${kilit.kalanYil} ${t('yilSonra')}` : kilit.uyari}
+          </div>
+        )}
         <div className="ordu-politika-detay">
           <ul className="ordu-arti" aria-label={t('artilar')}>
             {gosterilen.arti.map((x, i) => (
@@ -335,7 +343,7 @@ export function BirlikPaneli({
                 )}
               </div>
               <small>
-                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{erBirim}</span>
+                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{gucBirim}</span>
                 {g.aktif ? <span className="s-gelir"> · {formatPara(g.gelir)} {pb}{g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}</span> : null}
               </small>
             </div>
@@ -446,7 +454,8 @@ export function BirlikPaneli({
             t('ganimetPayi'),
             b.politikalar.ganimetPayi.secili,
             b.politikalar.ganimetPayi.secenekler,
-            (id) => onBirlikKarar({ ganimet_payi: id })
+            (id) => onBirlikKarar({ ganimet_payi: id }),
+            { kalanYil: b.politikalar.ganimetPayi.kilitKalanYil, uyari: t('ganimetUyari'), kilitli: t('techKilitli') }
           )}
           {politika('talim', t('talimPol'), b.talim.politika, b.talim.politikalar, (id) => onBirlikKarar({ talim: id }))}
           {politika('ton', t('tonPol'), b.politikalar.ton.secili, b.politikalar.ton.secenekler, (id) => onBirlikKarar({ ton: id }))}

@@ -3533,6 +3533,19 @@ function buyukSavasBaslat(state: CharacterState, dusman: string, yaklasan?: Duny
 
 /** Aktif büyük savaşın süresi dolduysa sona erdirir; mesaj döner ve bekleme süresini başlatır. */
 export function buyukSavasBitisKontrolEt(state: CharacterState): string | null {
+  // Olayla ilan edilen savaş (dunya_savas_ilani[_asker]): `buyuk_savas` kaydı yoktur, süresi tarihi pencereyle
+  // belirlenir. Pencere kapanınca savaş biter; aksi halde `ulke.savasta` sonsuza dek açık kalırdı. Kendi bitiş
+  // olayı olan özel savaşlar (`*_savasinda` etiketi: Fransa-Prusya, Kırım) bu kuralın dışındadır.
+  if (!state.buyuk_savas && state.ulke.savasta) {
+    if (state.etiketler.some((e) => e.includes("savasinda"))) return null;
+    if (tarihiSavasKontrol(state.bolge, state.yil, state.cag)) return null;
+    const rakipEtiketi = [...state.etiketler].reverse().find((e) => e.startsWith("tarihi_savas_gordu:"));
+    const rakip = rakipEtiketi ? rakipEtiketi.slice("tarihi_savas_gordu:".length) : komsuGucSec(state.bolge);
+    state.ulke.savasta = false;
+    state.son_buyuk_savas_bitis_yili = state.yil;
+    ulkeGecmisiEkle(state, "savas_bitti", state.yil, rakip);
+    return T(state.dil, "🕊️ {0} ile sürdürülen savaş sona erdi, barış geri döndü.", [K(state.dil, rakip)]);
+  }
   if (!state.buyuk_savas || state.yil < state.buyuk_savas.bitisYili) return null;
   const dusman = state.buyuk_savas.dusman;
   state.ulke.savasta = false;
