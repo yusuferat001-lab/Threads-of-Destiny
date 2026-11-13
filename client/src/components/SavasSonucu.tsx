@@ -13,10 +13,9 @@ const M = {
   baslik: { tr: 'Savaş Sonucu', en: 'Battle Result' },
   saldiri: { tr: 'Saldırıdaydın', en: 'You attacked' },
   savunma: { tr: 'Savunmadaydın', en: 'You defended' },
-  guclerin: { tr: 'Güçler ve zarlar', en: 'Forces and rolls' },
+  guclerin: { tr: 'Güçler', en: 'Forces' },
   sen: { tr: 'Sen', en: 'You' },
   dusman: { tr: 'Düşman', en: 'Enemy' },
-  zar: { tr: 'zar', en: 'roll' },
   kayiplarin: { tr: 'Kayıpların', en: 'Your losses' },
   olu: { tr: 'ölü', en: 'dead' },
   yarali: { tr: 'yaralı', en: 'wounded' },
@@ -47,7 +46,7 @@ export function SavasSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: SavasGunuSo
         <div className="savas-kiyas">
           <strong>{t('guclerin')}</strong>
           <div>
-            {t('sen')}: <strong>{sonuc.oyuncuGuc}</strong> ({t('zar')} {sonuc.oyuncuZar >= 0 ? '+' : ''}{sonuc.oyuncuZar}%) ↔ {t('dusman')}: <strong>{sonuc.dusmanGuc}</strong> ({t('zar')} {sonuc.dusmanZar >= 0 ? '+' : ''}{sonuc.dusmanZar}%)
+            {t('sen')}: <strong>{sonuc.oyuncuGuc}</strong> ↔ {t('dusman')}: <strong>{sonuc.dusmanGuc}</strong>
           </div>
         </div>
         <div className="savas-kiyas">

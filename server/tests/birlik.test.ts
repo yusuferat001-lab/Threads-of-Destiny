@@ -59,7 +59,7 @@ import {
   savasKarariVer,
   ganimetSaklamaEngeli,
 } from "../src/game/birlikIslem";
-import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir } from "../src/game/birlikYil";
+import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir, barisCatismaCoz } from "../src/game/birlikYil";
 import { askerGucleri, pazarPayiHesapla } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
@@ -309,8 +309,8 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 9 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
+  it("sabit maaş 6 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([6, 6, 6, 6, 6]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -501,7 +501,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     const sonuc = birlikYilIsle(s, bg(s));
     rnd.mockRestore();
-    expect(sonuc.dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
+    expect(b.catisma_bekleyen).toBeTruthy(); // çatışma çıktı; oyuncu kararını verene dek bekler
     expect(b.baris_bekleme).toBeGreaterThanOrEqual(BARIS_BEKLEME_ARALIK[0]);
     expect(b.baris_bekleme).toBeLessThanOrEqual(BARIS_BEKLEME_ARALIK[1]);
   });
@@ -512,9 +512,11 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     b.baris_bekleme = BARIS_BEKLEME_ARALIK[1];
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     for (let i = 0; i < BARIS_BEKLEME_ARALIK[1]; i++) {
-      expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(false);
+      birlikYilIsle(s, bg(s));
+      expect(b.catisma_bekleyen).toBeFalsy();
     }
-    expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
+    birlikYilIsle(s, bg(s));
+    expect(b.catisma_bekleyen).toBeTruthy();
     rnd.mockRestore();
   });
 
@@ -534,7 +536,8 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     expect(birlikAl(s).baris_bekleme).toBe(2);
     for (let i = 0; i < 2; i++) {
-      expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(false);
+      birlikYilIsle(s, bg(s));
+      expect(birlikAl(s).catisma_bekleyen).toBeFalsy();
     }
     rnd.mockRestore();
   });
@@ -551,11 +554,11 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
       s.rutbe_seviye = 5;
       s.isletme!.yatirimlar.kisla = 4;
       const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // iki taraf da orta zar, düşman gücü ortada → oyuncu güçlü çıkar (zafer); tür sabit
-      const d = birlikYilIsle(s, bg(s)).dokum;
+      birlikYilIsle(s, bg(s)); // çatışma kurulur (karar bekler)
+      const u = barisCatismaCoz(s, b, bg(s), "saldiri");
       rnd.mockRestore();
-      const u = d.uyarilar.find((x) => x.kod === "baris_catisma");
-      expect(u?.savasSonucu).toBe("zafer");
-      return u?.tutar ?? 0;
+      expect(u.zafer).toBe(true);
+      return u.ganimet;
     }
     const k1 = ganimet(1);
     const k2 = ganimet(2);
@@ -564,16 +567,18 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     expect(k2 / k1).toBeLessThan(2.4);
   });
 
-  it("yenilgide ganimet çok azalır (zaferin %20'si) ve kayıp verilir", () => {
+  it("yenilgide ganimet yok; baskında yalnız savunma, karşılaşmada iki yön de çözülür", () => {
     const s = asker();
     const b = barisYili(s);
     b.moral = 55;
-    const rnd = vi.spyOn(Math, "random").mockReturnValue(0); // zar en düşük → yenilgi
-    const d = birlikYilIsle(s, bg(s)).dokum;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0); // baskın (savunma zorunlu), zar en düşük
+    birlikYilIsle(s, bg(s));
+    expect(b.catisma_bekleyen?.baskin).toBe(true);
+    const u = barisCatismaCoz(s, b, bg(s), "saldiri"); // baskında saldırı seçilse bile savunma sayılır
     rnd.mockRestore();
-    const u = d.uyarilar.find((x) => x.kod === "baris_catisma");
-    expect(u).toBeTruthy();
-    if (u!.savasSonucu === "yenilgi") expect(u!.tutar ?? 0).toBeLessThan(100);
+    expect(u.inisiyatif).toBe("savunma");
+    if (!u.zafer) expect(u.ganimet).toBe(0);
+    expect(b.catisma_bekleyen).toBeNull();
   });
 
   it("tahmini ganimet görünümde güçle büyür", () => {
@@ -997,7 +1002,7 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     const v = r.durum.birlik!;
     expect(v.er).toBe(20);
     expect(v.guc.toplam).toBeGreaterThan(0);
-    expect(v.rakipler.length).toBe(2);
+    expect(v.rakipler.length).toBe(0); // Asker'de rakip komutan yok
     expect(v.hesap.barisGanimetTahmini).toBeGreaterThan(0);
   });
 

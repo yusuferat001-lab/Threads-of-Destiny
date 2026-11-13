@@ -5,6 +5,7 @@ import { vergiBekliyorMu } from "../src/data/ekstraVergi";
 import { senaryoUret, stateGetir, yonetimTalebiKararlastir } from "../src/game/gameEngine";
 import { doktrinBekleyenSeviye } from "../src/game/birlik";
 import { doktrinSec, savasKarariBekliyorMu, savasKarariDurumu, savasKarariVer } from "../src/game/birlikIslem";
+import { barisCatismaOtomatik, catismaBekliyorMu } from "../src/game/birlikYil";
 import { doktrinSecenekleri } from "../src/data/birlik";
 import { isletmeBaglami } from "../src/game/stateManager";
 
@@ -32,6 +33,8 @@ export function doktrinleriTamamla(state: CharacterState): void {
 /** Asker testleri: savaş yılında bekleyen zorunlu savaş kararlarını ilk seçenekle verir. */
 export function savasKararlariniVer(state: CharacterState): void {
   if (state.meslek !== "Asker" || !state.isletme?.birlik) return;
+  // Bekleyen haydut/sınır çatışması: oyuncu kararı yerine akıllı varsayılan (baskında savunma, değilse iyi oranlı yön).
+  if (catismaBekliyorMu(state)) barisCatismaOtomatik(state, state.isletme.birlik, isletmeBaglami(state));
   for (let g = 0; g < 10 && savasKarariBekliyorMu(state); g++) {
     const d = savasKarariDurumu(state);
     if (!d) return;

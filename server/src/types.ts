@@ -1167,6 +1167,46 @@ export interface BirlikSavasKarari {
   esir: BirlikEsirKarari;
 }
 
+/** Barış çatışması (haydut / sınır): çıktığında oyuncu karar verene dek zaman ilerlemez. */
+export interface BirlikCatismaBekleyen {
+  yil: number;
+  tur: "haydut" | "sinir";
+  /** Baskın: oyuncu savunmaya mecbur; değilse karşılaşma (saldırı ya da savunma seçilir). */
+  baskin: boolean;
+  dusmanTur: "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
+  /** Düşmanın o çatışma için çekilmiş mutlak gücü (oyuncuya aralık olarak gösterilir). */
+  dusmanGuc: number;
+}
+
+/** Çatışma karar penceresi: iki tarafın saldırı/savunma gücü. */
+export interface CatismaKarariDurumu {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  dusmanTur: string;
+  ad: { tr: string; en: string };
+  oyuncu: { saldiri: number; savunma: number };
+  dusman: { saldiri: [number, number]; savunma: [number, number] };
+}
+
+/** Çatışma sonuç ekranı. */
+export interface CatismaSonucuGorunum {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  inisiyatif: "saldiri" | "savunma";
+  zafer: boolean;
+  oyuncuGuc: number;
+  dusmanGuc: number;
+  olu: number;
+  yarali: number;
+  firar: number;
+  kalanEr: number;
+  dusmanOlu: number;
+  ganimet: number;
+  esir: number;
+  nakitHasar: number;
+  talim: number;
+}
+
 /** Savaş Günü sonucu (Savaş Sonucu ekranı): güçler, zarlar, kayıplar, düşman kaybı tahmini, ganimet tahmini. */
 export interface SavasGunuSonucu {
   yil: number;
@@ -1300,6 +1340,8 @@ export interface BirlikDurumu {
   erzak_oran: number;
   /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
   baris_bekleme?: number;
+  /** Çıkmış ama oyuncunun henüz karar vermediği barış çatışması (karar verilene dek zaman ilerlemez). */
+  catisma_bekleyen?: BirlikCatismaBekleyen | null;
   /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */
   kale_gelir?: number[];
   /** Ordunun bir kısmı seferde (Haçlı/sefer yolculuğu) mi. */

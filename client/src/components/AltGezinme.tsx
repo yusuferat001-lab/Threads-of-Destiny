@@ -13,7 +13,7 @@ interface AltGezinmeProps {
 }
 
 /**
- * Mobil sabit alt gezinme çubuğu: Evin · Sosyalleş · Mağaza · İlişkiler.
+ * Mobil sabit alt gezinme çubuğu: Evin · Sosyalleş · İlişkiler · Mağaza.
  * Kariyer/Yatırım ana ekrandaki meslek tuşlarından açılır; Kişilik (avatar/isim), Canlı Skor
  * (üst şerit rozeti) ve Ayarlar (⚙️) başka yerlerde olduğundan "Diğer" menüsü yok.
  * Oyun/Sonuç ekranına dönüş burada YOK — her alt ekranın kendi "Geri Dön" butonu
@@ -51,8 +51,8 @@ export function AltGezinme({
     <nav className="alt-gezinme" aria-label={m.agBaslik}>
       {dugme('finans', '🏠', m.shEvinKisa, onEv)}
       {dugme('sosyallesme', '🍷', m.shSosyallesme, onSosyallesme)}
-      {dugme('magaza', '🛒', m.shMagaza, onMagaza)}
       {dugme('aile', '💞', m.agAile, onAile, aileBildirimi)}
+      {dugme('magaza', '🛒', m.shMagaza, onMagaza)}
     </nav>
   );
 }

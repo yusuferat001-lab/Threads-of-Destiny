@@ -23,3 +23,10 @@ export function doktrinBekliyor(k: CharacterState | null): boolean {
 export function savasKarariOlasi(k: CharacterState | null): boolean {
   return !!k && k.aktif && k.meslek === 'Asker' && !!k.ulke?.savasta && !!(k.isletme as { birlik?: unknown } | null)?.birlik;
 }
+
+/** Asker'in barış çatışması (haydut/sınır) kararı bekliyor mu? (sunucudaki catismaBekliyorMu'nun aynası) */
+export function catismaBekliyor(k: CharacterState | null): boolean {
+  if (!k || !k.aktif || k.meslek !== 'Asker' || k.ulke?.savasta) return false;
+  const b = (k.isletme as { birlik?: { catisma_bekleyen?: unknown } } | null)?.birlik;
+  return !!b?.catisma_bekleyen && !k.etiketler.includes('hapiste') && !k.etiketler.includes('yolculukta');
+}

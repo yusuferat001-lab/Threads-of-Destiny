@@ -27,6 +27,8 @@ import type {
   BirlikKararGirdisi,
   BirlikTur,
   SavasKarariDurumu,
+  CatismaKarariDurumu,
+  CatismaSonucuGorunum,
   SavasGunuSonucu,
 } from './types';
 import {
@@ -101,6 +103,8 @@ import {
   birlikIkmalDegistir,
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
+  birlikCatismaGetir,
+  birlikCatismaVer,
   isletmeYatirimYap,
   isletmeYatirimDusur,
   isletmeCalisanAl,
@@ -145,11 +149,12 @@ import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi, Tan
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
-import { ogretiBekliyor, vergiBekliyor, doktrinBekliyor, savasKarariOlasi } from './ogreti';
+import { ogretiBekliyor, vergiBekliyor, doktrinBekliyor, savasKarariOlasi, catismaBekliyor } from './ogreti';
 import { OgretiSecimi } from './components/OgretiSecimi';
 import { DoktrinSecimi } from './components/DoktrinSecimi';
 import { SavasKararlari } from './components/SavasKararlari';
 import { SavasSonucu } from './components/SavasSonucu';
+import { CatismaKarari, CatismaSonucu } from './components/CatismaKarari';
 import { VergiTalebi } from './components/VergiTalebi';
 import { UrunSecimi } from './components/UrunSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
@@ -386,6 +391,8 @@ function App() {
   const [isletme, setIsletme] = useState<IsletmeGorunumu | null>(null);
   /** Asker savaş yılında sıradaki zorunlu karar adımı (yoksa null). */
   const [savasKarari, setSavasKarari] = useState<SavasKarariDurumu | null>(null);
+  const [catismaKarari, setCatismaKarari] = useState<CatismaKarariDurumu | null>(null);
+  const [catismaSonucu, setCatismaSonucu] = useState<CatismaSonucuGorunum | null>(null);
   const [savasGunuSonucu, setSavasGunuSonucu] = useState<SavasGunuSonucu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
@@ -910,6 +917,13 @@ function App() {
    */
   async function senaryoGerekirseCek(state: CharacterState): Promise<SenaryoResponse | null> {
     if (ogretiBekliyor(state) || doktrinBekliyor(state) || state.urun_secim_bekliyor || vergiBekliyor(state)) return null;
+    if (catismaBekliyor(state)) {
+      const { karar } = await birlikCatismaGetir(state.id);
+      if (karar) {
+        setCatismaKarari(karar);
+        return null;
+      }
+    }
     if (savasKarariOlasi(state)) {
       const { karar } = await birlikSavasKarariGetir(state.id);
       if (karar) {
@@ -1745,6 +1759,33 @@ function App() {
     }
   }
 
+  /** Asker: haydut / sınır çatışmasında saldırı ya da savunma seçimini gönderir; sonuç ekranı açılır. */
+  async function catismaKarariVerHandler(secim: 'saldiri' | 'savunma') {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const r = await birlikCatismaVer(karakter.id, secim);
+      setKarakter(r.state);
+      setIsletme(r.durum);
+      setCatismaKarari(null);
+      setCatismaSonucu(r.sonuc);
+      // Çatışma bitti ve bekleyen bir olay varsa şimdi çek.
+      if (!senaryo && r.state.olay_bekliyor) {
+        const yeni = await senaryoGerekirseCek(r.state);
+        if (yeni) {
+          setSenaryo(yeni);
+          setTepkiModu(false);
+          setEkran('oyun');
+        }
+      }
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
   /** Asker: savaş kararı penceresindeki seçimleri (plan / savaş günü / esir) sırayla sunucuya verir. */
   async function savasKarariVerHandler(secimler: string[]) {
     if (!karakter) return;
@@ -1963,7 +2004,8 @@ function App() {
     !karakter.urun_secim_bekliyor &&
     !ogretiBekliyor(karakter) &&
     !doktrinBekliyor(karakter) &&
-    !savasKarari;
+    !savasKarari &&
+    !catismaKarari;
   // Asker savaş yılında karar zinciri bekliyorsa pencere açılır (sunucu karar bitmeden zamanı ilerletmez).
   useEffect(() => {
     if (!karakter || !savasKarariOlasi(karakter) || doktrinBekliyor(karakter) || karakter.olay_bekliyor) {
@@ -1980,6 +2022,22 @@ function App() {
       iptal = true;
     };
   }, [karakter?.id, karakter?.yil, karakter?.ulke?.savasta, karakter?.rutbe_seviye, karakter?.aktif]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Asker'in karar bekleyen haydut/sınır çatışması varsa pencere açılır (sunucu karar bitmeden zamanı ilerletmez).
+  useEffect(() => {
+    if (!karakter || !catismaBekliyor(karakter)) {
+      setCatismaKarari(null);
+      return;
+    }
+    let iptal = false;
+    birlikCatismaGetir(karakter.id)
+      .then((r) => {
+        if (!iptal) setCatismaKarari(r.karar);
+      })
+      .catch(() => {});
+    return () => {
+      iptal = true;
+    };
+  }, [karakter?.id, karakter?.yil, karakter?.aktif, (karakter?.isletme as { birlik?: { catisma_bekleyen?: unknown } } | null)?.birlik?.catisma_bekleyen]); // eslint-disable-line react-hooks/exhaustive-deps
   // Ana ekran tabloları işletme görünümünden beslenir; her yıl/para değişiminde tazelenir.
   useEffect(() => {
     if (!anaEkranModu || !karakter) return;
@@ -2273,6 +2331,14 @@ function App() {
 
       {karakter && savasKarari && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <SavasKararlari karar={savasKarari} yukleniyor={yukleniyor} onSec={savasKarariVerHandler} />
+      )}
+
+      {karakter && catismaKarari && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <CatismaKarari karar={catismaKarari} yukleniyor={yukleniyor} onSec={catismaKarariVerHandler} />
+      )}
+
+      {karakter && catismaSonucu && (
+        <CatismaSonucu sonuc={catismaSonucu} paraBirimi={karakter.para_birimi} onKapat={() => setCatismaSonucu(null)} />
       )}
 
       {karakter && savasGunuSonucu && (

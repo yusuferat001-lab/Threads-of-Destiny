@@ -332,12 +332,11 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'savas_catisma': {
         const c = u.catisma;
         if (!c) return '';
-        const ys = (x: number) => `${x >= 0 ? '+' : ''}${x}%`;
         const yon = c.inisiyatif === 'saldiri' ? (en ? 'attack' : 'saldırı') : (en ? 'defence' : 'savunma');
         const kars = c.inisiyatif === 'saldiri' ? (en ? 'defence' : 'savunma') : (en ? 'attack' : 'saldırı');
         return en
-          ? `⚔️ Decisive battle: your ${yon} ${c.oyuncuGuc} (roll ${ys(c.oyuncuZar)}) vs enemy ${kars} ${c.dusmanGuc} (roll ${ys(c.dusmanZar)}) — ${c.genelZafer ? 'victory' : 'defeat'}.`
-          : `⚔️ Karar savaşı: senin ${yon} gücün ${c.oyuncuGuc} (zar ${ys(c.oyuncuZar)}) ↔ düşman ${kars} ${c.dusmanGuc} (zar ${ys(c.dusmanZar)}) — ${c.genelZafer ? 'zafer' : 'yenilgi'}.`;
+          ? `⚔️ Decisive battle: your ${yon} ${c.oyuncuGuc} vs enemy ${kars} ${c.dusmanGuc} — ${c.genelZafer ? 'victory' : 'defeat'}.`
+          : `⚔️ Karar savaşı: senin ${yon} gücün ${c.oyuncuGuc} ↔ düşman ${kars} ${c.dusmanGuc} — ${c.genelZafer ? 'zafer' : 'yenilgi'}.`;
       }
       case 'savas_sonu':
         return u.savasSonucu === 'zafer'
@@ -493,7 +492,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong>
           </span>
           <span>
-            💰 {t('beklenen')}: <strong className={isaretSinifi(durum.butce.net)}>~{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
+            💰 {dil === 'en' ? 'Earnings' : 'Kazanç'}: <strong className={isaretSinifi(durum.butce.kazanc)}>{durum.butce.kazanc >= 0 ? '+' : ''}{formatPara(durum.butce.kazanc)} {pb}{t('yil')}</strong>
           </span>
         </div>
 
@@ -628,7 +627,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             <div className="isletme-butce-satir"><span>{t('kira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.kira)}</span></div>
             {durum.butce.evcilHayvan > 0 && <div className="isletme-butce-satir"><span>{t('hayvanGider')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.evcilHayvan)}</span></div>}
             {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
-            <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>
+            {durum.butce.mulkGeliri !== 0 && <div className="isletme-butce-satir"><span>{dil === 'en' ? 'Property income' : 'Mülk geliri'}</span><span className={isaretSinifi(durum.butce.mulkGeliri)}>{durum.butce.mulkGeliri >= 0 ? '+' : '−'}{formatPara(Math.abs(durum.butce.mulkGeliri))}</span></div>}
+            <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.kazanc)}>{durum.butce.kazanc >= 0 ? '+' : ''}{formatPara(durum.butce.kazanc)} {pb}</span></div>
           </div>
         </div>
 

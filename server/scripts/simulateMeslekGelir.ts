@@ -56,7 +56,7 @@ import { ogretiBekleyenSeviye, faaliyetSlotSayisi, faaliyetKilitliMi } from "../
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import { FAALIYETLER } from "../src/data/cemaat";
 import { doktrinBekleyenSeviye } from "../src/game/birlik";
-import { catismaIzleyici, CatismaIzi } from "../src/game/birlikYil";
+import { catismaIzleyici, CatismaIzi, barisCatismaOtomatik, catismaBekliyorMu } from "../src/game/birlikYil";
 import { doktrinSecenekleri } from "../src/data/birlik";
 import { yolDali } from "../src/game/birlik";
 import { giderEnflasyonCarpani, isletmeBaglami } from "../src/game/stateManager";
@@ -521,6 +521,8 @@ const ASKER_V = process.env.SIM_ASKER ?? "v0"; // v0 = simulateBirlik 'dengeli' 
 async function askerYonet(id: string): Promise<void> {
   const state = await stateGetir(id);
   const b = state.isletme?.birlik;
+  // Haydut/sınır çatışması karar bekler: botta akıllı varsayılanla çözülür.
+  if (b && catismaBekliyorMu(state)) barisCatismaOtomatik(state, b, isletmeBaglami(state));
   if (!b || state.ulke.savasta) return;
   const genf = giderEnflasyonCarpani(state);
   const er = erSayisi(state);

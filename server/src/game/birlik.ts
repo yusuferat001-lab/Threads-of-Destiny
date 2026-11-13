@@ -230,6 +230,7 @@ export function birlikHazirla(state: CharacterState): void {
   if (typeof b.erzak_oran !== "number") b.erzak_oran = 1;
   if (b.savas === undefined) b.savas = null;
   if (b.savas_karari === undefined) b.savas_karari = null;
+  if (b.catisma_bekleyen === undefined) b.catisma_bekleyen = null;
   // Eski "kale çevresi" arazisi sık ormana dönüştü (ova / dağ geçidi / sık orman).
   if ((b.savas?.arazi as string | undefined) === "kale") b.savas!.arazi = "orman";
   if ((b.savas_karari?.arazi as string | null | undefined) === "kale") b.savas_karari!.arazi = "orman";

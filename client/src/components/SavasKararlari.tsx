@@ -23,13 +23,14 @@ const M = {
     },
   },
   dusman: { tr: 'Düşmanın baskın birliği', en: "Enemy's main force" },
-  tahmin: { tr: 'Düşmanın tahmini gücü', en: 'Estimated enemy strength' },
-  saldiri: { tr: 'Saldırıdaysan', en: 'If you attack' },
-  savunma: { tr: 'Savunmadaysan', en: 'If you defend' },
   kiyasNot: {
-    tr: 'Saldırıda senin saldırı gücün düşmanın savunmasıyla, savunmada senin savunman düşmanın saldırısıyla yarışır; iki tarafa küçük zar (±%8) eklenir.',
-    en: 'Attacking, your attack meets their defence; defending, your defence meets their attack; both sides add a small roll (±8%).',
+    tr: 'Saldırırsan senin saldırın düşmanın savunmasıyla, savunursan senin savunman düşmanın saldırısıyla yarışır.',
+    en: 'If you attack, your attack meets their defence; if you defend, your defence meets their attack.',
   },
+  sen: { tr: 'Sen', en: 'You' },
+  dusmanKisa: { tr: 'Düşman', en: 'Enemy' },
+  saldiriK: { tr: 'Saldırı', en: 'Attack' },
+  savunmaK: { tr: 'Savunma', en: 'Defence' },
   onayla: { tr: 'Onayla', en: 'Confirm' },
   eksik: { tr: 'Her bölümden bir seçim yap.', en: 'Pick one from every section.' },
 };
@@ -70,15 +71,27 @@ export function SavasKararlari({ karar, yukleniyor, onSec }: { karar: SavasKarar
         )}
         {k && karar.grup === 'gun' && (
           <div className="savas-kiyas">
-            <div>
-              🎯 {M.tahmin[dil]}: <strong>{aralik(k.dusman.guc)}</strong>
-            </div>
-            <div>
-              ⚔️ {M.saldiri[dil]}: <strong>{k.oyuncu.saldiri}</strong> ↔ 🛡️ <strong>{aralik(k.dusman.savunma)}</strong>
-            </div>
-            <div>
-              🛡️ {M.savunma[dil]}: <strong>{k.oyuncu.savunma}</strong> ↔ ⚔️ <strong>{aralik(k.dusman.saldiri)}</strong>
-            </div>
+            <table className="savas-kiyas-tablo">
+              <thead>
+                <tr>
+                  <th />
+                  <th>{M.sen[dil]}</th>
+                  <th>{M.dusmanKisa[dil]}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>⚔️ {M.saldiriK[dil]}</th>
+                  <td><strong>{k.oyuncu.saldiri}</strong></td>
+                  <td>{aralik(k.dusman.saldiri)}</td>
+                </tr>
+                <tr>
+                  <th>🛡️ {M.savunmaK[dil]}</th>
+                  <td><strong>{k.oyuncu.savunma}</strong></td>
+                  <td>{aralik(k.dusman.savunma)}</td>
+                </tr>
+              </tbody>
+            </table>
             <small>{M.kiyasNot[dil]}</small>
           </div>
         )}

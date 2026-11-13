@@ -882,6 +882,8 @@ export const ANLATIM_EN: Record<string, string> = {
   "Yükseltilecek er yok.": "There are no men to upgrade.",
   "Şu an seçilecek bir doktrin yok.": "There is no doctrine to choose right now.",
   "Şu an verilecek bir savaş kararı yok.": "There is no war decision to make right now.",
+  "Şu an çözülecek bir çatışma yok.": "There is no clash to resolve right now.",
+  "Şu an verilecek bir çatışma kararı yok.": "There is no clash decision to make right now.",
   "Önce doktrinini seçmelisin.": "You must choose your doctrine first.",
   "Önce savaş kararlarını vermelisin.": "You must make your war decisions first.",
   "Bu işi ancak üçüncü rütbeden itibaren yapabilirsin.": "You can do this job only from the third rank.",

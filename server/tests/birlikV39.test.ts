@@ -4,7 +4,7 @@ import { birlikAl, birlikHesapla, birlikHazirla, erSayisi, gucHesapla } from "..
 import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
-import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula } from "../src/game/birlikYil";
+import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik } from "../src/game/birlikYil";
 import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani, BARIS_GANIMET_TABAN, SAVAS_ZAFER_GANIMET_TABAN, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
@@ -161,9 +161,9 @@ describe("v39 subaylar", () => {
     expect(subayToplami(s).tahminAralik).toBeCloseTo(0.023, 6);
   });
 
-  it("yatırım fiyatları: Karakol 12/20/32/48, Revir 13/22/34/50", () => {
+  it("yatırım fiyatları: Revir 13/22/34/50; Karakol (koruma yatırımı) yok", () => {
     const profil = isletmeProfiliGetir("Asker", "Orta Çağ")!;
-    expect(profil.yatirimlar.find((y) => y.id === "karakol")!.fiyatlar).toEqual([12, 20, 32, 48]);
+    expect(profil.yatirimlar.find((y) => y.id === "karakol")).toBeUndefined();
     expect(profil.yatirimlar.find((y) => y.id === "revir")!.fiyatlar).toEqual([13, 22, 34, 50]);
     expect(profil.roller.map((r) => r.tur)).toEqual(["taarruz", "savunma", "kesif", "musteri", "guvenlik"]);
   });
@@ -187,8 +187,8 @@ describe("v39 haydut / sınır çatışması", () => {
     }
   });
 
-  it("çatışma uyarısı baskın/av, düşman kaybı ve bizim kaybımız (yaralı ≥ ölü) içerir; yenilgide ganimet yok", () => {
-    const sonuclar: IsletmeUyari[] = [];
+  it("çatışma baskın/av olabilir; sonuçta düşman kaybı, kayıp (yaralı ≥ ölü) ve ganimet tutarlıdır; yenilgide ganimet yok", () => {
+    const sonuclar: ReturnType<typeof barisCatismaOtomatik>[] = [];
     for (let n = 0; n < 60; n++) {
       const s = asker();
       s.yas = 40;
@@ -198,17 +198,19 @@ describe("v39 haydut / sınır çatışması", () => {
       birlikAl(s).kalite = { dusuk: 100, orta: 0, yuksek: 0 };
       birlikAl(s).baris_bekleme = 0;
       vi.spyOn(Math, "random").mockRestore();
-      const u = birlikYilIsle(s, bg(s)).dokum.uyarilar ?? [];
-      sonuclar.push(...u);
+      birlikYilIsle(s, bg(s));
+      expect(birlikAl(s).catisma_bekleyen).toBeTruthy();
+      sonuclar.push(barisCatismaOtomatik(s, birlikAl(s), bg(s)));
     }
-    const c = sonuclar.filter((x) => x.kod === "baris_catisma");
-    expect(c.length).toBeGreaterThan(10);
-    expect(c.some((x) => x.baskin === true)).toBe(true);
-    expect(c.some((x) => x.baskin === false)).toBe(true);
+    const c = sonuclar.filter((x): x is NonNullable<typeof x> => !!x);
+    expect(c.length).toBe(60);
+    expect(c.some((x) => x.baskin)).toBe(true);
+    expect(c.some((x) => !x.baskin)).toBe(true);
     expect(c.every((x) => typeof x.dusmanOlu === "number")).toBe(true);
-    expect(c.filter((x) => x.savasSonucu === "yenilgi").every((x) => (x.tutar ?? 0) === 0)).toBe(true);
-    const kayiplar = sonuclar.filter((x) => x.kod === "savas_kayip" && x.kaynak === "catisma");
-    for (const k of kayiplar) expect((k.yaralanan ?? 0)).toBeGreaterThanOrEqual(k.sayi ?? 0);
+    expect(c.filter((x) => !x.zafer).every((x) => x.ganimet === 0)).toBe(true);
+    for (const x of c) expect(x.yarali).toBeGreaterThanOrEqual(x.olu);
+    // baskında yalnız savunma
+    expect(c.filter((x) => x.baskin).every((x) => x.inisiyatif === "savunma")).toBe(true);
   });
 });
 
@@ -300,9 +302,9 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("güç başı görev geliri 0,49–0,735 arası (ek çarpan yok)", async () => {
+  it("güç başı görev geliri 0,49–0,735 arası; ek çarpan ×1,11", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
-    expect(GOREV_GELIR_CARPANI).toBe(1);
+    expect(GOREV_GELIR_CARPANI).toBe(1.11);
     const v = GOREVLER.map((g) => g.erBasi);
     expect(Math.min(...v)).toBeCloseTo(0.49, 6);
     expect(Math.max(...v)).toBeCloseTo(0.735, 6);
@@ -539,5 +541,47 @@ describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indiri
     s.ulke.savasta = true;
     expect(SAVAS_KISLA_INDIRIMI).toBe(0.25);
     expect(birlikHesapla(s, bg(s)).kislaBakim).toBeCloseTo(baris * 0.75, 6);
+  });
+});
+
+describe("v50 etkileşimli çatışma ekranı", () => {
+  it("çatışma çıkınca zaman durur; pencere iki tarafın saldırı/savunmasını verir; baskında yalnız savunma; karar sonrası bekleme biter", async () => {
+    const { catismaKarariDurumu, catismaKarariVer, savasKarariBekliyorMu } = await import("../src/game/birlikIslem");
+    const s = asker();
+    s.isletme!.baslangic_yili = s.yil - 10;
+    const b = birlikAl(s);
+    b.baris_bekleme = 0;
+    expect(savasKarariBekliyorMu(s)).toBe(false);
+    birlikYilIsle(s, bg(s));
+    expect(b.catisma_bekleyen).toBeTruthy();
+    expect(savasKarariBekliyorMu(s)).toBe(true); // zaman ilerlemez
+    const k = catismaKarariDurumu(s, bg(s))!;
+    expect(k.oyuncu.saldiri).toBeGreaterThan(0);
+    expect(k.oyuncu.savunma).toBeGreaterThan(0);
+    expect(k.dusman.saldiri[1]).toBeGreaterThanOrEqual(k.dusman.saldiri[0]);
+    expect(k.dusman.savunma[1]).toBeGreaterThanOrEqual(k.dusman.savunma[0]);
+    expect(() => catismaKarariVer(s, "yanlis", bg(s))).toThrow();
+    const paraOnce = s.para;
+    const sonuc = catismaKarariVer(s, "saldiri", bg(s));
+    expect(sonuc.inisiyatif).toBe(k.baskin ? "savunma" : "saldiri");
+    expect(b.catisma_bekleyen).toBeNull();
+    expect(savasKarariBekliyorMu(s)).toBe(false);
+    if (sonuc.zafer) expect(s.para).toBeGreaterThanOrEqual(paraOnce); // ganimet nakde eklenir
+    expect(() => catismaKarariVer(s, "savunma", bg(s))).toThrow(); // ikinci kez çözülmez
+  });
+
+  it("savaşta çatışma kurulmaz; Karakol yatırımı yok; rakip komutan saldırısı ve subay hırsızlığı yok", () => {
+    const s = asker();
+    const b = birlikAl(s);
+    s.ulke.savasta = true;
+    b.baris_bekleme = 0;
+    birlikYilIsle(s, bg(s));
+    expect(b.catisma_bekleyen).toBeFalsy();
+    s.ulke.savasta = false;
+    for (let i = 0; i < 12; i++) {
+      const uy = birlikYilIsle(s, bg(s)).dokum.uyarilar.map((u) => u.kod);
+      for (const yasak of ["rakip_saldiri", "hirsizlik", "sizdirma", "ic_hirsizlik", "kazanc_ozet", "baris_catisma"]) expect(uy).not.toContain(yasak);
+      if (b.catisma_bekleyen) barisCatismaOtomatik(s, b, bg(s));
+    }
   });
 });

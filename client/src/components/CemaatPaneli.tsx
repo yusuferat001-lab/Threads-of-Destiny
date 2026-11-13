@@ -458,7 +458,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
             <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>
           )}
           <div className="isletme-dokum-net">
-            {t('beklenenNet')}: <strong className={durum.butce.net >= 0 ? 's-gelir' : 's-gider'}>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
+            {dil === 'en' ? 'Parish net' : 'Cemaat neti'}: <strong className={durum.butce.net >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
           </div>
           <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
           <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>
@@ -468,8 +468,11 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
           {durum.butce.krediTaksit > 0 && (
             <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong className="s-gider">−{formatPara(durum.butce.krediTaksit)}</strong></div>
           )}
+          {durum.butce.mulkGeliri !== 0 && (
+            <div>{dil === 'en' ? 'Property income' : 'Mülk geliri'}: <strong className={durum.butce.mulkGeliri >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.mulkGeliri >= 0 ? '+' : '−'}{formatPara(Math.abs(durum.butce.mulkGeliri))}</strong></div>
+          )}
           <div className="isletme-dokum-net">
-            {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong className={durum.butce.cebineKalan >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
+            {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong className={durum.butce.kazanc >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.kazanc >= 0 ? '+' : ''}{formatPara(durum.butce.kazanc)} {pb}</strong>
           </div>
         </div>
 

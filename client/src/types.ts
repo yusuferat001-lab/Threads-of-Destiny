@@ -1083,6 +1083,9 @@ export interface IsletmeButcesi {
   evcilHayvan: number;
   krediTaksit: number;
   cebineKalan: number;
+  /** Mülklerden gelen yıllık net gelir ve nihai "Kazanç" (= cebineKalan + mülk geliri; ana ekrandaki Kazanç ile aynı). */
+  mulkGeliri: number;
+  kazanc: number;
   /** Meslek geliri ve net'in ± aralığı (yıllık rastgelelik payı). */
   gelir: number;
   netAlt: number;
@@ -1228,6 +1231,46 @@ export interface SavasAdimBolumu {
   baslik: DilMetni;
   aciklama: DilMetni;
   secenekler: { id: string; simge?: string; ad: DilMetni; aciklama: DilMetni }[];
+}
+
+/** Barış çatışması (haydut / sınır): çıktığında oyuncu karar verene dek zaman ilerlemez. */
+export interface BirlikCatismaBekleyen {
+  yil: number;
+  tur: "haydut" | "sinir";
+  /** Baskın: oyuncu savunmaya mecbur; değilse karşılaşma (saldırı ya da savunma seçilir). */
+  baskin: boolean;
+  dusmanTur: "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
+  /** Düşmanın o çatışma için çekilmiş mutlak gücü (oyuncuya aralık olarak gösterilir). */
+  dusmanGuc: number;
+}
+
+/** Çatışma karar penceresi: iki tarafın saldırı/savunma gücü. */
+export interface CatismaKarariDurumu {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  dusmanTur: string;
+  ad: { tr: string; en: string };
+  oyuncu: { saldiri: number; savunma: number };
+  dusman: { saldiri: [number, number]; savunma: [number, number] };
+}
+
+/** Çatışma sonuç ekranı. */
+export interface CatismaSonucuGorunum {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  inisiyatif: "saldiri" | "savunma";
+  zafer: boolean;
+  oyuncuGuc: number;
+  dusmanGuc: number;
+  olu: number;
+  yarali: number;
+  firar: number;
+  kalanEr: number;
+  dusmanOlu: number;
+  ganimet: number;
+  esir: number;
+  nakitHasar: number;
+  talim: number;
 }
 
 /** Savaş Günü sonucu (Savaş Sonucu ekranı). */

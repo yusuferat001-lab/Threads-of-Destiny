@@ -149,7 +149,6 @@ const FIYAT_KISLA = [30, 90, 220, 500]; // kışla (tek ordu limiti)
 const FIYAT_OKUL = [20, 30, 45, 65];
 const FIYAT_ASEVI = [8, 15, 24, 36];
 const FIYAT_REVIR = [13, 22, 34, 50]; // Asker revir (≈1 yıllık net'ten başlar)
-const FIYAT_KARAKOL = [12, 20, 32, 48];
 const FIYAT_DEVSIRME = [20, 35, 52, 75];
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
@@ -314,17 +313,6 @@ const ASKER_YATIRIMLAR: YatirimTanimi[] = [
     },
     etki: "devsirme",
     fiyatlar: FIYAT_DEVSIRME,
-  },
-  {
-    id: "karakol",
-    simge: "🚧",
-    ad: { tr: "Karakol", en: "Outpost" },
-    aciklama: {
-      tr: "Rakip komutanların baskın ve sabotajını engelleyebilir: her kademe korumayı +0,15 artırır (en çok 0,6).",
-      en: "Can block rival raids and sabotage: each tier adds +0.15 protection (max 0.6).",
-    },
-    etki: "koruma",
-    fiyatlar: FIYAT_KARAKOL,
   },
 ];
 

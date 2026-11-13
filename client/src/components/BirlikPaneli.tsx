@@ -113,7 +113,11 @@ const M = {
   dusmanTahmin: { tr: 'Düşmanın tahmini gücü', en: 'Estimated enemy strength' },
   kiyasSaldiri: { tr: 'Saldırıdaysan', en: 'If you attack' },
   kiyasSavunma: { tr: 'Savunmadaysan', en: 'If you defend' },
-  kiyasNot: { tr: 'Saldırıda senin saldırı gücün düşmanın savunmasıyla, savunmada senin savunma gücün düşmanın saldırısıyla yarışır; iki tarafa da küçük zar (±%8) eklenir.', en: 'Attacking, your attack power meets the enemy defence; defending, your defence meets their attack. Both sides add a small roll (±8%).' },
+  kiyasNot: { tr: 'Saldırırsan senin saldırın düşmanın savunmasıyla, savunursan senin savunman düşmanın saldırısıyla yarışır.', en: 'If you attack, your attack meets their defence; if you defend, your defence meets their attack.' },
+  senK: { tr: 'Sen', en: 'You' },
+  dusmanK: { tr: 'Düşman', en: 'Enemy' },
+  saldiriK: { tr: 'Saldırı', en: 'Attack' },
+  savunmaK: { tr: 'Savunma', en: 'Defence' },
   sonSavas: { tr: 'Son karar savaşı', en: 'Last decisive battle' },
   zafer: { tr: 'zafer', en: 'victory' },
   savasYili: { tr: 'Savaş', en: 'War' },
@@ -138,7 +142,15 @@ const M = {
   gTalim: { tr: 'Talim masrafı', en: 'Drill costs' },
   beklenenNet: { tr: 'Beklenen net', en: 'Expected net' },
   yil: { tr: '/yıl', en: '/yr' },
-  ekipNot: { tr: 'Subay maaşları ayrıca giderinden düşer.', en: 'Officers\' wages come out of your expenses separately.' },
+  gYagma: { tr: 'Yağma', en: 'Plunder' },
+  gGanimet: { tr: 'Ganimet', en: 'Loot' },
+  gSubay: { tr: 'Subay maaşları', en: 'Officers\' wages' },
+  gYasam: { tr: 'Yaşam gideri', en: 'Living costs' },
+  gKira: { tr: 'Kira', en: 'Rent' },
+  gHayvan: { tr: 'Evcil hayvan', en: 'Pets' },
+  gKredi: { tr: 'Kredi taksidi', en: 'Loan instalment' },
+  gMulk: { tr: 'Mülk geliri', en: 'Property income' },
+  cebineKalan: { tr: 'Cebine kalan', en: 'Left in your pocket' },
   barisTahmin: { tr: 'Bir çatışma zaferinde tahmini ganimetin', en: 'Estimated loot from a clash victory' },
   sonDokum: { tr: 'Geçen yıl', en: 'Last year' },
   firar: { tr: 'firar', en: 'deserted' },
@@ -392,11 +404,6 @@ export function BirlikPaneli({
               </span>
             )}
           </div>
-          {b.rakipler.length > 0 && (
-            <div className="isletme-imtiyazlar">
-              <strong>{t('rakipBaslik')}:</strong> {b.rakipler.map((r) => `${r.ad} — ${t('rakipGuc')} ${r.guc}`).join(' · ')}
-            </div>
-          )}
         </div>
         <div className="sayfa-sutun blok-yan1">
           <div className="sayfa-blok blok-guc">
@@ -465,9 +472,11 @@ export function BirlikPaneli({
           <div className="isletme-dokum">
             <div>{d(b.hesap.soldAdi)}: <strong className="s-gelir">+{formatPara(b.hesap.sold)}</strong></div>
             <div>{t('gorevGeliri')}: <strong className="s-gelir">+{formatPara(b.hesap.gorevGeliri)}</strong></div>
-            <div>{t('ganimetNet')}: <strong className="s-gelir">+{formatPara(b.hesap.ganimetNet)}</strong></div>
+            {b.hesap.ganimetNet - b.hesap.yagmaBrut > 0.005 && <div>{t('gGanimet')}: <strong className="s-gelir">+{formatPara(b.hesap.ganimetNet - b.hesap.yagmaBrut)}</strong></div>}
+            {b.hesap.yagmaBrut > 0 && <div>{t('gYagma')}: <strong className="s-gelir">+{formatPara(b.hesap.yagmaBrut)}</strong></div>}
             {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong className="s-gelir">+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
-            <div>{t('toplamGelir')}: <strong className="s-gelir">+{formatPara(b.hesap.toplamGelir)}</strong></div>
+            {durum.butce.mulkGeliri !== 0 && <div>{t('gMulk')}: <strong className={durum.butce.mulkGeliri >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.mulkGeliri >= 0 ? '+' : '−'}{formatPara(Math.abs(durum.butce.mulkGeliri))}</strong></div>}
+            <div>{t('toplamGelir')}: <strong className="s-gelir">+{formatPara(b.hesap.toplamGelir + Math.max(0, durum.butce.mulkGeliri))}</strong></div>
             <div>{t('gErMasrafi')}: <strong className="s-gider">−{formatPara(b.hesap.erMasrafi)}</strong></div>
             <div>{t('gErzak')}: <strong className="s-gider">−{formatPara(b.hesap.erzak)}</strong></div>
             {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong className="s-gider">−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
@@ -477,15 +486,19 @@ export function BirlikPaneli({
             {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-gider">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
             {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
             <div>{t('gTalim')}: <strong className="s-gider">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
+            {durum.butce.maas > 0 && <div>{t('gSubay')}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>}
+            <div>{t('gYasam')}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
+            <div>{t('gKira')}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>
+            {durum.butce.evcilHayvan > 0 && <div>{t('gHayvan')}: <strong className="s-gider">−{formatPara(durum.butce.evcilHayvan)}</strong></div>}
+            {durum.butce.krediTaksit > 0 && <div>{t('gKredi')}: <strong className="s-gider">−{formatPara(durum.butce.krediTaksit)}</strong></div>}
             <div className="isletme-dokum-net">
-              {t('beklenenNet')}: <strong className={b.hesap.net >= 0 ? 's-gelir' : 's-gider'}>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
+              {t('cebineKalan')}: <strong className={durum.butce.kazanc >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.kazanc >= 0 ? '+' : ''}{formatPara(durum.butce.kazanc)} {pb}{t('yil')}</strong>
             </div>
-            <small>{t('ekipNot')}</small>
           </div>
           {dokum && dokum.birlik && (
             <div className="isletme-dokum">
               <div>
-                {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('ganimetNet').split(' ')[0]} {formatPara(dokum.birlik.ganimetPara)}
+                {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('gGanimet')} {formatPara(dokum.birlik.ganimetPara)}{(dokum.birlik.yagmaPara ?? 0) > 0 ? ` · ${t('gYagma')} ${formatPara(dokum.birlik.yagmaPara ?? 0)}` : ''}
               </div>
               {dokum.uyarilar.map((u, i) => {
                 const sm = uyariMetni(u);
@@ -519,19 +532,31 @@ export function BirlikPaneli({
                   const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
                   return (
                     <>
-                      <span>
-                        🎯 {t('dusmanTahmin')}: <strong>{aralik(k.dusman.guc)}</strong>
-                      </span>
-                      <span>
-                        ⚔️ {t('kiyasSaldiri')}: <strong className={renk(k.oyuncu.saldiri, k.dusman.savunma)}>{k.oyuncu.saldiri}</strong> ↔ 🛡️ <strong>{aralik(k.dusman.savunma)}</strong>
-                      </span>
-                      <span>
-                        🛡️ {t('kiyasSavunma')}: <strong className={renk(k.oyuncu.savunma, k.dusman.saldiri)}>{k.oyuncu.savunma}</strong> ↔ ⚔️ <strong>{aralik(k.dusman.saldiri)}</strong>
-                      </span>
+                      <table className="savas-kiyas-tablo">
+                        <thead>
+                          <tr>
+                            <th />
+                            <th>{t('senK')}</th>
+                            <th>{t('dusmanK')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th>⚔️ {t('saldiriK')}</th>
+                            <td><strong className={renk(k.oyuncu.saldiri, k.dusman.savunma)}>{k.oyuncu.saldiri}</strong></td>
+                            <td>{aralik(k.dusman.saldiri)}</td>
+                          </tr>
+                          <tr>
+                            <th>🛡️ {t('savunmaK')}</th>
+                            <td><strong className={renk(k.oyuncu.savunma, k.dusman.saldiri)}>{k.oyuncu.savunma}</strong></td>
+                            <td>{aralik(k.dusman.savunma)}</td>
+                          </tr>
+                        </tbody>
+                      </table>
                       <small>{t('kiyasNot')}</small>
                       {k.son && (
                         <span>
-                          📜 {t('sonSavas')} ({k.son.yil}): {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} <strong>{k.son.oyuncuGuc}</strong> ({k.son.oyuncuZar >= 0 ? '+' : ''}{k.son.oyuncuZar}%) ↔ <strong>{k.son.dusmanGuc}</strong> ({k.son.dusmanZar >= 0 ? '+' : ''}{k.son.dusmanZar}%) →{' '}
+                          📜 {t('sonSavas')} ({k.son.yil}): {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} <strong>{k.son.oyuncuGuc}</strong> ↔ <strong>{k.son.dusmanGuc}</strong> →{' '}
                           <strong className={k.son.genelZafer ? 's-arti' : 's-eksi'}>{k.son.genelZafer ? t('zafer') : t('yenilgi')}</strong>
                         </span>
                       )}

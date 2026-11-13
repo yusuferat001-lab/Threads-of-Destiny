@@ -23,7 +23,7 @@ function SAYFA_BASLIKLARI(meslek: string, sayfa: StratejiSayfa, en: boolean): st
     techizat: { '': ['Teçhizat & Birlikler', 'Gear & Units'] },
     yatirim: { '': ['Yatırımlar', 'Investments'] },
     calisan: { 'Din Adamı': ['Hizmetliler', 'Clergy & Staff'], 'Zanaatkâr': ['Çıraklar & Ustalar', 'Staff'], Asker: ['Subaylar', 'Officers'], '': ['Çalışanlar', 'Staff'] },
-    cevre: { '': ['Çevre', 'Rivals & City'] },
+    cevre: { Asker: ['Çevre', 'City'], '': ['Çevre', 'Rivals & City'] },
   };
   const tablo = ad[sayfa];
   const [tr, enAd] = tablo[meslek] ?? tablo[''];
@@ -264,7 +264,6 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
   const kitle = kitleSozlugu(meslek, en ? 'en' : 'tr');
   // Asker: pazar payı yok — yerine askerî güç ve rakip komutanların gücü gösterilir.
   if (birlik) {
-    const siralama = [...birlik.rakipler].sort((a, b) => b.guc - a.guc);
     return (
       <div className="aile-koken-karti pazar-karti">
         <h3>⚔️ {en ? 'Military Strength' : 'Askerî Güç'}</h3>
@@ -272,21 +271,14 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
           <li>
             <span className="pazar-nokta pazar-nokta-sen" /> {en ? 'You' : 'Sen'} — ⚔️ {birlik.guc.saldiri} · 🛡️ {birlik.guc.savunma} · <strong className="s-durum">{birlik.guc.toplam}</strong>
           </li>
-          {siralama.map((r) => (
-            <li key={r.ad}>
-              <span className="pazar-nokta pazar-nokta-rakip" /> {r.ad} · <strong className={r.guc > birlik.guc.toplam ? 's-eksi' : 's-arti'}>{r.guc}</strong>
-              <small> · {en ? 'enmity' : 'husumet'} {r.husumet}</small>
-            </li>
-          ))}
-          {siralama.length === 0 && <li>{en ? 'No known rival commanders right now.' : 'Şu an tanınan rakip komutan yok.'}</li>}
         </ul>
         <p className="pazar-etki">
           🎖️ {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
         </p>
         <p className="pazar-ipucu">
           {en
-            ? 'Your strength drives rank and career points; rival commanders only raid you when they are strong.'
-            : 'Gücün rütbeyi ve kariyer puanını belirler; rakip komutanlar güçlendikçe sana baskın ve sabotaj düzenler.'}
+            ? 'Your strength drives rank, career points and what you earn from duties and plunder.'
+            : 'Gücün rütbeyi, kariyer puanını ve görev ile yağmadan kazandığını belirler.'}
         </p>
       </div>
     );

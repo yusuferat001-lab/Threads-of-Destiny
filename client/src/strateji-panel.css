@@ -931,3 +931,6 @@
 .savas-sonuc { text-align: center; }
 .savas-sonuc-baslik { font-size: 1.8rem; font-weight: 900; letter-spacing: 0.08em; margin: 0.3rem 0; }
 .savas-sonuc .savas-kiyas { text-align: left; }
+.savas-kiyas-tablo { margin: 0.6rem auto 0.4rem; border-collapse: collapse; min-width: 260px; font-size: 1rem; }
+.savas-kiyas-tablo th, .savas-kiyas-tablo td { padding: 0.35rem 0.9rem; border-bottom: 1px solid rgba(212, 175, 55, 0.25); text-align: center; }
+.savas-kiyas-tablo th:first-child { text-align: left; }

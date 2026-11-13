@@ -355,7 +355,7 @@ describe("limit aşımı", () => {
   });
 });
 
-import { birlikYilIsle } from "../src/game/birlikYil";
+import { birlikYilIsle, barisCatismaOtomatik } from "../src/game/birlikYil";
 function birlikYilKos(s: CharacterState) {
   s.yil += 1;
   return birlikYilIsle(s, bg(s));
@@ -418,18 +418,18 @@ describe("görev geliri ve erzak tabloları", () => {
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 9; asker başı 0,15, savaşta ×3", () => {
-    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
+  it("sabit maaş 6; asker başı 0,15, savaşta ×4 (0,60)", () => {
+    expect(SOLD).toEqual([6, 6, 6, 6, 6]);
     expect(ER_BASI_GELIR).toBe(0.15);
-    expect(SAVAS_ER_BASI_CARPANI).toBe(3);
+    expect(SAVAS_ER_BASI_CARPANI).toBe(4);
     const s = asker();
     ordu(s, 100);
     const baris = birlikHesapla(s, bg(s));
     s.ulke.savasta = true;
     const savas = birlikHesapla(s, bg(s));
     const e = bg(s).enflasyon;
-    expect(baris.sold).toBeCloseTo(9 * e + 100 * 0.15 * e, 3);
-    expect(savas.sold).toBeCloseTo(9 * e + 100 * 0.45 * e, 3);
+    expect(baris.sold).toBeCloseTo(6 * e + 100 * 0.15 * e, 3);
+    expect(savas.sold).toBeCloseTo(6 * e + 100 * 0.6 * e, 3);
   });
 
   it("4. yıl (sonuç yılı) kayıpları büyüdü ve beklenen toplam kullanıcı tavanının altında kalır", () => {
@@ -506,10 +506,11 @@ describe("askeri güç belirleyici (v34)", () => {
       const b = birlikAl(s);
       s.isletme!.baslangic_yili = s.yil - 10;
       b.baris_bekleme = 0;
-      const u = birlikYilIsle(s, bg(s)).dokum.uyarilar.find((x) => x.kod === "baris_catisma");
+      birlikYilIsle(s, bg(s));
+      const u = barisCatismaOtomatik(s, b, bg(s));
       if (!u) continue;
       n++;
-      if (u.savasSonucu === "zafer") zafer++;
+      if (u.zafer) zafer++;
     }
     expect(n).toBeGreaterThan(deneme / 2);
     return zafer / n;

@@ -381,11 +381,11 @@ export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [9, 9, 9, 9, 9];
+export const SOLD = [6, 6, 6, 6, 6];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir). */
 export const ER_BASI_GELIR = 0.15;
-/** Görev geliri ek çarpanı (1 = yok). Er başı görev geliri tabloda doğrudan 1,10–1,90 arasıdır. */
-export const GOREV_GELIR_CARPANI = 1;
+/** Görev geliri ek çarpanı (1 = yok): tüm görev gelirleri %11 artırıldı. */
+export const GOREV_GELIR_CARPANI = 1.11;
 /** Barış yılı görev kayıpları ölü değil yaralı olur: yaralı = görev er payı × kayipBaris × bu. */
 export const BARIS_GOREV_YARALI_CARPANI = 2.5;
 /** Her rütbede sabit yıllık gönüllü er (savaşta ×2, vebada kısılır, kışla limitine takılır). */
@@ -395,7 +395,7 @@ export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
 export const SUVARI_GOREV_GELIRI = 0.1;
-export const SAVAS_ER_BASI_CARPANI = 3;
+export const SAVAS_ER_BASI_CARPANI = 4;
 export const ER_MASRAFI = 0.2;
 export const ERZAK_BIRIMI = 0.15;
 /**
@@ -711,7 +711,7 @@ export const ROL_TANIMLARI: Record<BirlikRol, { ganimet: number; kayip: number; 
   onc: {
     ganimet: 1.3, kayip: 1.4, zar: 0.05, moral: 0,
     ad: { tr: "Öncü", en: "Vanguard" },
-    aciklama: { tr: "Ganimet ×1,3, kayıp ×1,4, zara +1.", en: "Loot ×1.3, losses ×1.4, +1 to the roll." },
+    aciklama: { tr: "Ganimet ×1,3, kayıp ×1,4, çarpışmada küçük avantaj.", en: "Loot ×1.3, losses ×1.4, a slight edge in the clash." },
   },
   ana: {
     ganimet: 1, kayip: 1, zar: 0, moral: 0,
@@ -721,7 +721,7 @@ export const ROL_TANIMLARI: Record<BirlikRol, { ganimet: number; kayip: number; 
   yedek: {
     ganimet: 0.6, kayip: 0.6, zar: -0.04, moral: 0,
     ad: { tr: "Yedek", en: "Reserve" },
-    aciklama: { tr: "Ganimet ×0,6, kayıp ×0,6, zar −1.", en: "Loot ×0.6, losses ×0.6, −1 to the roll." },
+    aciklama: { tr: "Ganimet ×0,6, kayıp ×0,6, çarpışmada küçük dezavantaj.", en: "Loot ×0.6, losses ×0.6, a slight disadvantage in the clash." },
   },
 };
 export const ROL_SIRASI: BirlikRol[] = ["onc", "ana", "yedek"];

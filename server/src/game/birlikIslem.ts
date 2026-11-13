@@ -1,5 +1,7 @@
 import { subayToplami, SUBAY_TAVANLARI, TAHMIN_ARALIGI_TABAN } from "./subay";
 import type {
+  CatismaKarariDurumu,
+  CatismaSonucuGorunum,
   SavasGunuSonucu,
   BirlikArazi,
   BirlikDurumu,
@@ -21,6 +23,8 @@ import {
   ARAZI_ADLARI,
   ARAZI_SIRASI,
   ARAZI_TERCIH_IHTIMALI,
+  GOREV_GELIR_CARPANI,
+  BARIS_CATISMALARI,
   DUSMAN_ORAN,
   dusmanAraziCarpani,
   dusmanSaldiriSavunma,
@@ -114,7 +118,7 @@ import {
   type GucDokumu,
 } from "./birlik";
 import { SAVAS_SURE } from "../data/dunyaDonemleri";
-import { esirleriIsle, savasBaslat, savasGunuCoz, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
+import { barisCatismaCoz, barisCatismaOtomatik, catismaBekliyorMu, esirleriIsle, savasBaslat, savasGunuCoz, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
 import { olasilikliYuvarla } from "./isletme";
 
 // ── Yardımcılar ─────────────────────────────────────────────────────────────
@@ -371,10 +375,40 @@ export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | n
   return b.savas_karari;
 }
 
-/** Savaş yılında kararlar verilmeden zaman ilerlemez. */
+/** Savaş yılında kararlar verilmeden zaman ilerlemez (barış çatışması kararı da zamanı durdurur). */
 export function savasKarariBekliyorMu(state: CharacterState): boolean {
+  if (catismaBekliyorMu(state)) return true;
   const k = savasKarariHazirla(state);
   return !!k && k.adim < k.adimlar.length;
+}
+
+/** Barış çatışması karar penceresi: iki tarafın saldırı ve savunma gücü (düşman aralık olarak). */
+export function catismaKarariDurumu(state: CharacterState, bg: IsletmeBaglami): CatismaKarariDurumu | null {
+  const b = state.isletme?.birlik;
+  if (!b || !catismaBekliyorMu(state) || !b.catisma_bekleyen) return null;
+  const k = b.catisma_bekleyen;
+  const dag = dusmanSaldiriSavunma(k.dusmanTur);
+  const kesif = subayToplami(state).tahminAralik;
+  const yay = Math.min(kesif, TAHMIN_ARALIGI_TABAN);
+  const ref = k.dusmanGuc;
+  const aralik = (x: number): [number, number] => [Math.round(x * (1 - yay)), Math.round(x * (1 + yay))];
+  const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: k.tur });
+  return {
+    tur: k.tur,
+    baskin: k.baskin,
+    dusmanTur: k.dusmanTur,
+    ad: BARIS_CATISMALARI[k.tur].ad[state.cag === "Sanayi Devrimi" ? "sanayi" : "orta"],
+    oyuncu: { saldiri: Math.round(d.saldiri), savunma: Math.round(d.savunma) },
+    dusman: { saldiri: aralik(ref * dag.saldiri), savunma: aralik(ref * dag.savunma) },
+  };
+}
+
+/** Çatışma kararını verir ve çözer; sonuç ekranı için döner. */
+export function catismaKarariVer(state: CharacterState, secim: string, bg: IsletmeBaglami): CatismaSonucuGorunum {
+  const b = birlikAl(state);
+  if (!catismaBekliyorMu(state) || !b.catisma_bekleyen) throw new Error("Şu an verilecek bir çatışma kararı yok.");
+  if (secim !== "saldiri" && secim !== "savunma") throw new Error("Geçersiz seçim.");
+  return barisCatismaCoz(state, b, bg, secim);
 }
 
 export interface SavasKarariSecenegi {
@@ -840,7 +874,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       savunma: Math.round(d.savunma),
       toplam: Math.round(d.guc),
     },
-    rakipler: aktifRakipler(state).map((r) => ({ ad: r.ad, guc: Math.round(r.musteri * kk), husumet: Math.round(r.husumet) })),
+    rakipler: [], // Asker'de rakip komutan yok: tehdit yalnız düşman çatışması ve savaştır
     pay: Math.round(pazarPayiHesapla(state) * 1000) / 10,
     kalite: {
       sayilar: { ...b.kalite },
@@ -906,7 +940,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         const pay = gp.find((x) => x.gorev.id === g.id);
         const hs = h.gorevler.find((x) => x.id === g.id);
         return {
-          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * bg.enflasyon),
+          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * bg.enflasyon),
           yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
           erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0),
         };
