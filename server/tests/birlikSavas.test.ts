@@ -418,8 +418,8 @@ describe("görev geliri ve erzak tabloları", () => {
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 9–10; asker başı 0,15, savaşta ×3", () => {
-    expect(SOLD).toEqual([9, 9.25, 9.5, 9.75, 10]);
+  it("sabit maaş 9; asker başı 0,15, savaşta ×3", () => {
+    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
     expect(ER_BASI_GELIR).toBe(0.15);
     expect(SAVAS_ER_BASI_CARPANI).toBe(3);
     const s = asker();

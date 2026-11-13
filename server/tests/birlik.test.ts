@@ -309,13 +309,13 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 9–10 (rütbeyle hafif artar); vergi/aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([9, 9.25, 9.5, 9.75, 10]);
+  it("sabit maaş 9 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
     const h3 = birlikHesapla(s, bg(s));
-    expect(h3.sold - h0.sold).toBeCloseTo(0.75 * bg(s).enflasyon, 6); // S1 9 → S4 9,75
+    expect(h3.sold).toBeCloseTo(h0.sold, 6);
     const sonuc = birlikYilIsle(s, bg(s));
     expect(sonuc.dokum.vergi).toBe(0);
     expect(sonuc.dokum.loncaAidati).toBe(0);
