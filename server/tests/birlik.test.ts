@@ -782,12 +782,12 @@ describe("savaş", () => {
 });
 
 describe("talim, doktrin, birlik, terhis", () => {
-  it("talim politikaları: hafif 0, orta +5 (tavan 70), ağır +12; her yıl −2 unutma; moral −0/−2/−5", () => {
+  it("talim politikaları: hafif 0, orta +5 (tavan 70), ağır +12; her yıl −2 unutma; moral 0/−1/−3", () => {
     expect(TALIM_TANIMLARI.hafif.delta).toBe(0);
     expect(TALIM_TANIMLARI.orta.delta).toBe(5);
     expect(TALIM_TANIMLARI.orta.tavan).toBe(70);
     expect(TALIM_TANIMLARI.agir.delta).toBe(12);
-    expect([TALIM_TANIMLARI.hafif.moral, TALIM_TANIMLARI.orta.moral, TALIM_TANIMLARI.agir.moral]).toEqual([0, -2, -5]);
+    expect([TALIM_TANIMLARI.hafif.moral, TALIM_TANIMLARI.orta.moral, TALIM_TANIMLARI.agir.moral]).toEqual([0, -1, -3]);
     const s = asker();
     const b = birlikAl(s);
     b.talim_politikasi = "agir";

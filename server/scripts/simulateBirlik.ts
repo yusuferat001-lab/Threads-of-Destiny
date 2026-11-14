@@ -277,7 +277,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
       if (process.env.SIM_BATMA) console.log(`  BATTI y${y + 1} ${tarz} R${s.rutbe_seviye} er=${erSayisi(s)} para=${s.para.toFixed(0)} net=${d?.net} savas=${s.ulke.savasta} kredi=${s.kredi?.kalanBorc ?? 0} ekip=${s.ekip.length} kalite=${JSON.stringify(birlikAl(s).kalite)} birlik=${birlikAl(s).birlik_turler.length}`);
     }
     if (TRACE && cs) console.log(`    y${y + 1} çatışma ${cs.tur} ${cs.zafer ? "zafer" : "yenilgi"} ganimet=${cs.ganimet} guc=${Math.round(birlikAl(s).guc)}`);
-    if (TRACE && y % 5 === 4) console.log(`  y${y + 1} R${s.rutbe_seviye} er=${erSayisi(s)} guc=${Math.round(birlikAl(s).guc)} pay=${(pazarPayiHesapla(s) * 100).toFixed(1)}% net=${d?.net} para=${s.para.toFixed(0)}`);
+    if (TRACE && (y % 5 === 4 || y < 8)) console.log(`  y${y + 1} R${s.rutbe_seviye} er=${erSayisi(s)} guc=${Math.round(birlikAl(s).guc)} pay=${(pazarPayiHesapla(s) * 100).toFixed(1)}% net=${d?.net} para=${s.para.toFixed(0)} moral=${Math.round(birlikAl(s).moral)} talim=${Math.round(birlikAl(s).talim)} kalite=${JSON.stringify(birlikAl(s).kalite)} savas=${!!s.ulke.savasta}`);
     if (s.yas >= 90) {
       o.olduYil = y;
       break;

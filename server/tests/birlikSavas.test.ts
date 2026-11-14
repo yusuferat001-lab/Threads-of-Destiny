@@ -358,7 +358,7 @@ describe("seferberlik ve savaş sonu terhis", () => {
     const ana = erSayisi(s) - sv.seferberlik_er;
     s.ulke.savasta = false;
     savasiBitir(s, b, bg(s), []);
-    expect(erSayisi(s)).toBeLessThanOrEqual(ana + Math.round(sv.seferberlik_er * 0.45) + 1);
+    expect(erSayisi(s)).toBeLessThanOrEqual(ana + Math.round(sv.seferberlik_er * 0.55) + 1);
   });
 });
 
@@ -426,7 +426,7 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("her görevin güç başı net kazancı 0,49–0,735 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
+  it("her görevin güç başı net kazancı 0,49–0,735 arası, açılış eşiği (askeri güç, ×0,75 ölçeği) 8–173 ve görev açıldıkça artar; masraf alanı yok", () => {
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
@@ -436,8 +436,8 @@ describe("görev geliri ve erzak tabloları", () => {
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
-    expect(sira[0].minGuc).toBe(10);
-    expect(sira[sira.length - 1].minGuc).toBe(230);
+    expect(sira[0].minGuc).toBe(8);
+    expect(sira[sira.length - 1].minGuc).toBe(173);
     expect(sira[0].erBasi).toBe(0.49);
     expect(sira[sira.length - 1].erBasi).toBe(0.735);
     expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
@@ -528,10 +528,10 @@ describe("askeri güç belirleyici (v34)", () => {
     const s = asker();
     ordu(s, 60);
     const b = birlikAl(s);
-    b.gorevler = ["tahsilat"]; // 70 askeri güç
+    b.gorevler = ["tahsilat"]; // 52 askeri güç (×0,75 ölçeği)
     expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 düşük er ≈ 47 güç
     b.kalite = { dusuk: 0, orta: 60, yuksek: 0 };
-    expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 orta er ≈ 63 güç
+    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 orta er ≈ 63 güç
     b.kalite = { dusuk: 0, orta: 0, yuksek: 60 };
     expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 yüksek er ≈ 79 güç (teçhizat 0,75 / 1 / 1,25)
     expect(() => birlikKararUygula(s, { gorevler: ["tahsilat"] }, bg(s))).not.toThrow();
