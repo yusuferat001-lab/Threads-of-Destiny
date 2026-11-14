@@ -195,7 +195,7 @@ export function OlayKutusu({
       <KoseTezhibi />
 
       <div className="olay-kutusu-ic">
-        <div className="olay-parsomeni">
+        <div className="olay-parsomeni" aria-live="polite">
           {sonuc ? (
             <div className="olay-metni-govde" ref={govdeRef}>
               <div className="olay-metin-grubu">

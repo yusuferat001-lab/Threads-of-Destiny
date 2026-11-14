@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import type { KrediConfig, FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, BirlikKararGirdisi, BirlikTur, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { useEscKapat } from '../hooks';
 import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi, kitleSozlugu } from '../format';
 import { bic } from '../i18n';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
@@ -614,6 +615,7 @@ export function StratejiSayfasi({
 
   // İşlem sonucu / hata → ekrana açılır pencere.
   const [modalMesaj, setModalMesaj] = useState<string | null>(null);
+  useEscKapat(modalMesaj !== null, () => setModalMesaj(null));
   // Ana ekrandaki Müşteri / Gelir panelinden gelindiyse ilgili bölüme kaydır ve kısaca vurgula.
   useEffect(() => {
     if (!odak) return;
