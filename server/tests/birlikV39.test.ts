@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik, barisCatismaCoz } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani, BARIS_GANIMET_TABAN, SAVAS_ZAFER_GANIMET_TABAN, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -83,9 +83,9 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut/sınır 2,6–3,2, savaş zaferi 64–75 (asıl gelir savaş ganimeti), yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
+  it("sabitler: haydut/sınır 2,6–3,2, savaş zaferi 13–16, yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
     expect(BARIS_GANIMET_ARALIK).toEqual([2.6, 3.2]);
-    expect(SAVAS_ZAFER_GANIMET).toEqual([64, 75]);
+    expect(SAVAS_ZAFER_GANIMET).toEqual([13, 16]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
   });
@@ -541,12 +541,11 @@ describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indiri
     expect(birlikHesapla(s, bg(s)).gorevGeliri).toBe(0);
   });
 
-  it("ganimet tabanı: küçük ordu bile haydut/sınır ve savaş zaferinde en az taban kadar alır", () => {
-    expect(BARIS_GANIMET_TABAN).toBe(120);
-    expect(SAVAS_ZAFER_GANIMET_TABAN).toBe(500);
-    expect(ganimetBrutTemel(10, 3.6, BARIS_GANIMET_TABAN)).toBe(120); // 10 güç × 3,6 = 36 < 120
-    expect(ganimetBrutTemel(10, 12.6, SAVAS_ZAFER_GANIMET_TABAN)).toBe(500);
-    expect(ganimetBrutTemel(100, 3.6, BARIS_GANIMET_TABAN)).toBeCloseTo(100 * 3.6 * ganimetGucCarpani(100), 8); // taban devreye girmez // taban devreye girmez
+  it("ganimet tabanı: askerî gücü 40'ın altındaki ordu da haydut/sınır ve savaş zaferinde 40 güçlük ordunun ganimetini alır", () => {
+    expect(GANIMET_TABAN_GUC).toBe(40);
+    expect(ganimetBrutTemel(10, 2.9)).toBeCloseTo(40 * 2.9 * ganimetGucCarpani(40), 8); // 10 güç → 40 güç sayılır
+    expect(ganimetBrutTemel(10, 14.5)).toBeCloseTo(40 * 14.5 * ganimetGucCarpani(40), 8);
+    expect(ganimetBrutTemel(100, 2.9)).toBeCloseTo(100 * 2.9 * ganimetGucCarpani(100), 8); // taban devreye girmez
   });
 
   it("savaşta kışla bakımı %25 düşer", () => {

@@ -47,7 +47,6 @@ import {
   SEFERBERLIK_KALMA_ZAFER,
   SEFERBERLIK_TANIMLARI,
   SEFERBERLIK_SIRASI,
-  SEFERBERLIK_YENILGI_FIRAR_CARPANI,
   YARALI_ORAN,
 } from "../src/data/birlik";
 import { birlikKararUygula } from "../src/game/birlikIslem";
@@ -275,12 +274,12 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
 });
 
 describe("seferberlik ve savaş sonu terhis", () => {
-  it("iki seçenek: Gazi Çağrısı %15 orta, Tüm Erkekler %30 düşük; moral −4/−12; yıllık firar %5/9; talim: Gazi ordunun talimi, Tüm Erkekler 0; savaş sonu hepsi kalır", () => {
+  it("iki seçenek: Gazi Çağrısı %15 orta, Tüm Erkekler %30 düşük; moral −4/−12; ilk 2 yıl ek firar toplamı %5/10; talim: Gazi ordunun talimi, Tüm Erkekler 0; savaş sonu hepsi kalır", () => {
     expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.15);
     expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.3);
     expect(SEFERBERLIK_SIRASI).toEqual(["secme", "genel"]);
     expect([SEFERBERLIK_TANIMLARI.secme.moral, SEFERBERLIK_TANIMLARI.genel.moral]).toEqual([-4, -12]);
-    expect([SEFERBERLIK_TANIMLARI.secme.firar, SEFERBERLIK_TANIMLARI.genel.firar]).toEqual([5, 9]);
+    expect([SEFERBERLIK_TANIMLARI.secme.firar, SEFERBERLIK_TANIMLARI.genel.firar]).toEqual([5, 10]);
     expect(SEFERBERLIK_TANIMLARI.secme.talim).toBeNull(); // etkisi yok (ordunun talimi)
     expect(SEFERBERLIK_TANIMLARI.genel.talim).toBe(0);
     expect(SEFERBERLIK_KALMA_ZAFER).toEqual([1, 1]);
@@ -294,29 +293,36 @@ describe("seferberlik ve savaş sonu terhis", () => {
       expect(birlikAl(s).kalite[kalite]).toBe((kalite === "dusuk" ? 100 : 0) + adet);
     }
   });
-  it("seferber erler her savaş yılı firar eder (en az %5; büyük çağrıda daha çok); yenilgide son 2 yıl daha yüksek; savaş tavanına sayılmaz", () => {
-    const ort = (tur: "secme" | "dengeli" | "genel", yenilgi: boolean) => {
-      let toplam = 0;
-      const N = 60;
-      for (let n = 0; n < N; n++) {
+  it("seferber ek firarı yalnız savaşın ilk iki yılında, ayrı bir toplam: Gazi %5, Tüm Erkekler %10 (iki yıla rastgele bölünür); 3. yıldan sonra yok; savaş tavanına sayılmaz", () => {
+    for (const [tur, toplam] of [["secme", 5], ["genel", 10]] as const) {
+      let farkli = 0;
+      for (let n = 0; n < 30; n++) {
         const s = asker();
         ordu(s, 200);
         const b = birlikAl(s);
         const sv = savasa(s, tur);
-        const once = sv.seferberlik_er;
-        if (yenilgi) {
-          sv.sonuc = "yenilgi";
-          sv.yil_sayac = 3;
-        }
-        const pct = SEFERBERLIK_TANIMLARI[tur].firar * (yenilgi ? SEFERBERLIK_YENILGI_FIRAR_CARPANI : 1);
-        const k = kayipUygula(s, b, { oluPct: 0, firarPct: 0, levyFirarPct: pct });
-        toplam += k.firarLevy / once;
+        const f1 = savasYiliCoz(s, b, bg(s));
+        const f2 = savasYiliCoz(s, b, bg(s));
+        expect((f1.seferFirarPct ?? 0) + (f2.seferFirarPct ?? 0)).toBeCloseTo(toplam, 2);
+        if (Math.abs((f1.seferFirarPct ?? 0) - (f2.seferFirarPct ?? 0)) > 1e-6) farkli++;
+        const f3 = savasYiliCoz(s, b, bg(s));
+        expect(f3.seferFirarPct ?? 0).toBe(0);
+        const f4 = savasYiliCoz(s, b, bg(s));
+        expect(f4.seferFirarPct ?? 0).toBe(0);
+        expect(sv.firar_toplam ?? 0).toBe(0); // ek firar kayıp tavanına sayılmaz (kayıp uygulanmadı)
       }
-      return (toplam / N) * 100;
-    };
-    expect(ort("secme", false)).toBeGreaterThan(3.5);
-    expect(ort("genel", false)).toBeGreaterThan(ort("secme", false));
-    expect(ort("genel", true)).toBeGreaterThan(ort("genel", false));
+      expect(farkli).toBeGreaterThan(20);
+    }
+    // ek firar uygulanınca seferberlerden düşer, savaş firar sayacına girmez
+    const s = asker();
+    ordu(s, 200);
+    const b = birlikAl(s);
+    const sv = savasa(s, "genel");
+    const once = sv.seferberlik_er;
+    const k = kayipUygula(s, b, { oluPct: 0, firarPct: 0, levyFirarPct: 10 });
+    expect(k.firarLevy).toBeGreaterThan(0);
+    expect(sv.seferberlik_er).toBe(once - k.firarLevy);
+    expect(sv.firar_toplam ?? 0).toBe(0);
   });
 
   it("savaş sonu: kalan seferber zafer ve yenilgide %45–55 (hayatta kalanlar üzerinden), yaralı/sağlam oransal; ana ordu değişmez", () => {

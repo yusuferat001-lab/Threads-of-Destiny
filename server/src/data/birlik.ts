@@ -432,14 +432,14 @@ export const GANIMET_GUC_TABAN = 0.25;
 export function ganimetGucCarpani(guc: number): number {
   return Math.max(GANIMET_GUC_TABAN, 1 - GANIMET_GUC_AZALMA * Math.max(0, guc));
 }
-/** Barış çatışması (haydut / sınır) zafer ganimeti = max(BARIS_GANIMET_TABAN; askerî güç × U(a; b) × ganimetGucCarpani(güç)) (yenilgide ganimet yok). */
+/** Barış çatışması (haydut / sınır) zafer ganimeti = max(40; askerî güç) × U(a; b) × ganimetGucCarpani(güç) (yenilgide ganimet yok). */
 export const BARIS_GANIMET_ARALIK: Aralik = [2.6, 3.2];
-/** Ganimet tabanı (brüt, enflasyonsuz): küçük ordu da zaferde en az bu kadar ganimet alır (haydut, sınır ve genel savaş zaferi). */
-export const BARIS_GANIMET_TABAN = 120;
-export const SAVAS_ZAFER_GANIMET_TABAN = 500;
-/** Zafer ganimeti brüt temeli: aralık ortalaması/çekimi × güç × güç çarpanı, ama en az taban. */
-export function ganimetBrutTemel(guc: number, aralikDegeri: number, taban: number): number {
-  return Math.max(taban, guc * aralikDegeri * ganimetGucCarpani(guc));
+/** Ganimet tabanı: askerî gücü bunun altındaki ordu da zaferde (haydut, sınır ve savaş) 40 güçlük bir ordunun ganimetini alır. */
+export const GANIMET_TABAN_GUC = 40;
+/** Zafer ganimeti brüt temeli: etkin güç (en az GANIMET_TABAN_GUC) × aralık ortalaması/çekimi × güç çarpanı. */
+export function ganimetBrutTemel(guc: number, aralikDegeri: number): number {
+  const g = Math.max(GANIMET_TABAN_GUC, guc);
+  return g * aralikDegeri * ganimetGucCarpani(g);
 }
 /** Savaşta kışla/yapı bakımı bu oranda düşer. */
 export const SAVAS_KISLA_INDIRIMI = 0.25;
@@ -812,7 +812,7 @@ export const SEFERBERLIK_TANIMLARI: Record<
     er: number;
     /** Çağrı anında bir kerelik ordu morali. */
     moral: number;
-    /** Savaş boyunca HER YIL çağrılan erlerden firar eden % (savaş yenilgiyle biterse son 2 yıl ×SEFERBERLIK_YENILGI_FIRAR_CARPANI). */
+    /** Savaşın İLK İKİ YILINDA çağrılan erlerden EK olarak firar eden TOPLAM % (iki yıla rastgele bölünür; ön yıl kayıp toplamından ayrıdır). */
     firar: number;
     erzak: number;
     kalite: BirlikKalite;
@@ -832,24 +832,19 @@ export const SEFERBERLIK_TANIMLARI: Record<
     aciklama: { tr: "Eski gaziler silah başına: az ama sağlam ve eğitimli; moral hafif düşer.", en: "Old veterans take up arms: few but steady and trained; morale dips slightly." },
   },
   genel: {
-    er: 0.3, moral: -12, firar: 9, erzak: 0.15, kalite: "dusuk", talim: 0, ahlak: -2, mutluluk: -2, sohret: -1,
+    er: 0.3, moral: -12, firar: 10, erzak: 0.15, kalite: "dusuk", talim: 0, ahlak: -2, mutluluk: -2, sohret: -1,
     ad: { tr: "Tüm Erkekler", en: "Every Man" },
     aciklama: { tr: "Bütün erkekler silah altında: büyük ama eğitimsiz ordu; moral düşer, firar yüksek, halk ve şöhretin zarar görür.", en: "Every man is under arms: a big but untrained army; morale falls, desertion runs high, and the people and your renown suffer." },
   },
 };
 /** Küçükten büyüğe. */
 export const SEFERBERLIK_SIRASI: BirlikSeferberlik[] = ["secme", "genel"];
-/** Savaş yenilgiyle sonuçlanırsa (karar savaşından itibaren son 2 yıl) seferber firarı bu kadar katlanır. */
-export const SEFERBERLIK_YENILGI_FIRAR_CARPANI = 1.6;
 /** Savaş sonunda seferberlik erlerinden (sağlam + yaralı) hayatta kalanların kadroda kalan oranı. */
 /** Savaş sonunda seferberlerin HEPSİ (hayatta kalanlar) ordunun sıradan eri olarak kadroda kalır. */
 export const SEFERBERLIK_KALMA_ZAFER: Aralik = [1, 1];
 export const SEFERBERLIK_KALMA_YENILGI: Aralik = [1, 1];
 /** Zaferle biten savaşta kadroda kalan seferberlerin bu kesri bir kalite yukarı çıkar (kalıcı gazi kadrosu). */
 export const SEFERBERLIK_GAZI_ORANI = 0.3;
-/** Seferber firarına moral eki: moral bu eşiğin altına indikçe (eşik − moral) × katsayı puan (seferberlerde normal erin ≈3 katı). */
-export const SEFERBERLIK_MORAL_FIRAR_ESIGI = 40;
-export const SEFERBERLIK_MORAL_FIRAR_KATSAYI = 0.15;
 
 // ── Ganimet / esir ──────────────────────────────────────────────────────────
 /** Esirin orduya katılan oranı (düşük kalite, eğitimsiz). */
@@ -1030,8 +1025,8 @@ export const ASKER_SALDIRI_HASARLARI = {
 /** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,7 / ölçülü 0,5 / yumuşak 0,3); yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %75/55/35 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
 export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.0053;
-/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = max(SAVAS_ZAFER_GANIMET_TABAN; askerî güç × U(5,8; 6,8) × ganimetGucCarpani(güç)); esir = güç × bu × yıl. Yenilgide ganimet yok. */
-export const SAVAS_ZAFER_GANIMET: Aralik = [64, 75];
+/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = max(40; askerî güç) × U(13; 16) × ganimetGucCarpani(güç); esir = güç × bu × yıl. Yenilgide ganimet yok. */
+export const SAVAS_ZAFER_GANIMET: Aralik = [13, 16];
 export const SAVAS_ZAFER_ESIR = 0.02;
 /** Kiralık ordu (paralı asker): savaş başına bir kez, iki seviye; savaş süresince tutulur, eğitimli ve pahalıdır. Peşin ve yıllık ücret er başınadır (× gider enflasyonu); yıllık ücret erzak ve masrafı da kapsar (ayrı erzak/er masrafı yok). */
 export type KiralikSeviye = "kucuk" | "buyuk";

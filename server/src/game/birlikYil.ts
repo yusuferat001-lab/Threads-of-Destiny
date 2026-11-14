@@ -8,8 +8,6 @@ import {
   ASKER_PAZAR_HEDEF,
   BARIS_CATISMALARI,
   BARIS_BEKLEME_ARALIK,
-  BARIS_GANIMET_TABAN,
-  SAVAS_ZAFER_GANIMET_TABAN,
   ganimetBrutTemel,
   BARIS_YILLIK_IHTIMAL,
   KALE_GELIR,
@@ -111,15 +109,12 @@ import {
   ROL_TANIMLARI,
   SEFERBERLIK_KALMA_YENILGI,
   SEFERBERLIK_GAZI_ORANI,
-  SEFERBERLIK_MORAL_FIRAR_ESIGI,
-  SEFERBERLIK_MORAL_FIRAR_KATSAYI,
   MORAL_DIP_ESIGI,
   MORAL_DIP_TOPARLANMA,
   TALIM_DOGAL_DUSUS,
   TALIM_YENI_ER_GIRIS,
   SEFERBERLIK_KALMA_ZAFER,
   SEFERBERLIK_TANIMLARI,
-  SEFERBERLIK_YENILGI_FIRAR_CARPANI,
   SERTLIK_DOGAL_SONUM,
   SERTLIK_OTORITE_KATSAYISI,
   ASKER_PAZAR_DONEM_CARPANI,
@@ -695,7 +690,7 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
   const emir = emirGetir(sv.emir);
   const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
   const ortGanimet = (SAVAS_ZAFER_GANIMET[0] + SAVAS_ZAFER_GANIMET[1]) / 2;
-  const brut = zafer ? ganimetBrutTemel(gucOnce, ortGanimet, SAVAS_ZAFER_GANIMET_TABAN) * bg.enflasyon * carpan : 0;
+  const brut = zafer ? ganimetBrutTemel(gucOnce, ortGanimet) * bg.enflasyon * carpan : 0;
   const net = brut * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
   const yilSayisi = Math.max(1, (sv.yil_sayac ?? 0) + 1);
   const sonuc: SavasGunuSonucu = {
@@ -730,6 +725,8 @@ export interface SavasYili {
   catisma: CatismaSonucu | null;
   /** Yalnız ön yıllarda: yaralı ordunun %'si olarak ölüden bağımsız çekilir (yoksa yaralı = ölü × oran). */
   yaraliPct?: number;
+  /** Yalnız ön yıllarda: seferber erlerden EK firar (seferberlerin %'si; savaş tavanına ve ön yıl toplamına sayılmaz). */
+  seferFirarPct?: number;
   /** Bu yılın ordu % kayıp oranları (aralıktan çekildi). */
   oluPct: number;
   firarPct: number;
@@ -737,7 +734,7 @@ export interface SavasYili {
 }
 
 /** Ön yıl planı: toplam T (%5–6) üç türe ≈ eşit (±%30) bölünür; her tür iki yıla rastgele (%35–65) dağıtılır. */
-export function onYilPlaniCek(): NonNullable<BirlikSavasDurumu["on_yil_plan"]> {
+export function onYilPlaniCek(seferToplam = 0): NonNullable<BirlikSavasDurumu["on_yil_plan"]> {
   const T = aralikCek(SAVAS_ON_YIL_TOPLAM);
   const w = [0, 1, 2].map(() => 1 + rnd(-SAVAS_ON_YIL_SAPMA, SAVAS_ON_YIL_SAPMA));
   const wt = w[0] + w[1] + w[2];
@@ -746,7 +743,10 @@ export function onYilPlaniCek(): NonNullable<BirlikSavasDurumu["on_yil_plan"]> {
     const u = rnd(0.35, 0.65);
     return [Math.round(t * u * 1000) / 1000, Math.round(t * (1 - u) * 1000) / 1000];
   };
-  return { olu: bol(w[0]), yarali: bol(w[1]), firar: bol(w[2]) };
+  // Seferber ek firarı: ayrı bir toplam (Gazi %5, Tüm Erkekler %10), iki yıla rastgele bölünür.
+  const us = rnd(0.35, 0.65);
+  const sefer: [number, number] = [Math.round(seferToplam * us * 1000) / 1000, Math.round(seferToplam * (1 - us) * 1000) / 1000];
+  return { olu: bol(w[0]), yarali: bol(w[1]), firar: bol(w[2]), sefer };
 }
 
 /** Savaşın bir yılı: 1–2. yıl olay zarı, 3. yıl tek karar savaşı, sonrası sonuca göre düşük kayıp. */
@@ -766,7 +766,7 @@ export function savasYiliCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
   }
   if (sv.sonuc == null) {
     // Ön yıllar: savaş başında çekilen plan (toplam %5–6, üç türe yaklaşık eşit, iki yıla rastgele); yağma ve kayıp çarpanı sonrası da toplam %6'yı geçmez.
-    const plan = (sv.on_yil_plan ??= onYilPlaniCek());
+    const plan = (sv.on_yil_plan ??= onYilPlaniCek(sv.seferberlik ? SEFERBERLIK_TANIMLARI[sv.seferberlik]?.firar ?? 0 : 0));
     const i = Math.min(1, Math.max(0, sv.yil_sayac - 1));
     let o = plan.olu[i] * yk;
     let y = plan.yarali[i] * yk;
@@ -779,7 +779,7 @@ export function savasYiliCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
     y *= olcek;
     f *= olcek;
     sv.on_yil_kullanilan = (sv.on_yil_kullanilan ?? 0) + toplam * olcek;
-    return { catisma: null, oluPct: o, yaraliPct: y, firarPct: f, faz: "on" };
+    return { catisma: null, oluPct: o, yaraliPct: y, firarPct: f, seferFirarPct: plan.sefer?.[i] ?? 0, faz: "on" };
   }
   const t = SAVAS_SONRA_KAYBI[sv.sonuc];
   return { catisma: null, oluPct: aralikCek(t.olu), firarPct: aralikCek(t.firar), faz: "sonra" };
@@ -866,7 +866,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     const emir = emirGetir(sv.emir);
     const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
     const guc = b.guc;
-    sonuc.brut = r2(ganimetBrutTemel(guc, aralikCek(SAVAS_ZAFER_GANIMET), SAVAS_ZAFER_GANIMET_TABAN) * bg.enflasyon * carpan);
+    sonuc.brut = r2(ganimetBrutTemel(guc, aralikCek(SAVAS_ZAFER_GANIMET)) * bg.enflasyon * carpan);
     sonuc.erPayi = r2(sonuc.brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
     sonuc.net = r2(sonuc.brut - sonuc.erPayi);
     sonuc.esir = olasilikliYuvarla(guc * SAVAS_ZAFER_ESIR * Math.max(1, sv.yil_sayac ?? state.yil - sv.baslangic_yili));
@@ -976,7 +976,7 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   const sm = k.baskin ? { ganimet: 1, kayip: 1 } : inisiyatif === "saldiri" ? CATISMA_SALDIRI : CATISMA_SAVUNMA;
   catismaIzleyici.fn?.({ tur, zafer, yas: state.yas, oyuncuGuc: guc, dusmanGuc: E, oyuncuEtkin: oyuncuTaraf, dusmanEtkin: dusmanTaraf, tablo: barisDusmanGucuYas(state.yas, tur) });
   const carpan = (1 + sub.ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
-  const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK), BARIS_GANIMET_TABAN) * bg.enflasyon * carpan * sm.ganimet : 0;
+  const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK)) * bg.enflasyon * carpan * sm.ganimet : 0;
   const erPayi = brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
   const net = brut - erPayi;
   const esirSayisi = zafer ? olasilikliYuvarla(guc * t.esir) : 0;
@@ -1199,14 +1199,8 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     ekOlu: gorevOlu,
     ekYarali: gorevYarali,
     ...(savasYili?.yaraliPct != null ? { yaraliPct: savasYili.yaraliPct } : {}),
-    // Seferber firarı: seviyeye göre taban × (yenilgide son 2 yıl) × (ağır borç) + düşük moralde ek.
-    levyFirarPct:
-      savasta && b.savas?.seferberlik
-        ? SEFERBERLIK_TANIMLARI[b.savas.seferberlik].firar *
-            (b.savas.sonuc === "yenilgi" && (b.savas.yil_sayac ?? 0) >= SAVAS_KARAR_YILI ? SEFERBERLIK_YENILGI_FIRAR_CARPANI : 1) *
-            (borc?.seferFirarCarpani ?? 1) +
-          Math.max(0, SEFERBERLIK_MORAL_FIRAR_ESIGI - b.moral) * SEFERBERLIK_MORAL_FIRAR_KATSAYI
-        : 0,
+    // Seferber EK firarı: yalnız savaşın ilk iki yılı, ayrı toplam (%5 / %10); ağır borç eşiğinde ×1,5.
+    levyFirarPct: savasta ? (savasYili?.seferFirarPct ?? 0) * (borc?.seferFirarCarpani ?? 1) : 0,
     oluTavan: tavan?.olu,
     firarTavan: tavan?.firar,
   });

@@ -1295,7 +1295,7 @@ export interface BirlikSavasDurumu {
   /** Kiralık erlerden yaralı olanlar (savaş gücüne katılmaz, ordu yaralılarıyla aynı hızda iyileşir; ücret yine ödenir). */
   kiralik_yarali?: number;
   /** Savaşın ilk iki yılı için çekilmiş plan: yıl başına ölü/yaralı/firar % (ordunun yüzdesi; çarpanlar öncesi), iki yılın toplamı ≤ SAVAS_ON_YIL_TAVANI. */
-  on_yil_plan?: { olu: [number, number]; yarali: [number, number]; firar: [number, number] };
+  on_yil_plan?: { olu: [number, number]; yarali: [number, number]; firar: [number, number]; sefer?: [number, number] };
   /** Ön yıllarda şimdiye kadar uygulanan toplam kayıp % (çarpanlar sonrası). */
   on_yil_kullanilan?: number;
   /** Seferber erlerin giriş talimi (etkin talim ağırlıklı ortalaması için; ordunun gerçek talimi bozulmaz). */
