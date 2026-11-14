@@ -64,7 +64,6 @@ import {
   SAVAS_ZAFER_GANIMET,
   SEFER_DONUS_MORAL,
   SEFER_DONUS_TALIM,
-  YAGMA_ER_ORANI,
   emirGetir,
   ASKER_PAZAR_YAKINSAMA,
   ASKER_SALDIRI_AGIRLIKLARI,
@@ -1137,14 +1136,12 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const sohretKazanc = gorevSohret + b.kale * KALE_SOHRET;
   if (sohretKazanc !== 0) state.un = clamp(state.un + sohretKazanc, 0, 100);
 
-  // 3b. Yağma ikmali: köylerden gönüllü gelir, halk ezilir.
+  // 3b. Yağma ikmali: halk ezilir (yağmadan gönüllü er gelmez).
   if (savasta && h.yagmaBrut > 0) {
-    const gonullu = olasilikliYuvarla(erSayisi(state) * YAGMA_ER_ORANI);
-    if (gonullu > 0) yeniErEkle(state, gonullu, bg, { kalite: "dusuk", bedava: true, talim: 0 });
     const yt = IKMAL_TANIMLARI[ikmalId].yagma;
     state.ahlak = clamp(state.ahlak + yt.ahlak, 0, 100);
     state.mutluluk = clamp(state.mutluluk + yt.mutluluk, 0, 100);
-    uyarilar.push({ kod: "yagma", tutar: r2(h.yagmaBrut), sayi: gonullu });
+    uyarilar.push({ kod: "yagma", tutar: r2(h.yagmaBrut) });
   }
 
   // 4. Esir.

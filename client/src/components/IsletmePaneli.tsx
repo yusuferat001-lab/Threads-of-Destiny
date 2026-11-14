@@ -373,8 +373,8 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return `🎖️ ${dil === 'en' ? 'Honour earned' : 'Unvan kazandın'}: ${kt(dil, u.isim ?? '')}`;
       case 'yagma':
         return en
-          ? `🔥 Plunder this year: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} recruits` : ''}.`
-          : `🔥 Bu yıl yağmadan: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} gönüllü` : ''}.`;
+          ? `🔥 Plunder this year: +${formatPara(u.tutar ?? 0)} ${pb}.`
+          : `🔥 Bu yıl yağmadan: +${formatPara(u.tutar ?? 0)} ${pb}.`;
       case 'imtiyaz_bitti':
         return `📜 ${u.hat && IMTIYAZ_ADLARI[u.hat] ? d(IMTIYAZ_ADLARI[u.hat]) : ''}: ${en ? 'expired' : 'sona erdi'}`;
       default:
