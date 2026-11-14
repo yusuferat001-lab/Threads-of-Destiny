@@ -690,6 +690,11 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     expect(sec[1].aciklama.tr).toContain("+20 er");
     expect(sec[2].aciklama.tr).toContain("+30 er");
     expect(sec[2].aciklama.tr).not.toContain("peşin");
+    for (const x of sec) expect(x.aciklama.tr).toMatch(/yıllık ekstra gider ≈ \d/);
+    const gider = (i: number) => Number(/ekstra gider ≈ ([\d.]+)/.exec(sec[i].aciklama.tr)![1]);
+    expect(gider(0)).toBeGreaterThan(0);
+    expect(gider(2)).toBeGreaterThan(gider(1));
+    expect(gider(1)).toBeGreaterThan(gider(0)); // büyük çağrı daha pahalı
     expect(sec[2].aciklama.tr).toMatch(/askerî güç \d+ → \d+/);
     const k = savasKarariHazirla(s)!;
     expect(k.adimlar[0]).toBe("seferberlik");
@@ -762,7 +767,7 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     b.kalite = { dusuk: 0, orta: 20, yuksek: 0 };
     birlikYilIsle(s, bg(s));
     expect(b.moral).toBeLessThan(50);
-    expect(b.talim).toBeLessThan(50); // doğal unutma −2 ve yeni erlerin (giriş talimi 30) seyreltmesi
+    expect(b.talim).toBeLessThan(50); // doğal unutma −2 ve yeni erlerin (giriş talimi 25) seyreltmesi
     expect(b.talim).toBeGreaterThan(44);
   });
   it("dipteki moral toparlanır (<30 → +2)", () => {

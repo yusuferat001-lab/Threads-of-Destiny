@@ -45,7 +45,7 @@ export const KALITE_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.75, orta:
 /** Düşükten verilen kaliteye yükseltmenin er başı fiyatı (enflasyonsuz). */
 export const KALITE_FIYATI: Record<BirlikKalite, number> = { dusuk: 0, orta: 0, yuksek: 0 };
 /** Teçhizat bakımı: er başı yıllık (enflasyonlu), seviyeye göre. */
-export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.15, orta: 0.3, yuksek: 0.45 };
+export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.15, orta: 0.27, yuksek: 0.4 };
 /** Teçhizat seviyesinin yıllık moral etkisi (kalite karışımının ağırlıklı ortalaması) ve talim kazancı çarpanı. */
 export const KALITE_MORAL: Record<BirlikKalite, number> = { dusuk: -2, orta: 0, yuksek: 2 };
 export const KALITE_TALIM_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.9, orta: 1, yuksek: 1.1 };
@@ -184,7 +184,7 @@ export const TALIM_BASLANGIC = 50;
 export const MORAL_NOTR = 50;
 export const TALIM_NOTR = 50;
 /** Yeni katılan erlerin (gönüllü, devşirme, esir) giriş talimi; ordunun talim ortalamasını seyreltir. Seferber erlerin giriş talimi ayrıdır. */
-export const TALIM_YENI_ER_GIRIS = 30;
+export const TALIM_YENI_ER_GIRIS = 25;
 /** Moral ve talimin güce etkisi: nötrde 0, 0'da −%25, 100'de +%25 (doğrusal). */
 export const MORAL_TALIM_GUC_ARALIGI = 0.25;
 /** Doğal moral düşüşü (yıllık, savaşta daha sert) ve dipteki toparlanma (moral bu eşiğin altındaysa +MORAL_DIP_TOPARLANMA). */

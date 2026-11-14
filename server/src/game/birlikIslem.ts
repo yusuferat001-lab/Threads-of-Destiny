@@ -511,12 +511,15 @@ function adimSecenekleri(state: CharacterState, adim: string): SavasKarariSecene
         const klon = structuredClone(state);
         const n = seferberlikUygula(klon, id, bg);
         const g1 = Math.round(gucHesapla(klon, { enflasyon: bg.enflasyon }).guc);
+        // Yıllık ekstra gider: er masrafı + erzak + teçhizat bakımı + talim masrafı (+ kışla limitini aşarsa aşım gideri) — çağrılan erlerin ordu giderine eklediği fark.
+        const ekstra = Math.max(0, r2(birlikHesapla(klon, bg).toplamGider - birlikHesapla(state, bg).toplamGider));
+        const para = state.para_birimi;
         return {
           id,
           ad: t.ad,
           aciklama: {
-            tr: `${t.aciklama.tr} +${n} er (${er0} → ${er0 + n}), askerî güç ${g0} → ${g1}.`,
-            en: `${t.aciklama.en} +${n} men (${er0} → ${er0 + n}), strength ${g0} → ${g1}.`,
+            tr: `${t.aciklama.tr} +${n} er (${er0} → ${er0 + n}), askerî güç ${g0} → ${g1}, yıllık ekstra gider ≈ ${ekstra} ${para}.`,
+            en: `${t.aciklama.en} +${n} men (${er0} → ${er0 + n}), strength ${g0} → ${g1}, extra upkeep ≈ ${ekstra} ${para}/yr.`,
           },
         };
       });

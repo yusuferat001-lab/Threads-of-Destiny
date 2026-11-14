@@ -289,8 +289,8 @@ describe("limitler ve yeni er katılımı", () => {
     expect(erSayisi(s)).toBe(komutaLimiti(s));
     expect(b.kalite.orta).toBe(r.eklenen);
     expect(r.maliyet).toBe(0); // teçhizat yükseltme/katılım ücretsiz (yalnız yıllık bakım)
-    // talim = (60 × 20 + giriş talimi 30 × eklenen) / (20 + eklenen)
-    expect(b.talim).toBeCloseTo((60 * 20 + 30 * r.eklenen) / (20 + r.eklenen), 4);
+    // talim = (60 × 20 + giriş talimi 25 × eklenen) / (20 + eklenen)
+    expect(b.talim).toBeCloseTo((60 * 20 + 25 * r.eklenen) / (20 + r.eklenen), 4);
   });
 
   it("yeni erler hedef kaliteyle gelir; teçhizat ücreti yok", () => {
@@ -843,11 +843,13 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(birlikAl(s).kalite.yuksek).toBe(erSayisi(s));
   });
 
-  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,15/0,30/0,45; güç başına gider birbirine yakın (hiçbiri baskın değil)", () => {
+  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,15/0,27/0,40; güç başına gider yükseldikçe biraz azalır (yükseltme teşvik edilir, ama hiçbiri baskın değil)", () => {
     expect(KALITE_CARPANI).toEqual({ dusuk: 0.75, orta: 1, yuksek: 1.25 });
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.3, yuksek: 0.45 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.27, yuksek: 0.4 });
     const g = (q: "dusuk" | "orta" | "yuksek") => (ER_MASRAFI + ERZAK_BIRIMI + KALITE_BAKIM[q]) / KALITE_CARPANI[q];
-    expect(Math.abs(g("yuksek") - g("dusuk"))).toBeLessThan(0.05);
+    expect(g("yuksek")).toBeLessThan(g("orta"));
+    expect(g("orta")).toBeLessThan(g("dusuk"));
+    expect(g("dusuk") - g("yuksek")).toBeLessThan(0.1); // fark küçük: yükseltme zorunlu değil
   });
 
   it("Asker rütbesi askerî güce bağlı: pazar payı yeterli olsa da güç eşiği gerekir", () => {
