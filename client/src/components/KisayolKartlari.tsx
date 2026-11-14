@@ -67,7 +67,7 @@ export function KisayolKartlari({
   };
 
   return (
-    <nav className="kisayol-kartlari" aria-label={m.agBaslik}>
+    <nav className="kisayol-kartlari" aria-label={m.ksBaslik}>
       {ogeler.map((id) => {
         const k = kartlar[id];
         return (

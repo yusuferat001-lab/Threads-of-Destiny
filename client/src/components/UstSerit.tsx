@@ -84,10 +84,14 @@ function StatModulu({
   const yon = takip === undefined || nonce === 0 ? '' : delta > 0 ? ' ust-serit-modul-deger-artis' : ' ust-serit-modul-deger-azalis';
   const sinif = `ust-serit-modul${sinifEk ? ` ${sinifEk}` : ''}${onTikla ? ' ust-serit-modul-tikla' : ''}${gorunum ? ` ust-serit-modul-ton-${gorunum.ton}` : ''}`;
   const Kok = onTikla ? 'button' : 'div';
+  // Mobilde etiket gizli (yalnız ikon + sayı): erişilebilir ad "Can: 94" olsun.
+  const erisimAdi = `${etiket}: ${deger}${degerBirim ? ` ${degerBirim}` : ''}`;
   return (
     <Kok
       className={sinif}
-      {...(onTikla ? { type: 'button' as const, onClick: onTikla, 'aria-haspopup': 'dialog' as const, title: `${etiket} — ${m.gmDokun}` } : {})}
+      {...(onTikla
+        ? { type: 'button' as const, onClick: onTikla, 'aria-haspopup': 'dialog' as const, 'aria-label': erisimAdi, title: `${etiket} — ${m.gmDokun}` }
+        : { role: 'group' as const, 'aria-label': erisimAdi })}
     >
       {takip !== undefined && <DeltaRozeti key={nonce} deger={delta} nonce={nonce} birim={takipBirim} />}
       <span className="ust-serit-modul-ikon" aria-hidden="true">

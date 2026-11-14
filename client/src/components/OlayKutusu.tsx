@@ -141,6 +141,7 @@ export function OlayKutusu({
   const { m } = useDil();
   const adaylar = olayResmiAdaylari(senaryo.kategori, cag, senaryo.resim);
   const govdeRef = useRef<HTMLDivElement>(null);
+  const kutuRef = useRef<HTMLElement>(null);
   useKaydirmaIpucu(govdeRef, `${sonuc ? 's' : 'q'}|${tepkiModu ? 't' : ''}|${senaryo.olay_basligi}|${sonuc?.ozet ?? ''}`);
   useKlavyeKisayollari({
     etkin: klavye,
@@ -150,6 +151,16 @@ export function OlayKutusu({
     onSecenek,
     onDevam,
   });
+  // Klavye odağı (yalnız PC): sonuç ekranında "Devam Et"e, soru ekranında kutunun kendisine (ilk Tab
+  // ilk şıkka iner). Soruda şıkka doğrudan odak verilmez: Enter/Boşlukla yanlışlıkla şık seçilmesin.
+  // Odak düğme DOM'dan kalkınca ("şıklar → Devam") sayfa başına dönmesin diye gerekli.
+  useEffect(() => {
+    if (!klavye || yukleniyor) return;
+    const kutu = kutuRef.current;
+    if (!kutu) return;
+    const devam = kutu.querySelector<HTMLButtonElement>('.olay-devam:not(:disabled)');
+    (devam ?? kutu).focus({ preventScroll: true });
+  }, [klavye, yukleniyor, sonuc, senaryo.olay_basligi]);
   // Yoğun içerik. Mobilde dar 2 sütunlu hücrelerde ~17 karakter/satır sığar: 4 şık ya da uzun şık
   // metni (3 şıkta >44, 2 şıkta >70 karakter; kilit nedeni de yer tutar) varsa çerçeve küçülür,
   // punto iner. PC'de hücreler ~35 karakter/satır alır: yalnız 4 şık ya da >90 karakter yoğundur.
@@ -166,7 +177,11 @@ export function OlayKutusu({
         enUzunSecenek > 70);
 
   return (
-    <section className={`olay-kutusu${sonuc ? ' olay-kutusu-sonuc' : ''}${yogun ? ' olay-kutusu-yogun' : ''}`}>
+    <section
+      ref={kutuRef}
+      tabIndex={-1}
+      className={`olay-kutusu${sonuc ? ' olay-kutusu-sonuc' : ''}${yogun ? ' olay-kutusu-yogun' : ''}`}
+    >
       {etiketGoster && (
         <div className="olay-kutusu-etiketler">
           {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
