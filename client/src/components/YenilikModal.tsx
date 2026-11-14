@@ -1,5 +1,6 @@
 import type { Dil } from '../ayarlar';
 import { metinler } from '../i18n';
+import { useEscKapat } from '../hooks';
 
 interface Props {
   dil: Dil;
@@ -9,6 +10,7 @@ interface Props {
 /** İlk açılışta beliren, sonra bir daha görünmeyen "Yenilikler" bildirimi (bkz. yenilikler.ts). */
 export function YenilikModal({ dil, onKapat }: Props) {
   const M = metinler(dil);
+  useEscKapat(true, onKapat);
 
   const maddeler = [M.ynMadde1, M.ynMadde2, M.ynMadde3, M.ynMadde4];
 

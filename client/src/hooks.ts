@@ -32,3 +32,19 @@ export function useGecisDeltasi(deger: number): { delta: number; nonce: number }
   }, [deger]);
   return durum;
 }
+
+/**
+ * Pencere açıkken Escape tuşu pencereyi kapatır (klavye kullanıcıları için çıkış yolu).
+ * Zorunlu karar pencerelerinde (öğreti/doktrin/vergi/savaş kararı vb.) KULLANMA — onlar
+ * seçim yapılmadan kapanmamalı. Ayarlar vb. eski pencereler kendi dinleyicisini taşır.
+ */
+export function useEscKapat(acik: boolean, onKapat: () => void): void {
+  useEffect(() => {
+    if (!acik) return;
+    const dinle = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onKapat();
+    };
+    window.addEventListener('keydown', dinle);
+    return () => window.removeEventListener('keydown', dinle);
+  }, [acik, onKapat]);
+}

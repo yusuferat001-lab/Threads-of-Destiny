@@ -195,3 +195,54 @@
     animation: none;
   }
 }
+
+/*
+ * Dokunma alanı ≥44×44 ve okunur yazı (UX turu, mobil ≤767px).
+ * Görünüm aynı kalır; yalnız hedef büyür. Dişli ve tarih satırında görünmez ::after kullanılır
+ * (öğe overflow:hidden olmadığı için dışarı taşabilir); avatar yuvarlak kırpıldığından gerçek
+ * boyutu 44'e çıkar.
+ */
+@media (max-width: 767px) {
+  .oyun-kapsayici-tam > .ayar-ac-buton::after {
+    content: '';
+    position: absolute;
+    inset: -8px -6px;
+  }
+  .ust-yil-satiri::after {
+    content: '';
+    position: absolute;
+    inset: -2px 0 -16px;
+  }
+
+  .ust-serit-modul,
+  .ust-amac-serit-satiri .amac-serit-oge,
+  .canli-skor-rozeti {
+    min-height: 44px;
+  }
+  .ust-avatar-rozeti .karakter-avatari {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Yazı: 9,6 / 8,6 px → ~11 px (alt gezinme 12 px). */
+  .alt-gezinme-etiket {
+    font-size: 0.75rem;
+  }
+  .ust-amac-serit-satiri .amac-serit-oge {
+    font-size: 0.7rem;
+  }
+  .ust-serit-modul-ahlak .ust-serit-modul-deger {
+    font-size: 0.68rem;
+  }
+  .ust-serit-delta {
+    font-size: 0.7rem;
+  }
+}
+
+/* Alt gezinme olay beklerken devre dışı: %50 opaklık + küçük etiket okunmaz oluyordu.
+   Hâlâ "kapalı" okunsun ama etiket/ikon seçilebilsin (~6:1 kontrast). */
+@media (max-width: 767px) {
+  .alt-gezinme-buton:disabled {
+    opacity: 0.7;
+  }
+}

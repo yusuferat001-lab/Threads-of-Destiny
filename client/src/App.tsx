@@ -178,7 +178,7 @@ import { tanismaSenaryosu, tanismaOlaySonucu } from './tanismaOlay';
 import { DunyaGecmisiModal } from './components/DunyaGecmisiModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
-import { useMobilEkran, useGecisDeltasi } from './hooks';
+import { useMobilEkran, useGecisDeltasi, useEscKapat } from './hooks';
 import './App.css';
 import './giris.css';
 // Olay kutusu (kadife panel): ortak görünüm → mobil yerleşim → PC yerleşim. App.css'ten SONRA, bu sırayla
@@ -435,6 +435,9 @@ function App() {
 
   // Mobil tek-ekran tasarımı: canlı skor rozetinin detay modalı (yalnız placeholder — §5).
   const [skorDetayAcik, setSkorDetayAcik] = useState(false);
+  useEscKapat(bolgeBilgiAcik, () => setBolgeBilgiAcik(false));
+  useEscKapat(kisilikModalAcik, () => setKisilikModalAcik(false));
+  useEscKapat(skorDetayAcik, () => setSkorDetayAcik(false));
   const [gostergeAcik, setGostergeAcik] = useState<GostergeStat | null>(null);
   // Aşk evliliği: süren tanışma penceresi (durum sunucudan, karakter state'inde `aktif_tanisma`).
   const [tanisma, setTanisma] = useState<TanismaDurumu | null>(null);

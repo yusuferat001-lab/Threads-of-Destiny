@@ -756,3 +756,26 @@
     font-size: clamp(0.8rem, 0.5vw + 0.62rem, 1.15rem);
   }
 }
+
+/* Üst şerit (PC ≤1600px): para değeri "16 Liv…" diye kesiliyor, "MUTLULUK" etiketi kısalıyor
+   ve uçan delta rozeti "PARA" etiketinin üstüne biniyordu. Para birimi (tam hâli `title`'da ve
+   sol panelde) bu genişlikte şeritte gösterilmez; modül iç boşluğu daralır. ≤1400px'teki mevcut
+   kural (etiket/birim gizleme) aynen duruyor. */
+@media (min-width: 768px) and (max-width: 1600px) {
+  .oyun-ekrani-pc .ust-serit-modul-birim,
+  .oyun-ekrani-pc .ust-serit-delta-birim {
+    display: none;
+  }
+  .oyun-ekrani-pc .ust-serit-modul {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+    gap: 0.3rem;
+  }
+}
+
+/* Uçan +N/−N rozeti PC'de modülün üst kenarının ÜSTÜNE oturur; etiketi ("PARA", "ŞÖHRET") örtmesin. */
+@media (min-width: 768px) {
+  .oyun-ekrani-pc .ust-serit-delta {
+    top: -0.85rem;
+  }
+}

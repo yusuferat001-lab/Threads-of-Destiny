@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { CemaatKararGirdisi, CemaatPolitikaGorunumu, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeUyari, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { useEscKapat } from '../hooks';
 import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
@@ -197,6 +198,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
   const [uyariAcik, setUyariAcik] = useState(false);
+  useEscKapat(uyariAcik, () => setUyariAcik(false));
   const c = durum.cemaat;
   const dokum = durum.sonDokum;
   const onemliKodlar: IsletmeUyari['kod'][] = ['sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'bina_tasti', 'asiri_olay', 'mezun'];

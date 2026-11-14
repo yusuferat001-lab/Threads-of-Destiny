@@ -1,5 +1,6 @@
 import type { IsletmeGorunumu, IsletmeUyari } from '../types';
 import { useDil } from '../DilContext';
+import { useEscKapat } from '../hooks';
 import { gecenYilBaslik } from '../isletmeAdi';
 import { isletmeUyariMetni } from './IsletmePaneli';
 
@@ -42,6 +43,7 @@ interface Props {
 /** Ana ekranda (olay yokken) açılır; oyuncu "Tamam" deyince kapanır. */
 export function IsletmeBildirimModal({ durum, uyarilar, onKapat }: Props) {
   const { dil } = useDil();
+  useEscKapat(true, onKapat);
   const tr = dil !== 'en';
   return (
     <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" aria-modal="true">
