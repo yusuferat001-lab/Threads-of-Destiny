@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useDil } from '../DilContext';
+import { useEscKapat } from '../hooks';
 import type { AmaclarDurumu, AmacKarti } from '../types';
 
 interface AmacPaneliProps {
@@ -55,6 +56,7 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
   const { dil } = useDil();
   const t = dil === 'en' ? EN : TR;
   const [secili, setSecili] = useState<string | null>(null);
+  useEscKapat(secili !== null, () => setSecili(null));
   const seciliAmac = durum?.amaclar.find((a) => a.id === secili) ?? null;
 
   const detayPenceresi =

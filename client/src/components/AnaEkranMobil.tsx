@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDil } from '../DilContext';
+import { useEscKapat } from '../hooks';
 import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
 
@@ -81,6 +82,9 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const [donemAcik, setDonemAcik] = useState(false);
   const [rakipAcik, setRakipAcik] = useState(false);
   const [savasAcik, setSavasAcik] = useState(false);
+  useEscKapat(donemAcik, () => setDonemAcik(false));
+  useEscKapat(rakipAcik, () => setRakipAcik(false));
+  useEscKapat(savasAcik, () => setSavasAcik(false));
   const tr = dil !== 'en';
   const dokum = isletme?.sonDokum ?? null;
   const birim = karakter.para_birimi;
