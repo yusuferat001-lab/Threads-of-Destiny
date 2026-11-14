@@ -182,7 +182,11 @@ describe("v39 haydut / sınır çatışması", () => {
     expect(barisDusmanGucuYas(21, "sinir") / barisDusmanGucuYas(15, "sinir")).toBeLessThan(1.25);
     expect(savasDusmanGucuYas(21) / savasDusmanGucuYas(15)).toBeLessThan(1.2);
     // sonra hızlı artış
-    expect(barisDusmanGucuYas(65, "haydut")).toBeGreaterThan(200);
+    expect(barisDusmanGucuYas(65, "haydut")).toBeGreaterThan(100);
+    // haydut ve sınır savaştan daha YAVAŞ artar (40 → 80 yaş büyüme oranı)
+    const buyume = (f: (y: number) => number) => f(80) / f(40);
+    expect(buyume((y) => barisDusmanGucuYas(y, "haydut"))).toBeLessThan(buyume(savasDusmanGucuYas));
+    expect(buyume((y) => barisDusmanGucuYas(y, "sinir"))).toBeLessThan(buyume(savasDusmanGucuYas));
     expect(savasDusmanGucuYas(80)).toBeGreaterThan(500);
     for (const tablo of [BARIS_DUSMAN_TABLOLARI.haydut, BARIS_DUSMAN_TABLOLARI.sinir, SAVAS_DUSMAN_YAS]) {
       for (let i = 1; i < tablo.length; i++) {
