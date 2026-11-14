@@ -807,7 +807,8 @@ export interface IsletmeUyari {
     | 'kazanc_ozet'
     | 'kesif_savas'
     | 'yarali_iyilesti'
-    | 'limit_asimi';
+    | 'limit_asimi'
+    | 'limit_asimi_seferber';
   hat?: string;
   isim?: string;
   sonuc?:
@@ -1100,7 +1101,7 @@ export type BirlikGanimetPayi = 'az' | 'dengeli' | 'comert';
 export type BirlikTalim = 'hafif' | 'orta' | 'agir';
 export type BirlikTon = 'merhametli' | 'dengeli' | 'sert';
 export type BirlikArazi = 'ova' | 'dag' | 'orman';
-export type BirlikSeferberlik = 'genel' | 'secme' | 'dengeli';
+export type BirlikSeferberlik = 'genel' | 'secme';
 interface DilMetni { tr: string; en: string }
 
 export interface BirlikKararGirdisi {

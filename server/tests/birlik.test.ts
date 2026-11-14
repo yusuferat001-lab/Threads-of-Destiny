@@ -261,16 +261,16 @@ describe("askerî güç ve pay", () => {
 describe("limitler ve yeni er katılımı", () => {
   it("ordu limiti yalnız kışla (rütbe limiti ve seferberlik çarpanı yok)", () => {
     const s = asker();
-    expect(KISLA_ER_LIMITI).toEqual([25, 60, 120, 240, 450]);
+    expect(KISLA_ER_LIMITI).toEqual([30, 70, 140, 280, 500]);
     expect(komutaLimiti(s)).toBe(kislaLimiti(s));
-    expect(komutaLimiti(s)).toBe(25);
+    expect(komutaLimiti(s)).toBe(30);
     s.rutbe_seviye = 1;
     s.isletme!.yatirimlar.kisla = 4;
-    expect(komutaLimiti(s)).toBe(450); // rütbe sınırlamaz
+    expect(komutaLimiti(s)).toBe(500); // rütbe sınırlamaz
     s.isletme!.yatirimlar.kisla = 2;
     birlikAl(s).savas = savasBaslat(s);
-    birlikAl(s).savas!.seferberlik = "dengeli";
-    expect(komutaLimiti(s)).toBe(120); // seferberlik limiti büyütmez
+    birlikAl(s).savas!.seferberlik = "genel";
+    expect(komutaLimiti(s)).toBe(140); // seferberlik limiti büyütmez
   });
 
   it("subay limiti: rütbe tabanı 1..5 + kışla bonusu", () => {
@@ -314,8 +314,8 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 6 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([6, 6, 6, 6, 6]);
+  it("sabit maaş 8 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([8, 8, 8, 8, 8]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -713,8 +713,8 @@ describe("savaş", () => {
     expect(() => savasKarariVer(s, "olmayan", bg(s))).toThrow(/Geçersiz seçim/);
   });
 
-  it("seferberlik türleri: Tüm Erkekler en çok er, Gazi Çağrısı orta kalite ve eğitimli; moral büyük çağrıda daha çok düşer", () => {
-    function dene(tur: "genel" | "secme" | "dengeli") {
+  it("seferberlik türleri (iki tür): Tüm Erkekler en çok er, Gazi Çağrısı orta kalite ve eğitimli; moral büyük çağrıda daha çok düşer", () => {
+    function dene(tur: "genel" | "secme") {
       const s = asker();
       s.rutbe_seviye = 3;
       s.isletme!.yatirimlar.kisla = 3;
@@ -727,9 +727,7 @@ describe("savaş", () => {
     }
     const g = dene("genel");
     const sc = dene("secme");
-    const d = dene("dengeli");
-    expect(g.eklenen).toBeGreaterThan(d.eklenen);
-    expect(d.eklenen).toBeGreaterThan(sc.eklenen);
+    expect(g.eklenen).toBeGreaterThan(sc.eklenen);
     expect(sc.b.kalite.orta).toBeGreaterThan(0);
     expect(g.b.kalite.orta).toBe(0);
     expect(g.b.moral).toBeLessThan(sc.b.moral);

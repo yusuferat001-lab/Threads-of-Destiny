@@ -91,7 +91,7 @@ const M = {
   zayif: { tr: 'Zayıf', en: 'Weak' },
   kusatmaNot: { tr: 'Kuşatma kolu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında etkisi yoktur); zaferden sonra kale alınıp alınamayacağını belirler.', en: 'A siege train adds an attack bonus only when besieging a FORT (no effect on the open battlefield); it decides whether a fort can be taken after a victory.' },
   terhisBaslik: { tr: 'Terhis', en: 'Discharge' },
-  terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler kendiliğinden döner; diğer erleri sen terhis edersin.', en: 'You cannot discharge during a war. Wartime recruits go home on their own when it ends; you discharge the rest yourself.' },
+  terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler de sıradan er olarak orduda kalır; kışla limitini aşan erleri sen terhis edersin.', en: 'You cannot discharge during a war. When it ends, wartime recruits stay as ordinary men; you discharge anyone over the barracks limit yourself.' },
   yarali: { tr: 'Yaralı', en: 'Wounded' },
   gYarali: { tr: 'Yaralı tedavisi', en: 'Wounded care' },
   gAsim: { tr: 'Limit üstü erlerin ek gideri', en: 'Extra cost of men over the limit' },

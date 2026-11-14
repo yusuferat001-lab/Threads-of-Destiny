@@ -311,13 +311,20 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("güç başı görev geliri 0,49–0,735 arası; ek çarpan ×1,9 (gelir ağırlığı ganimete kaydırıldı)", async () => {
+  it("güç başı görev geliri 0,8–1,25 arası (ek çarpan yok); görev kademesi arttıkça gelir ve etkiler artar", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
-    expect(GOREV_GELIR_CARPANI).toBe(1.9);
+    expect(GOREV_GELIR_CARPANI).toBe(1);
     const v = GOREVLER.map((g) => g.erBasi);
-    expect(Math.min(...v)).toBeCloseTo(0.49, 6);
-    expect(Math.max(...v)).toBeCloseTo(0.735, 6);
+    expect(Math.min(...v)).toBeCloseTo(0.8, 6);
+    expect(Math.max(...v)).toBeCloseTo(1.25, 6);
     for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
+    // her görev farklı bir karışımla şöhret/moral/otorite/ahlak etkiler; sıfır olmayan her etki en az 0,3
+    for (const g of GOREVLER) {
+      const etkiler = [g.sohret, g.moral, g.otorite, g.ahlak].filter((x): x is number => typeof x === "number" && x !== 0);
+      expect(etkiler.length).toBeGreaterThan(0);
+      for (const e of etkiler) expect(Math.abs(e)).toBeGreaterThanOrEqual(0.3 - 1e-9);
+    }
+    expect(GOREVLER.find((g) => g.id === "komuta")!.sohret).toBeGreaterThan(GOREVLER.find((g) => g.id === "devriye")!.sohret ?? 0);
   });
 
   it("mızraklı yaralıyı, zırhlı ölüyü azaltır; süvari haydut/akın görev gelirini +%10 artırır", async () => {
@@ -635,14 +642,14 @@ describe("v51 çatışma kayıpları: B paketi, seçim etkisi, kayıp tabanı", 
 });
 
 describe("v52 yağma türüne göre savaş yılı kaybı", () => {
-  it("yağma yıllarında (1–3. yıl) sert ×1,3 / orta ×1 / yumuşak ×0,8; 4. yıldan sonra çarpan yok; karar savaşı mağlubiyeti ölü %21–25", async () => {
+  it("yağma yıllarında (1–3. yıl) sert ×1,15 / orta ×1 / yumuşak ×0,85; 4. yıldan sonra çarpan yok; karar savaşı mağlubiyeti ölü %18–23", async () => {
     const { yagmaKayipCarpani } = await import("../src/game/birlikYil");
     const { IKMAL_TANIMLARI, SAVAS_KARAR_KAYBI } = await import("../src/data/birlik");
-    expect(SAVAS_KARAR_KAYBI.yenilgi.olu).toEqual([21, 25]);
+    expect(SAVAS_KARAR_KAYBI.yenilgi.olu).toEqual([18, 23]);
     const s = asker();
     const sv = savasBaslat(s);
     const b = birlikAl(s);
-    for (const [id, c] of [["yagma_sert", 1.3], ["yagma_orta", 1], ["yagma_yumusak", 0.8]] as const) {
+    for (const [id, c] of [["yagma_sert", 1.15], ["yagma_orta", 1], ["yagma_yumusak", 0.85]] as const) {
       sv.ikmal = id;
       expect(IKMAL_TANIMLARI[id].yagma.kayip).toBe(c);
       for (const y of [1, 2, 3]) expect(yagmaKayipCarpani(b, y)).toBe(c);
@@ -691,18 +698,17 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     b.savas = null;
     const d = savasKarariDurumu(s, bg(s))!;
     const sec = d.adimlar.find((a) => a.adim === "seferberlik")!.secenekler;
-    expect(sec.map((x) => x.id)).toEqual(["secme", "dengeli", "genel"]);
-    expect(sec[0].aciklama.tr).toContain("+10 er (100 → 110)");
-    expect(sec[0].aciklama.tr).not.toContain("peşin");
-    expect(sec[1].aciklama.tr).toContain("+20 er");
-    expect(sec[2].aciklama.tr).toContain("+30 er");
-    expect(sec[2].aciklama.tr).not.toContain("peşin");
-    for (const x of sec) expect(x.aciklama.tr).toMatch(/yıllık ekstra gider ≈ \d/);
+    expect(sec.map((x) => x.id)).toEqual(["secme", "genel"]);
+    expect(sec[0].aciklama.tr).toContain("+15 er (100 → 115)");
+    expect(sec[1].aciklama.tr).toContain("+30 er (100 → 130)");
+    for (const x of sec) {
+      expect(x.aciklama.tr).not.toContain("peşin");
+      expect(x.aciklama.tr).toMatch(/yıllık ekstra gider ≈ \d/);
+      expect(x.aciklama.tr).toMatch(/askerî güç \d+ → \d+/);
+    }
     const gider = (i: number) => Number(/ekstra gider ≈ ([\d.]+)/.exec(sec[i].aciklama.tr)![1]);
     expect(gider(0)).toBeGreaterThan(0);
-    expect(gider(2)).toBeGreaterThan(gider(1));
     expect(gider(1)).toBeGreaterThan(gider(0)); // büyük çağrı daha pahalı
-    expect(sec[2].aciklama.tr).toMatch(/askerî güç \d+ → \d+/);
     const k = savasKarariHazirla(s)!;
     expect(k.adimlar[0]).toBe("seferberlik");
     const para0 = s.para;
@@ -717,7 +723,7 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     seferberlikUygula(s, "genel", bg(s));
     const sef = birlikHesapla(s, bg(s));
     expect(sef.sold).toBeCloseTo(yalin.sold, 6);
-    expect(yalin.sold).toBeCloseTo(6 * e + 100 * 0.45 * e, 3);
+    expect(yalin.sold).toBeCloseTo(8 * e + 100 * 0.45 * e, 3);
   });
   it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
     const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");
@@ -790,9 +796,9 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     const { MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN } = await import("../src/data/birlik");
     expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([10, -17, -9]);
   });
-  it("etkin talim: Gazi etkisiz (ordunun talimi), Eli Silah ve Tüm Erkekler talimi seyreltir; ordunun gerçek talimi bozulmaz; savaş sonu katılan kadroya işler", async () => {
+  it("etkin talim: Gazi etkisiz (ordunun talimi), Tüm Erkekler talimi seyreltir; ordunun gerçek talimi bozulmaz; savaş sonu katılan kadroya işler", async () => {
     const { etkinTalim } = await import("../src/game/birlik");
-    for (const [tur, giris] of [["secme", 70], ["dengeli", 10], ["genel", 0]] as const) {
+    for (const [tur, giris] of [["secme", 70], ["genel", 0]] as const) {
       const s = savasHazir();
       const b = birlikAl(s);
       b.talim = 70;
@@ -831,8 +837,8 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
       else expect(b.kalite.orta).toBe(0);
     }
   });
-  it("seferber ahlak bedeli: Gazi 0; Eli Silah −1/−1; Tüm Erkekler −3/−3 ve şöhret −2", () => {
-    for (const [tur, ah, mu, un] of [["secme", 0, 0, 0], ["dengeli", -1, -1, 0], ["genel", -3, -3, -2]] as const) {
+  it("seferber ahlak bedeli: Gazi 0; Tüm Erkekler −2/−2 ve şöhret −1", () => {
+    for (const [tur, ah, mu, un] of [["secme", 0, 0, 0], ["genel", -2, -2, -1]] as const) {
       const s = savasHazir();
       s.ahlak = 50;
       s.mutluluk = 50;

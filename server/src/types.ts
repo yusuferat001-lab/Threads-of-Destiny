@@ -976,6 +976,7 @@ export interface IsletmeUyari {
     | "esir"
     | "seferberlik_terhis"
     | "kiralik_cekildi"
+    | "limit_asimi_seferber"
     | "baris_catisma"
     | "savas_ganimet"
     | "kale"
@@ -1146,7 +1147,7 @@ export type BirlikRol = "onc" | "ana" | "yedek";
 /** Savaş planındaki ikmal kararı: yalnız üç yağma türü. */
 export type BirlikIkmal = "yagma_sert" | "yagma_orta" | "yagma_yumusak";
 export type BirlikEsirKarari = "idam" | "serbest" | "sat" | "karma";
-export type BirlikSeferberlik = "genel" | "secme" | "dengeli";
+export type BirlikSeferberlik = "genel" | "secme";
 
 /** Bir savaş yılının oyuncu kararları (Savaş Kararları penceresi). */
 export interface BirlikSavasKarari {
@@ -1293,6 +1294,10 @@ export interface BirlikSavasDurumu {
   kiralik_er?: number;
   /** Kiralık erlerden yaralı olanlar (savaş gücüne katılmaz, ordu yaralılarıyla aynı hızda iyileşir; ücret yine ödenir). */
   kiralik_yarali?: number;
+  /** Savaşın ilk iki yılı için çekilmiş plan: yıl başına ölü/yaralı/firar % (ordunun yüzdesi; çarpanlar öncesi), iki yılın toplamı ≤ SAVAS_ON_YIL_TAVANI. */
+  on_yil_plan?: { olu: [number, number]; yarali: [number, number]; firar: [number, number] };
+  /** Ön yıllarda şimdiye kadar uygulanan toplam kayıp % (çarpanlar sonrası). */
+  on_yil_kullanilan?: number;
   /** Seferber erlerin giriş talimi (etkin talim ağırlıklı ortalaması için; ordunun gerçek talimi bozulmaz). */
   seferberlik_talim?: number;
   /** Savaş planında (ilk yıl) seçilen ikmal; savaş boyu geçerlidir, yalnız Ordu ekranından değiştirilebilir. */

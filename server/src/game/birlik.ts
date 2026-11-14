@@ -24,6 +24,7 @@ import {
   GOREV_SLOTLARI,
   KALE_KOMUTA_BONUSU,
   KIRALIK_KALITE_CARPANI,
+  SEFERBERLIK_TANIMLARI,
   KIRALIK_YILLIK,
   SAVAS_ER_BASI_CARPANI,
   LIMIT_ASIM_GIDER_CARPANI,
@@ -239,6 +240,9 @@ export function birlikHazirla(state: CharacterState): void {
   if (typeof b.erzak_oran !== "number") b.erzak_oran = 1;
   if (b.savas === undefined) b.savas = null;
   if (b.savas_karari === undefined) b.savas_karari = null;
+  // v59: seferberlik artık iki tür (%15 / %30); eski "dengeli" (%20) → büyük çağrı.
+  if ((b.savas?.seferberlik as string | undefined) === "dengeli") b.savas!.seferberlik = "genel";
+  if ((b.savas_karari?.seferberlik as string | null | undefined) === "dengeli") b.savas_karari!.seferberlik = "genel";
   if (b.catisma_bekleyen === undefined) b.catisma_bekleyen = null;
   // Eski "kale çevresi" arazisi sık ormana dönüştü (ova / dağ geçidi / sık orman).
   if ((b.savas?.arazi as string | undefined) === "kale") b.savas!.arazi = "orman";
@@ -682,7 +686,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const giderEri = er + asim * (LIMIT_ASIM_GIDER_CARPANI - 1);
   const erMasrafi = giderEri * ER_MASRAFI * bg.giderEnflasyon * (1 + turBakim) * mC;
   const donem = state.ulke.savasta ? "savas" : state.veba?.aktif ? "veba" : state.ulke.donem?.tur ?? "durgunluk";
-  const seferEk = b.savas?.seferberlik ? { genel: 0.2, dengeli: 0.08, secme: 0 }[b.savas.seferberlik] : 0;
+  const seferEk = b.savas?.seferberlik ? SEFERBERLIK_TANIMLARI[b.savas.seferberlik]?.erzak ?? 0 : 0;
   const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (savasta ? 1 - ikmal.yagma.erzakIndirimi : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
   const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon * (savasta ? 1 - SAVAS_KISLA_INDIRIMI : 1);
   const techizatBakim = (b.kalite.dusuk * KALITE_BAKIM.dusuk + b.kalite.orta * KALITE_BAKIM.orta + b.kalite.yuksek * KALITE_BAKIM.yuksek) * bg.giderEnflasyon;
