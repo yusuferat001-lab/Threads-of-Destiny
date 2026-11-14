@@ -399,7 +399,7 @@ export const ER_BASI_GELIR = 0.15;
 export const GOREV_GELIR_CARPANI = 1.11;
 /** Barış yılı görev kayıpları ölü değil yaralı olur: yaralı = görev er payı × kayipBaris × bu. */
 export const BARIS_GOREV_YARALI_CARPANI = 2.5;
-/** Her rütbede sabit yıllık gönüllü er (savaşta ×2, vebada kısılır, kışla limitine takılır). */
+/** Her rütbede sabit yıllık gönüllü er (savaşta ayrıca çarpılmaz; vebada kısılır, kışla limitine takılır). */
 export const BARIS_YILLIK_ER = 1;
 /** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haydut/akın görev gelirini artırır. */
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
@@ -798,8 +798,6 @@ export const SEFERBERLIK_SIRASI: BirlikSeferberlik[] = ["genel", "dengeli", "sec
 /** Savaş sonunda seferberlik erlerinden (sağlam + yaralı) hayatta kalanların kadroda kalan oranı. */
 export const SEFERBERLIK_KALMA_ZAFER: Aralik = [0.35, 0.45];
 export const SEFERBERLIK_KALMA_YENILGI: Aralik = [0.2, 0.25];
-/** Savaşta devşirme çarpanı. */
-export const SAVAS_DEVSIRME_CARPANI = 2;
 
 // ── Ganimet / esir ──────────────────────────────────────────────────────────
 /** Esirin orduya katılan oranı (düşük kalite, eğitimsiz). */

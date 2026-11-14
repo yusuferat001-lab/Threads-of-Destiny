@@ -107,7 +107,6 @@ import {
   MORAL_ZAFER,
   REVIR_MORAL_KADEME,
   ROL_TANIMLARI,
-  SAVAS_DEVSIRME_CARPANI,
   SEFERBERLIK_KALMA_YENILGI,
   SEFERBERLIK_KALMA_ZAFER,
   SEFERBERLIK_TANIMLARI,
@@ -1116,7 +1115,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   // 6. (Kaldırıldı) Rakip komutan saldırıları/hırsızlık: Asker'de rakip yok; tehdit yalnız düşman çatışması ve savaştır.
 
-  // 7. Büyüme: devşirme subayı, büro, şöhret, doktrin, yatkınlık (savaşta ×2; vebada kısılır).
+  // 7. Büyüme: devşirme subayı, büro, şöhret, doktrin, yatkınlık (savaşta çarpan yok; vebada kısılır).
   const sohret = sohretMusteriSayisi(state.un);
   let buyume =
     BARIS_YILLIK_ER +
@@ -1125,7 +1124,6 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     Math.max(0, sohret) +
     doktrin.devsirme +
     yatkinlikMusteriBuyumesi(state);
-  if (savasta) buyume *= SAVAS_DEVSIRME_CARPANI;
   if (state.veba?.aktif) buyume *= VEBA_ARTIS_CARPANI;
   buyume += Math.min(0, sohret); // kötü şöhret devşirmeyi azaltır (savaşta/vebada çarpılmaz)
   const gelen = Math.max(0, olasilikliYuvarla(Math.max(0, buyume)));
