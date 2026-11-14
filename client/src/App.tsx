@@ -2768,7 +2768,11 @@ function App() {
                   giyilenKozmetikler={avatarKozmetikleri}
                 />
                 <div className="sol-panel-baslik">
-                  {karakter.isim && <span className="sol-panel-isim">{karakter.isim}</span>}
+                  {karakter.isim && (
+                    <span className="sol-panel-isim" title={karakter.isim}>
+                      {karakter.isim}
+                    </span>
+                  )}
                   <strong>
                     {kt(karakter.rutbe)}
                     {karakter.unvanlar.length > 0 && ` "${kt(karakter.unvanlar[karakter.unvanlar.length - 1])}"`}

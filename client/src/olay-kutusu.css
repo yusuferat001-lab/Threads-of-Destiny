@@ -415,3 +415,9 @@
     transition: none;
   }
 }
+
+/* Kutu klavye odağını programatik alır (OlayKutusu.tsx); kutunun kendisinde halka çizilmez,
+   odaklanabilir şıklar/Devam Et kendi halkasını taşır. */
+.olay-kutusu:focus {
+  outline: none;
+}

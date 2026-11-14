@@ -1674,6 +1674,12 @@ button.ikincil {
 }
 
 .sol-panel-baslik .sol-panel-isim {
+  /* Uzun/bölünmez adlar panel kenarına taşmasın: kır, en çok 2 satır. */
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   font-family: var(--font-baslik);
   font-size: clamp(0.8rem, 0.4vw + 0.62rem, 1.1rem);
   color: var(--renk-altin-parlak);

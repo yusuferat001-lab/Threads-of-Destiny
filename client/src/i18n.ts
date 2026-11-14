@@ -341,6 +341,7 @@ const TR = {
 
   // ---- Mobil alt gezinme çubuğu ----
   agBaslik: 'Alt gezinme',
+  ksBaslik: 'Kısayollar',
   agAile: 'İlişkiler',
   agKapat: 'Kapat, Oyuna dön',
 
@@ -1085,6 +1086,7 @@ const EN: Metinler = {
 
   // ---- Mobile bottom navigation ----
   agBaslik: 'Bottom navigation',
+  ksBaslik: 'Shortcuts',
   agAile: 'Relationships',
   agKapat: 'Close, back to game',
 

@@ -31,8 +31,8 @@
     --cerceve-h: calc(var(--cerceve-w) / 1.93);
     --cerceve-tasma: calc(var(--cerceve-h) * 0.58); /* kutunun üstünden sahneye taşan pay */
     --yz-baslik: calc(22 * var(--u));
-    --yz-metin: calc(19.5 * var(--u));
-    --yz-sik: calc(17.5 * var(--u));
+    --yz-metin: max(1.05rem, calc(19.5 * var(--u)));
+    --yz-sik: max(0.95rem, calc(17.5 * var(--u)));
     --sik-yuk: calc(52 * var(--u));
 
     flex: 0 1 auto;
@@ -108,7 +108,7 @@
     font-size: 0.94em;
   }
   .olay-kutusu .secenek-kilit {
-    font-size: 0.84em;
+    font-size: 0.9em;
   }
   .olay-kutusu .olay-devam {
     width: min(100%, calc(420 * var(--u)));
