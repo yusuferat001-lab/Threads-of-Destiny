@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, senaryoUret, yilGec, stateGetir, isletmeUrunSec } from "../src/game/gameEngine";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { secimUygulaVeCoz } from "./testUtils";
+import { KORUYUCU_MUSKA_ETIKETI } from "../src/game/stateManager";
 
 async function ilerleOyunu(meslek = "Tüccar") {
   const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba", undefined, "tr", undefined, "ilerle");
@@ -20,14 +21,23 @@ async function ilkOlayiCoz(id: string) {
   return secimUygulaVeCoz(id, idx >= 0 ? idx : 0);
 }
 
-/** İlk olay seçimi rastgele öldürebilir; hayatta kalan bir "olay yok" oyunu döner. */
-async function olaysizOyun(meslek = "Tüccar") {
+/**
+ * İlk olayı çözer. Seçim rastgele öldürebilir ya da zincir/yolculuk gibi yeni bir olay bekletebilir;
+ * bu durumlarda yeni oyunla yeniden dener ve hayatta kalan, bekleyen olayı OLMAYAN oyunu döner.
+ */
+async function temizIlkOlay(meslek = "Tüccar") {
   for (let i = 0; i < 20; i++) {
     const state = await ilerleOyunu(meslek);
-    await ilkOlayiCoz(state.id);
-    if (state.aktif) return state;
+    const { yas, yil } = state;
+    const sonuc = await ilkOlayiCoz(state.id);
+    if (state.aktif && !(await stateGetir(state.id)).olay_bekliyor) return { state, sonuc, yas, yil };
   }
-  throw new Error("Hayatta kalan oyun üretilemedi.");
+  throw new Error("Hayatta kalan, bekleyen olayı olmayan oyun üretilemedi.");
+}
+
+/** Hayatta kalan bir "olay yok" oyunu döner. */
+async function olaysizOyun(meslek = "Tüccar") {
+  return (await temizIlkOlay(meslek)).state;
 }
 
 describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
@@ -38,10 +48,7 @@ describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
   });
 
   it("olaya cevap vermek yıl geçirmez, sayaç sıfırlanır, olay bitince ana ekran açılır", async () => {
-    const state = await ilerleOyunu();
-    const yas = state.yas;
-    const yil = state.yil;
-    const sonuc = await ilkOlayiCoz(state.id);
+    const { state, sonuc, yas, yil } = await temizIlkOlay();
     expect(sonuc.yasArtisi).toBe(0);
     expect(state.yas).toBe(yas);
     expect(state.yil).toBe(yil);
@@ -50,8 +57,7 @@ describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
   });
 
   it("senaryo, olay çıkmadıysa üretilmez", async () => {
-    const state = await ilerleOyunu();
-    await ilkOlayiCoz(state.id);
+    const state = await olaysizOyun(); // ilk olay öldürür ya da yeni olay bekletirse yeniden dener
     await expect(senaryoUret(state.id)).rejects.toThrow("olay yok");
   });
 
@@ -119,6 +125,7 @@ describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
 
   it("100 yaş tavanı: son İLERLE ölümle biter ve sonrasında İLERLE reddedilir", async () => {
     const state = await olaysizOyun();
+    state.etiketler = state.etiketler.filter((e) => e !== KORUYUCU_MUSKA_ETIKETI); // ilk olay muska vermiş olabilir: ölümü bir kez engeller
     state.yas = 99;
     const sonuc = await yilGec(state.id);
     expect(sonuc.state.aktif).toBe(false);
