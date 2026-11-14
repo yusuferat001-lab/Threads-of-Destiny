@@ -955,7 +955,7 @@ export const TABIP_KAYIP_TAVAN = 0.3;
 /** Revir kademesi başına kayıp ve firar çarpanı azalması. */
 export const REVIR_KAYIP_KADEME = 0.06;
 /** Devşirme bürosu kademesi başına yıllık er (K0..K4). */
-export const DEVSIRME_BUROSU_ER = [0, 1, 3, 4, 5];
+export const DEVSIRME_BUROSU_ER = [0, 1, 2, 3, 4];
 export const KARAKOL_KORUMA = [0, 0.15, 0.3, 0.45, 0.6];
 
 // ── Rakip komutan saldırıları ───────────────────────────────────────────────

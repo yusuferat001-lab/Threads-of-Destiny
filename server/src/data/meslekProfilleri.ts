@@ -308,8 +308,8 @@ const ASKER_YATIRIMLAR: YatirimTanimi[] = [
     simge: "📯",
     ad: { tr: "Devşirme Bürosu", en: "Recruiting Office" },
     aciklama: {
-      tr: "Yılda er çeker: 1. kademe +1, 2. +3, 3. +4, 4. +5.",
-      en: "Draws men each year: tier 1 +1, tier 2 +3, tier 3 +4, tier 4 +5.",
+      tr: "Yılda er çeker: 1. kademe +1, 2. +2, 3. +3, 4. +4.",
+      en: "Draws men each year: tier 1 +1, tier 2 +2, tier 3 +3, tier 4 +4.",
     },
     etki: "devsirme",
     fiyatlar: FIYAT_DEVSIRME,
@@ -342,7 +342,7 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat" | "birlik"
   birlik: {
     ana: { tr: "Askerî gücü artırır", en: "Raises military strength" },
     maliyet: { tr: "Er ve erzak masrafını düşürür", en: "Lowers soldier and supply costs" },
-    musteri: { tr: "Yılda +2…+5 er çeker", en: "Brings +2…+5 men a year" },
+    musteri: { tr: "Yılda +1…+4 er çeker", en: "Brings +1…+4 men a year" },
     guvenlik: { tr: "Ölü, firar ve yaralıyı azaltır", en: "Cuts deaths, desertion and wounded" },
     taarruz: { tr: "Saldırıyı ve ganimeti artırır, kaybı da artırır", en: "Raises attack and loot, also raises losses" },
     savunma: { tr: "Savunmayı güçlendirir, ölümü azaltır, ganimeti azaltır", en: "Strengthens defence, cuts deaths, trims loot" },

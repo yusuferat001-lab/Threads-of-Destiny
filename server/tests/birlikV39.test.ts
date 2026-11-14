@@ -129,8 +129,9 @@ describe("v39 subaylar", () => {
     expect(e("kesif", 30).arazi).toBeCloseTo(0.22, 6);
     expect(e("kesif", 90).tahminAralik).toBeCloseTo(0.023, 6);
     expect(e("kesif", 60).pusuAzalt).toBeCloseTo(0.48, 6);
-    expect(e("musteri", 30).devsirme).toBe(2);
-    expect(e("musteri", 90).devsirme).toBe(5);
+    expect(e("musteri", 30).devsirme).toBe(2); // 1,5 → 2
+    expect(e("musteri", 90).devsirme).toBe(4); // en çok 4 (Y100 + sadık dahil)
+    expect(e("musteri", 100).devsirme).toBeLessThanOrEqual(4);
     expect(e("guvenlik", 60).oluFirarAzalt).toBeCloseTo(0.22, 6);
     expect(e("guvenlik", 60).yaraliAzalt).toBeCloseTo(0.14, 6);
     // sadık ×1,05
