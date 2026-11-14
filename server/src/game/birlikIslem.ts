@@ -65,8 +65,8 @@ import {
   ROL_TANIMLARI,
   SEFERBERLIK_SIRASI,
   SEFERBERLIK_TANIMLARI,
-  TALIM_GUC_KATSAYISI,
-  TALIM_KAYIP_KATSAYISI,
+  talimGucEtkisi,
+  talimKayipEtkisi,
   TALIM_SIRASI,
   TALIM_TANIMLARI,
   TON_SIRASI,
@@ -119,6 +119,7 @@ import {
   yolDali,
   type BirlikHesabi,
   type GucDokumu,
+  etkinTalim,
 } from "./birlik";
 import { SAVAS_SURE } from "../data/dunyaDonemleri";
 import { barisCatismaCoz, barisCatismaOtomatik, catismaBekliyorMu, esirleriIsle, savasBaslat, savasGunuCoz, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
@@ -503,22 +504,19 @@ function adimSecenekleri(state: CharacterState, adim: string): SavasKarariSecene
     case "seferberlik":
       return SEFERBERLIK_SIRASI.map((id) => {
         const t = SEFERBERLIK_TANIMLARI[id];
-        // Tam sayı önizleme: çağrılacak er, toplam er ve askerî güç (şimdiki → sonraki), peşin ücret.
+        // Tam sayı önizleme: çağrılacak er, toplam er ve SAĞLAM erlerin askerî gücü (şimdiki → sonraki). Ücret yok.
         const bg = isletmeBaglami(state);
         const er0 = erSayisi(state);
         const g0 = Math.round(gucHesapla(state, { enflasyon: bg.enflasyon }).guc);
         const klon = structuredClone(state);
         const n = seferberlikUygula(klon, id, bg);
         const g1 = Math.round(gucHesapla(klon, { enflasyon: bg.enflasyon }).guc);
-        const ucret = r2(n * t.ucret * bg.giderEnflasyon);
-        const para = state.para_birimi;
-        const yetmez = ucret > Math.max(0, state.para) && ucret > 0;
         return {
           id,
           ad: t.ad,
           aciklama: {
-            tr: `${t.aciklama.tr} +${n} er (${er0} → ${er0 + n}), askerî güç ${g0} → ${g1}, ${ucret > 0 ? `peşin ${ucret} ${para}${yetmez ? " (paran yetmiyor)" : ""}` : "ücretsiz"}.`,
-            en: `${t.aciklama.en} +${n} men (${er0} → ${er0 + n}), strength ${g0} → ${g1}, ${ucret > 0 ? `${ucret} ${para} up front${yetmez ? " (you cannot afford it)" : ""}` : "free"}.`,
+            tr: `${t.aciklama.tr} +${n} er (${er0} → ${er0 + n}), askerî güç ${g0} → ${g1}.`,
+            en: `${t.aciklama.en} +${n} men (${er0} → ${er0 + n}), strength ${g0} → ${g1}.`,
           },
         };
       });
@@ -602,9 +600,6 @@ export function savasKarariVer(state: CharacterState, secim: string, bg: Isletme
   if (!gecerli.includes(secim)) throw new Error("Geçersiz seçim.");
   if (adim === "seferberlik") {
     k.seferberlik = secim as BirlikSeferberlik;
-    const tSef = SEFERBERLIK_TANIMLARI[secim as BirlikSeferberlik];
-    const ucretSef = Math.round(erSayisi(state) * tSef.er) * tSef.ucret * bg.giderEnflasyon;
-    if (ucretSef > 0 && ucretSef > Math.max(0, state.para)) throw new Error("Bu seferberlik için paran yetmiyor.");
     seferberlikUygula(state, secim as BirlikSeferberlik, bg);
   } else if (adim === "emir") {
     const sv = b.savas ?? savasBaslat(state);
@@ -966,8 +961,8 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
     talim: {
       seviye: Math.round(b.talim * 10) / 10,
       politika: b.talim_politikasi,
-      gucYuzde: Math.round(Math.min(20, b.talim * TALIM_GUC_KATSAYISI * 100) * 10) / 10,
-      kayipYuzde: Math.round(Math.min(15, b.talim * TALIM_KAYIP_KATSAYISI * 100) * 10) / 10,
+      gucYuzde: Math.round(talimGucEtkisi(etkinTalim(state)) * 1000) / 10,
+      kayipYuzde: Math.round(talimKayipEtkisi(etkinTalim(state)) * 1000) / 10,
       politikalar: TALIM_SIRASI.map((id) => ({
         id, ad: TALIM_TANIMLARI[id].ad, delta: TALIM_TANIMLARI[id].delta, tavan: TALIM_TANIMLARI[id].tavan, masraf: r2(TALIM_TANIMLARI[id].masraf * er * bg.giderEnflasyon), moral: TALIM_TANIMLARI[id].moral, ...talimArtiEksi(id),
       })),

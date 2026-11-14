@@ -307,6 +307,8 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? '🏚️ More men than your barracks can hold — upkeep and rations cost far more.' : '🏚️ Kışlanın barındırabildiğinden fazla erin var; masraf ve erzak çok daha pahalıya geliyor.';
       case 'esir':
         return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
+      case 'kiralik_cekildi':
+        return en ? `💸 Unpaid, your ${u.sayi ?? 0} mercenaries abandoned the war.` : `💸 Ücret ödenemedi: ${u.sayi ?? 0} paralı asker savaşı bırakıp gitti.`;
       case 'seferberlik_terhis':
         return en ? `🎖️ ${u.sayi ?? 0} wartime recruits were discharged.` : `🎖️ Savaş devşirmesinden ${u.sayi ?? 0} er terhis edildi.`;
       case 'kesif_savas': {

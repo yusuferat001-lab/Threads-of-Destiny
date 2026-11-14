@@ -975,6 +975,7 @@ export interface IsletmeUyari {
     | "savas_sonu"
     | "esir"
     | "seferberlik_terhis"
+    | "kiralik_cekildi"
     | "baris_catisma"
     | "savas_ganimet"
     | "kale"
@@ -1224,6 +1225,9 @@ export interface SavasGunuSonucu {
   olu: number;
   yarali: number;
   firar: number;
+  /** Kiralık ordu (paralı) kaybı bu savaşta: ölü ve yaralı (firar yok). */
+  kiralikOlu?: number;
+  kiralikYarali?: number;
   kalanEr: number;
   /** Düşmanın tahmini kaybı ("~"). */
   dusmanOlu: number;
@@ -1287,6 +1291,10 @@ export interface BirlikSavasDurumu {
   emir?: string | null;
   /** Kiralık ordu: savaş süresince tutulan eğitimli paralı sayısı. */
   kiralik_er?: number;
+  /** Kiralık erlerden yaralı olanlar (savaş gücüne katılmaz, ordu yaralılarıyla aynı hızda iyileşir; ücret yine ödenir). */
+  kiralik_yarali?: number;
+  /** Seferber erlerin giriş talimi (etkin talim ağırlıklı ortalaması için; ordunun gerçek talimi bozulmaz). */
+  seferberlik_talim?: number;
   /** Savaş planında (ilk yıl) seçilen ikmal; savaş boyu geçerlidir, yalnız Ordu ekranından değiştirilebilir. */
   ikmal?: BirlikIkmal;
   /** Esirlerin kaderi (Rütbe 3+): ilk esir çıkınca bir kez sorulur, savaş boyu geçerlidir. Verilene dek "karma". */
@@ -1311,6 +1319,8 @@ export interface BirlikDurumu {
   /** Talim / savaş tecrübesi (0-100): ordunun ortalama eğitimi. */
   talim: number;
   talim_politikasi: BirlikTalim;
+  /** v55 dengesi: moral/talim nötr 50, ±%25 etki (eski kayıtlarda talim en az 50'ye çekilir). */
+  denge_v55?: boolean;
   ganimet_payi: BirlikGanimetPayi;
   /** Ganimet payı en erken bu oyun yılında yeniden değiştirilebilir (5 yılda bir); yoksa/null = serbest. */
   ganimet_kilit_bitis?: number | null;

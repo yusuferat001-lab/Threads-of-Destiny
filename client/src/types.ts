@@ -796,6 +796,7 @@ export interface IsletmeUyari {
     | 'savas_sonu'
     | 'esir'
     | 'seferberlik_terhis'
+    | 'kiralik_cekildi'
     | 'baris_catisma'
     | 'savas_ganimet'
     | 'kale'
@@ -1294,6 +1295,9 @@ export interface SavasGunuSonucu {
   olu: number;
   yarali: number;
   firar: number;
+  /** Kiralık ordu (paralı) kaybı bu savaşta: ölü ve yaralı (firar yok). */
+  kiralikOlu?: number;
+  kiralikYarali?: number;
   kalanEr: number;
   dusmanOlu: number;
   ganimetTahmini: number;

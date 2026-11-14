@@ -45,6 +45,9 @@ import {
   KISLA_BAKIM,
   KISLA_ER_LIMITI,
   MORAL_BASLANGIC,
+  TALIM_BASLANGIC,
+  talimGucEtkisi,
+  talimKayipEtkisi,
   PIYADE,
   REVIR_KAYIP_KADEME,
   ROL_TANIMLARI,
@@ -102,7 +105,7 @@ export function birlikVarsayilan(er: number): BirlikDurumu {
     birlik_turler: [],
     birlik_kilit_bitis: null,
     kusatma_seviye: 0,
-    talim: 0,
+    talim: TALIM_BASLANGIC,
     talim_politikasi: "orta",
     ganimet_payi: "dengeli",
     ganimet_kilit_bitis: null,
@@ -226,7 +229,12 @@ export function birlikHazirla(state: CharacterState): void {
   }
   if (typeof b.moral !== "number") b.moral = MORAL_BASLANGIC;
   if (typeof b.sertlik !== "number") b.sertlik = 0;
-  if (typeof b.talim !== "number") b.talim = 0;
+  if (typeof b.talim !== "number") b.talim = TALIM_BASLANGIC;
+  // v55: talim nötr noktası 50 (eski kayıtlar talim 0'dan −%25 ceza yemesin).
+  if (!b.denge_v55) {
+    b.denge_v55 = true;
+    b.talim = Math.max(b.talim, TALIM_BASLANGIC);
+  }
   if (typeof b.zar_bonusu !== "number") b.zar_bonusu = 0;
   if (typeof b.erzak_oran !== "number") b.erzak_oran = 1;
   if (b.savas === undefined) b.savas = null;
@@ -385,6 +393,21 @@ export function yolEtkisi(state: CharacterState) {
   return YOL_ETKILERI[yolDali(state) ?? ""] ?? {};
 }
 
+/**
+ * Etkin talim: savaşta çağrılan seferber erlerin giriş talimi, ana ordunun talimiyle ER SAYISINA GÖRE ağırlıklı ortalanır
+ * (savaş bitince seferberler gidince ordunun gerçek talimi `b.talim` olduğu gibi kalır).
+ */
+export function etkinTalim(state: CharacterState): number {
+  const b = birlikDurumu(state);
+  if (!b) return 0;
+  const sv = state.ulke.savasta ? b.savas : null;
+  const er = erSayisi(state);
+  const sef = Math.min(er, Math.max(0, Math.round(sv?.seferberlik_er ?? 0)));
+  if (!sv || sef <= 0 || er <= 0) return b.talim;
+  const giris = sv.seferberlik_talim ?? b.talim;
+  return (b.talim * (er - sef) + giris * sef) / er;
+}
+
 export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDokumu {
   const b = birlikDurumu(state);
   const er = erSayisi(state);
@@ -396,7 +419,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   const saglamOrani = er > 0 ? 1 - yaraliSayisi(state) / er : 1;
   const ham =
     (b.kalite.dusuk * KALITE_CARPANI.dusuk + b.kalite.orta * KALITE_CARPANI.orta + b.kalite.yuksek * KALITE_CARPANI.yuksek) * seferOrani * saglamOrani +
-    (b.savas?.kiralik_er ?? 0) * KIRALIK_KALITE_CARPANI;
+    Math.max(0, (b.savas?.kiralik_er ?? 0) - (b.savas?.kiralik_yarali ?? 0)) * KIRALIK_KALITE_CARPANI;
   const paylar = turPaylari(b);
   const turToplam = Object.values(paylar).reduce((t, x) => t + (x ?? 0), 0);
   const piyade = 1 - turToplam;
@@ -414,7 +437,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   const yol = yolEtkisi(state);
   const sub = subayToplami(state);
   ekle("moral", moralGucEtkisi(b.moral));
-  ekle("talim", Math.min(0.2, b.talim * TALIM_GUC_KATSAYISI));
+  ekle("talim", talimGucEtkisi(etkinTalim(state)));
   ekle("doktrin", doktrin.guc);
   ekle("yol", yol.guc ?? 0);
   ekle("taarruz_subay", sub.saldiri, "saldiri");
@@ -424,7 +447,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   if (doktrin.saldiri) ekle("doktrin_saldiri", doktrin.saldiri, "saldiri");
   if (doktrin.savunma) ekle("doktrin_savunma", doktrin.savunma, "savunma");
   ekle("erzak", 0.4 + 0.6 * clamp(b.erzak_oran, 0, 1) - 1);
-  const ceza = odenmeyenCeza(state.para, ctx.enflasyon ?? 1);
+  const ceza = odenmeyenCeza(state.para, ctx.enflasyon ?? 1, !!state.ulke.savasta);
   if (ceza) {
     ekle("odenmeyen_maas", ceza.maasGuc);
     ekle("odenmeyen_erzak", ceza.erzakGuc);
@@ -536,7 +559,7 @@ export function kayipCarpani(state: CharacterState): number {
   const revir = clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * REVIR_KAYIP_KADEME;
   const sub = subayToplami(state);
   const tabip = sub.oluFirarAzalt;
-  const talim = Math.min(0.15, b.talim * TALIM_KAYIP_KATSAYISI);
+  const talim = talimKayipEtkisi(etkinTalim(state)); // nötr 50'de 0; düşük talim kaybı artırır, yüksek azaltır
   const emir = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;
   const zirhli = ZIRHLI_OLU_AZALTMA * turOrani(b, "zirhli");
   return Math.max(KAYIP_CARPANI_TABANI, 1 - talim - revir - tabip - zirhli + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));

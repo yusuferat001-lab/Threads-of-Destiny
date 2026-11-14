@@ -122,10 +122,11 @@ describe("kurulum", () => {
       const b = s.isletme!.birlik!;
       expect(b.kalite).toEqual({ dusuk: 20, orta: 0, yuksek: 0 });
       expect(b.birlik_seviye).toBe(0);
-      expect(b.moral).toBe(60);
+      expect(b.moral).toBe(50); // moral ve talim nötr noktada (50) başlar: güce etkisi 0
+      expect(b.talim).toBe(50);
       expect(s.rakipler.filter((r) => !r.yenildi)).toHaveLength(2);
       const pay = pazarPayiHesapla(s);
-      expect(pay).toBeGreaterThan(0.08);
+      expect(pay).toBeGreaterThan(0.06); // teçhizat 0,75 / 1 / 1,25 sonrası başlangıç gücü %25 düştü (görev eşikleri ve düşman en son yeniden ayarlanacak)
       expect(pay).toBeLessThan(0.14);
     }
   });
@@ -161,13 +162,13 @@ describe("kurulum", () => {
 });
 
 describe("askerî güç ve pay", () => {
-  it("ham güç: düşük ×1, orta ×1,25, yüksek ×1,5", () => {
+  it("ham güç: düşük ×0,75, orta ×1, yüksek ×1,25", () => {
     const s = asker();
     const b = birlikAl(s);
     b.kalite = { dusuk: 10, orta: 10, yuksek: 10 };
     s.meslek_musteri = 30;
     const d = gucHesapla(s);
-    expect(d.ham).toBeCloseTo(10 * 1 + 10 * 1.25 + 10 * 1.5, 5);
+    expect(d.ham).toBeCloseTo(10 * 0.75 + 10 * 1 + 10 * 1.25, 5);
   });
 
   it("her açık savaş birliği ordunun %20'sidir; dört tür açıkken %80 özel + %20 piyade", () => {
@@ -213,24 +214,28 @@ describe("askerî güç ve pay", () => {
     expect(d.guc / d.ham).toBeLessThanOrEqual(2.0 * 1.2 + 1e-6);
   });
 
-  it("moral güç bandı: <30 −%20, 30–45 −%10, 45–65 0, 65–80 +%6, 80+ +%15", () => {
-    expect(moralGucEtkisi(10)).toBeCloseTo(-0.2);
-    expect(moralGucEtkisi(35)).toBeCloseTo(-0.1);
-    expect(moralGucEtkisi(55)).toBeCloseTo(0);
-    expect(moralGucEtkisi(70)).toBeCloseTo(0.06);
-    expect(moralGucEtkisi(90)).toBeCloseTo(0.15);
+  it("moral güce etkisi: 50'de 0, 0'da −%25, 100'de +%25 (doğrusal)", () => {
+    expect(moralGucEtkisi(0)).toBeCloseTo(-0.25);
+    expect(moralGucEtkisi(25)).toBeCloseTo(-0.125);
+    expect(moralGucEtkisi(50)).toBeCloseTo(0);
+    expect(moralGucEtkisi(75)).toBeCloseTo(0.125);
+    expect(moralGucEtkisi(100)).toBeCloseTo(0.25);
   });
 
-  it("talim güce en çok +%20 ekler", () => {
+  it("talim güce etkisi: 50'de 0, 0'da −%25, 100'de +%25; moral nötrken", () => {
     const s = asker();
     const b = birlikAl(s);
-    b.moral = 55;
+    b.moral = 50;
+    b.talim = 50;
+    const g50 = gucHesapla(s).guc;
     b.talim = 0;
-    const g0 = gucHesapla(s).guc;
+    const oran0 = gucHesapla(s).guc / g50; // ortak çarpana (erzak vb.) bağlı küçük sapma
+    expect(oran0).toBeGreaterThan(0.74);
+    expect(oran0).toBeLessThan(0.78);
     b.talim = 100;
-    const g1 = gucHesapla(s).guc;
-    expect(g1 / g0).toBeLessThanOrEqual(1.2 + 1e-6);
-    expect(g1 / g0).toBeGreaterThan(1.1);
+    const oran100 = gucHesapla(s).guc / g50;
+    expect(oran100).toBeGreaterThan(1.22);
+    expect(oran100).toBeLessThan(1.26);
   });
 
   it("pay = güç / (güç + rakipler + diğer ordular); güç ikiye katlanınca pay artar", () => {
@@ -777,21 +782,23 @@ describe("savaş", () => {
 });
 
 describe("talim, doktrin, birlik, terhis", () => {
-  it("talim politikaları: hafif −5, orta +7 (tavan 60), ağır +15", () => {
-    expect(TALIM_TANIMLARI.hafif.delta).toBe(-5);
-    expect(TALIM_TANIMLARI.orta.delta).toBe(7);
-    expect(TALIM_TANIMLARI.orta.tavan).toBe(60);
-    expect(TALIM_TANIMLARI.agir.delta).toBe(15);
+  it("talim politikaları: hafif 0, orta +5 (tavan 70), ağır +12; her yıl −2 unutma; moral −0/−2/−5", () => {
+    expect(TALIM_TANIMLARI.hafif.delta).toBe(0);
+    expect(TALIM_TANIMLARI.orta.delta).toBe(5);
+    expect(TALIM_TANIMLARI.orta.tavan).toBe(70);
+    expect(TALIM_TANIMLARI.agir.delta).toBe(12);
+    expect([TALIM_TANIMLARI.hafif.moral, TALIM_TANIMLARI.orta.moral, TALIM_TANIMLARI.agir.moral]).toEqual([0, -2, -5]);
     const s = asker();
     const b = birlikAl(s);
     b.talim_politikasi = "agir";
-    b.talim = 0;
+    b.talim = 40;
+    b.moral = 60;
     birlikYilIsle(s, bg(s));
-    expect(b.talim).toBeGreaterThan(10);
+    expect(b.talim).toBeGreaterThan(44); // +12 × kalite çarpanı − 2
     b.talim_politikasi = "hafif";
-    b.talim = 30;
+    b.talim = 40;
     birlikYilIsle(s, bg(s));
-    expect(b.talim).toBeLessThan(30);
+    expect(b.talim).toBeLessThan(40); // bakımsız talim düşer
   });
 
   it("rütbe başına bir doktrin zorunlu; 2 evrensel + yola göre 1 seçenek; seçilince bekleme biter", () => {
@@ -836,8 +843,8 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(birlikAl(s).kalite.yuksek).toBe(erSayisi(s));
   });
 
-  it("teçhizat sabitleri: güç 1/1,25/1,5; bakım 0,15/0,30/0,45; güç başına gider birbirine yakın (hiçbiri baskın değil)", () => {
-    expect(KALITE_CARPANI).toEqual({ dusuk: 1, orta: 1.25, yuksek: 1.5 });
+  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,15/0,30/0,45; güç başına gider birbirine yakın (hiçbiri baskın değil)", () => {
+    expect(KALITE_CARPANI).toEqual({ dusuk: 0.75, orta: 1, yuksek: 1.25 });
     expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.3, yuksek: 0.45 });
     const g = (q: "dusuk" | "orta" | "yuksek") => (ER_MASRAFI + ERZAK_BIRIMI + KALITE_BAKIM[q]) / KALITE_CARPANI[q];
     expect(Math.abs(g("yuksek") - g("dusuk"))).toBeLessThan(0.05);

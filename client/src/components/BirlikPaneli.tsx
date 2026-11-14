@@ -51,7 +51,7 @@ const M = {
   ham: { tr: 'Ham güç (kalite × er)', en: 'Raw strength (quality × men)' },
   birlikCarpani: { tr: 'Özel birlik çarpanı (saldırı / savunma)', en: 'Special-unit multiplier (attack / defence)' },
   toplamGuc: { tr: 'Toplam güç', en: 'Total strength' },
-  gucNot: { tr: 'Güç = (saldırı + savunma) / 2. Rütben, kariyer puanın ve görev şartların buna bağlıdır; düşman gücü yaşınla artar.', en: 'Strength = (attack + defence) / 2. Your rank, career points and duty requirements depend on it; enemy strength grows with your age.' },
+  gucNot: { tr: 'Güç = (saldırı + savunma) / 2 ve yalnız SAĞLAM erlerin gücüdür; yaralılar tedavi süresince katılmaz. Rütben, kariyer puanın ve görev şartların buna bağlıdır; düşman gücü yaşınla artar.', en: 'Strength = (attack + defence) / 2 and counts only HEALTHY men; the wounded do not count while they recover. Your rank, career points and duty requirements depend on it; enemy strength grows with your age.' },
   gorevBaslik: { tr: 'Görevler', en: 'Duties' },
   gorevNot: {
     tr: 'Ordu açık görevlere eşit bölünür; her görev yıllık düzenli gelir getirir.',

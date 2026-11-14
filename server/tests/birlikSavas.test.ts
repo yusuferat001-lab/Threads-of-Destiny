@@ -272,14 +272,18 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
 });
 
 describe("seferberlik ve savaş sonu terhis", () => {
-  it("üç seçenek: Gazi Çağrısı %10 orta (ücretsiz), Eli Silah Tutanlar %20 düşük, Tüm Erkekler %30 düşük; moral −3/−7/−15; yıllık firar %5/7/10", () => {
+  it("üç seçenek: Gazi Çağrısı %10 orta (ücret yok), Eli Silah Tutanlar %20 düşük, Tüm Erkekler %30 düşük; moral −3/−7/−15; yıllık firar %5/7/10", () => {
     expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.1);
     expect(SEFERBERLIK_TANIMLARI.dengeli.er).toBe(0.2);
     expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.3);
     expect(SEFERBERLIK_SIRASI).toEqual(["secme", "dengeli", "genel"]);
     expect([SEFERBERLIK_TANIMLARI.secme.moral, SEFERBERLIK_TANIMLARI.dengeli.moral, SEFERBERLIK_TANIMLARI.genel.moral]).toEqual([-3, -7, -15]);
     expect([SEFERBERLIK_TANIMLARI.secme.firar, SEFERBERLIK_TANIMLARI.dengeli.firar, SEFERBERLIK_TANIMLARI.genel.firar]).toEqual([5, 7, 10]);
-    expect(SEFERBERLIK_TANIMLARI.secme.ucret).toBe(0);
+    expect(SEFERBERLIK_TANIMLARI.secme.talim).toBeNull(); // etkisi yok (ordunun talimi)
+    expect(SEFERBERLIK_TANIMLARI.dengeli.talim).toBe(10);
+    expect(SEFERBERLIK_TANIMLARI.genel.talim).toBe(0);
+    expect(SEFERBERLIK_KALMA_ZAFER).toEqual([0.45, 0.55]);
+    expect(SEFERBERLIK_KALMA_YENILGI).toEqual([0.45, 0.55]);
     for (const [tur, kalite, adet] of [["secme", "orta", 10], ["dengeli", "dusuk", 20], ["genel", "dusuk", 30]] as const) {
       const s = asker();
       ordu(s, 100);
@@ -315,7 +319,7 @@ describe("seferberlik ve savaş sonu terhis", () => {
     expect(ort("genel", true)).toBeGreaterThan(ort("genel", false));
   });
 
-  it("savaş sonu: kalan seferber zaferde %35–45, yenilgide %20–25 (hayatta kalanlar üzerinden), yaralı/sağlam oransal; ana ordu değişmez", () => {
+  it("savaş sonu: kalan seferber zafer ve yenilgide %45–55 (hayatta kalanlar üzerinden), yaralı/sağlam oransal; ana ordu değişmez", () => {
     for (const sonuc of ["zafer", "yenilgi"] as const) {
       for (let n = 0; n < 25; n++) {
         const s = asker();
@@ -525,9 +529,11 @@ describe("askeri güç belirleyici (v34)", () => {
     ordu(s, 60);
     const b = birlikAl(s);
     b.gorevler = ["tahsilat"]; // 70 askeri güç
-    expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 düşük er ≈ 63 güç
+    expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 düşük er ≈ 47 güç
     b.kalite = { dusuk: 0, orta: 60, yuksek: 0 };
-    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 orta er ≈ 88 güç
+    expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 orta er ≈ 63 güç
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 60 };
+    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 yüksek er ≈ 79 güç (teçhizat 0,75 / 1 / 1,25)
     expect(() => birlikKararUygula(s, { gorevler: ["tahsilat"] }, bg(s))).not.toThrow();
   });
 

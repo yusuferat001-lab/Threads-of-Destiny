@@ -109,6 +109,13 @@ import {
   REVIR_MORAL_KADEME,
   ROL_TANIMLARI,
   SEFERBERLIK_KALMA_YENILGI,
+  SEFERBERLIK_GAZI_ORANI,
+  SEFERBERLIK_MORAL_FIRAR_ESIGI,
+  SEFERBERLIK_MORAL_FIRAR_KATSAYI,
+  MORAL_DIP_ESIGI,
+  MORAL_DIP_TOPARLANMA,
+  TALIM_DOGAL_DUSUS,
+  TALIM_YENI_ER_GIRIS,
   SEFERBERLIK_KALMA_ZAFER,
   SEFERBERLIK_TANIMLARI,
   SEFERBERLIK_YENILGI_FIRAR_CARPANI,
@@ -293,7 +300,7 @@ export function yeniErEkle(state: CharacterState, adet: number, bg: IsletmeBagla
     if (ucret <= butce) maliyet += ucret;
   }
   b.kalite[kalite] += n;
-  const girisTalim = sec.talim ?? 0;
+  const girisTalim = sec.talim ?? TALIM_YENI_ER_GIRIS;
   b.talim = clamp((b.talim * eski + girisTalim * n) / (eski + n), 0, 100);
   state.meslek_musteri = eski + n;
   return { eklenen: n, maliyet };
@@ -307,14 +314,20 @@ export function seferberlikUygula(state: CharacterState, tur: BirlikSeferberlik,
   sv.seferberlik = tur;
   if (sv.er_once == null) sv.er_once = erSayisi(state);
   const istenen = Math.round(erSayisi(state) * t.er);
-  // Çağrılan erler seçilen kademenin teçhizatıyla gelir (düz piyade); kışla limitine takılmaz, aşan kısım limit aşım gideri öder.
-  const eklenen = yeniErEkle(state, istenen, bg, { kalite: t.kalite, bedava: true, talim: t.talim, limitsiz: true }).eklenen;
+  // Çağrılan erler ücretsiz gelir (bedel moral, talim, firar, ahlak ve erzak); kışla limitine takılmaz, aşan kısım limit aşım gideri öder.
+  // Ordunun gerçek talimi bozulmaz: giriş talimi `seferberlik_talim`de tutulur, güç ve kayıp "etkin talim" ortalamasından hesaplanır.
+  const eklenen = yeniErEkle(state, istenen, bg, { kalite: t.kalite, bedava: true, talim: b.talim, limitsiz: true }).eklenen;
   sv.seferberlik_er += eklenen;
-  // Peşin ücret (en küçük çağrı ücretsiz); karar penceresi parayı önceden denetler, burada yalnız düşülür.
-  if (t.ucret > 0 && eklenen > 0) state.para = r2(state.para - eklenen * t.ucret * bg.giderEnflasyon);
+  sv.seferberlik_talim = t.talim ?? b.talim;
   sv.seferberlik_kalite = t.kalite;
   sv.baslangic_toplam = erSayisi(state);
   b.moral = clamp(b.moral + t.moral, 0, 100);
+  // Halk bedeli: büyük çağrılar ahlak, mutluluk ve şöhreti götürür.
+  if (eklenen > 0) {
+    state.ahlak = clamp(state.ahlak + t.ahlak, 0, 100);
+    state.mutluluk = clamp(state.mutluluk + t.mutluluk, 0, 100);
+    state.un = clamp(state.un + t.sohret, 0, 100);
+  }
   birlikSenkron(state, bg.enflasyon);
   return eklenen;
 }
@@ -415,6 +428,10 @@ export function yaraliIyilesmeSuresi(state: CharacterState): number {
 }
 /** Yıllık iyileşme (yıl başı): `yarali_hizi` kadar yaralı iyileşir; tam sayı. İyileşen sayıyı döner. */
 export function yaraliIyilestir(state: CharacterState, b: BirlikDurumu): number {
+  if (b.savas && (b.savas.kiralik_yarali ?? 0) > 0) {
+    // Paralı yaralılar da ordu yaralılarıyla aynı sürede iyileşir.
+    b.savas.kiralik_yarali = Math.max(0, (b.savas.kiralik_yarali ?? 0) - Math.max(1, Math.ceil((b.savas.kiralik_yarali ?? 0) / yaraliIyilesmeSuresi(state))));
+  }
   const y = yaraliSayisi(state);
   if (y <= 0) {
     b.yarali = 0;
@@ -475,6 +492,9 @@ export interface KayipSonucu {
   yaralananEk?: number;
   oluLevy: number;
   firarLevy: number;
+  /** Kiralık ordu (paralı) kaybı: ölü ve yaralı (firar yok). */
+  kiralikOlu?: number;
+  kiralikYarali?: number;
 }
 
 /**
@@ -488,6 +508,17 @@ export function kayipUygula(state: CharacterState, b: BirlikDurumu, g: KayipGird
   const nR = er - nL;
   const kc = kayipCarpani(state);
   const levyC = 1;
+  // Kiralık ordu (paralı): ordunun ölü yüzdesini AYNEN yaşar, ölenin ~yaralı katı kadar da yaralanır; firar etmez.
+  let kiralikOlu = 0;
+  let kiralikYarali = 0;
+  if (sv && (sv.kiralik_er ?? 0) > 0 && g.oluPct > 0) {
+    const nM = Math.round(sv.kiralik_er ?? 0);
+    kiralikOlu = Math.min(nM, olasilikliYuvarla(nM * (g.oluPct / 100) * kc));
+    const saglamM = Math.max(0, nM - Math.round(sv.kiralik_yarali ?? 0) - kiralikOlu);
+    kiralikYarali = Math.min(Math.round(kiralikOlu * (g.yaraliOran ?? yaraliOrani(state))), saglamM);
+    sv.kiralik_er = nM - kiralikOlu;
+    sv.kiralik_yarali = Math.min(sv.kiralik_er, Math.max(0, Math.round(sv.kiralik_yarali ?? 0)) + kiralikYarali);
+  }
   let olu = olasilikliYuvarla(er * (g.oluPct / 100) * kc) + Math.max(0, Math.round(g.ekOlu ?? 0));
   let firar = olasilikliYuvarla((nR + nL * levyC) * (Math.max(0, g.firarPct) / 100) * clamp(kc, 0.4, 1.2));
   if (g.oluTavan != null) olu = Math.min(olu, Math.max(0, g.oluTavan));
@@ -504,7 +535,7 @@ export function kayipUygula(state: CharacterState, b: BirlikDurumu, g: KayipGird
       b.yarali = Math.max(0, Math.round(b.yarali ?? 0)) + y;
       b.yarali_hizi = Math.max(1, Math.ceil(b.yarali / yaraliIyilesmeSuresi(state)));
     }
-    return { olu: 0, firar: 0, yaralanan: y, yaralananEk: y, oluLevy: 0, firarLevy: 0 };
+    return { olu: 0, firar: 0, yaralanan: y, yaralananEk: y, oluLevy: 0, firarLevy: 0, kiralikOlu, kiralikYarali };
   }
   const [oluR, oluL] = dagit(olu, [nR, nL], [nR, nL]);
   const [firR, firL0] = dagit(firar, [nR, nL * levyC], [nR - oluR, nL - oluL]);
@@ -540,7 +571,7 @@ export function kayipUygula(state: CharacterState, b: BirlikDurumu, g: KayipGird
   b.yarali += yR + yL;
   if (sv) sv.seferberlik_yarali = levyYar + yL;
   b.yarali_hizi = Math.max(1, Math.ceil(b.yarali / yaraliIyilesmeSuresi(state)));
-  return { olu: oluR + oluL, firar: firR + firL, yaralanan: yR + yL, yaralananEk: Math.min(ekYar, Math.max(0, yR + yL - Math.min(yaralananOlu, yR + yL))), oluLevy: oluL, firarLevy: firL };
+  return { olu: oluR + oluL, firar: firR + firL, yaralanan: yR + yL, yaralananEk: Math.min(ekYar, Math.max(0, yR + yL - Math.min(yaralananOlu, yR + yL))), oluLevy: oluL, firarLevy: firL, kiralikOlu, kiralikYarali };
 }
 
 
@@ -676,6 +707,8 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
     olu: kayip.olu,
     yarali: kayip.yaralanan,
     firar: kayip.firar,
+    kiralikOlu: kayip.kiralikOlu ?? 0,
+    kiralikYarali: kayip.kiralikYarali ?? 0,
     kalanEr: erSayisi(state),
     dusmanOlu: Math.round(E * (zafer ? rnd(dk.zafer[0], dk.zafer[1]) : rnd(dk.yenilgi[0], dk.yenilgi[1]))),
     ganimetTahmini: r2(net),
@@ -772,7 +805,25 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     state.meslek_musteri = Math.max(0, erSayisi(state) - terhis);
     b.yarali = Math.max(0, Math.round(b.yarali ?? 0) - Math.min(terhisYarali, terhis));
     if (terhis > 0) uyarilar.push({ kod: "seferberlik_terhis", sayi: terhis });
+    // Kadroda kalan seferberler ordunun talim ortalamasına katılır (savaş boyu bozulmayan gerçek talim şimdi seyrelir/yükselir).
+    const kalanGercek = hayatta - terhis;
+    const anaEr = Math.max(0, erSayisi(state) - kalanGercek);
+    if (kalanGercek > 0 && anaEr + kalanGercek > 0) {
+      b.talim = clamp((b.talim * anaEr + (sv.seferberlik_talim ?? b.talim) * kalanGercek) / (anaEr + kalanGercek), 0, 100);
+    }
+    // Kalıcı gazi kadrosu: zaferle biten savaşta kalanların bir kısmı bir kalite yukarı çıkar.
+    if (zafer && kalanGercek > 0) {
+      const yukari = Math.min(b.kalite[lk], Math.round(kalanGercek * SEFERBERLIK_GAZI_ORANI));
+      const hedef: BirlikKalite | null = lk === "dusuk" ? "orta" : lk === "orta" ? "yuksek" : null;
+      if (hedef && yukari > 0) {
+        b.kalite[lk] -= yukari;
+        b.kalite[hedef] += yukari;
+      }
+    }
   }
+  // Kiralık ordu savaşla gider (yaralılar dahil).
+  sv.kiralik_er = 0;
+  sv.kiralik_yarali = 0;
   const sonuc: SavasSonu = { zafer, brut: 0, erPayi: 0, net: 0, esir: 0, kale: false };
   if (zafer) {
     // Büyük zafer ganimeti: askerî güçle ve savaşın uzunluğuyla orantılı; askerlerin payı ayrılır, kalanı bizim.
@@ -1089,11 +1140,18 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     }
   }
   const ayar = firarAyarlayici(state, b);
+  // Savaş zamanı borç eşikleri (−50 hafif, −200 ağır): moral düşer, firar artar, güç kaybı; ağır eşikte paralı toplu çekilir.
+  const borc = odenmeyenCeza(state.para + h.net, bg.enflasyon, savasta);
+  if (savasta && borc?.paraliCekilir && b.savas && (b.savas.kiralik_er ?? 0) > 0) {
+    uyarilar.push({ kod: "kiralik_cekildi", sayi: b.savas.kiralik_er });
+    b.savas.kiralik_er = 0;
+    b.savas.kiralik_yarali = 0;
+  }
   let oluPct = 0;
   let firarPct = 0;
   if (savasYili) {
     oluPct = savasYili.oluPct;
-    firarPct = savasYili.firarPct + ayar.puan;
+    firarPct = savasYili.firarPct + ayar.puan + (borc?.firar ?? 0);
   } else {
     firarPct = ayar.tetik ? ayar.puan : 0;
   }
@@ -1103,7 +1161,14 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     firarPct,
     ekOlu: gorevOlu,
     ekYarali: gorevYarali,
-    levyFirarPct: savasta && b.savas?.seferberlik ? SEFERBERLIK_TANIMLARI[b.savas.seferberlik].firar * (b.savas.sonuc === "yenilgi" && (b.savas.yil_sayac ?? 0) >= SAVAS_KARAR_YILI ? SEFERBERLIK_YENILGI_FIRAR_CARPANI : 1) : 0,
+    // Seferber firarı: seviyeye göre taban × (yenilgide son 2 yıl) × (ağır borç) + düşük moralde ek.
+    levyFirarPct:
+      savasta && b.savas?.seferberlik
+        ? SEFERBERLIK_TANIMLARI[b.savas.seferberlik].firar *
+            (b.savas.sonuc === "yenilgi" && (b.savas.yil_sayac ?? 0) >= SAVAS_KARAR_YILI ? SEFERBERLIK_YENILGI_FIRAR_CARPANI : 1) *
+            (borc?.seferFirarCarpani ?? 1) +
+          Math.max(0, SEFERBERLIK_MORAL_FIRAR_ESIGI - b.moral) * SEFERBERLIK_MORAL_FIRAR_KATSAYI
+        : 0,
     oluTavan: tavan?.olu,
     firarTavan: tavan?.firar,
   });
@@ -1151,12 +1216,13 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     const t = k.dusuk + k.orta + k.yuksek;
     return t > 0 ? (k.dusuk * tablo.dusuk + k.orta * tablo.orta + k.yuksek * tablo.yuksek) / t : tablo.orta;
   };
-  const talimDelta = talimT.delta > 0 ? talimT.delta * kaliteKatsayi(KALITE_TALIM_CARPANI) : talimT.delta;
-  if (talimT.delta > 0) b.talim = clamp(Math.max(b.talim, Math.min(talimT.tavan, b.talim + talimDelta)), 0, 100);
-  else b.talim = clamp(b.talim + talimDelta, 0, 100);
+  // Talim: politikanın kazancı (kalite çarpanıyla; moral dipteyken yarıya iner, tavana kadar) − doğal unutma. Bakım yoksa talim kendiliğinden düşer.
+  const talimKazanc = talimT.delta > 0 ? talimT.delta * kaliteKatsayi(KALITE_TALIM_CARPANI) * (b.moral < MORAL_DIP_ESIGI ? 0.5 : 1) : 0;
+  const talimArti = talimKazanc > 0 ? Math.max(0, Math.min(talimT.tavan, b.talim + talimKazanc) - b.talim) : 0;
+  b.talim = clamp(b.talim + talimArti - TALIM_DOGAL_DUSUS, 0, 100);
   if (catisma) b.talim = clamp(b.talim + (catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI), 0, 100);
 
-  // 9. Moral: yıllık etkenler + bir kerelik olaylar + 60'a yönelim.
+  // 9. Moral: yıllık etkenler + bir kerelik olaylar; nötr 50'den başlar, bakım yapılmazsa zamanla düşer.
   let moral = GANIMET_PAYI_TANIMLARI[b.ganimet_payi].moral + TON_TANIMLARI[b.ton].moral + talimT.moral + (doktrin.moral + (yol.moral ?? 0));
   moral += savasta ? MORAL_SAVAS_YILLIK : MORAL_BARIS_YILLIK;
   if (savasta && h.yagmaBrut > 0) moral += IKMAL_TANIMLARI[ikmalId].yagma.moral; // yağma türü: sert ordu morali artırır, yumuşak düşürür
@@ -1167,8 +1233,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   else if (donem === "bolluk") moral += MORAL_BOLLUK_YILLIK;
   if (eskiEr > 0 && (olen + firar) / eskiEr > MORAL_YUKSEK_KAYIP_ESIGI) moral += MORAL_YUKSEK_KAYIP;
   moral += clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * REVIR_MORAL_KADEME;
-  const ceza = odenmeyenCeza(state.para + h.net, bg.enflasyon);
-  if (ceza) moral += ceza.moral;
+  if (borc) moral += borc.moral;
   if (catisma) {
     moral += catisma.kanatZafer ? MORAL_ZAFER : catisma.oran < 0.75 ? MORAL_KANAT_BOZGUN : -3;
     if (!catisma.genelZafer) moral += MORAL_YENILGI;
@@ -1176,10 +1241,8 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   // Tek yıllık toplam düşüş sınırlı: art arda bozgun + yenilgi + yıllık yük morali bir yılda dibe çakmasın.
   moral = Math.max(moral, -MORAL_YILLIK_TABAN);
   b.moral = clamp(b.moral + moral, 0, 100);
-  // 60'a yönelim: en az yılda 1 puan; uçurumdaki moral daha hızlı toparlanır (farkın %10'u, en çok 4) — moral dibinde kalıp ordu eritmesin.
-  const fark = 60 - b.moral;
-  const cekim = Math.min(Math.abs(fark), Math.min(MORAL_YONELIM_TAVAN, Math.max(MORAL_YONELIM, Math.abs(fark) * 0.15)));
-  b.moral = clamp(b.moral + Math.sign(fark) * cekim, 0, 100);
+  // Doğal düşüşün (MORAL_BARIS_YILLIK / MORAL_SAVAS_YILLIK) yanında yalnız dipteki moral toparlanır: ordu moral dibinde kalıp eriyip gitmesin.
+  if (b.moral < MORAL_DIP_ESIGI) b.moral = clamp(b.moral + MORAL_DIP_TOPARLANMA, 0, 100);
 
   // 10. Sertlik, ahlak, otorite, aşırılık.
   const gorevSertlik = h.gorevler.filter((g) => g.aktif).reduce((t, g) => t + (gorevSertlikDegeri(g.id)), 0);

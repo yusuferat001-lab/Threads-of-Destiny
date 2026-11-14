@@ -20,6 +20,7 @@ const M = {
   olu: { tr: 'ölü', en: 'dead' },
   yarali: { tr: 'yaralı', en: 'wounded' },
   firar: { tr: 'firar', en: 'deserted' },
+  parali: { tr: 'Paralı askerler', en: 'Mercenaries' },
   kalan: { tr: 'Kalan er', en: 'Men left' },
   dusmanKaybi: { tr: 'Düşman kaybı (tahmini)', en: 'Enemy losses (estimate)' },
   ganimet: { tr: 'Savaş sonunda gelecek ganimet (tahmini)', en: 'Spoils due at war end (estimate)' },
@@ -55,6 +56,14 @@ export function SavasSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: SavasGunuSo
             <span className="s-eksi">{sonuc.olu}</span> {t('olu')} · <span className="s-eksi">{sonuc.yarali}</span> {t('yarali')} · <span className="s-eksi">{sonuc.firar}</span> {t('firar')} · {t('kalan')}: <strong>{sonuc.kalanEr}</strong>
           </div>
         </div>
+        {(sonuc.kiralikOlu ?? 0) + (sonuc.kiralikYarali ?? 0) > 0 && (
+          <div className="savas-kiyas">
+            <strong>{t('parali')}</strong>
+            <div>
+              <span className="s-eksi">{sonuc.kiralikOlu ?? 0}</span> {t('olu')} · <span className="s-eksi">{sonuc.kiralikYarali ?? 0}</span> {t('yarali')}
+            </div>
+          </div>
+        )}
         <div className="savas-kiyas">
           <strong>{t('dusmanKaybi')}</strong>
           <div>
