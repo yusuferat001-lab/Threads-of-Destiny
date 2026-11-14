@@ -320,7 +320,9 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
     state.para = 5000;
     state.un = 10;
     state.mutluluk = 40;
-    vitrineKoy(state, "oc_binek_ati", "sd_fayton");
+    // Vitrin çağa uygun eşyalarla sabitlenir: Sanayi eşyası (sd_fayton) vitrine konursa çağ kontrolü vitrini
+    // yeniden karar ve oc_binek_ati rastgele düşerdi. Sanayi eşyasının reddi aşağıda çağ kontrolüyle sınanır.
+    vitrineKoy(state, "oc_binek_ati");
     const sonuc = await magazadanSatinAl(state.id, "oc_binek_ati");
     expect(sonuc.state.un).toBe(14);
     expect(sonuc.state.mutluluk).toBe(43);
