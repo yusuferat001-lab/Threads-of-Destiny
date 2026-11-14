@@ -1050,57 +1050,6 @@ button.ikincil {
   color: var(--c-arti-koyu);
 }
 
-/* ---- Açılış ekranı ---- */
-
-.ekran-acilis {
-  align-items: center;
-  text-align: center;
-}
-
-.ekran-acilis .banner {
-  width: 100%;
-  margin-top: 0;
-}
-
-.acilis-metni {
-  line-height: 1.75;
-  font-size: 1.05rem;
-  max-width: 560px;
-  text-align: left;
-  background: #241c15;
-  border-left: 3px solid #6b4f2a;
-  padding: 1rem 1.15rem;
-  border-radius: 0 8px 8px 0;
-}
-
-.acilis-ozet {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  font-size: 0.9rem;
-}
-
-.acilis-ozet span {
-  background: #2a1f18;
-  border: 1px solid #3d2e1f;
-  padding: 0.4rem 0.7rem;
-  border-radius: 999px;
-}
-
-.acilis-durum {
-  font-size: 0.85rem;
-  opacity: 0.75;
-  font-style: italic;
-  margin: 0;
-}
-
-.ekran-acilis button:not(.ikincil) {
-  width: 100%;
-  max-width: 320px;
-  text-align: center;
-}
-
 /* ---- Banner (çağ/bölge) ---- */
 
 .banner {
@@ -3296,33 +3245,6 @@ button.ikincil {
     font-size: 0.78rem;
     padding: 0.28rem 0.55rem;
   }
-}
-
-/* Açılış ekranına gömülü meslek seçimi (ayrı "meslek" sayfası kaldırıldı). */
-.acilis-meslek-baslik {
-  margin: 0.6rem 0 0.1rem;
-  font-size: 1.05rem;
-  color: var(--renk-altin);
-}
-.acilis-meslek-kartlari {
-  width: 100%;
-}
-/* Okunabilirlik: koyu kartta soluk metin yerine net açık gri; başlık soluk altın
-   değil parlak altın (kullanıcı: "meslek renkleri okunmuyor"). */
-.acilis-meslek-kartlari .meslek-kart strong,
-.ekran-acilis .meslek-kart strong {
-  color: var(--renk-altin-parlak);
-  opacity: 1;
-}
-.acilis-meslek-kartlari .meslek-aciklama,
-.ekran-acilis .meslek-aciklama {
-  color: #e6dcc4;
-  opacity: 0.92;
-}
-.acilis-meslek-kartlari .meslek-yatkinlik,
-.ekran-acilis .meslek-yatkinlik {
-  color: #f0e6c8;
-  opacity: 1;
 }
 
 /* Kendi İşin kartı diğer yatırım kartlarından altın çerçeveyle ayrışır — en öncelikli aksiyon. */
@@ -6280,6 +6202,19 @@ button.ikincil {
     height: 100dvh;
     border: none;
     border-radius: 0;
+  }
+
+  /* "Neler Yeni" kısa bir bildirim: Ayarlar gibi tam ekran sayfa değil, ortalanmış kart
+     (tam ekranda gövde içeriği kadar kısalıp altta boş siyah bırakıyordu). */
+  .ayarlar-katman:has(> .yenilik-modal) {
+    padding: 1rem;
+  }
+  .yenilik-modal {
+    height: auto;
+    max-height: 88dvh;
+    border: 3px solid var(--renk-kahve-kenar);
+    border-top: 3px solid var(--muhur-kirmizi-parlak);
+    border-radius: 12px;
   }
 }
 

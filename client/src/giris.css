@@ -9,8 +9,7 @@
 /* ---------- Ortak kurulum kabuğu ---------- */
 
 .ekran-giris,
-.ekran-kurulum,
-.ekran-acilis {
+.ekran-kurulum {
   position: relative;
   background:
     radial-gradient(ellipse at 50% -10%, rgba(var(--renk-altin-rgb), 0.12), transparent 55%),
@@ -33,8 +32,7 @@
    artık zaten masaüstüne özel, mobilde hiç tanımlanmıyor (2026-09 sonu). */
 @media (min-width: 768px) {
   .ekran-giris,
-  .ekran-kurulum,
-  .ekran-acilis {
+  .ekran-kurulum {
     overflow: hidden;
     flex: 1;
     min-height: 0;
@@ -43,8 +41,7 @@
 
 /* Kurulum + açılış ekranları: arka plan TAM EKRAN (giriş ekranı gibi kenardan
    kenara), içerik ortalanmış sınırlı bir sütunda. Çerçeve çizgisi YOK. */
-.ekran-kurulum,
-.ekran-acilis {
+.ekran-kurulum {
   align-self: stretch;
   width: 100%;
   max-width: none;
@@ -57,15 +54,13 @@
 }
 /* İçeriği ortada sınırlı genişlikte tut — butonlar hariç (doğal boyutta kalsınlar).
    Kart ızgaraları zaten flex-wrap + justify-center ile ortalı, sabit boyutlu. */
-.ekran-kurulum > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.giris-aciklama):not(.karakter-avatari),
-.ekran-acilis > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.acilis-sahne):not(.acilis-metni):not(.giris-aciklama):not(.karakter-avatari) {
+.ekran-kurulum > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.giris-aciklama):not(.karakter-avatari) {
   width: 100%;
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
 }
-.ekran-kurulum > .giris-aciklama,
-.ekran-acilis > .giris-aciklama {
+.ekran-kurulum > .giris-aciklama {
   max-width: 480px;
   margin: 0.2rem auto 0;
 }
@@ -186,8 +181,7 @@
    Kapsayıcı .ekran zaten bir bütün olarak fade-in yapıyor (ekranBelir); burada
    yalnız hafif bir yukarı-kayma katmanı ekleriz — opaklığa DOKUNMAYIZ, yoksa
    stagger gecikmeleri boyunca ekran boş/siyah görünüyor. */
-.ekran-kurulum > *:not(.kose-tezhip-kat),
-.ekran-acilis > *:not(.kose-tezhip-kat):not(.banner) {
+.ekran-kurulum > *:not(.kose-tezhip-kat) {
   animation: parcaBelir 0.34s var(--gecis-yay) both;
 }
 .ekran-kurulum > *:nth-child(2) { animation-delay: 0.03s; }
@@ -745,52 +739,13 @@ a.giris-imza-isim:hover {
   font-weight: 700;
 }
 
-/* ---------- Açılış (künye/berat) ---------- */
-
-.ekran-acilis { gap: 0.9rem; }
-
-.ekran-acilis h2 {
-  font-family: var(--font-baslik);
-  color: var(--renk-altin-parlak);
-}
-
-.acilis-metni {
-  background: linear-gradient(180deg, rgba(36, 28, 21, 0.9), rgba(24, 18, 13, 0.9));
-  border-left: 3px solid var(--renk-altin);
-  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.08);
-  border-radius: 0 var(--r-orta) var(--r-orta) 0;
-}
-/* Not: burada eskiden bir ::first-letter drop-cap (büyük ilk harf) efekti vardı.
-   Metin her zaman "{yıl} yılı, ..." ile başladığı (bkz. stateManager.ts
-   acilisAnlatimiUret) için drop-cap yalnızca yılın İLK RAKAMINI büyütüp
-   "1" + "058" gibi bölünmüş, bozuk görünen bir sayı üretiyordu — kaldırıldı. */
-
-.acilis-ozet span {
-  background: linear-gradient(180deg, rgba(43, 32, 21, 0.7), rgba(20, 15, 10, 0.6));
-  border: 1px solid rgba(var(--renk-altin-rgb), 0.3);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
-}
-
-/* NOT: `.meslek-kart` hariç — meslek seçimi artık açılışa gömülü ve o kartlar
-   kendi koyu kurulum stilini (`.ekran-kurulum .meslek-kart`) korumalı; yoksa
-   altın gradyan zemin + soluk altın başlık = okunmaz. */
-.ekran-acilis button:not(.ikincil):not(.meslek-kart) {
-  font-family: var(--font-baslik);
-  letter-spacing: 0.05em;
-  background: var(--altin-gradyan-dik);
-  color: #211703;
-  border: 1px solid var(--renk-altin-parlak);
-  font-weight: 700;
-}
-
 /* ---------- Mobil (≤767px) — her ekran için ayrı sadeleştirme ---------- */
 
 @media (max-width: 767px) {
   /* Telefonda yatay 3 sütun anlamsız — dikey tek sütuna iner, sayfa doğal kayar
      (bkz. .oyun-kapsayici-tam mobil kuralı: height:auto; overflow:visible). */
   .ekran-giris,
-  .ekran-kurulum,
-  .ekran-acilis {
+  .ekran-kurulum {
     border-radius: 10px;
     padding: 1.15rem max(0.9rem, env(safe-area-inset-left))
       calc(1.4rem + env(safe-area-inset-bottom))
@@ -832,8 +787,7 @@ a.giris-imza-isim:hover {
   }
   .giris-fon { opacity: 0.05; }
   .ekran-giris::after,
-  .ekran-kurulum::after,
-  .ekran-acilis::after {
+  .ekran-kurulum::after {
     inset: 6px;
   }
 
@@ -945,7 +899,6 @@ a.giris-imza-isim:hover {
   .cark-logo-donen { animation: none; }
   .ky-donen { animation: none; }
   .ekran-kurulum > *,
-  .ekran-acilis > *,
   .kose-tezhip {
     animation: none !important;
     opacity: 1;
@@ -1009,249 +962,4 @@ a.giris-imza-isim:hover {
 }
 .nasil-bolum li::marker {
   color: var(--renk-altin-koyu);
-}
-
-/* ---------- Açılış ekranı (meslek seçimi buraya gömüldü) ---------- */
-
-/* 2026-09 yeniden düzenleme — iki sütunlu "kimlik dosyası" görünümü (strateji
-   oyunlarındaki karakter sayfalarına benzer: solda sabit bir kimlik kartı,
-   sağda anlatı + karar alanı). Eskiden portre+banner tek geniş (940px) satırda,
-   hemen altında aile metni dar (560px) bir kutuda idi — genişlik uyumsuzluğu
-   metni sıkışmış/okunaksız gösteriyordu. Artık her sütunun net, sabit bir
-   genişliği var. */
-.acilis-sahne {
-  display: grid;
-  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
-  align-items: start;
-  gap: 1.6rem;
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  text-align: left;
-}
-
-.acilis-kimlik {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 1.2rem 1.1rem 1.4rem;
-  background:
-    linear-gradient(180deg, rgba(var(--renk-altin-rgb), 0.14), transparent 55%),
-    linear-gradient(180deg, color-mix(in srgb, var(--panel-ust) 78%, transparent), color-mix(in srgb, var(--panel-alt) 85%, transparent));
-  border: 1px solid rgba(var(--renk-altin-rgb), 0.25);
-  border-radius: var(--r-orta);
-  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.08), var(--golge-derin);
-  position: sticky;
-  top: 0.5rem;
-}
-
-.acilis-kimlik .karakter-avatari {
-  width: clamp(84px, 7vw, 118px);
-  margin: 0;
-}
-
-.acilis-kimlik-ad {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  text-align: center;
-  margin: 0.1rem 0 0;
-}
-.acilis-kimlik-ad strong {
-  font-family: var(--font-baslik);
-  font-size: 1.15rem;
-  line-height: 1.2;
-}
-.acilis-kimlik-alt {
-  font-size: 0.82rem;
-  opacity: 0.82;
-  font-style: normal;
-}
-
-.acilis-kimlik .banner {
-  width: 100%;
-  margin: 0.15rem 0 0;
-}
-
-.acilis-kimlik .acilis-ozet {
-  flex-direction: column;
-  align-items: stretch;
-  width: 100%;
-  gap: 0.4rem;
-  margin-top: 0.15rem;
-}
-.acilis-kimlik .acilis-ozet span {
-  text-align: left;
-  border-radius: 6px;
-}
-
-.acilis-kimlik .acilis-durum {
-  align-self: stretch;
-  text-align: left;
-}
-
-.acilis-kimlik .kisilik-paneli {
-  width: 100%;
-  margin-top: 0.4rem;
-}
-
-.acilis-icerik {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
-  text-align: left;
-}
-
-/* Aile geçmişi anlatısı artık kendi sütununun tam genişliğini kullanır (dar
-   560px kutusu kaldırıldı); uzun metinde nadiren kendi içinde kayar. */
-.acilis-icerik .acilis-metni {
-  max-width: none;
-  width: 100%;
-  max-height: 360px;
-  overflow-y: auto;
-}
-
-.acilis-icerik .acilis-meslek-baslik,
-.acilis-icerik .giris-aciklama {
-  text-align: left;
-  margin: 0;
-}
-
-/* Meslek kartları açılışta biraz fazla yer kaplıyordu — hafifçe küçültüldü
-   (min yükseklik + padding + simge/başlık). */
-.ekran-acilis .acilis-meslek-kartlari .meslek-kart {
-  min-height: 0;
-  padding: 0.8rem 1rem;
-  gap: 0.3rem;
-}
-.ekran-acilis .acilis-meslek-kartlari .meslek-simge {
-  width: 2.2rem;
-  height: 2.2rem;
-  font-size: 1.25rem;
-}
-.ekran-acilis .acilis-meslek-kartlari .meslek-kart strong {
-  font-size: 1rem;
-}
-
-/* ---------- Açılış + meslek ekranı: mobil kompaktlaştırma ---------- */
-
-@media (max-width: 767px) {
-  .ekran-acilis {
-    gap: 0.55rem;
-  }
-
-  /* İki sütunlu kimlik/anlatı düzeni telefonda tek sütuna iner (kalıcı geçici
-     düzen — mobil için ayrı bir tur planlanıyor, bu sadece kırılmamasını
-     garantiler). */
-  .acilis-sahne {
-    grid-template-columns: 1fr;
-    gap: 0.55rem;
-  }
-  .acilis-kimlik {
-    position: static;
-    padding: 0.85rem 0.75rem 1rem;
-  }
-  .acilis-kimlik .karakter-avatari {
-    width: 60px;
-  }
-
-  /* Açılış metni + özet: daha az dikey yer, aynı yazı boyu. */
-  .ekran-acilis h2 {
-    margin: 0.15rem 0;
-    font-size: 1.15rem;
-  }
-  .acilis-metni {
-    padding: 0.7rem 0.85rem;
-    line-height: 1.5;
-  }
-  .acilis-ozet {
-    gap: 0.35rem;
-  }
-
-  /* Kişilik & miras paneli: çerçeveleri incelt, yazı boyutlarına dokunma. */
-  .kisilik-paneli {
-    margin-top: 0.55rem;
-  }
-  .kisilik-paneli h3 {
-    margin-bottom: 0.4rem;
-  }
-  .kisilik-paneli .eksen-gostergesi {
-    margin-bottom: 0.4rem;
-  }
-  .kisilik-rozet {
-    padding: 0.3rem 0.45rem;
-    margin-bottom: 0.3rem;
-    gap: 0.05rem;
-  }
-
-  /* Aile geçmişi anlatısı: çoğu görünsün (kullanıcı isteği) — mobilde de bol pay. */
-  .ekran-acilis .acilis-metni {
-    max-height: 240px;
-    font-size: 0.9rem;
-    padding: 0.6rem 0.75rem;
-  }
-  .acilis-meslek-baslik {
-    margin: 0.3rem 0 0;
-    font-size: 0.95rem;
-  }
-  .acilis-meslek-kartlari {
-    gap: 0.4rem;
-  }
-  /* Meslek kartları mobilde daha da kısa (dikeyde) — kullanıcı: "büyük, dikeyde küçült". */
-  .ekran-acilis .acilis-meslek-kartlari .meslek-kart {
-    min-height: 0;
-    padding: 0.5rem 0.7rem;
-    gap: 0.15rem;
-  }
-  .ekran-acilis .acilis-meslek-kartlari .meslek-simge {
-    width: 1.8rem;
-    height: 1.8rem;
-    font-size: 1.05rem;
-  }
-  .ekran-acilis .acilis-meslek-kartlari .meslek-kart strong {
-    font-size: 0.92rem;
-  }
-  .acilis-meslek-kartlari .meslek-aciklama {
-    font-size: 0.7rem;
-    line-height: 1.3;
-  }
-  .ekran-acilis .acilis-meslek-kartlari .meslek-yatkinlik,
-  .ekran-acilis .acilis-meslek-kartlari .meslek-miras-ipucu {
-    font-size: 0.7rem;
-  }
-
-  /* Açılış: dikey alanı topla. */
-  .acilis-kimlik .banner {
-    padding: 0.5rem 0.75rem;
-  }
-  .acilis-kimlik .banner .banner-sembol {
-    font-size: 1.4rem;
-  }
-  .ekran-acilis .kisilik-paneli {
-    margin-top: 0.35rem;
-  }
-  .ekran-acilis .kisilik-paneli h3 {
-    margin: 0.3rem 0 0.25rem;
-  }
-  .ekran-acilis .kisilik-paneli .eksen-gostergesi {
-    margin-bottom: 0.3rem;
-  }
-  /* Açılışta kişilik detay rozetleri gizli (tam döküm oyunda portreye dokununca).
-     Eksen çubukları da kaldırıldığı için tek başına kalan "Kişilik & Miras"
-     başlığı boş bir başlık gibi görünüyordu — o da gizlenir; mesleğe yatkınlık
-     rozeti (meslek seçildikten sonra) görünür kalır. */
-  .ekran-acilis .kisilik-paneli .kisilik-rozet:not(.kisilik-rozet-meslek-yatkinlik),
-  .ekran-acilis .kisilik-paneli h3 {
-    display: none;
-  }
-  .ekran-acilis .acilis-ozet {
-    font-size: 0.82rem;
-    gap: 0.3rem;
-  }
-  .ekran-acilis .acilis-ozet span {
-    padding: 0.3rem 0.55rem;
-  }
 }
