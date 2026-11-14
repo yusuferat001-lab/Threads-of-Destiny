@@ -251,31 +251,39 @@ export const BASKIN_NAKIT_HASARI = 0.04;
 /** Çatışmanın baskın (oyuncu savunmada) olma ihtimali; kalanı av (oyuncu saldırıda). */
 export const BASKIN_IHTIMALI = 0.5;
 /**
- * Haydut ve sınır düşmanının yaşa göre mutlak gücü: [yaş, güç], aralarda doğrusal. İKİ AYRI TABLO: haydut en kolay, sınır (düzenli düşman) daha güçlü, büyük savaş (SAVAS_DUSMAN_YAS) en güçlü.
- * İlk 6 yıl (15–21 yaş) neredeyse DÜZ kalır (oyuncu küçük ordusuyla bunaltılmasın), sonra yükselir. Teçhizat 0,75/1/1,25 sonrası güç ölçeğine göre kalibre edilir. ±%5 sapma, zar ±%7 (SAVAS_ZAR_BOLEN).
+ * Düşmanın yaşa göre mutlak gücü: SABİT HIZLA artan, üç tür için ayrı taban ve yıllık artış oranı ("çarpan"):
+ *   15–21 yaş: neredeyse düz (taban21 / 1,15'ten taban21'e doğrusal) — ilk 6 yıl çok artmaz.
+ *   21–60 yaş: güç = taban21 × (1 + oran)^(yaş − 21)  (her yıl aynı yüzde; sıçrama yok).
+ *   60 yaş sonrası: 60 yaşındaki artış hızı SABİT kalır (doğrusal; yaş 70→80 hızlanmaz).
+ * Haydut en kolay, sınır (düzenli düşman) daha güçlü, büyük savaş en güçlü ve en hızlı artan. ±%5 sapma, zar ±%7 (SAVAS_ZAR_BOLEN).
  */
-export const BARIS_DUSMAN_TABLOLARI: Record<"haydut" | "sinir", [number, number][]> = {
-  haydut: [
-    [15, 12], [21, 14], [25, 22], [30, 31], [35, 37], [40, 43], [45, 56], [50, 74], [55, 97], [60, 128], [65, 163], [70, 220], [75, 285], [80, 360],
-  ],
-  sinir: [
-    [15, 14], [21, 16], [25, 25], [30, 38], [35, 45], [40, 55], [45, 72], [50, 95], [55, 125], [60, 165], [65, 210], [70, 285], [75, 370], [80, 470],
-  ],
+export type DusmanTuru = "haydut" | "sinir" | "savas";
+export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban21: number; oran: number }> = {
+  haydut: { taban21: 15.5, oran: 0.056 },
+  sinir: { taban21: 18, oran: 0.058 },
+  savas: { taban21: 21, oran: 0.067 },
 };
-export const BARIS_DUSMAN_SAPMA: [number, number] = [0.95, 1.05];
-function yasTablosundan(t: [number, number][], yas: number): number {
-  if (yas <= t[0][0]) return t[0][1];
-  for (let i = 1; i < t.length; i++) {
-    if (yas <= t[i][0]) {
-      const [y0, g0] = t[i - 1];
-      const [y1, g1] = t[i];
-      return g0 + ((g1 - g0) * (yas - y0)) / (y1 - y0);
-    }
+export const DUSMAN_ILK_YIL_ORANI = 1.15;
+export const DUSMAN_SABIT_ARTIS_YASI = 60;
+export function dusmanGucuYas(yas: number, tur: DusmanTuru): number {
+  const { taban21, oran } = DUSMAN_PARAMETRELERI[tur];
+  if (yas < 21) {
+    const e15 = taban21 / DUSMAN_ILK_YIL_ORANI;
+    return e15 + ((taban21 - e15) * Math.max(0, yas - 15)) / 6;
   }
-  return t[t.length - 1][1];
+  const e = (y: number) => taban21 * Math.pow(1 + oran, y - 21);
+  if (yas <= DUSMAN_SABIT_ARTIS_YASI) return e(yas);
+  return e(DUSMAN_SABIT_ARTIS_YASI) * (1 + oran * (yas - DUSMAN_SABIT_ARTIS_YASI));
 }
+/** Tablo görünümü (5 yılda bir; test ve belge için). */
+export const BARIS_DUSMAN_TABLOLARI: Record<"haydut" | "sinir", [number, number][]> = {
+  haydut: [15, 21, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].map((y) => [y, Math.round(dusmanGucuYas(y, "haydut"))] as [number, number]),
+  sinir: [15, 21, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].map((y) => [y, Math.round(dusmanGucuYas(y, "sinir"))] as [number, number]),
+};
+export const SAVAS_DUSMAN_YAS: [number, number][] = [15, 21, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].map((y) => [y, Math.round(dusmanGucuYas(y, "savas"))] as [number, number]);
+export const BARIS_DUSMAN_SAPMA: [number, number] = [0.95, 1.05];
 export function barisDusmanGucuYas(yas: number, tur: "haydut" | "sinir"): number {
-  return yasTablosundan(BARIS_DUSMAN_TABLOLARI[tur], yas);
+  return dusmanGucuYas(yas, tur);
 }
 /** Firar ayarlayıcıları (puan, %): moral < 40 → (40 − moral) × 0,05; erzak < 0,7 → +0,5; sertlik × 0,005. */
 export const FIRAR_MORAL_ESIGI = 40;
@@ -727,20 +735,8 @@ export function dusmanReferansGucuYas(yas: number): number {
  * Büyük savaştaki düşmanın yaşa göre mutlak gücü (kalibrasyon tablosu: [yaş, güç], aralarda doğrusal). `DUSMAN_REFERANS_YAS`
  * yalnız Asker kariyer puanının ölçeği olarak kalır (rütbe hızı değişmesin); savaş düşmanı bu tablodan gelir.
  */
-export const SAVAS_DUSMAN_YAS: [number, number][] = [
-  [15, 15], [21, 17], [25, 37], [30, 57], [35, 58], [40, 66], [45, 104], [50, 119], [55, 251], [60, 321], [65, 362], [70, 366], [75, 497], [80, 592],
-];
 export function savasDusmanGucuYas(yas: number): number {
-  const t = SAVAS_DUSMAN_YAS;
-  if (yas <= t[0][0]) return t[0][1];
-  for (let i = 1; i < t.length; i++) {
-    if (yas <= t[i][0]) {
-      const [y0, g0] = t[i - 1];
-      const [y1, g1] = t[i];
-      return g0 + ((g1 - g0) * (yas - y0)) / (y1 - y0);
-    }
-  }
-  return t[t.length - 1][1];
+  return dusmanGucuYas(yas, "savas");
 }
 /** d20 zarın güce katkısı: güç × (zar − 10,5)/40 (±%24). */
 export const ZAR_BOLEN = 40;

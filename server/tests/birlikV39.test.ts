@@ -196,6 +196,25 @@ describe("v39 haydut / sınır çatışması", () => {
     }
   });
 
+  it("düşman gücü SABİT artar: 21–60 arası her yıl aynı yüzde, 60 sonrası hız sabit (70→80 sıçraması yok), türlerin oranı farklı", async () => {
+    const { dusmanGucuYas, DUSMAN_PARAMETRELERI } = await import("../src/data/birlik");
+    const turler = ["haydut", "sinir", "savas"] as const;
+    for (const t of turler) {
+      const oran = DUSMAN_PARAMETRELERI[t].oran;
+      for (const yas of [22, 30, 45, 59]) expect(dusmanGucuYas(yas + 1, t) / dusmanGucuYas(yas, t)).toBeCloseTo(1 + oran, 5);
+      // 60 sonrası yıllık mutlak artış sabit
+      const d1 = dusmanGucuYas(71, t) - dusmanGucuYas(70, t);
+      const d2 = dusmanGucuYas(81, t) - dusmanGucuYas(80, t);
+      expect(d2).toBeCloseTo(d1, 5);
+      // 60 yaşındaki bitişte kırılma yok
+      expect(dusmanGucuYas(61, t) - dusmanGucuYas(60, t)).toBeLessThan((dusmanGucuYas(60, t) - dusmanGucuYas(59, t)) * 1.1);
+      // 70→80 artışı, 60→70 artışından en fazla ~%35 büyük (hızlanma yok)
+      expect(dusmanGucuYas(80, t) - dusmanGucuYas(70, t)).toBeLessThan((dusmanGucuYas(70, t) - dusmanGucuYas(60, t)) * 1.5);
+    }
+    expect(DUSMAN_PARAMETRELERI.haydut.oran).toBeLessThan(DUSMAN_PARAMETRELERI.sinir.oran);
+    expect(DUSMAN_PARAMETRELERI.sinir.oran).toBeLessThan(DUSMAN_PARAMETRELERI.savas.oran);
+  });
+
   it("çatışma baskın/av olabilir; sonuçta düşman kaybı, kayıp (yaralı ≥ ölü) ve ganimet tutarlıdır; yenilgide ganimet yok", () => {
     const sonuclar: ReturnType<typeof barisCatismaOtomatik>[] = [];
     for (let n = 0; n < 60; n++) {

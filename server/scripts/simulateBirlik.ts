@@ -320,6 +320,21 @@ for (const cag of CAGLAR) {
     console.log(
       `  zafer% haydut/sınır/savaş = ${(["haydut", "sinir", "savas"] as const).map((k) => { const z = omurler.reduce((t, o) => t + o.zafer[k][0], 0); const n = omurler.reduce((t, o) => t + o.zafer[k][1], 0); return n ? `${f((z / n) * 100, 0)} (n=${n})` : "-"; }).join(" / ")}`
     );
+    if (process.env.SIM_DEKAD) {
+      // 10 yıllık yaş dekadlarında: ort/medyan er, askerî güç, "ele kalan" (kasaya giren net, nominal ve enflasyonsuz-reel) ve ordu neti. Yalnız o dekadda hâlâ oyunda olan (batmamış) ömürler.
+      console.log(`  DEKAD [${tarz}]: yaş | n | er ort | güç ort/medyan | ele kalan/yıl nominal ort/medyan | reel ort | ordu neti ort`);
+      for (const [a, b] of [[15, 19], [20, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 79]] as const) {
+        const idx = (o: Omur) => Array.from({ length: b - a + 1 }, (_, k) => a - 15 + k).filter((i) => i < o.er.length);
+        const sel = omurler.filter((o) => idx(o).length > 0);
+        if (!sel.length) continue;
+        const yillar = (fn: (o: Omur, i: number) => number) => sel.flatMap((o) => idx(o).map((i) => fn(o, i)));
+        const g = yillar((o, i) => o.guc[i]);
+        const eleKalan = yillar((o, i) => o.cebineGercek[i]);
+        console.log(
+          `    ${a}-${b} | ${sel.length} | ${f(ort(yillar((o, i) => o.er[i])), 0)} | ${f(ort(g), 0)} / ${f(med(g), 0)} | ${f(ort(eleKalan), 0)} / ${f(med(eleKalan), 0)} | ${f(ort(yillar((o, i) => o.cebineGercek[i] / o.enf[i])), 0)} | ${f(ort(yillar((o, i) => o.net[i])), 0)}`
+        );
+      }
+    }
     console.log(
       `[${tarz.padEnd(8)}] net@30/40/50 = ${f(yasNet(30))}/${f(yasNet(40))}/${f(yasNet(50))} | er@60 ort ${f(ort(er60), 0)} med ${f(med(er60), 0)} | pay@60 ${f(ort(omurler.map((o) => o.pay[Math.min(o.pay.length - 1, 44)] ?? 0)))}% | ganimet/gelir ${f(ganimet * 100, 0)}% | savaş sonrası kalan ${savasKalan.length ? f(med(savasKalan) * 100, 0) + "%" : "-"} (n=${savasKalan.length}) | batan ${f((omurler.filter((o) => o.batti).length / N) * 100, 0)}% | ${rutbeOrt.join(" ")}`
     );
