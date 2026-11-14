@@ -289,8 +289,8 @@ describe("limitler ve yeni er katılımı", () => {
     expect(erSayisi(s)).toBe(komutaLimiti(s));
     expect(b.kalite.orta).toBe(r.eklenen);
     expect(r.maliyet).toBe(0); // teçhizat yükseltme/katılım ücretsiz (yalnız yıllık bakım)
-    // talim = 60 × 20 / (20 + eklenen)
-    expect(b.talim).toBeCloseTo((60 * 20) / (20 + r.eklenen), 4);
+    // talim = (60 × 20 + giriş talimi 30 × eklenen) / (20 + eklenen)
+    expect(b.talim).toBeCloseTo((60 * 20 + 30 * r.eklenen) / (20 + r.eklenen), 4);
   });
 
   it("yeni erler hedef kaliteyle gelir; teçhizat ücreti yok", () => {
