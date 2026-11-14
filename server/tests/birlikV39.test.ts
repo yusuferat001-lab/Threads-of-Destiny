@@ -643,3 +643,85 @@ describe("v52 yağma türüne göre savaş yılı kaybı", () => {
     }
   });
 });
+
+describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", () => {
+  function savasHazir() {
+    const s = asker();
+    s.rutbe_seviye = 3;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 100;
+    birlikAl(s).kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+    s.para = 100000;
+    s.ulke.savasta = true;
+    savasBaslat(s);
+    return s;
+  }
+  it("paralı asker: iki seviye (%20 / %40), peşin 6,4 + yıllık 2,4 er başı, moral −7 / −14; savaşta bir kez", async () => {
+    const { kiralikOrduTut, kiralikOnizleme } = await import("../src/game/birlikIslem");
+    const { KIRALIK_SEVIYELERI, KIRALIK_PESIN, KIRALIK_YILLIK } = await import("../src/data/birlik");
+    expect([KIRALIK_PESIN, KIRALIK_YILLIK]).toEqual([6.4, 2.4]);
+    for (const [sev, adet, moral] of [["kucuk", 20, -7], ["buyuk", 40, -14]] as const) {
+      const s = savasHazir();
+      const b = birlikAl(s);
+      b.moral = 60;
+      const o = kiralikOnizleme(s, bg(s), sev);
+      expect(o.er).toBe(adet);
+      expect(o.gucSonra).toBeGreaterThan(o.gucOnce);
+      const para0 = s.para;
+      const r = kiralikOrduTut(s, bg(s), sev);
+      expect(r.adet).toBe(adet);
+      expect(para0 - s.para).toBeCloseTo(adet * 6.4 * bg(s).giderEnflasyon, 3);
+      expect(b.moral).toBe(60 + moral);
+      expect(KIRALIK_SEVIYELERI[sev].moral).toBe(moral);
+      expect(birlikHesapla(s, bg(s)).kiralikMasrafi).toBeCloseTo(adet * 2.4 * bg(s).giderEnflasyon, 3);
+      expect(() => kiralikOrduTut(s, bg(s), sev)).toThrow();
+    }
+  });
+  it("seferberlik penceresi tam sayı er ve güç yazar; küçük çağrı ücretsiz, büyükler peşin ücretli; ücret düşülür", async () => {
+    const { savasKarariDurumu, savasKarariVer, savasKarariHazirla } = await import("../src/game/birlikIslem");
+    const s = savasHazir();
+    const b = birlikAl(s);
+    b.savas = null;
+    const d = savasKarariDurumu(s, bg(s))!;
+    const sec = d.adimlar.find((a) => a.adim === "seferberlik")!.secenekler;
+    expect(sec.map((x) => x.id)).toEqual(["secme", "dengeli", "genel"]);
+    expect(sec[0].aciklama.tr).toContain("+10 er (100 → 110)");
+    expect(sec[0].aciklama.tr).toContain("ücretsiz");
+    expect(sec[1].aciklama.tr).toContain("+20 er");
+    expect(sec[2].aciklama.tr).toContain("+30 er");
+    expect(sec[2].aciklama.tr).toContain("peşin");
+    expect(sec[2].aciklama.tr).toMatch(/askerî güç \d+ → \d+/);
+    const k = savasKarariHazirla(s)!;
+    expect(k.adimlar[0]).toBe("seferberlik");
+    const para0 = s.para;
+    savasKarariVer(s, "genel", bg(s));
+    expect(s.para).toBeLessThan(para0);
+    expect(birlikAl(s).savas!.seferberlik_er).toBe(30);
+  });
+  it("savaşta asker başı ödeme yalnız ana kadroya (seferber hariç)", () => {
+    const s = savasHazir();
+    const e = bg(s).enflasyon;
+    const yalin = birlikHesapla(s, bg(s));
+    seferberlikUygula(s, "genel", bg(s));
+    const sef = birlikHesapla(s, bg(s));
+    expect(sef.sold).toBeCloseTo(yalin.sold, 6);
+    expect(yalin.sold).toBeCloseTo(6 * e + 100 * 0.45 * e, 3);
+  });
+  it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
+    const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");
+    expect(CATISMA_ORDU_MORALI.haydut).toEqual({ zafer: 3, yenilgi: -3 });
+    expect(CATISMA_ORDU_MORALI.sinir).toEqual({ zafer: 5, yenilgi: -6 });
+    expect(CATISMA_KISI_MORALI.sinir.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.haydut.yenilgi);
+    expect(SAVAS_KISI_MORALI.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.sinir.yenilgi);
+    const s = asker();
+    const b = birlikAl(s);
+    b.catisma_bekleyen = { yil: s.yil, tur: "sinir", baskin: false, dusmanTur: "karma", dusmanGuc: 5 };
+    b.moral = 50;
+    s.mutluluk = 50;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    barisCatismaCoz(s, b, bg(s), "saldiri");
+    rnd.mockRestore();
+    expect(b.moral).toBeGreaterThanOrEqual(55); // +5 sınır zaferi (+ ilk zaferde madalya morali)
+    expect(s.mutluluk).toBe(52);
+  });
+});

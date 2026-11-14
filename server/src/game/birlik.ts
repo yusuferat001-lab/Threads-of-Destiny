@@ -620,7 +620,9 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const mC = masrafCarpani(state);
   const soldTam = SOLD[rutbe] * bg.enflasyon * (1 + doktrin.sold + (yol.sold ?? 0));
   // Maaş kalemi tek: sabit kısım (savaşta aynen) + asker başı ödeme (savaşta devlet %30 fazla öder, oyuncuya gelir).
-  const erBasiOdeme = er * ER_BASI_GELIR * bg.enflasyon * (savasta ? SAVAS_ER_BASI_CARPANI : 1);
+  // Asker başı ödeme yalnız ana kadroya: savaşta çağrılan seferber erler ödeme almaz (kiralık erler zaten ordu sayısında yok).
+  const odemeEri = Math.max(0, er - (savasta ? Math.round(b.savas?.seferberlik_er ?? 0) : 0));
+  const erBasiOdeme = odemeEri * ER_BASI_GELIR * bg.enflasyon * (savasta ? SAVAS_ER_BASI_CARPANI : 1);
   const sold = r2(soldTam + erBasiOdeme);
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)

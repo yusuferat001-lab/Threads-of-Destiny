@@ -1197,7 +1197,14 @@ export interface BirlikGorunumu {
   };
   kale: number;
   emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
-  kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
+  kiralik: {
+    aktif: boolean;
+    er: number;
+    ucret: number;
+    mumkun: boolean;
+    /** İki seviye: tam sayı er, peşin ve yıllık ücret, askerî güç (şimdiki → sonraki). */
+    seviyeler: { id: 'kucuk' | 'buyuk'; ad: DilMetni; er: number; pesin: number; yillik: number; gucOnce: number; gucSonra: number }[];
+  };
   hesap: {
     soldAdi: DilMetni;
     savasOdenegiMi: boolean;

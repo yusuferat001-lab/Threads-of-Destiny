@@ -1,4 +1,5 @@
 import { subayToplami, SUBAY_TAVANLARI, TAHMIN_ARALIGI_TABAN } from "./subay";
+import { isletmeBaglami } from "./stateManager";
 import type {
   CatismaKarariDurumu,
   CatismaSonucuGorunum,
@@ -74,7 +75,9 @@ import {
   TUR_TANIMLARI,
   turGucluZayif,
   EMIRLER,
-  KIRALIK_ORAN,
+  KIRALIK_SEVIYELERI,
+  KIRALIK_SIRASI,
+  type KiralikSeviye,
   MIN_CEKIRDEK_ER,
   KIRALIK_PESIN,
   KIRALIK_YILLIK,
@@ -323,19 +326,41 @@ export function terhisEt(state: CharacterState, adet: number, bg: IsletmeBaglami
   return { maliyet: 0, iade, adet: n };
 }
 
-/** Kiralık ordu: savaş süresince ordunun %40'ı kadar eğitimli paralı tutar (peşin ücret; yıllık ücret gider hesabında). */
-export function kiralikOrduTut(state: CharacterState, bg: IsletmeBaglami): IslemSonucu {
+/** Bir kiralık seviyesinin tam sayı karşılığı: er, peşin ve yıllık ücret, askerî güç önizlemesi (şimdiki → sonraki). */
+export function kiralikOnizleme(state: CharacterState, bg: IsletmeBaglami, seviye: KiralikSeviye) {
+  const sv = KIRALIK_SEVIYELERI[seviye];
+  const er = erSayisi(state);
+  const n = Math.round(er * sv.oran);
+  const klon = structuredClone(state);
+  const kb = birlikAl(klon);
+  const savas = kb.savas ?? savasBaslat(klon);
+  savas.kiralik_er = n;
+  return {
+    id: seviye,
+    ad: sv.ad,
+    er: n,
+    pesin: r2(n * KIRALIK_PESIN * bg.giderEnflasyon),
+    yillik: r2(n * KIRALIK_YILLIK * bg.giderEnflasyon),
+    gucOnce: Math.round(gucHesapla(state, { enflasyon: bg.enflasyon }).guc),
+    gucSonra: Math.round(gucHesapla(klon, { enflasyon: bg.enflasyon }).guc),
+  };
+}
+
+/** Kiralık ordu (paralı asker): savaş başına bir kez, iki seviyeden biri; peşin ücret + savaş boyu yıllık ücret; ordu morali düşer. */
+export function kiralikOrduTut(state: CharacterState, bg: IsletmeBaglami, seviye: KiralikSeviye = "buyuk"): IslemSonucu {
   const b = birlikAl(state);
   hapisYolculuk(state);
   if (!state.ulke.savasta) throw new Error("Kiralık ordu yalnız savaşta tutulur.");
+  if (!KIRALIK_SIRASI.includes(seviye)) throw new Error("Geçersiz kiralık ordu seviyesi.");
   const sv = b.savas ?? savasBaslat(state);
   if ((sv.kiralik_er ?? 0) > 0) throw new Error("Kiralık ordu zaten tutuldu.");
-  const n = Math.round(erSayisi(state) * KIRALIK_ORAN);
+  const n = Math.round(erSayisi(state) * KIRALIK_SEVIYELERI[seviye].oran);
   if (n <= 0) throw new Error("Kiralayacak kadar ordun yok.");
   const maliyet = r2(n * KIRALIK_PESIN * bg.giderEnflasyon);
   gucParaKontrol(state, maliyet);
   state.para = r2(state.para - maliyet);
   sv.kiralik_er = n;
+  b.moral = clamp(b.moral + KIRALIK_SEVIYELERI[seviye].moral, 0, 100);
   birlikSenkron(state, bg.enflasyon);
   return { maliyet, iade: 0, adet: n };
 }
@@ -476,7 +501,27 @@ function adimSecenekleri(state: CharacterState, adim: string): SavasKarariSecene
   const cag = state.cag;
   switch (adim) {
     case "seferberlik":
-      return SEFERBERLIK_SIRASI.map((id) => ({ id, ad: SEFERBERLIK_TANIMLARI[id].ad, aciklama: SEFERBERLIK_TANIMLARI[id].aciklama }));
+      return SEFERBERLIK_SIRASI.map((id) => {
+        const t = SEFERBERLIK_TANIMLARI[id];
+        // Tam sayı önizleme: çağrılacak er, toplam er ve askerî güç (şimdiki → sonraki), peşin ücret.
+        const bg = isletmeBaglami(state);
+        const er0 = erSayisi(state);
+        const g0 = Math.round(gucHesapla(state, { enflasyon: bg.enflasyon }).guc);
+        const klon = structuredClone(state);
+        const n = seferberlikUygula(klon, id, bg);
+        const g1 = Math.round(gucHesapla(klon, { enflasyon: bg.enflasyon }).guc);
+        const ucret = r2(n * t.ucret * bg.giderEnflasyon);
+        const para = state.para_birimi;
+        const yetmez = ucret > Math.max(0, state.para) && ucret > 0;
+        return {
+          id,
+          ad: t.ad,
+          aciklama: {
+            tr: `${t.aciklama.tr} +${n} er (${er0} → ${er0 + n}), askerî güç ${g0} → ${g1}, ${ucret > 0 ? `peşin ${ucret} ${para}${yetmez ? " (paran yetmiyor)" : ""}` : "ücretsiz"}.`,
+            en: `${t.aciklama.en} +${n} men (${er0} → ${er0 + n}), strength ${g0} → ${g1}, ${ucret > 0 ? `${ucret} ${para} up front${yetmez ? " (you cannot afford it)" : ""}` : "free"}.`,
+          },
+        };
+      });
     case "emir":
       return EMIRLER.filter((e) => e.seviye === emirSeviyesi(rutbeIndeksi(state))).map((e) => ({ id: e.id, simge: e.simge, ad: e.ad, aciklama: e.aciklama }));
     case "arazi": {
@@ -557,6 +602,9 @@ export function savasKarariVer(state: CharacterState, secim: string, bg: Isletme
   if (!gecerli.includes(secim)) throw new Error("Geçersiz seçim.");
   if (adim === "seferberlik") {
     k.seferberlik = secim as BirlikSeferberlik;
+    const tSef = SEFERBERLIK_TANIMLARI[secim as BirlikSeferberlik];
+    const ucretSef = Math.round(erSayisi(state) * tSef.er) * tSef.ucret * bg.giderEnflasyon;
+    if (ucretSef > 0 && ucretSef > Math.max(0, state.para)) throw new Error("Bu seferberlik için paran yetmiyor.");
     seferberlikUygula(state, secim as BirlikSeferberlik, bg);
   } else if (adim === "emir") {
     const sv = b.savas ?? savasBaslat(state);
@@ -773,7 +821,7 @@ export interface BirlikGorunumu {
   /** Ele geçirilen kale sayısı, savaşta geçerli komutan emri ve kiralık ordu durumu. */
   kale: number;
   emir: { ad: { tr: string; en: string }; simge: string; aciklama: { tr: string; en: string } } | null;
-  kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
+  kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean; seviyeler: ReturnType<typeof kiralikOnizleme>[] };
   hesap: {
     /** Maaşın çağ+ülkeye göre adı; savaşta "savaş ödeneği" olarak ödenir. */
     soldAdi: { tr: string; en: string };
@@ -987,8 +1035,9 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
     kiralik: {
       aktif: (b.savas?.kiralik_er ?? 0) > 0,
       er: b.savas?.kiralik_er ?? 0,
-      ucret: r2(Math.round(er * KIRALIK_ORAN) * KIRALIK_PESIN * bg.giderEnflasyon),
-      mumkun: !!state.ulke.savasta && (b.savas?.kiralik_er ?? 0) === 0 && Math.round(er * KIRALIK_ORAN) > 0,
+      ucret: r2(Math.round(er * KIRALIK_SEVIYELERI.kucuk.oran) * KIRALIK_PESIN * bg.giderEnflasyon),
+      mumkun: !!state.ulke.savasta && (b.savas?.kiralik_er ?? 0) === 0 && Math.round(er * KIRALIK_SEVIYELERI.kucuk.oran) > 0,
+      seviyeler: state.ulke.savasta && (b.savas?.kiralik_er ?? 0) === 0 ? KIRALIK_SIRASI.map((sv) => kiralikOnizleme(state, bg, sv)) : [],
     },
     hesap: {
       soldAdi: state.ulke.savasta ? { tr: "Savaş ödeneği", en: "War allowance" } : maasAdi(state.cag, state.bolge),

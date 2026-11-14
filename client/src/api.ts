@@ -294,8 +294,8 @@ export function birlikKusatma(stateId: string, seviye: number) {
 export function birlikTerhis(stateId: string, adet: number) {
   return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/terhis`, { method: 'POST', body: JSON.stringify({ adet }) });
 }
-export function birlikKiralik(stateId: string) {
-  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kiralik`, { method: 'POST', body: '{}' });
+export function birlikKiralik(stateId: string, seviye: 'kucuk' | 'buyuk') {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kiralik`, { method: 'POST', body: JSON.stringify({ seviye }) });
 }
 export function birlikIkmalDegistir(stateId: string, id: string) {
   return istek<BirlikYaniti & { ikmal: string }>(`/api/game/${stateId}/birlik/ikmal`, { method: 'POST', body: JSON.stringify({ id }) });

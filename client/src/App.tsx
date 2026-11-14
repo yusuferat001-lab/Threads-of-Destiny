@@ -1840,7 +1840,7 @@ function App() {
   const birlikTechizatHandler = (seviye: 'dusuk' | 'orta' | 'yuksek') => birlikEylemHandler(() => birlikTechizatSec(karakter!.id, seviye));
   const birlikBirlikHandler = (turler: BirlikTur[]) => birlikEylemHandler(() => birlikBirlikSec(karakter!.id, turler));
   const birlikKusatmaHandler = (seviye: number) => birlikEylemHandler(() => birlikKusatma(karakter!.id, seviye));
-  const birlikKiralikHandler = () => birlikEylemHandler(() => birlikKiralik(karakter!.id));
+  const birlikKiralikHandler = (seviye: 'kucuk' | 'buyuk') => birlikEylemHandler(() => birlikKiralik(karakter!.id, seviye));
   const birlikTerhisHandler = (adet: number) => birlikEylemHandler(() => birlikTerhis(karakter!.id, adet));
 
   async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) {

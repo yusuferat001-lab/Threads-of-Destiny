@@ -17,7 +17,7 @@ interface Props {
   onBirlikSec: (turler: BirlikTur[]) => void;
   onKusatma: (seviye: number) => void;
   onTerhis: (adet: number) => void;
-  onKiralik?: () => void;
+  onKiralik?: (seviye: 'kucuk' | 'buyuk') => void;
   onIkmal?: (id: string) => void;
   onYatirim: (yatirimId: string) => void;
   onYatirimDusur?: (yatirimId: string) => void;
@@ -103,7 +103,10 @@ const M = {
   savasYok: { tr: 'Şu an savaş yok.', en: 'No war right now.' },
   emirBaslik: { tr: 'Komutan emri', en: 'Commander\'s order' },
   kale: { tr: 'Ele geçirilen kale', en: 'Castles held' },
-  kiralikTut: { tr: 'Kiralık ordu tut', en: 'Hire mercenaries' },
+  kiralikTut: { tr: 'Paralı asker tut', en: 'Hire mercenaries' },
+  erK: { tr: 'er', en: 'men' },
+  pesin: { tr: 'peşin', en: 'up front' },
+  yillikUcret: { tr: 'yıllık', en: 'yearly' },
   kiralikVar: { tr: 'Kiralık ordu', en: 'Hired troops' },
   gKiralik: { tr: 'Kiralık ordu', en: 'Hired troops' },
   gKale: { tr: 'Kale geliri', en: 'Castle income' },
@@ -601,9 +604,14 @@ export function BirlikPaneli({
                   </span>
                 )}
                 {onKiralik && b.kiralik.mumkun && (
-                  <button className="ikincil" disabled={yukleniyor} onClick={onKiralik}>
-                    {t('kiralikTut')} · {formatPara(b.kiralik.ucret)} {pb}
-                  </button>
+                  <span className="savas-ikmal-sec">
+                    <small>{t('kiralikTut')}:</small>{' '}
+                    {b.kiralik.seviyeler.map((sv) => (
+                      <button key={sv.id} type="button" className="ikincil" disabled={yukleniyor} onClick={() => onKiralik(sv.id)}>
+                        {d(sv.ad)} · +{sv.er} {t('erK')} · {t('guc')} {sv.gucOnce} → {sv.gucSonra} · {t('pesin')} {formatPara(sv.pesin)} {pb} · {t('yillikUcret')} {formatPara(sv.yillik)} {pb}
+                      </button>
+                    ))}
+                  </span>
                 )}
               </div>
             )}

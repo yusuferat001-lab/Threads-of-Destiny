@@ -412,7 +412,8 @@ gameRouter.post("/:id/birlik/kusatma", async (req, res) => {
 
 gameRouter.post("/:id/birlik/kiralik", async (req, res) => {
   try {
-    res.json(await birlikKiralik(req.params.id));
+    const { seviye } = req.body ?? {};
+    res.json(await birlikKiralik(req.params.id, seviye === "kucuk" ? "kucuk" : "buyuk"));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

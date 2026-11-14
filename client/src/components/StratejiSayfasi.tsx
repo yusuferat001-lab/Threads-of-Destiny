@@ -81,7 +81,7 @@ interface StratejiSayfasiProps {
   onBirlikSec?: (turler: BirlikTur[]) => void;
   onBirlikKusatma?: (seviye: number) => void;
   onBirlikTerhis?: (adet: number) => void;
-  onBirlikKiralik?: () => void;
+  onBirlikKiralik?: (seviye: 'kucuk' | 'buyuk') => void;
   onBirlikIkmal?: (id: string) => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeYatirimDusur?: (yatirimId: string) => void;

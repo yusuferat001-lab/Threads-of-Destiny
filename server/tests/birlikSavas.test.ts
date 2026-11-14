@@ -46,6 +46,8 @@ import {
   SEFERBERLIK_KALMA_YENILGI,
   SEFERBERLIK_KALMA_ZAFER,
   SEFERBERLIK_TANIMLARI,
+  SEFERBERLIK_SIRASI,
+  SEFERBERLIK_YENILGI_FIRAR_CARPANI,
   YARALI_ORAN,
 } from "../src/data/birlik";
 import { birlikKararUygula } from "../src/game/birlikIslem";
@@ -221,14 +223,14 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
     expect(SAVAS_KAYIP_TAVANI.yenilgi).toEqual({ olu: 38, firar: 14 });
     const s = asker();
     ordu(s, 100);
-    const sv = savasa(s, "genel"); // 100 + 50 = 150
-    expect(sv.baslangic_toplam).toBe(150);
+    const sv = savasa(s, "genel"); // 100 + 30 = 130
+    expect(sv.baslangic_toplam).toBe(130);
     sv.sonuc = "zafer";
-    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 16, firar: 9 }); // 150 × %11 / %6
+    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 14, firar: 7 }); // 130 × %11 / %6
     sv.sonuc = "yenilgi";
-    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 57, firar: 21 }); // 150 × %38 / %14
-    sv.olu_toplam = 55;
-    sv.firar_toplam = 21;
+    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 49, firar: 18 }); // 130 × %38 / %14
+    sv.olu_toplam = 47;
+    sv.firar_toplam = 18;
     expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 2, firar: 0 });
   });
 
@@ -259,28 +261,58 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
     const s = asker();
     ordu(s, 100);
     const b = birlikAl(s);
-    const sv = savasa(s, "genel"); // 100 ana + 50 seferber
-    expect(sv.seferberlik_er).toBe(50);
+    const sv = savasa(s, "genel"); // 100 ana + 30 seferber
+    expect(sv.seferberlik_er).toBe(30);
     const k = kayipUygula(s, b, { oluPct: 20, firarPct: 0 });
-    // 150 × %20 ≈ 30 ölü; seferberler payı 1/3 ≈ 10
-    expect(k.oluLevy).toBeGreaterThanOrEqual(Math.floor((k.olu * 50) / 150) - 1);
-    expect(k.oluLevy).toBeLessThanOrEqual(Math.ceil((k.olu * 50) / 150) + 1);
-    expect(sv.seferberlik_er).toBe(50 - k.oluLevy);
+    // 130 × %20 ≈ 26 ölü; seferberler payı 30/130
+    expect(k.oluLevy).toBeGreaterThanOrEqual(Math.floor((k.olu * 30) / 130) - 1);
+    expect(k.oluLevy).toBeLessThanOrEqual(Math.ceil((k.olu * 30) / 130) + 1);
+    expect(sv.seferberlik_er).toBe(30 - k.oluLevy);
   });
 });
 
 describe("seferberlik ve savaş sonu terhis", () => {
-  it("üç seçenek: genel +%50 düşük, dengeli +%28 orta, seçkin +%12 yüksek teçhizat; gönüllü yok", () => {
-    expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.5);
-    expect(SEFERBERLIK_TANIMLARI.dengeli.er).toBe(0.28);
-    expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.12);
-    for (const [tur, kalite] of [["genel", "dusuk"], ["dengeli", "orta"], ["secme", "yuksek"]] as const) {
+  it("üç seçenek: Gazi Çağrısı %10 orta (ücretsiz), Eli Silah Tutanlar %20 düşük, Tüm Erkekler %30 düşük; moral −3/−7/−15; yıllık firar %5/7/10", () => {
+    expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.1);
+    expect(SEFERBERLIK_TANIMLARI.dengeli.er).toBe(0.2);
+    expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.3);
+    expect(SEFERBERLIK_SIRASI).toEqual(["secme", "dengeli", "genel"]);
+    expect([SEFERBERLIK_TANIMLARI.secme.moral, SEFERBERLIK_TANIMLARI.dengeli.moral, SEFERBERLIK_TANIMLARI.genel.moral]).toEqual([-3, -7, -15]);
+    expect([SEFERBERLIK_TANIMLARI.secme.firar, SEFERBERLIK_TANIMLARI.dengeli.firar, SEFERBERLIK_TANIMLARI.genel.firar]).toEqual([5, 7, 10]);
+    expect(SEFERBERLIK_TANIMLARI.secme.ucret).toBe(0);
+    for (const [tur, kalite, adet] of [["secme", "orta", 10], ["dengeli", "dusuk", 20], ["genel", "dusuk", 30]] as const) {
       const s = asker();
       ordu(s, 100);
       const sv = savasa(s, tur);
+      expect(sv.seferberlik_er).toBe(adet);
       expect(sv.seferberlik_kalite).toBe(kalite);
-      expect(birlikAl(s).kalite[kalite]).toBe(100 * 0 + (kalite === "dusuk" ? 100 : 0) + sv.seferberlik_er);
+      expect(birlikAl(s).kalite[kalite]).toBe((kalite === "dusuk" ? 100 : 0) + adet);
     }
+  });
+
+  it("seferber erler her savaş yılı firar eder (en az %5; büyük çağrıda daha çok); yenilgide son 2 yıl daha yüksek; savaş tavanına sayılmaz", () => {
+    const ort = (tur: "secme" | "dengeli" | "genel", yenilgi: boolean) => {
+      let toplam = 0;
+      const N = 60;
+      for (let n = 0; n < N; n++) {
+        const s = asker();
+        ordu(s, 200);
+        const b = birlikAl(s);
+        const sv = savasa(s, tur);
+        const once = sv.seferberlik_er;
+        if (yenilgi) {
+          sv.sonuc = "yenilgi";
+          sv.yil_sayac = 3;
+        }
+        const pct = SEFERBERLIK_TANIMLARI[tur].firar * (yenilgi ? SEFERBERLIK_YENILGI_FIRAR_CARPANI : 1);
+        const k = kayipUygula(s, b, { oluPct: 0, firarPct: 0, levyFirarPct: pct });
+        toplam += k.firarLevy / once;
+      }
+      return (toplam / N) * 100;
+    };
+    expect(ort("secme", false)).toBeGreaterThan(3.5);
+    expect(ort("genel", false)).toBeGreaterThan(ort("secme", false));
+    expect(ort("genel", true)).toBeGreaterThan(ort("genel", false));
   });
 
   it("savaş sonu: kalan seferber zaferde %35–45, yenilgide %20–25 (hayatta kalanlar üzerinden), yaralı/sağlam oransal; ana ordu değişmez", () => {
@@ -421,10 +453,10 @@ describe("görev geliri ve erzak tabloları", () => {
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 6; asker başı 0,15, savaşta ×4 (0,60)", () => {
+  it("sabit maaş 6; asker başı 0,15, savaşta ×3 (0,45; yalnız ana kadro)", () => {
     expect(SOLD).toEqual([6, 6, 6, 6, 6]);
     expect(ER_BASI_GELIR).toBe(0.15);
-    expect(SAVAS_ER_BASI_CARPANI).toBe(4);
+    expect(SAVAS_ER_BASI_CARPANI).toBe(3);
     const s = asker();
     ordu(s, 100);
     const baris = birlikHesapla(s, bg(s));
@@ -432,7 +464,7 @@ describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
     const savas = birlikHesapla(s, bg(s));
     const e = bg(s).enflasyon;
     expect(baris.sold).toBeCloseTo(6 * e + 100 * 0.15 * e, 3);
-    expect(savas.sold).toBeCloseTo(6 * e + 100 * 0.6 * e, 3);
+    expect(savas.sold).toBeCloseTo(6 * e + 100 * 0.45 * e, 3);
   });
 
   it("4. yıl (sonuç yılı) kayıpları büyüdü ve beklenen toplam kullanıcı tavanının altında kalır", () => {

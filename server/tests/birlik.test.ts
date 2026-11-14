@@ -708,7 +708,7 @@ describe("savaş", () => {
     expect(() => savasKarariVer(s, "olmayan", bg(s))).toThrow(/Geçersiz seçim/);
   });
 
-  it("seferberlik türleri: genel çağrı en çok er, seçkin birlik yüksek kalite ve eğitimli", () => {
+  it("seferberlik türleri: Tüm Erkekler en çok er, Gazi Çağrısı orta kalite ve eğitimli; moral büyük çağrıda daha çok düşer", () => {
     function dene(tur: "genel" | "secme" | "dengeli") {
       const s = asker();
       s.rutbe_seviye = 3;
@@ -725,8 +725,8 @@ describe("savaş", () => {
     const d = dene("dengeli");
     expect(g.eklenen).toBeGreaterThan(d.eklenen);
     expect(d.eklenen).toBeGreaterThan(sc.eklenen);
-    expect(sc.b.kalite.yuksek).toBeGreaterThan(0);
-    expect(g.b.kalite.yuksek).toBe(0);
+    expect(sc.b.kalite.orta).toBeGreaterThan(0);
+    expect(g.b.kalite.orta).toBe(0);
     expect(g.b.moral).toBeLessThan(sc.b.moral);
   });
 

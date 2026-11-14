@@ -5504,8 +5504,8 @@ export function birlikBirlikSec(id: string, turler: string[]) {
 export function birlikKusatma(id: string, seviye: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: kusatmaAyarla(state, seviye, bg) }));
 }
-export function birlikKiralik(id: string) {
-  return birlikEylemi(id, (state, bg) => ({ sonuc: kiralikOrduTut(state, bg) }));
+export function birlikKiralik(id: string, seviye?: "kucuk" | "buyuk") {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: kiralikOrduTut(state, bg, seviye) }));
 }
 export function birlikTerhis(id: string, adet: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: terhisEt(state, adet, bg) }));
