@@ -238,3 +238,11 @@
     font-size: 0.7rem;
   }
 }
+
+/* Alt gezinme olay beklerken devre dışı: %50 opaklık + küçük etiket okunmaz oluyordu.
+   Hâlâ "kapalı" okunsun ama etiket/ikon seçilebilsin (~6:1 kontrast). */
+@media (max-width: 767px) {
+  .alt-gezinme-buton:disabled {
+    opacity: 0.7;
+  }
+}
