@@ -85,6 +85,7 @@ import {
   FIRAR_MORAL_KATSAYI,
   GANIMET_PAYI_TANIMLARI,
   IKMAL_TANIMLARI,
+  YAGMA_YIL,
   INISIYATIF_OYUNCU_SECER,
   INISIYATIF_ZORUNLU_SALDIRI,
   KALITE_FIYATI,
@@ -618,6 +619,13 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   return { kanatZafer, genelZafer, oran: R, arazi, inisiyatif };
 }
 
+/** Yağma yıllarında (savaşın ilk YAGMA_YIL yılı) seçilen yağma türünün ölü/firar çarpanı; diğer yıllarda 1. `yil` savaşın kaçıncı yılı olduğu (1 tabanlı). */
+export function yagmaKayipCarpani(b: BirlikDurumu, yil: number): number {
+  const sv = b.savas;
+  if (!sv || yil > YAGMA_YIL) return 1;
+  return IKMAL_TANIMLARI[sv.ikmal ?? "yagma_orta"]?.yagma.kayip ?? 1;
+}
+
 /**
  * Savaş Günü penceresi onaylanınca karar savaşı HEMEN çözülür (çatışma + kayıp uygulama); sonuç ekranı için döner.
  * Yıl işleme (`savasYiliCoz`) aynı yıl bu sonucu kullanır, tekrar zar atmaz ve kaybı ikinci kez uygulamaz.
@@ -631,8 +639,9 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
   const konum = catisma.oran < 0.75 ? "ust" : catisma.oran >= 1.2 ? "alt" : "tam";
   const zafer = catisma.genelZafer;
   const t = SAVAS_KARAR_KAYBI[zafer ? "zafer" : "yenilgi"];
-  const oluPct = aralikCek(yariAralik(t.olu, konum));
-  const firarPct = aralikCek(yariAralik(t.firar, konum));
+  const yk = yagmaKayipCarpani(b, (sv.yil_sayac ?? 0) + 1);
+  const oluPct = aralikCek(yariAralik(t.olu, konum)) * yk;
+  const firarPct = aralikCek(yariAralik(t.firar, konum)) * yk;
   const tavan = savasKayipTavani(state, b);
   const kayip = kayipUygula(state, b, { oluPct, firarPct, oluTavan: tavan.olu, firarTavan: tavan.firar });
   const E = dusmanReferansGucu(state) * sv.dusman_orani;
@@ -683,6 +692,7 @@ export interface SavasYili {
 export function savasYiliCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami): SavasYili {
   const sv = b.savas!;
   sv.yil_sayac = (sv.yil_sayac ?? 0) + 1;
+  const yk = yagmaKayipCarpani(b, sv.yil_sayac);
   // Karar savaşı pencere onaylanırken zaten çözüldüyse: kaydı kullan, yeniden zar atma, kaybı ikinci kez uygulama.
   if (sv.gun_cozuldu_yil === state.yil && sv.gun_catisma) {
     return { catisma: sv.gun_catisma, oluPct: 0, firarPct: 0, faz: "karar" };
@@ -691,12 +701,12 @@ export function savasYiliCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
     const catisma = catismaCoz(state, b, bg);
     const konum = catisma.oran < 0.75 ? "ust" : catisma.oran >= 1.2 ? "alt" : "tam";
     const t = SAVAS_KARAR_KAYBI[sv.sonuc!];
-    return { catisma, oluPct: aralikCek(yariAralik(t.olu, konum)), firarPct: aralikCek(yariAralik(t.firar, konum)), faz: "karar" };
+    return { catisma, oluPct: aralikCek(yariAralik(t.olu, konum)) * yk, firarPct: aralikCek(yariAralik(t.firar, konum)) * yk, faz: "karar" };
   }
   if (sv.sonuc == null) {
     let z = Math.random();
     const olay = SAVAS_ON_YIL_OLAYLARI.find((o) => (z -= o.ihtimal) < 0) ?? SAVAS_ON_YIL_OLAYLARI[0];
-    return { catisma: null, oluPct: aralikCek(olay.olu), firarPct: aralikCek(olay.firar), faz: "on" };
+    return { catisma: null, oluPct: aralikCek(olay.olu) * yk, firarPct: aralikCek(olay.firar) * yk, faz: "on" };
   }
   const t = SAVAS_SONRA_KAYBI[sv.sonuc];
   return { catisma: null, oluPct: aralikCek(t.olu), firarPct: aralikCek(t.firar), faz: "sonra" };

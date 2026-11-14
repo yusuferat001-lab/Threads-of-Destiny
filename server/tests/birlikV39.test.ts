@@ -625,3 +625,20 @@ describe("v51 çatışma kayıpları: B paketi, seçim etkisi, kayıp tabanı", 
     expect(kayipCarpani(s)).toBeGreaterThanOrEqual(0.5);
   });
 });
+
+describe("v52 yağma türüne göre savaş yılı kaybı", () => {
+  it("yağma yıllarında (1–3. yıl) sert ×1,3 / orta ×1 / yumuşak ×0,8; 4. yıldan sonra çarpan yok; karar savaşı mağlubiyeti ölü %21–25", async () => {
+    const { yagmaKayipCarpani } = await import("../src/game/birlikYil");
+    const { IKMAL_TANIMLARI, SAVAS_KARAR_KAYBI } = await import("../src/data/birlik");
+    expect(SAVAS_KARAR_KAYBI.yenilgi.olu).toEqual([21, 25]);
+    const s = asker();
+    const sv = savasBaslat(s);
+    const b = birlikAl(s);
+    for (const [id, c] of [["yagma_sert", 1.3], ["yagma_orta", 1], ["yagma_yumusak", 0.8]] as const) {
+      sv.ikmal = id;
+      expect(IKMAL_TANIMLARI[id].yagma.kayip).toBe(c);
+      for (const y of [1, 2, 3]) expect(yagmaKayipCarpani(b, y)).toBe(c);
+      expect(yagmaKayipCarpani(b, 4)).toBe(1);
+    }
+  });
+});

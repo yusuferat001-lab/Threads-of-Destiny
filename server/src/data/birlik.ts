@@ -198,7 +198,7 @@ export const SAVAS_ON_YIL_OLAYLARI: { ihtimal: number; olu: Aralik; firar: Arali
 ];
 export const SAVAS_KARAR_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
   zafer: { olu: [5, 7.5], firar: [1.5, 2.5] },
-  yenilgi: { olu: [22, 30], firar: [7, 10] },
+  yenilgi: { olu: [21, 25], firar: [7, 10] },
 };
 export const SAVAS_SONRA_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
   zafer: { olu: [0.6, 1.4], firar: [0.5, 1.2] },
@@ -745,6 +745,8 @@ export interface YagmaTuru {
   ahlak: number;
   mutluluk: number;
   moral: number;
+  /** Yağma yıllarında (savaşın ilk YAGMA_YIL yılı) savaş yılı ölü ve firar yüzdelerine çarpan: sert yağma halkı ve ordu hırsını çoğaltır. */
+  kayip: number;
 }
 /** Savaş planındaki ikmal kararı = yalnız üç yağma türü (sert / orta / yumuşak). */
 export const IKMAL_TANIMLARI: Record<
@@ -753,21 +755,21 @@ export const IKMAL_TANIMLARI: Record<
 > = {
   yagma_sert: {
     erzakOran: 0, maliyet: 1, sertlik: 2.5, ganimet: 1,
-    yagma: { gucOrani: 0.7, erzakIndirimi: 0.75, ahlak: -3, mutluluk: -3, moral: 4 },
+    yagma: { gucOrani: 0.7, erzakIndirimi: 0.75, ahlak: -3, mutluluk: -3, moral: 4, kayip: 1.3 },
     ad: { tr: "Sert yağma", en: "Harsh plunder" },
-    aciklama: { tr: "Köyleri soyarsın: en çok para; ordu coşar ama halk ezilir, vicdanın ve keyfin kaçar.", en: "You strip the villages bare: the most coin; the men are exalted, but the people suffer and your conscience and spirits sink." },
+    aciklama: { tr: "Köyleri soyarsın: en çok para; ordu coşar ama halk direnir, kayıplar artar, vicdanın ve keyfin kaçar.", en: "You strip the villages bare: the most coin; the men are exalted, but the people fight back, losses rise, and your conscience and spirits sink." },
   },
   yagma_orta: {
     erzakOran: 0, maliyet: 1, sertlik: 1.5, ganimet: 1,
-    yagma: { gucOrani: 0.5, erzakIndirimi: 0.55, ahlak: 0, mutluluk: 0, moral: 0 },
+    yagma: { gucOrani: 0.5, erzakIndirimi: 0.55, ahlak: 0, mutluluk: 0, moral: 0, kayip: 1 },
     ad: { tr: "Orta yağma", en: "Moderate plunder" },
     aciklama: { tr: "Köylerden ölçülü ganimet; ne ordunun ne senin moralin değişir.", en: "Measured loot from the villages; neither the army's morale nor yours shifts." },
   },
   yagma_yumusak: {
     erzakOran: 0, maliyet: 1, sertlik: 0.5, ganimet: 1,
-    yagma: { gucOrani: 0.3, erzakIndirimi: 0.35, ahlak: 3, mutluluk: 3, moral: -4 },
+    yagma: { gucOrani: 0.3, erzakIndirimi: 0.35, ahlak: 3, mutluluk: 3, moral: -4, kayip: 0.8 },
     ad: { tr: "Yumuşak yağma", en: "Gentle plunder" },
-    aciklama: { tr: "Az para toplarsın; halka kıymazsın, vicdanın ve keyfin yerinde olur ama ordu söylenir.", en: "You gather little; you spare the people and your conscience and spirits stay light, but the men grumble." },
+    aciklama: { tr: "Az para toplarsın; halka kıymazsın, kayıplar azalır, vicdanın ve keyfin yerinde olur ama ordu söylenir.", en: "You gather little; you spare the people, losses ease, and your conscience and spirits stay light, but the men grumble." },
   },
 };
 export const IKMAL_SIRASI: BirlikIkmal[] = ["yagma_sert", "yagma_orta", "yagma_yumusak"];
