@@ -109,13 +109,13 @@ import {
   yonetimIstekYap,
   yonetimTalebiKararlastir,
 } from './api';
-import { Banner } from './components/Banner';
 import { UstSerit } from './components/UstSerit';
 import { AileOzetPaneli } from './components/AileOzetPaneli';
 import { SiyasetPaneli } from './components/SiyasetPaneli';
 import { AmacPaneli } from './components/AmacPaneli';
 import { EtkiCipleri } from './components/EtkiCipleri';
 import { KisilikPaneli } from './components/KisilikPaneli';
+import { AcilisEkrani } from './components/AcilisEkrani';
 import { BolgeSahnesi } from './components/BolgeSahnesi';
 import { OlayKutusu, type OlaySonucu } from './components/OlayKutusu';
 import { KarakterAvatari } from './components/KarakterAvatari';
@@ -166,8 +166,8 @@ import { yenilikGosterilmeliMi, yenilikGorulduIsaretle } from './yenilikler';
 import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
 import { goldBakiyeGetir, olumGoldHesapla, goldEkle, olumGoldOdendiMi, olumGoldOdendiIsaretle } from './gold';
-import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, meslekYatkinlikOnizleme } from './bolgeTema';
-import { formatPara, formatYuzde, yatkinlikKitleMetni } from './format';
+import { sonucIkonuGetir, unUnvani } from './bolgeTema';
+import { formatPara } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
@@ -189,6 +189,7 @@ import './ana-ekran.css';
 import './strateji.css';
 import './pc-olay-kutusu.css';
 import './pc-tema.css';
+import './acilis.css';
 import './renk-paleti.css';
 import './strateji-panel.css';
 
@@ -224,21 +225,6 @@ interface SonEtki {
   terfiOldu: boolean;
 }
 
-const MESLEK_SIMGE: Record<string, string> = {
-  Asker: '⚔️',
-  Tüccar: '💰',
-  'Din Adamı': '🙏',
-  Zanaatkâr: '🔨',
-};
-
-/** Meslek/çağ kısa açıklamaları — dile göre i18n sözlüğünden. */
-function meslekAciklama(m: ReturnType<typeof dilCtxYap>['m'], meslek: string): string {
-  if (meslek === 'Asker') return m.meslekAciklamaAsker;
-  if (meslek === 'Tüccar') return m.meslekAciklamaTuccar;
-  if (meslek === 'Din Adamı') return m.meslekAciklamaDinAdami;
-  if (meslek === 'Zanaatkâr') return m.meslekAciklamaZanaatkar;
-  return '';
-}
 function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string {
   if (cag === 'Orta Çağ') return m.cagAciklamaOrtacag;
   if (cag === 'Sanayi Devrimi') return m.cagAciklamaSanayi;
@@ -2667,110 +2653,13 @@ function App() {
       )}
 
       {ekran === 'acilis' && karakter && (
-        <div className="ekran ekran-acilis ekran-kurulum">
-          <KoseTezhibi />
-          <div className="giris-yollar" aria-hidden="true">
-            <KaderYollari />
-          </div>
-          {/* İki sütunlu "kimlik + anlatı" düzeni: solda kalıcı bir kimlik kartı
-             (portre/isim/ülke/kaynaklar/kişilik), sağda anlatı + meslek seçimi.
-             Eski tek-sütunlu istifte dar (560px) aile metni tam genişlikteki
-             (940px) satırların arasında sıkışıp okunaksız görünüyordu — artık
-             her sütunun kendi net genişliği var, hiçbir öğe diğerinin üstüne
-             taşmıyor. */}
-          <div className="acilis-sahne">
-            <aside className="acilis-kimlik">
-              <KarakterAvatari kisilik={karakter.kisilik} giyilenKozmetikler={avatarKozmetikleri} />
-              <h2 className="acilis-kimlik-ad">
-                {karakter.isim && <strong>{karakter.isim}</strong>}
-                <span className="acilis-kimlik-alt">
-                  {bic(m.acilisAileCocugu, aileKokAdi(kt(karakter.aile_meslegi)), enTanimlik(aileKokAdi(kt(karakter.aile_meslegi))))}
-                </span>
-              </h2>
-              <Banner
-                cag={karakter.cag}
-                bolge={karakter.bolge}
-                yil={karakter.yil}
-                ulke={karakter.ulke}
-                hukumdar={karakter.hukumdar}
-              />
-              <div className="acilis-ozet">
-                <span>
-                  💰 {formatPara(karakter.para)} {karakter.para_birimi}
-                </span>
-                <span>❤️ {m.statSaglik} {karakter.saglik}</span>
-                <span>🙂 {m.statMutluluk} {karakter.mutluluk}</span>
-                <span>🏅 {unUnvani(karakter.un, dil)}</span>
-                <span>🎭 {karakter.kisilik.map((k) => kt(k)).join(' · ')}</span>
-              </div>
-
-              {karakter.durumlar.length > 0 && (
-                <p className="acilis-durum">
-                  {bic(m.acilisDurum, karakter.durumlar.map((d) => kt(d.ad)).join(', '))}
-                </p>
-              )}
-
-              <KisilikPaneli
-                kisilik={karakter.kisilik}
-                aileMeslegi={karakter.aile_meslegi}
-                bolge={karakter.bolge}
-                kaynaklar={karakter.yatkinlik_kaynaklari}
-                eksenler={karakter.kisilik_eksenleri}
-                meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
-                meslekYatkinlikSeviyesi={karakter.meslek_yatkinlik_seviyesi}
-                meslek={karakter.meslek}
-                meslekZarBonusu={karakter.meslek_zar_bonusu}
-                meslekMaasCarpani={karakter.meslek_maas_carpani}
-                meslekTecrubeHizi={karakter.meslek_tecrube_hizi}
-              />
-            </aside>
-
-            <div className="acilis-icerik">
-              <p className="acilis-metni">{karakter.acilis_anlatimi}</p>
-
-              {/* Meslek seçimi artık ayrı bir sayfa değil — açılışla aynı ekranda. */}
-              <h3 className="acilis-meslek-baslik">{m.meslekSecBaslik}</h3>
-              <p className="giris-aciklama">{m.meslekSecAlt}</p>
-              <div className="meslek-kartlari acilis-meslek-kartlari">
-                {meslekler.map((meslek) => {
-                  const kategori = MESLEK_KATEGORI[meslek];
-                  const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
-                  const { etiket, simge } = yatkinlikEtiketi(puan, dil);
-                  const onizleme = meslekYatkinlikOnizleme(puan);
-                  const yuzde = (v: number) => formatYuzde(dil, v, true);
-                  return (
-                    <button
-                      key={meslek}
-                      className="meslek-kart"
-                      disabled={yukleniyor}
-                      onClick={() => meslekSecildi(meslek)}
-                    >
-                      <span className="meslek-simge">{MESLEK_SIMGE[meslek] ?? '📜'}</span>
-                      <strong>{kt(meslek)}</strong>
-                      <span className="meslek-aciklama">{meslekAciklama(m, meslek)}</span>
-                      <span className="meslek-yatkinlik">
-                        {simge} {etiket} ({puan > 0 ? '+' : ''}
-                        {puan})
-                      </span>
-                      <span
-                        className={`meslek-yatkinlik-bonus${
-                          onizleme.seviye === 1 ? ' meslek-yatkinlik-malus' : onizleme.seviye === 2 ? ' meslek-yatkinlik-yok' : ''
-                        }`}
-                      >
-                        {onizleme.seviye === 2
-                          ? m.kpYatkinlikYok
-                          : `🎯 ${m.kpYatkinlikZar} ${yuzde(onizleme.zar)} · ${yatkinlikKitleMetni(meslek, dil === 'en' ? 'en' : 'tr', onizleme.musteri)} · ${m.kpYatkinlikTecrube} ${yuzde(onizleme.tecrube)}${
-                              onizleme.sohret > 0 ? ` · ${m.kpYatkinlikSohret} +${onizleme.sohret}` : ''
-                            }`}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              {yukleniyor && <p className="giris-aciklama">{m.yukleniyor}</p>}
-            </div>
-          </div>
-        </div>
+        <AcilisEkrani
+          karakter={karakter}
+          meslekler={meslekler}
+          yukleniyor={yukleniyor}
+          avatarKozmetikleri={avatarKozmetikleri}
+          onMeslekSec={meslekSecildi}
+        />
       )}
 
       {(((ekran === 'oyun' || ekran === 'sonuc') && (senaryo || anaEkranModu)) || yanEkranPc) && karakter && (

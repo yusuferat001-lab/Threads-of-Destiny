@@ -200,3 +200,71 @@ export function BolgeAmblemi({ bolge, cag }: { bolge: string; cag?: string }) {
     </span>
   );
 }
+
+/* ---------------- Meslek madalyonları ---------------- */
+
+const KOYU = '#241a11';
+
+function MeslekIcerik({ meslek }: { meslek: string }) {
+  if (meslek === 'Asker') {
+    // çapraz kılıçlar
+    return (
+      <g>
+        <g stroke={ALTIN} strokeWidth="4.5" strokeLinecap="round" fill="none">
+          <path d="M32 72 L66 26 M68 72 L34 26" />
+          <path d="M25 58 l14 12 M75 58 l-14 12" />
+        </g>
+        <g fill={ALTIN}>
+          <circle cx="28" cy="75" r="3.5" />
+          <circle cx="72" cy="75" r="3.5" />
+        </g>
+      </g>
+    );
+  }
+  if (meslek === 'Tüccar') {
+    // terazi
+    return (
+      <g>
+        <g stroke={ALTIN} strokeWidth="3.5" strokeLinecap="round" fill="none">
+          <path d="M50 26 V72 M38 74 H62 M24 34 H76" />
+          <path d="M24 34 L16 56 M24 34 L32 56 M76 34 L68 56 M76 34 L84 56" />
+        </g>
+        <g fill={ALTIN}>
+          <circle cx="50" cy="25" r="4" />
+          <path d="M14 56 H34 A10 8 0 0 1 14 56 Z" />
+          <path d="M66 56 H86 A10 8 0 0 1 66 56 Z" />
+        </g>
+      </g>
+    );
+  }
+  if (meslek === 'Din Adamı') {
+    // açık kitap + ışık
+    return (
+      <g>
+        <path d="M22 70 Q36 62 50 70 Q64 62 78 70 V46 Q64 38 50 46 Q36 38 22 46 Z" fill={ALTIN} />
+        <path d="M50 46 V70" stroke={KOYU} strokeWidth="2.5" />
+        <path d="M50 34 V22 M36 38 L29 29 M64 38 L71 29" stroke={ALTIN} strokeWidth="3.5" strokeLinecap="round" />
+      </g>
+    );
+  }
+  // Zanaatkâr — örs + çekiç
+  return (
+    <g>
+      <path d="M24 60 H70 L64 68 H56 V74 H64 V80 H34 V74 H44 V68 H34 Q26 68 24 60 Z" fill={ALTIN} />
+      <path d="M68 22 L52 54" stroke={ALTIN} strokeWidth="5" strokeLinecap="round" />
+      <rect x="55" y="17" width="24" height="11" rx="2.5" fill={ALTIN} transform="rotate(30 67 22)" />
+    </g>
+  );
+}
+
+export function MeslekAmblemi({ meslek }: { meslek: string }) {
+  return (
+    <span className="meslek-amblem" aria-hidden="true">
+      <svg viewBox="0 0 100 100" role="presentation">
+        <circle cx="50" cy="50" r="47" fill={KOYU} stroke={ALTIN} strokeWidth="2.5" />
+        <circle cx="50" cy="50" r="42" fill="none" stroke={ALTIN_ACIK} strokeWidth="1" opacity="0.5" />
+        <MeslekIcerik meslek={meslek} />
+      </svg>
+    </span>
+  );
+}

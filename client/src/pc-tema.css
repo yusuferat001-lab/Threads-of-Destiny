@@ -704,8 +704,7 @@
 /* ==== Faz 3: giriş / kurulum / açılış — koyu kahve zemin, kahve kartlar, seçili kart bordo ==== */
 @media (min-width: 768px) {
   .ekran-giris,
-  .ekran-kurulum,
-  .ekran-acilis {
+  .ekran-kurulum {
     background:
       radial-gradient(ellipse at 50% -10%, rgba(230, 193, 122, 0.12), transparent 60%),
       linear-gradient(180deg, #2a1d14 0%, #1d140d 60%, #150f0a 100%);

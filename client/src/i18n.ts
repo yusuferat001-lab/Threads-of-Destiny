@@ -186,6 +186,15 @@ const TR = {
   // ---- Açılış ----
   acilisAileCocugu: '{0} Ailesinin Çocuğu',
   acilisDurum: 'Doğuştan gelen durumun: {0}',
+  acilisHikayeDevam: 'Devamını oku',
+  acilisHikayeDaralt: 'Daralt',
+  acilisYatkinlik1: 'Yatkın değilsin',
+  acilisYatkinlik3: 'Yatkınsın',
+  acilisYatkinlik4: 'Çok yatkınsın',
+  acilisYatkinlik5: 'Doğuştan yeteneklisin',
+  acilisYatkinlikArti: 'Zarda, tecrübede ve çevre edinmede avantajlı başlarsın.',
+  acilisYatkinlikEksi: 'Zarda, tecrübede ve çevre edinmede dezavantajlı başlarsın.',
+  acilisYatkinlikSohret: 'Ayrıca saygın bir ünle başlarsın.',
   statSaglik: 'Sağlık',
   statMutluluk: 'Mutluluk',
 
@@ -921,6 +930,15 @@ const EN: Metinler = {
   // ---- Opening ----
   acilisAileCocugu: 'Child of {1} {0} Family',
   acilisDurum: 'Your condition from birth: {0}',
+  acilisHikayeDevam: 'Read more',
+  acilisHikayeDaralt: 'Show less',
+  acilisYatkinlik1: 'Ill-suited',
+  acilisYatkinlik3: 'Well-suited',
+  acilisYatkinlik4: 'Very well-suited',
+  acilisYatkinlik5: 'A natural',
+  acilisYatkinlikArti: 'You start with an edge in dice rolls, experience and contacts.',
+  acilisYatkinlikEksi: 'You start at a disadvantage in dice rolls, experience and contacts.',
+  acilisYatkinlikSohret: 'You also start with a respected name.',
   statSaglik: 'Health',
   statMutluluk: 'Happiness',
 

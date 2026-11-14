@@ -1,0 +1,422 @@
+/*
+ * Açılış + meslek seçimi ekranı (components/AcilisEkrani.tsx).
+ *
+ * Kendi kabuğu var: ortak `.ekran-kurulum` kabuğuna (giris.css) bağlı DEĞİL — onun çocuklara
+ * 940px sınırı ve `.ekran-acilis button` kuralları (kart genişliğini 320px'e eziyordu) bu ekran
+ * için işe yaramıyordu. Çağ/bölge/isim ekranları `.ekran-kurulum` + `.meslek-kart`ı kullanmaya
+ * devam eder; burada onlara dokunulmaz.
+ * Renkler: renk-paleti.css (artı yeşil, eksi kırmızı) + mevcut altın/ahşap token'ları.
+ * Düzen: PC'de 4 kart tek satır; mobilde (≤767px) 2×2 ve sabit alt "Devam Et".
+ */
+
+.acilis-ekran {
+  position: relative;
+  align-self: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  text-align: left;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(var(--renk-altin-rgb), 0.12), transparent 55%),
+    linear-gradient(180deg, #241a12 0%, #1b140d 60%, #150f0a 100%);
+  border: none;
+  border-radius: 0;
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.5);
+  padding: clamp(0.9rem, 2.6vh, 2rem) clamp(1rem, 4vw, 3rem);
+  overflow-y: auto;
+}
+
+.acilis-govde {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.6rem, 1.7vh, 1.1rem);
+}
+
+/* ---- Kimlik şeridi ---- */
+.acilis-kimlik {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+.acilis-kimlik .karakter-avatari {
+  flex: none;
+  width: 72px;
+  margin: 0;
+}
+.acilis-ad-blok {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.acilis-ad {
+  margin: 0;
+  font-family: var(--font-baslik);
+  font-size: clamp(1.25rem, 1vw + 0.9rem, 1.7rem);
+  color: var(--renk-altin-parlak);
+  overflow-wrap: anywhere;
+}
+.acilis-aile {
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+.acilis-kimlik .banner {
+  flex: 0 1 auto;
+  margin: 0;
+  padding: 0.5rem 0.95rem;
+  gap: 0.7rem;
+}
+.acilis-kimlik .banner-sembol {
+  font-size: 1.9rem;
+}
+.acilis-kimlik .banner-metin strong {
+  font-size: 1.05rem;
+}
+.acilis-kimlik .banner-metin span {
+  font-size: 0.85rem;
+}
+.acilis-kimlik .banner-rozetler {
+  margin-left: 0;
+}
+.acilis-ozet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.acilis-ozet span {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: linear-gradient(180deg, rgba(43, 32, 21, 0.7), rgba(20, 15, 10, 0.6));
+  border: 1px solid rgba(var(--renk-altin-rgb), 0.3);
+}
+.acilis-durum {
+  margin: 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* ---- Kısa anlatı (3 satır, "Devamını oku" ile açılır) ---- */
+.acilis-hikaye {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.acilis-metni {
+  margin: 0;
+  width: 100%;
+  max-width: 60rem;
+  box-sizing: border-box;
+  line-height: 1.6;
+  font-size: 1.02rem;
+  background: linear-gradient(180deg, rgba(36, 28, 21, 0.9), rgba(24, 18, 13, 0.9));
+  border-left: 3px solid var(--renk-altin);
+  border-radius: 0 var(--r-orta) var(--r-orta) 0;
+  padding: 0.7rem 1rem;
+}
+/* Kırpma iç öğede: dolgu dış kutuda kaldığı için kesilen satırın üst kısmı altta görünmez. */
+.acilis-metni-ic {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.acilis-metni.acik .acilis-metni-ic {
+  display: block;
+  -webkit-line-clamp: unset;
+}
+
+/* Metin düğmesi: genel `button` stilini (gradyan, gölge, kayma) sıfırlar. */
+.acilis-hikaye-dugme,
+.acilis-detay summary {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0.4rem 0.25rem;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--renk-altin-parlak);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.acilis-hikaye-dugme:hover:not(:disabled) {
+  background: none;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ---- Meslek seçimi ---- */
+.acilis-meslek-baslik {
+  margin: 0;
+  font-family: var(--font-baslik);
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--renk-altin-parlak);
+}
+.acilis-meslek-alt {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  opacity: 0.8;
+}
+.meslek-secim-izgara {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.6rem, 1.2vw, 1rem);
+  margin-top: 0.6rem;
+}
+
+.meslek-secim-kart {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.9rem 0.8rem 1rem;
+  text-align: center;
+  color: #e6d8b8;
+  background: #2a1f18;
+  border: 1px solid #3d2e1f;
+  border-radius: var(--r-orta);
+  box-shadow: none;
+  position: relative;
+  transform: none;
+}
+.meslek-secim-kart:hover:not(:disabled) {
+  background: #3a2b20;
+  border-color: #6b4f2a;
+  transform: none;
+}
+.meslek-secim-kart.secili {
+  background: #3a2b20;
+  border-color: var(--renk-altin-parlak);
+  box-shadow: var(--yaldiz-parilti), inset 0 0 0 2px var(--renk-altin-parlak);
+}
+/* Seçili işareti: yalnız renkle değil, köşede ✓ rozetiyle de belli olur. */
+.meslek-secim-kart.secili::after {
+  content: '✓';
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 700;
+  color: #211703;
+  background: var(--altin-gradyan-dik);
+}
+.meslek-secim-kart:focus-visible {
+  outline: 2px solid var(--renk-altin-parlak);
+  outline-offset: 2px;
+}
+.meslek-amblem {
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex: none;
+}
+.meslek-amblem svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.meslek-secim-ad {
+  font-family: var(--font-baslik);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+  color: var(--renk-altin-parlak);
+}
+.meslek-secim-aciklama {
+  font-size: 0.92rem;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+.meslek-secim-yatkinlik {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: auto;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(var(--renk-altin-rgb), 0.25);
+  width: 100%;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+.meslek-secim-yatkinlik b {
+  font-weight: 700;
+}
+.meslek-secim-yatkinlik small {
+  font-size: 0.82rem;
+  opacity: 0.9;
+}
+.meslek-secim-yatkinlik.arti {
+  color: var(--c-arti-koyu);
+}
+.meslek-secim-yatkinlik.eksi {
+  color: var(--c-eksi-koyu);
+}
+
+/* ---- Devam Et ---- */
+.acilis-eylem {
+  display: flex;
+  justify-content: center;
+}
+.acilis-devam {
+  width: auto;
+  min-width: min(100%, 280px);
+  max-width: 100%;
+  margin: 0;
+  padding: 0.85rem 2.4rem;
+  text-align: center;
+  font-family: var(--font-baslik);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: var(--altin-gradyan-dik);
+  color: #211703;
+  border: 1px solid var(--renk-altin-parlak);
+}
+
+/* ---- Kişilik & Miras (kapalı) ---- */
+.acilis-detay {
+  border-top: 1px solid rgba(var(--renk-altin-rgb), 0.2);
+  padding-top: 0.4rem;
+}
+.acilis-detay summary {
+  display: list-item;
+  list-style-position: inside;
+  text-decoration: none;
+  font-family: var(--font-baslik);
+  letter-spacing: 0.04em;
+}
+/* özetin kendisi başlık: paneldeki yinelenen başlığı gizle */
+.acilis-detay .kisilik-paneli > h3 {
+  display: none;
+}
+.acilis-detay .kisilik-paneli {
+  margin-top: 0.5rem;
+}
+
+/* ---- Mobil (≤767px): sayfa doğal kayar; kartlar 2×2; Devam Et altta sabit ---- */
+@media (max-width: 767px) {
+  .acilis-ekran {
+    flex: none;
+    display: block;
+    overflow: visible;
+    border-radius: 10px;
+    padding: 0.9rem max(0.8rem, env(safe-area-inset-left)) 0 max(0.8rem, env(safe-area-inset-right));
+  }
+  .acilis-govde {
+    gap: 0.65rem;
+  }
+  .acilis-kimlik {
+    gap: 0.5rem 0.75rem;
+  }
+  .acilis-kimlik .karakter-avatari {
+    width: 48px;
+  }
+  .acilis-ad {
+    font-size: 1.2rem;
+  }
+  .acilis-aile {
+    font-size: 0.85rem;
+  }
+  .acilis-kimlik .banner {
+    flex: 1 1 100%;
+    padding: 0.4rem 0.75rem;
+  }
+  .acilis-ozet {
+    flex: 1 1 100%;
+  }
+  .acilis-ozet span {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.55rem;
+  }
+  .acilis-metni {
+    font-size: 0.95rem;
+  }
+  .acilis-metni-ic {
+    -webkit-line-clamp: 2;
+  }
+  .acilis-ad-blok {
+    padding-right: 2.8rem; /* sabit ⚙️ düğmesinin altına girmesin */
+  }
+  .acilis-hikaye-dugme {
+    min-height: 44px;
+  }
+  .acilis-meslek-baslik {
+    font-size: 1.05rem;
+  }
+  .acilis-meslek-alt {
+    font-size: 0.85rem;
+  }
+  .meslek-secim-izgara {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .meslek-secim-kart {
+    gap: 0.3rem;
+    padding: 0.65rem 0.5rem 0.75rem;
+    min-height: 44px;
+  }
+  .meslek-amblem {
+    width: 44px;
+    height: 44px;
+  }
+  .meslek-secim-ad {
+    font-size: 1rem;
+  }
+  .meslek-secim-aciklama {
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+  .meslek-secim-yatkinlik {
+    font-size: 0.78rem;
+  }
+  .meslek-secim-yatkinlik small {
+    font-size: 0.75rem;
+  }
+  /* Devam Et: her zaman görünür (iOS alt çubuğu için safe-area) */
+  .acilis-eylem {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin: 0 calc(-1 * max(0.8rem, env(safe-area-inset-left))) 0 calc(-1 * max(0.8rem, env(safe-area-inset-right)));
+    padding: 0.6rem max(0.8rem, env(safe-area-inset-left)) calc(0.6rem + env(safe-area-inset-bottom))
+      max(0.8rem, env(safe-area-inset-right));
+    background: linear-gradient(180deg, rgba(21, 15, 10, 0), rgba(21, 15, 10, 0.92) 30%);
+  }
+  .acilis-devam {
+    width: 100%;
+    min-height: 48px;
+  }
+  .acilis-detay {
+    padding-bottom: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meslek-secim-kart,
+  .acilis-devam {
+    transition: none;
+  }
+}
