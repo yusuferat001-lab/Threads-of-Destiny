@@ -568,7 +568,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     const k1 = ganimet(1);
     const k2 = ganimet(2);
     expect(k1).toBeGreaterThan(0);
-    expect(k2 / k1).toBeGreaterThan(1.6);
+    expect(k2 / k1).toBeGreaterThan(1.3); // güçle büyür (küçük ordularda ganimet tabanı oranı sınırlar)
     expect(k2 / k1).toBeLessThan(2.4);
   });
 

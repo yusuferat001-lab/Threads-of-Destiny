@@ -404,7 +404,7 @@ export const SOLD = [6, 6, 6, 6, 6];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir); yalnız ana kadro içindir, seferber ve kiralık erler ödeme almaz. */
 export const ER_BASI_GELIR = 0.15;
 /** Görev geliri ek çarpanı (1 = yok). Teçhizat çarpanı 0,75/1/1,25'e inince güç ≈×0,75 oldu; güçle orantılı gelirler (görev, yağma, ganimet) ×1,33 ile yeniden dengelendi (1,11 × 1,333). */
-export const GOREV_GELIR_CARPANI = 2.4;
+export const GOREV_GELIR_CARPANI = 1.9;
 /** Barış yılı görev kayıpları ölü değil yaralı olur: yaralı = görev er payı × kayipBaris × bu. */
 export const BARIS_GOREV_YARALI_CARPANI = 2.5;
 /** Her rütbede sabit yıllık gönüllü er (savaşta ayrıca çarpılmaz; vebada kısılır, kışla limitine takılır). */
@@ -430,7 +430,7 @@ export function ganimetGucCarpani(guc: number): number {
   return Math.max(GANIMET_GUC_TABAN, 1 - GANIMET_GUC_AZALMA * Math.max(0, guc));
 }
 /** Barış çatışması (haydut / sınır) zafer ganimeti = max(BARIS_GANIMET_TABAN; askerî güç × U(a; b) × ganimetGucCarpani(güç)) (yenilgide ganimet yok). */
-export const BARIS_GANIMET_ARALIK: Aralik = [4.3, 5.3];
+export const BARIS_GANIMET_ARALIK: Aralik = [2.6, 3.2];
 /** Ganimet tabanı (brüt, enflasyonsuz): küçük ordu da zaferde en az bu kadar ganimet alır (haydut, sınır ve genel savaş zaferi). */
 export const BARIS_GANIMET_TABAN = 120;
 export const SAVAS_ZAFER_GANIMET_TABAN = 500;
@@ -780,19 +780,19 @@ export const IKMAL_TANIMLARI: Record<
 > = {
   yagma_sert: {
     erzakOran: 0, maliyet: 1, sertlik: 2.5, ganimet: 1,
-    yagma: { gucOrani: 0.93, erzakIndirimi: 0.75, ahlak: -3, mutluluk: -3, moral: 4, kayip: 1.3 },
+    yagma: { gucOrani: 0.56, erzakIndirimi: 0.75, ahlak: -3, mutluluk: -3, moral: 4, kayip: 1.3 },
     ad: { tr: "Sert yağma", en: "Harsh plunder" },
     aciklama: { tr: "Köyleri soyarsın: en çok para; ordu coşar ama halk direnir, kayıplar artar, vicdanın ve keyfin kaçar.", en: "You strip the villages bare: the most coin; the men are exalted, but the people fight back, losses rise, and your conscience and spirits sink." },
   },
   yagma_orta: {
     erzakOran: 0, maliyet: 1, sertlik: 1.5, ganimet: 1,
-    yagma: { gucOrani: 0.67, erzakIndirimi: 0.55, ahlak: 0, mutluluk: 0, moral: 0, kayip: 1 },
+    yagma: { gucOrani: 0.4, erzakIndirimi: 0.55, ahlak: 0, mutluluk: 0, moral: 0, kayip: 1 },
     ad: { tr: "Orta yağma", en: "Moderate plunder" },
     aciklama: { tr: "Köylerden ölçülü ganimet; ne ordunun ne senin moralin değişir.", en: "Measured loot from the villages; neither the army's morale nor yours shifts." },
   },
   yagma_yumusak: {
     erzakOran: 0, maliyet: 1, sertlik: 0.5, ganimet: 1,
-    yagma: { gucOrani: 0.4, erzakIndirimi: 0.35, ahlak: 3, mutluluk: 3, moral: -4, kayip: 0.8 },
+    yagma: { gucOrani: 0.24, erzakIndirimi: 0.35, ahlak: 3, mutluluk: 3, moral: -4, kayip: 0.8 },
     ad: { tr: "Yumuşak yağma", en: "Gentle plunder" },
     aciklama: { tr: "Az para toplarsın; halka kıymazsın, kayıplar azalır, vicdanın ve keyfin yerinde olur ama ordu söylenir.", en: "You gather little; you spare the people, losses ease, and your conscience and spirits stay light, but the men grumble." },
   },
@@ -1030,7 +1030,7 @@ export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.0053;
 export const YAGMA_ER_ORANI = 0.03;
 /** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = max(SAVAS_ZAFER_GANIMET_TABAN; askerî güç × U(5,8; 6,8) × ganimetGucCarpani(güç)); esir = güç × bu × yıl. Yenilgide ganimet yok. */
-export const SAVAS_ZAFER_GANIMET: Aralik = [15.5, 18.1];
+export const SAVAS_ZAFER_GANIMET: Aralik = [64, 75];
 export const SAVAS_ZAFER_ESIR = 0.02;
 /** Kiralık ordu (paralı asker): savaş başına bir kez, iki seviye; savaş süresince tutulur, eğitimli ve pahalıdır. Peşin ve yıllık ücret er başınadır (× gider enflasyonu); yıllık ücret erzak ve masrafı da kapsar (ayrı erzak/er masrafı yok). */
 export type KiralikSeviye = "kucuk" | "buyuk";

@@ -83,9 +83,9 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut/sınır 4,3–5,3, savaş zaferi 15,5–18,1 (güç ölçeği ×0,75 sonrası ×1,33), yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
-    expect(BARIS_GANIMET_ARALIK).toEqual([4.3, 5.3]);
-    expect(SAVAS_ZAFER_GANIMET).toEqual([15.5, 18.1]);
+  it("sabitler: haydut/sınır 2,6–3,2, savaş zaferi 64–75 (asıl gelir savaş ganimeti), yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
+    expect(BARIS_GANIMET_ARALIK).toEqual([2.6, 3.2]);
+    expect(SAVAS_ZAFER_GANIMET).toEqual([64, 75]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
   });
@@ -311,9 +311,9 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("güç başı görev geliri 0,49–0,735 arası; ek çarpan ×2,4 (teçhizat 0,75 ve moral/talim nötr sonrası yeniden dengelendi)", async () => {
+  it("güç başı görev geliri 0,49–0,735 arası; ek çarpan ×1,9 (gelir ağırlığı ganimete kaydırıldı)", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
-    expect(GOREV_GELIR_CARPANI).toBe(2.4);
+    expect(GOREV_GELIR_CARPANI).toBe(1.9);
     const v = GOREVLER.map((g) => g.erBasi);
     expect(Math.min(...v)).toBeCloseTo(0.49, 6);
     expect(Math.max(...v)).toBeCloseTo(0.735, 6);
@@ -364,7 +364,7 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     return { s, b, sv };
   }
 
-  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,93 / 0,67 / 0,4'ü (güç ölçeği ×0,75 sonrası ×1,33)", () => {
+  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,56 / 0,4 / 0,24'ü", () => {
     expect(IKMAL_SIRASI).toEqual(["yagma_sert", "yagma_orta", "yagma_yumusak"]);
     const { s, b, sv } = savasAskeri();
     const brut: Record<string, number> = {};
@@ -374,8 +374,8 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
       const oran = IKMAL_TANIMLARI[id].yagma.gucOrani;
       expect(brut[id] / (b.guc * bg(s).enflasyon)).toBeGreaterThanOrEqual(oran);
     }
-    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.93 / 0.67, 6);
-    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.4 / 0.67, 6);
+    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.56 / 0.4, 6);
+    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.24 / 0.4, 6);
   });
 
   it("sert yağma ahlak ve oyuncu morali düşürür, ordu morali artırır; yumuşak tam tersi", () => {
