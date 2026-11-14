@@ -123,6 +123,13 @@ export function SosyallesmePaneli({
                     <span className={`sosyal-cip-fiyat${ic.fiyat > 0 ? ' s-gider' : ''}`}>{fiyatEtiketi(ic.fiyat)}</span>
                   </button>
                 ))}
+                {aksiyonConfig.icecekler
+                  .filter((ic) => ic.kilitli && ic.neden)
+                  .map((ic) => (
+                    <small key={`neden-${ic.id}`} className="sosyal-aksiyon-neden sosyal-icki-neden">
+                      {ic.simge} {ic.ad}: {ic.neden}
+                    </small>
+                  ))}
               </div>
             )}
 

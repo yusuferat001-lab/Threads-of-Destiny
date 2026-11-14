@@ -148,6 +148,7 @@ export function IsletmeOrtak({
                 {t('dusur')}
               </button>
             )}
+            {onYatirimDusur && y.dusur?.engel && <small className="isletme-engel">{y.dusur.engel}</small>}
           </div>
         ))}
       </div>

@@ -4,7 +4,7 @@
 
 ## 19. İstemci (Client) Mimarisi
 
-React 19 + Vite, **state kütüphanesi yok** (saf `useState`, `App.tsx` ~2640 satırlık tek ekran-durum-makinesi — 2026-09 sonu itibarıyla; dosya büyümeye devam ediyor, bölünmesi ayrı bir teknik borç maddesi olarak not edildi). `client/src/types.ts` server tiplerinin **elle senkronize edilen** bir kopyasıdır.
+React 19 + Vite, **state kütüphanesi yok** (saf `useState`, `App.tsx` ~3400 satırlık tek ekran-durum-makinesi — 2026-09 sonu itibarıyla; dosya büyümeye devam ediyor, bölünmesi ayrı bir teknik borç maddesi olarak not edildi). `client/src/types.ts` server tiplerinin **elle senkronize edilen** bir kopyasıdır.
 
 **Ekran akışı** (`type Ekran`, `App.tsx`):
 ```
@@ -97,6 +97,9 @@ Mobil (`max-width:767px`) için bu üç sınıfın (`.ekran-tam-sayfa`/`.tam-gov
 
 
 **PC okunurluk + klavye (2026-11):** punto tabanları yükseldi — `--yz-pn max(0.9rem,…)`, `--yz-pn-kucuk max(0.8rem,…)` (`pc-tema.css`), `--yz-metin max(1.05rem,…)`, `--yz-sik max(0.95rem,…)` (`pc-olay-kutusu.css`); `.kisayol-karti-etiket`/`.secenek-kilit` `0.9em`; App.css'teki küçük clamp tabanları (`.sol-panel-baslik span`, `.un-rozeti-etiket`, `.siyaset-vergi-rozet`, `.komuta-ekip-detay`, `.amac-bonus/.amac-alt`, `.finans-ozet-mini-deger small`) pc-tema.css sonundaki `@media (min-width:768px)` bloğunda ≥12px. `--u` tabanı (0.78px) BİLEREK değişmedi (sabit yükseklikli olay kutusunu taşırır). `.sol-panel-isim` uzun/bölünmez adı kırar, en çok 2 satır (+`title`). **Klavye odağı** (`OlayKutusu.tsx`, yalnız `klavye` = PC): sonuç ekranında `Devam Et`'e, soru ekranında kutunun kendisine (`tabIndex=-1`) odak verilir; ilk Tab ilk şıka iner (şıka doğrudan odak YOK: Enter/Boşlukla yanlışlıkla seçilmesin). `UstSerit` modül düğmelerine `aria-label="Etiket: değer birim"` (mobilde etiket gizli), Yıl/Yaş `role=group`. Sağ sütun nav'ının adı `ksBaslik` (eskiden alt gezinmenin `agBaslik`'i).
+
+
+**Erişilebilirlik 2 (2026-11):** her ekranda tek `<main>` (giriş/çağ-bölge/isim/açılış `main.ekran…`, oyun `main.oyun-govde`); oyun ekranında görünmez `<h1 class="sr-only">` (`.sr-only` yardımcı sınıfı App.css sonunda). Yalnız `title`'da duran bilgiler görünür metne taşındı: mini oyun kuralları (`.mini-oyun-kural`), Birlik limit/terhis kilidi notu, İşletme "düşür" engeli (`.isletme-engel`), Sosyalleş kilitli içecek nedenleri (`.sosyal-icki-neden`). PC şıklarında rakam kısayolu görünür numara rozeti (`.secenek-no`, `aria-keyshortcuts`). Mobil alt gezinme olay beklerken kapalı: kapalı düğmeler `pointer-events:none`, dokunuş `nav`'a düşer ve 2,4 sn "Önce kararını ver" ipucu çıkar (`agOnceKarar`, `.alt-gezinme-ipucu`) + ekran okuyucu için `sr-only` açıklama. Kalan `title` ipuçları (≈70) ayrı iş.
 
 - **Masaüstü canlı skor + meslek kartı bonus satırı (2026-10):** mobildeki üst şerit `🏆 skor` rozetinin karşılığı olarak masaüstünde sol panelde (Şöhret rozetinin altında) `.canli-skor-rozeti-panel` düğmesi var; aynı `skorDetayAcik` penceresini (`SkorKirilimiPaneli`) açar — pencere CSS'i artık mobil `@media` bloğunun dışında. Açılış ekranındaki her meslek kartı, o mesleğin kategorisindeki yatkınlık kademesinin bonusunu tek satırda gösterir (`bolgeTema.meslekYatkinlikOnizleme`, sunucudaki §40 eşik/oranlarının aynası: Zar/Maaş/Tecrübe % + Mükemmelde Şöhret +8; nötrde "Yatkınlık bonusu yok"). Sunucudaki §40 oranları değişirse bu fonksiyon da güncellenmeli.
 

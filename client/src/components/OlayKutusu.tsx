@@ -261,7 +261,13 @@ export function OlayKutusu({
                 disabled={yukleniyor || secenek.kilitli}
                 onClick={() => onSecenek(i)}
                 title={klavye && !secenek.kilitli && i < 9 ? bic(m.okKisayol, i + 1) : undefined}
+                aria-keyshortcuts={klavye && !secenek.kilitli && i < 9 ? String(i + 1) : undefined}
               >
+                {klavye && !secenek.kilitli && i < 9 && (
+                  <span className="secenek-no" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                )}
                 <span className="secenek-metin">
                   {secenek.kilitli ? '🔒 ' : ''}
                   {secenek.metin}

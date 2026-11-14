@@ -2203,6 +2203,7 @@ function App() {
         <AltGezinme
           ekran={ekran}
           devreDisi={yukleniyor || (ilerleModu && !!karakter.olay_bekliyor)}
+          olayBekliyor={ilerleModu && !!karakter.olay_bekliyor}
           aileTalepVar={!!karakter.aile_talep}
           aileEvlilikRozeti={(!karakter.es_adi && karakter.yas >= 22) || !!karakter.bekleyen_dugun}
           onEv={finansEkraniniAc}
@@ -2321,7 +2322,7 @@ function App() {
       {nasilOynanirAcik && <NasilOynanir dil={dil} onKapat={() => setNasilOynanirAcik(false)} />}
 
       {ekran === 'giris' && (
-        <div className="ekran ekran-giris">
+        <main className="ekran ekran-giris">
           <KoseTezhibi />
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
@@ -2554,11 +2555,11 @@ function App() {
               </div>
             </div>
           )}
-        </div>
+        </main>
       )}
 
       {ekran === 'cag_sec' && (
-        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-cag">
+        <main className="ekran ekran-meslek ekran-kurulum ekran-adim-cag">
           <KoseTezhibi />
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
@@ -2617,11 +2618,11 @@ function App() {
           <button className="ikincil" onClick={() => setEkran('giris')}>
             {m.geri}
           </button>
-        </div>
+        </main>
       )}
 
       {ekran === 'isim_sec' && (
-        <div className="ekran ekran-isim ekran-kurulum ekran-adim-isim">
+        <main className="ekran ekran-isim ekran-kurulum ekran-adim-isim">
           <KoseTezhibi />
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
@@ -2649,7 +2650,7 @@ function App() {
           <button className="ikincil" disabled={yukleniyor} onClick={() => setEkran('cag_sec')}>
             {m.geri}
           </button>
-        </div>
+        </main>
       )}
 
       {ekran === 'acilis' && karakter && (
@@ -2751,7 +2752,8 @@ function App() {
               </span>
             </button>
           )}
-          <div className="oyun-govde">
+          <h1 className="sr-only">{m.oyunAdi}</h1>
+          <main className="oyun-govde">
             {!mobil && (
             <YanPanel className="sol-panel pc-kadife" baslik="" mobil={mobil}>
               {/* Portre ya da isme dokununca Kişilik & Miras penceresi açılır (default kapalı). */}
@@ -2922,7 +2924,7 @@ function App() {
               </section>
             </YanPanel>
             )}
-          </div>
+          </main>
 
           {bolgeBilgiAcik && (
             <div className="gecmis-hayat-detay-katman" onClick={() => setBolgeBilgiAcik(false)}>
