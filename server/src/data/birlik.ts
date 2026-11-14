@@ -169,6 +169,8 @@ export const TALIM_TANIMLARI: Record<BirlikTalim, TalimTanimi> = {
 };
 /** Güç bonusu = seviye × katsayı (en çok +%20). */
 export const TALIM_GUC_KATSAYISI = 0.002;
+/** Kayıp çarpanı (talim, revir, tabip, zırhlı, doktrin indirimleri sonrası) bunun altına inmez: tam yatırım kaybı sıfırlamaz. */
+export const KAYIP_CARPANI_TABANI = 0.5;
 /** Kayıp çarpanı azalması = seviye × katsayı (en çok −%15). */
 export const TALIM_KAYIP_KATSAYISI = 0.0015;
 export const TALIM_SAVAS_ZAFER = 10;
@@ -195,8 +197,8 @@ export const SAVAS_ON_YIL_OLAYLARI: { ihtimal: number; olu: Aralik; firar: Arali
   { ihtimal: 0.15, olu: [1.9, 3.1], firar: [0.6, 1.2] },
 ];
 export const SAVAS_KARAR_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
-  zafer: { olu: [2, 3.5], firar: [1, 1.5] },
-  yenilgi: { olu: [15, 20], firar: [5, 7] },
+  zafer: { olu: [5, 7.5], firar: [1.5, 2.5] },
+  yenilgi: { olu: [22, 30], firar: [7, 10] },
 };
 export const SAVAS_SONRA_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
   zafer: { olu: [0.6, 1.4], firar: [0.5, 1.2] },
@@ -204,16 +206,25 @@ export const SAVAS_SONRA_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
 };
 /** Savaş boyu kümülatif tavan (savaş başı toplam er üzerinden %). */
 export const SAVAS_KAYIP_TAVANI: Record<"zafer" | "yenilgi", { olu: number; firar: number }> = {
-  zafer: { olu: 6, firar: 4 },
-  yenilgi: { olu: 27, firar: 10 },
+  zafer: { olu: 11, firar: 6 },
+  yenilgi: { olu: 38, firar: 14 },
 };
-/** Haydut ve sınır çatışması (tek olay). */
-export const BARIS_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
-  zafer: { olu: [0.5, 1.5], firar: [0, 0] },
-  yenilgi: { olu: [2, 4], firar: [1, 2] },
+/** Haydut ve sınır çatışması (tek olay; ordunun %'si). Sınır, düzenli düşman ordusu olduğu için haydutlardan ağırdır. */
+export const BARIS_KAYBI: Record<"haydut" | "sinir", Record<"zafer" | "yenilgi", KayipAraligi>> = {
+  haydut: {
+    zafer: { olu: [1.5, 3], firar: [0, 0.5] },
+    yenilgi: { olu: [4, 7], firar: [2, 3] },
+  },
+  sinir: {
+    zafer: { olu: [2, 3.5], firar: [0, 0.5] },
+    yenilgi: { olu: [5, 8], firar: [2, 4] },
+  },
 };
-/** Barış çatışmasında yaralı = ölü × bu (savaşta 1,4–1,5 kalır); revir ve Tabip düşürür. */
-export const BARIS_YARALI_ORAN = 2.5;
+/** Barış çatışmasında yaralı = ölü × U(a; b) (savaşta YARALI_ORAN); revir, Tabip ve mızraklı düşürür, alt sınır YARALI_ORAN_TABAN. */
+export const BARIS_YARALI_ORAN: Aralik = [2, 2.5];
+/** Çatışma kararı: saldırıda ganimet ve kayıp artar, (seçilmiş) savunmada ikisi de azalır. Baskında savunma zorunludur, bu çarpan uygulanmaz. */
+export const CATISMA_SALDIRI = { ganimet: 1.3, kayip: 1.3 } as const;
+export const CATISMA_SAVUNMA = { ganimet: 0.8, kayip: 0.8 } as const;
 /** Düşmanın tahmini kaybı (gücünün kesri): bizim zaferimizde / yenilgimizde. */
 export const BARIS_DUSMAN_KAYBI = { zafer: [0.12, 0.2], yenilgi: [0.03, 0.06] } as const;
 /** Baskın: oyuncunun savunması pusu cezasıyla düşer (Keşif subayı, Karakol azaltır); yenilgide yıllık gelirin bu kesri nakit hasarı. */
@@ -263,7 +274,7 @@ export const FIRAR_ERZAK_EKI = 0.5;
 export const FIRAR_SERTLIK_KATSAYI = 0.005;
 export const FIRAR_GENEL_CAGRI_ILK_YIL = 1.5;
 /** Yaralı: ölü × oran (tam sayı); revir ve tabip düşürür; iyileşme süresi revirle kısalır; tedavi gideri yaralı başı yıllık. */
-export const YARALI_ORAN: Aralik = [1.4, 1.5];
+export const YARALI_ORAN: Aralik = [1.5, 1.75];
 export const YARALI_ORAN_TABAN = 1;
 export const YARALI_REVIR_DUSUS = 0.04;
 export const YARALI_TABIP_DUSUS_TAVAN = 0.12;
@@ -388,6 +399,8 @@ export const ER_BASI_GELIR = 0.15;
 export const GOREV_GELIR_CARPANI = 1.11;
 /** Barış yılı görev kayıpları ölü değil yaralı olur: yaralı = görev er payı × kayipBaris × bu. */
 export const BARIS_GOREV_YARALI_CARPANI = 2.5;
+/** Her rütbede sabit yıllık gönüllü er (savaşta ×2, vebada kısılır, kışla limitine takılır). */
+export const BARIS_YILLIK_ER = 1;
 /** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haydut/akın görev gelirini artırır. */
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;

@@ -433,3 +433,13 @@ Bu blok v39–v49'un üzerine yazar (çelişkide bu geçerli).
 - **Yağma** askerî güce bağlıdır: `yagmaBrut = b.guc × yağma oranı × enflasyon × ganimetC` (`b.guc` oyuncunun güncel toplam askerî gücü; `ganimetGucCarpani` yağmaya uygulanmaz). Dökümde `ganimetPara` yağmayı içermez, `yagmaPara` ayrıdır.
 - **Mobil alt gezinme:** Evin · Sosyalleş · **İlişkiler · Mağaza** (eski sıra Mağaza · İlişkiler).
 - **v50 ek (2026-11):** sabit yıllık +1 gönüllü er (`BARIS_YILLIK_ER`) KALDIRILDI; ordu yalnız devşirme subayı, Devşirme Bürosu, şöhret, doktrin ve yatkınlıktan büyür.
+
+### §45 Asker v51 (2026-11): kayıplar artırıldı (B paketi), +1 geri geldi, çatışmada güç farkı + saldırı/savunma etkisi
+Bu blok v50 ek notunun (+1'in kaldırılması) ve v48–v49 kayıp tablolarının üzerine yazar.
+- **Sabit yıllık +1 gönüllü er geri geldi** (`BARIS_YILLIK_ER=1`); kayıplar bunun için artırıldı.
+- **Çatışma** (`BARIS_KAYBI[tur][sonuç]`, ordunun %'si; haydut ve sınır artık ayrı): haydut zafer ölü 1,5–3 / firar 0–0,5, yenilgi 4–7 / 2–3 · sınır zafer 2–3,5 / 0–0,5, yenilgi 5–8 / 2–4. **Savaş karar savaşı** (`SAVAS_KARAR_KAYBI`): zafer ölü 5–7,5 / firar 1,5–2,5, yenilgi 22–30 / 7–10 (savaşın ön yılları ve sonuç yılı değişmedi). Savaş boyu tavan `SAVAS_KAYIP_TAVANI`: zafer ölü 11 / firar 6, yenilgi 38 / 14.
+- **Yaralı oranı** (ölü × oran): çatışma `BARIS_YARALI_ORAN=[2; 2,5]`, savaş `YARALI_ORAN=[1,5; 1,75]` (revir, Tabip, mızraklı düşürür; alt sınır 1).
+- **Çatışmada güç farkı:** oran = oyuncu/düşman etkin güç; < 0,75 → aralığın kötü yarısı, ≥ 1,2 → iyi yarısı, arası tüm aralık (savaşla aynı).
+- **Saldırı/savunma seçimi** (yalnız karşılaşma; baskında çarpan yok): saldırıda ganimet ve kayıp ×1,3, savunmada ×0,8 (`CATISMA_SALDIRI/SAVUNMA`). Ekranda sayı yok, yalnız "daha çok ganimet, daha çok kayıp" / "daha az kayıp, daha az ganimet".
+- **Kayıp çarpanı tabanı** 0,3 → 0,5 (`KAYIP_CARPANI_TABANI`).
+- **Devşirme:** Büro kademeleri +1/+3/+4/+5 er/yıl (`DEVSIRME_BUROSU_ER`), tek seferlik fiyat 20/35/52/75 × gider enflasyonu, bakım yok. Devşirme subayı yeteneğe göre 1 (Y0) · 2 (Y30) · 4 (Y60) · 5 (Y90) · 5,25 (Y100), sadıkta ×1,05, yuvarlanır (en çok 6); savaşta toplam ×2.

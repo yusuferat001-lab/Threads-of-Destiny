@@ -4,7 +4,7 @@ import { birlikAl, birlikHesapla, birlikHazirla, erSayisi, gucHesapla } from "..
 import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
-import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik } from "../src/game/birlikYil";
+import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik, barisCatismaCoz } from "../src/game/birlikYil";
 import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetGucCarpani, BARIS_GANIMET_TABAN, SAVAS_ZAFER_GANIMET_TABAN, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
@@ -49,7 +49,7 @@ describe("v39 barış kaybı ve sabit büyüme", () => {
     expect(kaynakli).toBeGreaterThan(0);
   });
 
-  it("sabit yıllık +1 er yok: devşirme kaynağı (subay, büro, şöhret, doktrin) yoksa ordu büyümez", () => {
+  it("her yıl en az +1 er gelir (savaşsız, subaysız, şöhretsiz)", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.99);
     const s = asker();
     s.un = 40; // kötü şöhret devşirmeyi azaltmasın
@@ -57,7 +57,7 @@ describe("v39 barış kaybı ve sabit büyüme", () => {
     s.isletme!.yatirimlar.kisla = 4;
     const once = erSayisi(s);
     birlikYilIsle(s, bg(s));
-    expect(erSayisi(s)).toBeLessThanOrEqual(once);
+    expect(erSayisi(s)).toBeGreaterThanOrEqual(once + 1);
   });
 });
 
@@ -583,5 +583,45 @@ describe("v50 etkileşimli çatışma ekranı", () => {
       for (const yasak of ["rakip_saldiri", "hirsizlik", "sizdirma", "ic_hirsizlik", "kazanc_ozet", "baris_catisma"]) expect(uy).not.toContain(yasak);
       if (b.catisma_bekleyen) barisCatismaOtomatik(s, b, bg(s));
     }
+  });
+});
+
+describe("v51 çatışma kayıpları: B paketi, seçim etkisi, kayıp tabanı", () => {
+  function hazir() {
+    const s = asker();
+    s.yas = 40;
+    s.rutbe_seviye = 3;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 100;
+    birlikAl(s).kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+    return s;
+  }
+  function coz(secim: "saldiri" | "savunma", baskin: boolean) {
+    const s = hazir();
+    const b = birlikAl(s);
+    b.catisma_bekleyen = { yil: s.yil, tur: "haydut", baskin, dusmanTur: "karma", dusmanGuc: 5 }; // çok zayıf düşman: kesin zafer
+    s.para = 0;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const r = barisCatismaCoz(s, b, bg(s), secim);
+    rnd.mockRestore();
+    return r;
+  }
+  it("seçilmiş saldırıda ganimet ≈ ×1,3/0,8 = 1,625 kat; baskında seçim yok (çarpan uygulanmaz)", () => {
+    const sal = coz("saldiri", false);
+    const sav = coz("savunma", false);
+    expect(sal.zafer && sav.zafer).toBe(true);
+    expect(sal.ganimet / sav.ganimet).toBeGreaterThan(1.5);
+    expect(sal.ganimet / sav.ganimet).toBeLessThan(1.75);
+    const baskin = coz("saldiri", true);
+    expect(baskin.inisiyatif).toBe("savunma");
+    expect(baskin.ganimet / sav.ganimet).toBeGreaterThan(1.15); // 1 / 0,8 = 1,25 (baskında ×1)
+  });
+  it("kayıp çarpanı tam yatırımla bile 0,5 altına inmez", async () => {
+    const { kayipCarpani } = await import("../src/game/birlik");
+    const s = hazir();
+    const b = birlikAl(s);
+    b.talim = 100;
+    s.isletme!.yatirimlar.revir = 4;
+    expect(kayipCarpani(s)).toBeGreaterThanOrEqual(0.5);
   });
 });

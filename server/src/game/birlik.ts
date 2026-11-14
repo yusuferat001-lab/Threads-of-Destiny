@@ -54,6 +54,7 @@ import {
   SUBAY_RUTBE_TABANI,
   TALIM_GUC_KATSAYISI,
   TALIM_KAYIP_KATSAYISI,
+  KAYIP_CARPANI_TABANI,
   TALIM_TANIMLARI,
   TUR_TANIMLARI,
   VEBA_GOREV_CARPANI,
@@ -538,7 +539,7 @@ export function kayipCarpani(state: CharacterState): number {
   const talim = Math.min(0.15, b.talim * TALIM_KAYIP_KATSAYISI);
   const emir = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;
   const zirhli = ZIRHLI_OLU_AZALTMA * turOrani(b, "zirhli");
-  return Math.max(0.3, 1 - talim - revir - tabip - zirhli + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
+  return Math.max(KAYIP_CARPANI_TABANI, 1 - talim - revir - tabip - zirhli + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
 }
 /** Doktrin (Levazım Disiplini vb.) + yol + ekip bonusu: er masrafı ve erzak çarpanı. */
 export function masrafCarpani(state: CharacterState): number {

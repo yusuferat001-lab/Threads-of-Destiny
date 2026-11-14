@@ -28,6 +28,8 @@ const M = {
   savunGec: { tr: 'Savun', en: 'Defend' },
   saldirAlt: { tr: 'Saldırın düşmanın savunmasına karşı', en: 'Your attack against their defence' },
   savunAlt: { tr: 'Savunman düşmanın saldırısına karşı', en: 'Your defence against their attack' },
+  saldirIpucu: { tr: 'Daha çok ganimet, daha çok kayıp.', en: 'More spoils, heavier losses.' },
+  savunIpucu: { tr: 'Daha az kayıp, daha az ganimet.', en: 'Lighter losses, smaller spoils.' },
   mecburi: { tr: 'Baskın: yalnızca savunabilirsin', en: 'Ambush: you can only defend' },
 };
 
@@ -38,7 +40,7 @@ const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen 
 /** Haydut / sınır çatışması karar penceresi: iki tarafın saldırı ve savunma gücü yan yana; baskında yalnız savunma. */
 export function CatismaKarari({ karar, yukleniyor, onSec }: { karar: CatismaKarariDurumu; yukleniyor: boolean; onSec: (s: 'saldiri' | 'savunma') => void }) {
   const { dil } = useDil();
-  const t = (k: 'baslik' | 'sen' | 'dusman' | 'saldiri' | 'savunma' | 'saldirGec' | 'savunGec' | 'saldirAlt' | 'savunAlt' | 'mecburi') => M[k][dil];
+  const t = (k: 'baslik' | 'sen' | 'dusman' | 'saldiri' | 'savunma' | 'saldirGec' | 'savunGec' | 'saldirAlt' | 'savunAlt' | 'mecburi' | 'saldirIpucu' | 'savunIpucu') => M[k][dil];
   const metin = (karar.baskin ? M.baskinMetin : M.karsilasmaMetin)[karar.tur][dil];
   const tur = DUSMAN_TUR[karar.dusmanTur];
   return (
@@ -86,6 +88,7 @@ export function CatismaKarari({ karar, yukleniyor, onSec }: { karar: CatismaKara
               <p>
                 {t('saldirAlt')}: <b className={renk(karar.oyuncu.saldiri, karar.dusman.savunma)}>{karar.oyuncu.saldiri}</b> ↔ {aralik(karar.dusman.savunma)}
               </p>
+              <small>{t('saldirIpucu')}</small>
             </button>
           )}
           <button type="button" className="ogreti-kart savas-secenek" disabled={yukleniyor} onClick={() => onSec('savunma')}>
@@ -94,6 +97,7 @@ export function CatismaKarari({ karar, yukleniyor, onSec }: { karar: CatismaKara
             <p>
               {t('savunAlt')}: <b className={renk(karar.oyuncu.savunma, karar.dusman.saldiri)}>{karar.oyuncu.savunma}</b> ↔ {aralik(karar.dusman.saldiri)}
             </p>
+            {!karar.baskin && <small>{t('savunIpucu')}</small>}
           </button>
         </div>
       </div>
