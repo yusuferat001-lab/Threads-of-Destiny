@@ -70,6 +70,7 @@ import {
   TUR_TANIMLARI,
   DOKTRINLER,
   GOREV_SLOTLARI,
+  GOREVLER,
   KISLA_ER_LIMITI,
   MIN_CEKIRDEK_ER,
   SOLD,
@@ -314,8 +315,8 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 8 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([8, 8, 8, 8, 8]);
+  it("sabit maaş 9 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -326,18 +327,19 @@ describe("gelir ve gider", () => {
     expect(sonuc.dokum.loncaAidati).toBe(0);
   });
 
-  it("görev slotları S1..S5 = 1/1/2/2/3; ordu açık görevlere eşit bölünür; min er şartı", () => {
-    expect(GOREV_SLOTLARI).toEqual([1, 1, 2, 2, 3]);
+  it("tek görev: her rütbede aynı anda 1 görev, 5 görev var; ordunun tamamı o göreve çıkar; min güç şartı", () => {
+    expect(GOREV_SLOTLARI).toEqual([1, 1, 1, 1, 1]);
+    expect(GOREVLER).toHaveLength(5);
     const s = asker();
     s.rutbe_seviye = 3;
     const b = birlikAl(s);
     s.meslek_musteri = 60;
     b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
-    b.gorevler = ["devriye", "tahsilat"];
+    b.gorevler = ["devriye", "tahsilat"]; // fazlası yok sayılır
     const p = gorevPaylari(s);
-    expect(p).toHaveLength(2);
-    expect(p[0].er + p[1].er).toBe(60);
-    expect(gorevSlotSayisi(s)).toBe(2);
+    expect(p).toHaveLength(1);
+    expect(p[0].er).toBe(60);
+    expect(gorevSlotSayisi(s)).toBe(1);
     // komuta (130 er şartı) 60 erle açılamaz
     b.gorevler = ["komuta"];
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
@@ -348,7 +350,7 @@ describe("gelir ve gider", () => {
     s.meslek_musteri = 60;
     const b = birlikAl(s);
     b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
-    b.gorevler = ["haydut"];
+    b.gorevler = ["komuta"];
     for (const id of ["az", "dengeli", "comert"] as const) {
       b.ganimet_payi = id;
       const h = birlikHesapla(s, bg(s));
@@ -386,7 +388,7 @@ describe("gelir ve gider", () => {
     s.meslek_musteri = 90;
     const b = birlikAl(s);
     b.kalite = { dusuk: 90, orta: 0, yuksek: 0 };
-    b.gorevler = ["haydut"];
+    b.gorevler = ["eskort"];
     const baris = birlikHesapla(s, bg(s));
     expect(baris.gorevGeliri).toBeGreaterThan(0);
     s.ulke.savasta = true;
@@ -1004,7 +1006,7 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     expect(r.durum.birlik!.talim.politika).toBe("agir");
     expect(r.durum.birlik!.politikalar.ton.secili).toBe("sert");
     await expect(isletmeKararVer(st.id, [], undefined, { talim: "yok" })).rejects.toThrow(/talim/);
-    await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye", "eskort"] })).rejects.toThrow(/aynı anda/);
+    await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye", "eskort"] })).rejects.toThrow(/[Aa]ynı anda/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["sefer"] })).rejects.toThrow(/Böyle bir görev yok/);
     const v = r.durum.birlik!;
     expect(v.er).toBe(20);

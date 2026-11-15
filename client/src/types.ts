@@ -893,6 +893,7 @@ export interface IsletmeDokum {
     kiralikMasrafi?: number;
     kaleGeliri?: number;
     devletPayi: number;
+    hazinePayi?: number;
     erPayi: number;
     erMasrafi: number;
     erzak: number;
@@ -1219,6 +1220,7 @@ export interface BirlikGorunumu {
     gorevGeliri: number;
     ganimetNet: number;
     devletPayi: number;
+    hazinePayi: number;
     erPayi: number;
     toplamGelir: number;
     erMasrafi: number;

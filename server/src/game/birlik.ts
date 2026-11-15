@@ -34,7 +34,6 @@ import {
   YAGMA_YIL,
   SAVAS_KISLA_INDIRIMI,
   GOREV_GELIR_CARPANI,
-  SUVARI_GOREV_GELIRI,
   ZIRHLI_OLU_AZALTMA,
   IKMAL_TANIMLARI,
   IKMAL_SIRASI,
@@ -69,6 +68,9 @@ import {
   moralGucEtkisi,
   odenmeyenCeza,
   type GorevTanimi,
+  gorevGucOrani,
+  yagmaEtkinGuc,
+  hazinePayi,
   BARIS_CATISMA_ILK_YIL,
   KALE_GELIR,
 } from "../data/birlik";
@@ -218,6 +220,9 @@ export function birlikHazirla(state: CharacterState): void {
     }
   }
   if (!Array.isArray(b.gorevler)) b.gorevler = ["devriye"];
+  // v64: tek görev; kalkan görevler (haydut avı, akın, muhafızlık) ve fazlalar ayıklanır.
+  b.gorevler = b.gorevler.filter((id, i, a) => GOREVLER.some((g) => g.id === id) && a.indexOf(id) === i).slice(0, 1);
+  if (b.gorevler.length === 0) b.gorevler = ["devriye"];
   if (!Array.isArray(b.doktrinler)) b.doktrinler = [];
   if (!Array.isArray(b.birlik_turler)) b.birlik_turler = [];
   // Eski "seviye" sistemi: yalnız seviye kadar tür açıktı; artık her açık tür %25. Tekrarları ve geçersizleri ayıkla.
@@ -604,6 +609,8 @@ export interface BirlikHesabi {
   kiralikMasrafi: number;
   kaleGeliri: number;
   devletPayi: number;
+  /** Hazine payı: ordu neti (enflasyonsuz) üzerinden kademeli vergi, en çok %40; gider kalemlerine dahildir. */
+  hazinePayi: number;
   erPayi: number;
   ganimetNet: number;
   /** Beklenen esir sayısı (ondalık; yıl işlemede olasılıklı yuvarlanır). */
@@ -640,7 +647,6 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const rol = ROL_TANIMLARI[karar.rol];
   const ikmal = IKMAL_TANIMLARI[karar.ikmal];
   const moralC = b.moral >= 70 ? 1.05 : b.moral < 40 ? 0.9 : 1;
-  const mizrakliAkin = (turPaylari(b).mizrakli ?? 0) > 0 ? 1 - 0.1 * clamp((turPaylari(b).mizrakli ?? 0) / 0.15, 0, 1.67) : 1;
   const gelirC = (1 + doktrin.gelir + (yol.gelir ?? 0)) * sertlikGelirCarpani(b) * moralC * bg.satisCarpani;
   const ganimetC =
     (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (savasta ? emirGetir(b.savas?.emir)?.ganimet ?? 0 : 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani * (imtiyazAktifMi(state, "sefer_emri") ? 1.25 : 1);
@@ -656,8 +662,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const kazancC = GOREV_GELIR_CARPANI;
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
-    const akinC = (g.tur === "akin" ? mizrakliAkin : 1) * (g.tur === "akin" || g.tur === "haydut" ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1);
-    const gelir = gucPay * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
+    const gelir = gucPay * gorevGucOrani(gucPay) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;
@@ -671,7 +676,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   // Yağma türü (sert 0,7 / orta 0,5 / yumuşak 0,3 × güç) ikmal kararından gelir; yalnız savaşın ilk YAGMA_YIL yılında.
   const yagmaTuru = ikmal.yagma;
   const yagma = savasta && b.savas?.sonuc !== "yenilgi" && (sec.savasYili ?? (b.savas?.yil_sayac ?? 0) + 1) <= YAGMA_YIL;
-  const yagmaBrut = yagma ? b.guc * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
+  const yagmaBrut = yagma ? yagmaEtkinGuc(b.guc) * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
   const toplamBrut = ganimetBrut + yagmaBrut;
   const devletPayi = 0; // askerde devlet payı/vergi yok
   // Er payı YALNIZ haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (olay anında, birlikYil). Görev ganimeti ve yağma doğrudan hazineye girer.
@@ -698,9 +703,12 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const kaleGeliri = r2(kaleGelirToplami(b) * bg.enflasyon);
   const limitAsimGideri = giderEri > er ? (erMasrafi + erzak) * (1 - er / giderEri) : 0;
   const toplamGelir = sold + erBasiGelir + gorevGeliri + ganimetNet + kaleGeliri;
-  const toplamGider = kiralikMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi + yaraliGideri;
+  const giderVergisiz = kiralikMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi + yaraliGideri;
+  // Hazine payı: vergiden önceki yıllık ordu neti (enflasyonsuz) üzerinden kademeli.
+  const hazine = r2(hazinePayi((toplamGelir - giderVergisiz) / bg.enflasyon) * bg.enflasyon);
+  const toplamGider = giderVergisiz + hazine;
   return {
-    er, sold, erBasiGelir, gorevler, gorevGeliri, ganimetBrut: toplamBrut, savasOdenegi, yaraliGideri, limitAsimGideri, yagmaBrut, kiralikMasrafi, kaleGeliri, devletPayi, erPayi, ganimetNet, esirBeklenen,
+    er, sold, erBasiGelir, gorevler, gorevGeliri, ganimetBrut: toplamBrut, savasOdenegi, yaraliGideri, limitAsimGideri, yagmaBrut, kiralikMasrafi, kaleGeliri, devletPayi, hazinePayi: hazine, erPayi, ganimetNet, esirBeklenen,
     erMasrafi, erzak, kislaBakim, techizatBakim, birlikBakim, kusatmaBakim, talimMasrafi, toplamGelir, toplamGider,
     net: toplamGelir - toplamGider,
   };

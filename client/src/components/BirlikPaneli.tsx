@@ -54,8 +54,8 @@ const M = {
   gucNot: { tr: 'Güç = (saldırı + savunma) / 2 ve yalnız SAĞLAM erlerin gücüdür; yaralılar tedavi süresince katılmaz. Rütben, kariyer puanın ve görev şartların buna bağlıdır; düşman gücü yaşınla artar.', en: 'Strength = (attack + defence) / 2 and counts only HEALTHY men; the wounded do not count while they recover. Your rank, career points and duty requirements depend on it; enemy strength grows with your age.' },
   gorevBaslik: { tr: 'Görevler', en: 'Duties' },
   gorevNot: {
-    tr: 'Ordu açık görevlere eşit bölünür; her görev yıllık düzenli gelir getirir.',
-    en: 'Your men are split evenly across open duties; each duty earns a steady yearly amount per man.',
+    tr: 'Aynı anda tek görev yürütülür; ordunun tamamı o göreve çıkar. Kazandıran görev daha çok yaralı ve kayıp verdirir.',
+    en: 'Only one duty runs at a time and your whole army takes it. The better a duty pays, the more wounded and losses it costs.',
   },
   slot: { tr: 'açık görev', en: 'open duties' },
   minEr: { tr: 'en az', en: 'min' },
@@ -154,6 +154,7 @@ const M = {
   gKredi: { tr: 'Kredi taksidi', en: 'Loan instalment' },
   gMulk: { tr: 'Mülk geliri', en: 'Property income' },
   cebineKalan: { tr: 'Cebine kalan', en: 'Left in your pocket' },
+  gHazine: { tr: 'Hazine payı', en: 'Treasury share' },
   barisTahmin: { tr: 'Bir çatışma zaferinde tahmini ganimetin', en: 'Estimated loot from a clash victory' },
   sonDokum: { tr: 'Geçen yıl', en: 'Last year' },
   firar: { tr: 'firar', en: 'deserted' },
@@ -333,12 +334,11 @@ export function BirlikPaneli({
   const gorevlerBlok = (
     <div className="sayfa-blok blok-gorev-liste">
       <h4>
-        {t('gorevBaslik')} ({b.gorevler.slot.kullanilan}/{b.gorevler.slot.toplam} {t('slot')})
+        {t('gorevBaslik')}
       </h4>
       <div className="gorev-liste">
         {b.gorevler.katalog.map((g) => {
           const secili = b.gorevler.secili.includes(g.id);
-          const dolu = !secili && b.gorevler.secili.length >= b.gorevler.slot.toplam;
           return (
             <div key={g.id} className={`gorev-kart${secili ? ' gorev-kart-acik' : ''}${!g.kullanilabilir ? ' gorev-kart-kilitli' : ''}`} title={d(g.aciklama)}>
               <div className="gorev-kart-ust">
@@ -350,8 +350,8 @@ export function BirlikPaneli({
                 ) : (
                   <button
                     className={secili ? '' : 'ikincil'}
-                    disabled={yukleniyor || (dolu && !secili)}
-                    onClick={() => onBirlikKarar({ gorevler: secili ? b.gorevler.secili.filter((x) => x !== g.id) : [...b.gorevler.secili, g.id] })}
+                    disabled={yukleniyor}
+                    onClick={() => onBirlikKarar({ gorevler: secili ? [] : [g.id] })}
                   >
                     {secili ? t('gorevKapat') : t('gorevAc')}
                   </button>
@@ -489,6 +489,7 @@ export function BirlikPaneli({
             {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-gider">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
             {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
             <div>{t('gTalim')}: <strong className="s-gider">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
+            {(b.hesap.hazinePayi ?? 0) > 0 && <div>{t('gHazine')}: <strong className="s-gider">−{formatPara(b.hesap.hazinePayi)}</strong></div>}
             {durum.butce.maas > 0 && <div>{t('gSubay')}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>}
             <div>{t('gYasam')}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
             <div>{t('gKira')}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>

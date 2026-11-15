@@ -87,6 +87,7 @@ import {
   doktrinSecenekleri,
   gorevAdi,
   gorevGetir,
+  gorevGucOrani,
   kusatmaAdi,
   moralGucEtkisi,
   techizatAdi,
@@ -148,7 +149,7 @@ export function birlikKararUygula(state: CharacterState, k: BirlikKararGirdisi):
   hapisYolculuk(state);
   if (k.gorevler !== undefined) {
     if (!Array.isArray(k.gorevler) || new Set(k.gorevler).size !== k.gorevler.length) throw new Error("Geçersiz karar.");
-    if (k.gorevler.length > gorevSlotSayisi(state)) throw new Error("Bu kadar görevi aynı anda yürütemezsin; rütben yükselince yeni yer açılır.");
+    if (k.gorevler.length > gorevSlotSayisi(state)) throw new Error("Aynı anda yalnız tek görev yürütebilirsin.");
     const gucPayi = gucHesapla(state).guc / Math.max(1, k.gorevler.length);
     for (const id of k.gorevler) {
       const g = gorevGetir(id);
@@ -831,6 +832,7 @@ export interface BirlikGorunumu {
     gorevGeliri: number;
     ganimetNet: number;
     devletPayi: number;
+    hazinePayi: number;
     erPayi: number;
     toplamGelir: number;
     erMasrafi: number;
@@ -985,7 +987,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         const pay = gp.find((x) => x.gorev.id === g.id);
         const hs = h.gorevler.find((x) => x.id === g.id);
         return {
-          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * bg.enflasyon),
+          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * gorevGucOrani(gucHesapla(state).guc) * bg.enflasyon),
           yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
           erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0),
         };
@@ -1042,7 +1044,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kaleGeliri: r2(h.kaleGeliri),
       kiralikMasrafi: r2(h.kiralikMasrafi),
       yagmaBrut: r2(h.yagmaBrut),
-      sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
+      sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), hazinePayi: r2(h.hazinePayi), erPayi: r2(h.erPayi),
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim),
       techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
       barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, (BARIS_GANIMET_ARALIK[0] + BARIS_GANIMET_ARALIK[1]) / 2) * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),

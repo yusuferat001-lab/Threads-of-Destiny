@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCharacter, mesleğiSec, isletmeBaglami } from "../src/game/stateManager";
 import { birlikAl } from "../src/game/birlik";
 import { barisCatismaCoz, saglikBedeliUygula, savasBaslat, savasiBitir, seferberlikUygula } from "../src/game/birlikYil";
-import { SAVAS_SAGLIK_TOPLAM, SAGLIK_RUTBE_MARUZ } from "../src/data/birlik";
+import { SAVAS_SAGLIK_TOPLAM } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
 
@@ -22,18 +22,17 @@ function asker(): CharacterState {
 const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("v63 oyuncunun sağlığı: savaş ve çatışma", () => {
-  it("büyük savaşın toplam ham bedeli 5–20 aralığında çekilir; rütbe maruziyeti azaltır", () => {
+  it("büyük savaşın toplam ham bedeli 5–20 aralığında çekilir; rütbe arttıkça sağlık kaybı sabit kalır", () => {
     for (let i = 0; i < 30; i++) {
       const sv = savasBaslat(asker());
       expect(sv.saglik_plan!).toBeGreaterThanOrEqual(SAVAS_SAGLIK_TOPLAM[0]);
       expect(sv.saglik_plan!).toBeLessThanOrEqual(SAVAS_SAGLIK_TOPLAM[1]);
     }
-    expect(SAGLIK_RUTBE_MARUZ[4]).toBeLessThan(SAGLIK_RUTBE_MARUZ[2]);
     const s1 = asker();
     const s5 = asker();
     s5.rutbe_seviye = 5;
     expect(saglikBedeliUygula(s1, 10)).toBe(10);
-    expect(saglikBedeliUygula(s5, 10)).toBe(4);
+    expect(saglikBedeliUygula(s5, 10)).toBe(10);
   });
 
   it("Tabip subayı ve revir sağlık bedelini azaltır", () => {

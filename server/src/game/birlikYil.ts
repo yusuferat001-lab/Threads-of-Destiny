@@ -20,7 +20,6 @@ import {
   BARIS_SAGLIK,
   BASKIN_YENILGI_SAGLIK_EK,
   GOREV_SAGLIK,
-  SAGLIK_RUTBE_MARUZ,
   SAGLIK_REVIR_AZALTMA,
   BARIS_YILLIK_ER,
   CATISMA_SALDIRI,
@@ -57,7 +56,8 @@ import {
   BARIS_TALIM_YENILGI,
   BARIS_TALIM_ZAFER,
   BARIS_GANIMET_ARALIK,
-  BARIS_GOREV_YARALI_CARPANI,
+  GOREV_FIRAR_YIL_IHTIMALI,
+  GOREV_KAYIP_BILDIRIM_ESIGI,
   EMIRLER,
   KALE_GUC_ESIGI,
   KUSATMA_ACIK,
@@ -248,8 +248,7 @@ export function saglikBedeliUygula(state: CharacterState, ham: number): number {
   if (!(ham > 0) || !state.aktif) return 0;
   const tabip = subayToplami(state).oluFirarAzalt;
   const revir = clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * SAGLIK_REVIR_AZALTMA;
-  const maruz = SAGLIK_RUTBE_MARUZ[clamp((state.rutbe_seviye ?? 1) - 1, 0, SAGLIK_RUTBE_MARUZ.length - 1)] ?? 1;
-  const kayip = olasilikliYuvarla(ham * maruz * (1 - tabip) * (1 - revir));
+  const kayip = olasilikliYuvarla(ham * (1 - tabip) * (1 - revir));
   if (kayip <= 0) return 0;
   state.saglik = Math.max(0, state.saglik - kayip);
   if (state.saglik <= 0) checkDeath(state, false, { tr: "Savaşta aldığı yaralardan öldü", en: "Died of wounds taken in war" });
@@ -1208,25 +1207,21 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const kc = kayipCarpani(state);
   let gorevOlu = 0;
   let gorevYarali = 0;
+  let gorevFirar = 0;
   const yaraliGorevler: string[] = [];
   const yaraliGorevlerEn: string[] = [];
+  // Görev kaybı (yalnız barışta; savaşta görev açık değildir): kazandıran görev daha çok kaybettirir — çoğunlukla yaralı, az ölü, firar ara sıra.
   for (const g of h.gorevler) {
     if (!g.aktif || g.er <= 0) continue;
-    if (savasta) {
-      gorevOlu += olasilikliYuvarla(g.er * GOREV_KAYIP(g.id, savasta) * kc);
-    } else {
-      // Barışta görev kayıpları ölü değil yaralıdır (bu yılın kaynağı bildirimde adıyla yazılır).
-      const y = olasilikliYuvarla(g.er * GOREV_KAYIP(g.id, savasta) * BARIS_GOREV_YARALI_CARPANI * kc);
-      if (y > 0) {
-        gorevYarali += y;
-        const tn = gorevGetir(g.id);
-        if (tn) {
-          const ad = gorevAdi(tn, state.cag);
-          yaraliGorevler.push(ad.tr);
-          yaraliGorevlerEn.push(ad.en);
-        }
-      }
-    }
+    const tn = gorevGetir(g.id);
+    if (!tn) continue;
+    const k = tn.kayip;
+    gorevYarali += olasilikliYuvarla(g.er * k.yarali * kc);
+    gorevOlu += olasilikliYuvarla(g.er * k.olu * kc);
+    if (Math.random() < GOREV_FIRAR_YIL_IHTIMALI) gorevFirar += olasilikliYuvarla((g.er * k.firar * clamp(kc, 0.4, 1.2)) / GOREV_FIRAR_YIL_IHTIMALI);
+    const ad = gorevAdi(tn, state.cag);
+    yaraliGorevler.push(ad.tr);
+    yaraliGorevlerEn.push(ad.en);
   }
   const ayar = firarAyarlayici(state, b);
   // Savaş zamanı borç eşikleri (−50 hafif, −200 ağır): moral düşer, firar artar, güç kaybı; ağır eşikte paralı toplu çekilir.
@@ -1244,6 +1239,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   } else {
     firarPct = ayar.tetik ? ayar.puan : 0;
   }
+  if (gorevFirar > 0 && !savasta) firarPct += (gorevFirar / Math.max(1, eskiEr)) * 100;
   const tavan = savasta ? savasKayipTavani(state, b) : null;
   const kayip = kayipUygula(state, b, {
     oluPct,
@@ -1258,12 +1254,17 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   });
   const olen = kayip.olu;
   const firar = kayip.firar;
-  if (firar > 0) uyarilar.push({ kod: "firar", sayi: firar });
   const kayipKaynak = savasta ? "savas" : "gorev";
   const yaralananOlu = kayip.yaralanan - (kayip.yaralananEk ?? 0);
-  if (olen > 0) uyarilar.push({ kod: "savas_kayip", sayi: olen, kaynak: kayipKaynak, ...(yaralananOlu > 0 ? { yaralanan: yaralananOlu } : {}) });
-  else if (yaralananOlu > 0) uyarilar.push({ kod: "savas_kayip", sayi: 0, kaynak: kayipKaynak, yaralanan: yaralananOlu });
-  if ((kayip.yaralananEk ?? 0) > 0) uyarilar.push({ kod: "savas_kayip", sayi: 0, kaynak: "gorev", yaralanan: kayip.yaralananEk, kaynakAd: { tr: yaraliGorevler.join(", "), en: yaraliGorevlerEn.join(", ") } });
+  const yaralananEk = kayip.yaralananEk ?? 0;
+  // Barışta görev kaybı her yıl bildirilmez: yalnız belirgin yıllarda (toplam eşiği aşınca) ya da moral/borç firarında ekrana gelir; kayıp her durumda uygulanır.
+  const gorevBildir = savasta || ayar.tetik || olen + firar + kayip.yaralanan >= Math.max(GOREV_KAYIP_BILDIRIM_ESIGI.mutlak, eskiEr * GOREV_KAYIP_BILDIRIM_ESIGI.oran);
+  if (gorevBildir) {
+    if (firar > 0) uyarilar.push({ kod: "firar", sayi: firar });
+    if (olen > 0) uyarilar.push({ kod: "savas_kayip", sayi: olen, kaynak: kayipKaynak, ...(yaralananOlu > 0 ? { yaralanan: yaralananOlu } : {}) });
+    else if (yaralananOlu > 0) uyarilar.push({ kod: "savas_kayip", sayi: 0, kaynak: kayipKaynak, yaralanan: yaralananOlu });
+    if (yaralananEk > 0) uyarilar.push({ kod: "savas_kayip", sayi: 0, kaynak: "gorev", yaralanan: yaralananEk, kaynakAd: { tr: yaraliGorevler.join(", "), en: yaraliGorevlerEn.join(", ") } });
+  }
   // Savaş Günü pencere onayında zaten uygulanan karar savaşı kaybı yıl bildiriminde de görünür (ikinci kez uygulanmaz).
   if (savasYili?.faz === "karar" && b.savas?.gun_sonucu && b.savas.gun_cozuldu_yil === state.yil) {
     const gs = b.savas.gun_sonucu;
@@ -1390,6 +1391,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
       kiralikMasrafi: r2(h.kiralikMasrafi),
       kaleGeliri: r2(h.kaleGeliri),
       devletPayi: 0,
+      hazinePayi: r2(h.hazinePayi),
       erPayi: r2(h.erPayi + (savasSonu?.erPayi ?? 0)),
       erMasrafi: r2(h.erMasrafi),
       erzak: r2(h.erzak),
@@ -1413,11 +1415,6 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 }
 
 // ── Görev tabloları (yardımcı) ──────────────────────────────────────────────
-function GOREV_KAYIP(id: string, savasta: boolean): number {
-  const g = gorevGetir(id);
-  if (!g) return 0;
-  return savasta ? g.kayipSavas : g.kayipBaris;
-}
 function gorevSertlikDegeri(id: string): number {
   return gorevGetir(id)?.sertlik ?? 0;
 }
