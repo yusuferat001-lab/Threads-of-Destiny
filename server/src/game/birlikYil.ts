@@ -25,6 +25,9 @@ import {
   SOHRET_BASKIN,
   ZAFER_SERISI_ESIGI,
   ZAFER_SERISI_DUSMAN_ARTISI,
+  ZAFER_SERISI_ESIGI_2,
+  ZAFER_SERISI_DUSMAN_ARTISI_2,
+  SAVAS_BOZGUN_FIRARI,
   ZAFER_SERISI_BOS,
   BARIS_YILLIK_ER,
   CATISMA_SALDIRI,
@@ -265,9 +268,10 @@ function ikmalSaglikCarpani(id: string | undefined): number {
   return IKMAL_TANIMLARI[(id as keyof typeof IKMAL_TANIMLARI) ?? "yagma_orta"]?.yagma.kayip ?? 1;
 }
 
-/** Zafer serisi (her tür ayrı): ≥3 arka arkaya zaferden sonraki karşılaşmada düşman gücü çarpanı (1,10–1,15); yoksa 1. */
+/** Zafer serisi (her tür ayrı): ≥3 arka arkaya zafer → düşman ×1,10–1,15, ≥5 → ×1,20–1,25 (seri sürdükçe kalıcı); yenilgi sıfırlar; yoksa 1. */
 export function hazirlikCek(b: BirlikDurumu, tur: "haydut" | "sinir" | "savas"): number {
   const seri = (b.zafer_serisi ??= { ...ZAFER_SERISI_BOS })[tur] ?? 0;
+  if (seri >= ZAFER_SERISI_ESIGI_2) return 1 + rnd(ZAFER_SERISI_DUSMAN_ARTISI_2[0], ZAFER_SERISI_DUSMAN_ARTISI_2[1]);
   return seri >= ZAFER_SERISI_ESIGI ? 1 + rnd(ZAFER_SERISI_DUSMAN_ARTISI[0], ZAFER_SERISI_DUSMAN_ARTISI[1]) : 1;
 }
 /** Sonuçla seri güncellenir: zafer +1, yenilgi sıfırlar. */
@@ -541,6 +545,8 @@ export interface KayipGirdisi {
   /** Savaş boyu kalan tavan (tam sayı); yoksa tavan yok. */
   oluTavan?: number;
   firarTavan?: number;
+  /** true: bu yılın firarı savaş toplam firar sayacına (tavan hesabı) EKLENMEZ (bozgun firarı: sonraki yıllar kendi payını korur). */
+  firarSayma?: boolean;
 }
 export interface KayipSonucu {
   olu: number;
@@ -615,7 +621,7 @@ export function kayipUygula(state: CharacterState, b: BirlikDurumu, g: KayipGird
     sv.seferberlik_er = levyKalan;
     sv.seferberlik_yarali = Math.min(sv.seferberlik_yarali ?? 0, levyKalan);
     sv.olu_toplam = (sv.olu_toplam ?? 0) + oluR + oluL;
-    sv.firar_toplam = (sv.firar_toplam ?? 0) + firR + firL0;
+    if (!g.firarSayma) sv.firar_toplam = (sv.firar_toplam ?? 0) + firR + firL0;
   }
   // Yaralı: ölünün 1,4–1,5 katı (revir/tabip düşürür), sağlam erlerden ayrılır; ana ordu / seferberlik oransal.
   const erSon = erSayisi(state);
@@ -674,13 +680,13 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   const d = gucHesapla(state, ctx);
   // Kıyas yönü: SALDIRIDAYSAN senin saldırı gücün düşmanın SAVUNMA gücüyle, SAVUNMADAYSAN senin savunma gücün düşmanın SALDIRI gücüyle yarışır.
   const oyuncuG = inisiyatif === "saldiri" ? d.saldiri : d.savunma;
-  // Düşmanın gücü MUTLAKTIR (yaşa göre referans × savaş başında çekilen ±%5): bizim gücümüz sonucu doğrudan belirler.
+  // Düşmanın gücü MUTLAKTIR (yaşa göre referans × savaş başında çekilen ±%5 × zafer serisi hazırlığı): bizim gücümüz sonucu doğrudan belirler.
   const E = dusmanReferansGucu(state) * sv.dusman_orani * (sv.hazirlik ?? 1);
   const dagilim = dusmanSaldiriSavunma(sv.dusman_tur);
   // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo).
   const dusmanG = E * (inisiyatif === "saldiri" ? dagilim.savunma : dagilim.saldiri) * dusmanAraziCarpani(arazi, sv.dusman_tur);
   const rol = ROL_TANIMLARI[karar?.rol ?? "ana"];
-  const zarYuzde = () => (d20() - 10.5) / SAVAS_ZAR_BOLEN; // ±%7 (SAVAS_ZAR_YUZDE)
+  const zarYuzde = () => (d20() - 10.5) / SAVAS_ZAR_BOLEN; // ±%4 (SAVAS_ZAR_YUZDE)
   let sonBizimZar = 0;
   let sonDusmanZar = 0;
   const bizimZar = () => {
@@ -791,6 +797,8 @@ export interface SavasYili {
   oluPct: number;
   firarPct: number;
   faz: "on" | "karar" | "sonra";
+  /** Büyük savaş yenilgisinin 4. yılı: bozgun firarı (savaş firar tavanına takılmaz). */
+  bozgun?: boolean;
 }
 
 /** Ön yıl planı: toplam T (%5–6) üç türe ≈ eşit (±%30) bölünür; her tür iki yıla rastgele (%35–65) dağıtılır. */
@@ -842,6 +850,10 @@ export function savasYiliCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
     return { catisma: null, oluPct: o, yaraliPct: y, firarPct: f, seferFirarPct: plan.sefer?.[i] ?? 0, faz: "on" };
   }
   const t = SAVAS_SONRA_KAYBI[sv.sonuc];
+  // Yalnız TÜM ORDU yenilgisi (büyük savaş): karar savaşından sonraki ilk yıl (4. yıl) bozgun firarı yüksektir.
+  if (sv.sonuc === "yenilgi" && sv.yil_sayac === SAVAS_KARAR_YILI + 1) {
+    return { catisma: null, oluPct: aralikCek(t.olu), firarPct: aralikCek(SAVAS_BOZGUN_FIRARI), faz: "sonra", bozgun: true };
+  }
   return { catisma: null, oluPct: aralikCek(t.olu), firarPct: aralikCek(t.firar), faz: "sonra" };
 }
 
@@ -1290,7 +1302,8 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     // Seferber EK firarı: yalnız savaşın ilk iki yılı, ayrı toplam (%5 / %10); ağır borç eşiğinde ×1,5.
     levyFirarPct: savasta ? (savasYili?.seferFirarPct ?? 0) * (borc?.seferFirarCarpani ?? 1) : 0,
     oluTavan: tavan?.olu,
-    firarTavan: tavan?.firar,
+    firarTavan: savasYili?.bozgun ? undefined : tavan?.firar,
+    firarSayma: !!savasYili?.bozgun,
   });
   const olen = kayip.olu;
   const firar = kayip.firar;

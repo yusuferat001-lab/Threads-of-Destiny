@@ -54,6 +54,7 @@ describe("Kazanç tek kaynak (FinansOzeti.kazanc)", () => {
     expect(d.butce.hazinePayi).toBeGreaterThan(0);
     expect(d.butce.kazanc).toBeCloseTo(vergisiz - d.butce.hazinePayi, 1);
     expect(f.kazanc.net).toBeCloseTo(d.butce.kazanc, 1); // ana ekran Kazanç == Ordu bütçesi Kazanç (vergi sonrası)
+    expect(f.hazinePayi).toBeCloseTo(d.butce.hazinePayi, 1); // Gelir&Gider ekranındaki Hazine payı satırı
     // Ordu netinden (yaşam/subay düşülmeden) alınsaydı vergi daha yüksek olurdu: kazançtan alınan, ordu netinden alınandan azdır.
     expect(d.butce.hazinePayi).toBeLessThan(hazinePayiKazanctan(state, e, d.butce.net));
     // Zararda vergi yok

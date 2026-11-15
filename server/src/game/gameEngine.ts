@@ -2746,6 +2746,8 @@ export interface FinansOzeti {
    * gider = gelir − net; alt/ust = net'in yıllık rastgelelik aralığı (talep gürültüsü, bağış, görev).
    */
   kazanc: { gelir: number; gider: number; net: number; alt: number; ust: number };
+  /** Hazine payı (yalnız Asker): KAZANÇ üzerinden alınan vergi; `kazanc.net` vergi sonrasıdır (yoksa 0). */
+  hazinePayi: number;
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez, iç kullanım/uyum için. */
   enflasyonYuzdesi: number;
@@ -2875,6 +2877,7 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     isletmeli: isletmeAktif(state),
     isletmeCalisanMaasi: isletmeAktif(state) ? paraYuvarla(state.ekip.reduce((t, u) => t + u.maas, 0)) : 0,
     kazanc: kazancHesapla(state, maasYillik, toplamGider, krediTaksit),
+    hazinePayi: isletmeAktif(state) ? butceVeCebineKalan(state, isletmeBaglami(state)).hazinePayi : 0,
     netYillik: paraYuvarla(maasYillik - toplamGider - krediTaksit),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
     giderEnflasyonYuzdesi: giderEnflasyonYuzdesiHesapla(state),

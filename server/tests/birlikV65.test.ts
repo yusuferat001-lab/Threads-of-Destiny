@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCharacter, mesleğiSec, isletmeBaglami } from "../src/game/stateManager";
-import { birlikAl } from "../src/game/birlik";
-import { barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
+import { birlikAl, birlikHesapla } from "../src/game/birlik";
+import { gucHesapla } from "../src/game/birlik";
+import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
 import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
-import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, IKMAL_TANIMLARI } from "../src/data/birlik";
+import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
 import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
@@ -172,5 +173,89 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     };
     expect(kayip("yagma_yumusak")).toBeLessThan(kayip("yagma_orta"));
     expect(kayip("yagma_sert")).toBeGreaterThan(kayip("yagma_orta"));
+  });
+
+  it("zafer serisi 5'e ulaşınca düşman bonusu +%20–25'e çıkar (3–4'te +%10–15); etki seri sürdükçe kalıcıdır; yenilgi sıfırlar", () => {
+    const s = asker();
+    const b = birlikAl(s);
+    b.zafer_serisi = { haydut: 0, sinir: 0, savas: 0 };
+    for (let i = 0; i < ZAFER_SERISI_ESIGI_2 - 1; i++) zaferSerisiIsle(b, "sinir", true);
+    for (let i = 0; i < 40; i++) {
+      const h = hazirlikCek(b, "sinir"); // seri 4
+      expect(h).toBeGreaterThanOrEqual(1.1);
+      expect(h).toBeLessThanOrEqual(1.15);
+    }
+    zaferSerisiIsle(b, "sinir", true); // seri 5
+    for (let i = 0; i < 40; i++) {
+      const h = hazirlikCek(b, "sinir");
+      expect(h).toBeGreaterThanOrEqual(1.2);
+      expect(h).toBeLessThanOrEqual(1.25);
+    }
+    for (let i = 0; i < 6; i++) zaferSerisiIsle(b, "sinir", true); // kalıcı: seri sürerken bonus düşmez
+    expect(hazirlikCek(b, "sinir")).toBeGreaterThanOrEqual(1.2);
+    expect(hazirlikCek(b, "haydut")).toBe(1); // türler ayrı
+    zaferSerisiIsle(b, "sinir", false);
+    expect(hazirlikCek(b, "sinir")).toBe(1);
+  });
+
+  it("büyük savaş YENİLGİSİNDE 4. yıl bozgun firarı yüksektir (%5–7) ve tavana sayılmaz; diğer yıllar ve zafer değişmez", () => {
+    const yil = (sonuc: "zafer" | "yenilgi", yilNo: number) => {
+      const s = asker();
+      s.meslek_musteri = 100;
+      s.ulke.savasta = true;
+      const b = birlikAl(s);
+      const sv = savasBaslat(s);
+      seferberlikUygula(s, "secme", bg(s));
+      sv.sonuc = sonuc;
+      sv.yil_sayac = yilNo - 1;
+      return savasYiliCoz(s, b, bg(s));
+    };
+    for (let i = 0; i < 30; i++) {
+      const y4 = yil("yenilgi", 4);
+      expect(y4.bozgun).toBe(true);
+      expect(y4.firarPct).toBeGreaterThanOrEqual(SAVAS_BOZGUN_FIRARI[0]);
+      expect(y4.firarPct).toBeLessThanOrEqual(SAVAS_BOZGUN_FIRARI[1]);
+      expect(y4.firarPct).toBeGreaterThan(SAVAS_SONRA_KAYBI.yenilgi.firar[1]); // eski değerin üstünde
+      const y5 = yil("yenilgi", 5);
+      expect(y5.bozgun).toBeUndefined();
+      expect(y5.firarPct).toBeLessThanOrEqual(SAVAS_SONRA_KAYBI.yenilgi.firar[1]);
+      expect(yil("zafer", 4).bozgun).toBeUndefined(); // yalnız yenilgide
+    }
+    // bozgun firarı savaş toplam firar sayacına eklenmez (sonraki yıllar kendi payını korur)
+    const s = asker();
+    s.meslek_musteri = 200;
+    s.ulke.savasta = true;
+    const b = birlikAl(s);
+    const sv = savasBaslat(s);
+    sv.firar_toplam = 0;
+    kayipUygula(s, b, { oluPct: 0, firarPct: 6, firarSayma: true });
+    expect(sv.firar_toplam).toBe(0);
+    kayipUygula(s, b, { oluPct: 0, firarPct: 6 });
+    expect(sv.firar_toplam).toBeGreaterThan(0);
+  });
+
+  it("süvari birimi haraç ve vergi tahsilatı görev gelirini +%10 artırır (haydut/akın görevleri kalktığı için)", () => {
+    const s = asker();
+    s.rutbe_seviye = 3;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 200;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 200, orta: 0, yuksek: 0 };
+    b.gorevler = ["tahsilat"];
+    b.birlik_turler = [];
+    const guc0 = gucHesapla(s).guc;
+    const g0 = birlikHesapla(s, bg(s)).gorevGeliri;
+    b.birlik_turler = ["suvari"];
+    const guc1 = gucHesapla(s).guc;
+    const g1 = birlikHesapla(s, bg(s)).gorevGeliri;
+    expect(g0).toBeGreaterThan(0);
+    expect(SUVARI_GOREV_GELIRI).toBe(0.1);
+    expect(g1 / g0).toBeGreaterThan(1.05 * (guc1 / guc0) * 0.9); // güç değişimi + %10 bonus (güç/er bantları aynı bantta)
+    b.gorevler = ["eskort"];
+    b.birlik_turler = [];
+    const e0 = birlikHesapla(s, bg(s)).gorevGeliri / gucHesapla(s).guc;
+    b.birlik_turler = ["suvari"];
+    const e1 = birlikHesapla(s, bg(s)).gorevGeliri / gucHesapla(s).guc;
+    expect(e1 / e0).toBeCloseTo(1, 1); // eskortta bonus yok
   });
 });

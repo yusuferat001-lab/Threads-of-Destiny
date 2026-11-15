@@ -539,3 +539,9 @@ Bu blok v54–v58'in seferberlik, savaş kaybı, görev geliri ve kışla/limit 
 - **Görev geliri er bantları** `GOREV_ER_BANTLARI` (0–200 ×1 · 200–350 ×0,85 · 350+ ×0,70), güç bantlarına ek. **Savaş sağlık kaybı ikmal çarpanı** (yumuşak ×0,85 / orta ×1 / sert ×1,15).
 - **Ölçüm** (genel bot N=400): kazanma haydut %81 · sınır %78 · savaş %66 (değişmedi); dengeli bot kazanma %93/91/88, aktif %98/96/96; 65 yıl ele kalan dengeli 22,1k, aktif 37,9k (vergi sonrası); genel bot 70–79 yaş yıllık net ≈113; borçla ölen %41.
 - `tests/gameFlow.test.ts`: oyun sırasında karakterin ölmesi (savaş sağlığı) artık hata değil, oyun sonu sayılır.
+
+### §45 Asker v68 (2026-11): bozgun firarı, zafer serisi 5'li kademe, tamamlanan yarım işler
+- **Bozgun firarı:** büyük savaş yenilgisinin 4. yılı firar %5–7 (`SAVAS_BOZGUN_FIRARI`), savaş firar tavanına sayılmaz; 5. yıl ve sonrası eskisi gibi. Ölçüm: 4. yıl ortalama %2,65 → %5,9.
+- **Zafer serisi:** ≥5 arka arkaya zaferde düşman ×1,20–1,25 (`ZAFER_SERISI_ESIGI_2`); 3–4'te ×1,10–1,15; etki seri sürdükçe kalıcı, yenilgi sıfırlar.
+- **Tamamlananlar:** süvari birimi görev bonusu Haraç ve Vergi Tahsilatı'na taşındı; Gelir & Gider ekranına Hazine payı satırı; eskimiş metin/yorumlar.
+- **Ölçüm** (N=400 genel bot): kazanma haydut %79 · sınır %77 · savaş %64; dengeli bot %96/94/91, aktif %95/93/93; 65 yıl ele kalan dengeli 22,6k, aktif 36,4k; borçla ölen %44 (±4).

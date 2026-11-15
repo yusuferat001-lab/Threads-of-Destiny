@@ -110,7 +110,7 @@ export const TUR_TANIMLARI: Record<BirlikTur, TurTanimi> = {
   suvari: {
     saldiri: 3, savunma: 0.8, pay: TUR_PAYI, arazi: { ova: 1.6, dag: 0.85, orman: 0.85 }, ucret: 0.85, bakim: 0.55, erzak: 1.55, simge: "🐎",
     ad: { orta: { tr: "Ağır Süvari", en: "Heavy Cavalry" }, sanayi: { tr: "Süvari", en: "Cavalry" } },
-    arti: { tr: "En güçlü saldırı; ovada ezici; haydut ve akın geliri +%10", en: "Strongest attack; crushing on open ground; bandit and raid income +10%" },
+    arti: { tr: "En güçlü saldırı; ovada ezici; haraç ve vergi tahsilatı geliri +%10", en: "Strongest attack; crushing on open ground; tribute and tax collection income +10%" },
     eksi: { tr: "Zayıf savunma; dağ ve ormanda zayıf, pahalı", en: "Weak defence; poor in hills and forest, costly" },
   },
   mizrakli: {
@@ -436,7 +436,7 @@ export const ER_BASI_GELIR = 0.15;
 export const GOREV_GELIR_CARPANI = 1;
 /** Her rütbede sabit yıllık gönüllü er (savaşta ayrıca çarpılmaz; vebada kısılır, kışla limitine takılır). */
 export const BARIS_YILLIK_ER = 1;
-/** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haydut/akın görev gelirini artırır. */
+/** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haraç ve vergi tahsilatı görev gelirini artırır. */
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
@@ -716,7 +716,7 @@ export const ARAZI_DEGISIM_ORANI = 0.4;
 /** İnisiyatif zarı: oyuncu seçer / zorunlu saldırı / zorunlu savunma. */
 export const INISIYATIF_OYUNCU_SECER = 0.4;
 export const INISIYATIF_ZORUNLU_SALDIRI = 0.3;
-/** Büyük savaşta düşman gücü sapması: referans × [0,95; 1,05] (savaş başında bir kez çekilir; oyuncuya ±%5 aralık olarak gösterilir). */
+/** Büyük savaşta düşman gücü sapması: referans × [0,95; 1,05] (savaş başında bir kez çekilir; oyuncuya ±%6,5 aralık olarak gösterilir, Keşif ile ±%2,5'e kadar). */
 export const DUSMAN_ORAN: [number, number] = [0.95, 1.05];
 /** Savaş günü / çatışma zarı: her taraf güç × (1 ± %4) (d20: (zar − 10,5) / SAVAS_ZAR_BOLEN, uçlar ±9,5 → ±%4, iki taraf için de). */
 export const SAVAS_ZAR_YUZDE = 0.04;
@@ -1137,6 +1137,9 @@ export const SOHRET_BASKIN = { zafer: 1, yenilgi: 1 };
 /** Seri sayaçları her tür için AYRIDIR: haydut, sınır, büyük savaş. */
 export const ZAFER_SERISI_ESIGI = 3;
 export const ZAFER_SERISI_DUSMAN_ARTISI: Aralik = [0.1, 0.15];
+/** Aynı türde arka arkaya 5 zafer: bonus kademe atlar (düşman +%20–25); yenilgi sayacı sıfırlar, etki seri sürdükçe KALICIDIR. */
+export const ZAFER_SERISI_ESIGI_2 = 5;
+export const ZAFER_SERISI_DUSMAN_ARTISI_2: Aralik = [0.2, 0.25];
 export type ZaferSerisi = { haydut: number; sinir: number; savas: number };
 export const ZAFER_SERISI_BOS: ZaferSerisi = { haydut: 0, sinir: 0, savas: 0 };
 
@@ -1149,3 +1152,10 @@ export function gorevErOrani(er: number): number {
   for (const [lo, hi, f] of GOREV_ER_BANTLARI) t += Math.max(0, Math.min(er, hi) - lo) * f;
   return t / er;
 }
+
+// ── Büyük savaş yenilgisinde bozgun firarı (v68): yalnız TÜM ORDU yenilgisi (büyük savaş); karar savaşından sonraki ilk yıl (savaşın 4. yılı) ──
+/** 4. yıl firarı ordunun %'si; savaş kayıp tavanının (SAVAS_KAYIP_TAVANI) DIŞINDA sayılır (bozgun: ordu dağılır). Eskiden bu yıl %2–3,5'ti (tavana da takılırdı). */
+export const SAVAS_BOZGUN_FIRARI: Aralik = [5, 7];
+/** Süvari birimi görev geliri bonusu (haydut avı/akın görevleri kalkınca Haraç ve Vergi Tahsilatı'na taşındı). */
+export const SUVARI_GOREV_GELIRI = 0.1;
+export const SUVARI_BONUS_GOREVLERI: string[] = ["tahsilat"];

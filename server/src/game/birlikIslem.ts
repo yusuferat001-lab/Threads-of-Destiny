@@ -855,7 +855,7 @@ export interface BirlikGorunumu {
   yol: string | null;
 }
 
-/** Karar savaşının kıyas özeti: düşmanın tahmini güç aralığı (±%5) ile senin saldırı/savunma gücün (güncel arazide). */
+/** Karar savaşının kıyas özeti: düşmanın tahmini güç aralığı (±%6,5; Keşif ile ±%2,5'e kadar) ile senin saldırı/savunma gücün (güncel arazide). */
 export interface SavasKiyasi {
   /** Aralıklar [alt, üst]: gerçek değer savaş başında bu aralıkta çekilmiştir. */
   dusman: { guc: [number, number]; saldiri: [number, number]; savunma: [number, number] };
