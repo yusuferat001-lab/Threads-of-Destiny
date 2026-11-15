@@ -263,3 +263,31 @@
     box-shadow: var(--golge-derin);
   }
 }
+
+/*
+ * Yan ekranlar (Evin/Sosyalleş/Mağaza/İlişkiler/...) mobil dokunma alanı ≥44px (UX turu 5).
+ * Görünüm aynı; dişli ve ✕ için görünmez ::after, sekme/çip için min-height. Alt ekranlarda dişli
+ * ✕'in ALTINDAN yanına alındı: iki düğmenin dokunma alanları üst üste binmesin.
+ */
+@media (max-width: 767px) {
+  .ayar-ac-buton::after {
+    content: '';
+    position: absolute;
+    inset: -8px -6px;
+  }
+  .ekran-kapat-buton::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+  }
+  .oyun-kapsayici:has(.ekran-kapat-buton) > .ayar-ac-buton {
+    top: 0.28rem;
+    right: 2.95rem;
+  }
+  .ekran-sekme,
+  .magaza-sekme,
+  .sosyal-icki-cip,
+  .sosyal-aksiyon-buton {
+    min-height: 44px;
+  }
+}

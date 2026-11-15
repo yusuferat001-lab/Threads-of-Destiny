@@ -102,9 +102,9 @@
 }
 .ana-etiket {
   font-family: var(--font-baslik);
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--s-latte-baslik);
 }
@@ -322,7 +322,7 @@
     min-height: calc(126 * var(--u));
   }
   .merkez-panel-ana .ana-etiket {
-    font-size: calc(13 * var(--u));
+    font-size: max(0.75rem, calc(13 * var(--u)));
   }
   .merkez-panel-ana .ana-deger {
     font-size: calc(36 * var(--u));
@@ -381,7 +381,7 @@
     font-size: calc(17 * var(--u));
   }
   .merkez-panel-ana .ana-tus-metin small {
-    font-size: calc(14 * var(--u));
+    font-size: max(0.75rem, calc(14 * var(--u)));
     max-width: 100%;
   }
   .merkez-panel-ana .ana-tus:hover:not(:disabled) {
@@ -399,7 +399,7 @@
     font-size: calc(26 * var(--u));
   }
   .merkez-panel-ana .ana-ekran .ana-ilerle small {
-    font-size: calc(16 * var(--u));
+    font-size: max(0.75rem, calc(16 * var(--u)));
   }
 }
 
