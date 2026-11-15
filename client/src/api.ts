@@ -7,6 +7,8 @@ import type {
   BirlikIslemSonucu,
   SavasKarariDurumu,
   SavasGunuSonucu,
+  CatismaKarariDurumu,
+  CatismaSonucuGorunum,
   DepoDoldurPlani,
   CharacterState,
   SenaryoResponse,
@@ -292,8 +294,8 @@ export function birlikKusatma(stateId: string, seviye: number) {
 export function birlikTerhis(stateId: string, adet: number) {
   return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/terhis`, { method: 'POST', body: JSON.stringify({ adet }) });
 }
-export function birlikKiralik(stateId: string) {
-  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kiralik`, { method: 'POST', body: '{}' });
+export function birlikKiralik(stateId: string, seviye: 'kucuk' | 'buyuk') {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kiralik`, { method: 'POST', body: JSON.stringify({ seviye }) });
 }
 export function birlikIkmalDegistir(stateId: string, id: string) {
   return istek<BirlikYaniti & { ikmal: string }>(`/api/game/${stateId}/birlik/ikmal`, { method: 'POST', body: JSON.stringify({ id }) });
@@ -303,6 +305,14 @@ export function birlikSavasKarariGetir(stateId: string) {
 }
 export function birlikSavasKarariVer(stateId: string, secim: string) {
   return istek<BirlikYaniti & { sonraki: SavasKarariDurumu | null; gunSonucu: SavasGunuSonucu | null }>(`/api/game/${stateId}/birlik/savas-karari`, { method: 'POST', body: JSON.stringify({ secim }) });
+}
+
+/** Barış çatışması (haydut / sınır): karar penceresi verisi ve kararın gönderilmesi. */
+export function birlikCatismaGetir(stateId: string) {
+  return istek<{ karar: CatismaKarariDurumu | null }>(`/api/game/${stateId}/birlik/catisma`);
+}
+export function birlikCatismaVer(stateId: string, secim: 'saldiri' | 'savunma') {
+  return istek<BirlikYaniti & { sonuc: CatismaSonucuGorunum }>(`/api/game/${stateId}/birlik/catisma`, { method: 'POST', body: JSON.stringify({ secim }) });
 }
 
 /** v20: depoyu hedef yüzdeye doldurma planı (onayla=false) ya da satın alma (onayla=true). */

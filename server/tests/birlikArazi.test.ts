@@ -84,10 +84,10 @@ describe("arazi üçlüsü: ova / dağ geçidi / sık orman", () => {
 });
 
 describe("düşman gücü: yaşa göre, ±%5, saldırı/savunma ayrımlı", () => {
-  it("savaş sapması ±%5, zar ±%7", () => {
+  it("savaş sapması ±%5, zar ±%4 (iki taraf için)", () => {
     expect(DUSMAN_ORAN).toEqual([0.95, 1.05]);
-    expect((20 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(0.07, 6);
-    expect((1 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(-0.07, 6);
+    expect((20 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(0.04, 6);
+    expect((1 - 10.5) / SAVAS_ZAR_BOLEN).toBeCloseTo(-0.04, 6);
   });
 
   it("referans güç yaşla artar", () => {
@@ -106,7 +106,7 @@ describe("düşman gücü: yaşa göre, ±%5, saldırı/savunma ayrımlı", () =
     expect(dusmanSaldiriSavunma("karma")).toEqual({ saldiri: 1, savunma: 1 });
   });
 
-  it("kıyas özeti: tahmin aralığı referans ±%5, oyuncunun saldırı/savunması yazılır", () => {
+  it("kıyas özeti: tahmin aralığı referans ±%6,5, oyuncunun saldırı/savunması yazılır", () => {
     const s = asker();
     const b = birlikAl(s);
     b.savas = {
@@ -115,8 +115,8 @@ describe("düşman gücü: yaşa göre, ±%5, saldırı/savunma ayrımlı", () =
     };
     const k = savasKiyasiHesapla(s, isletmeBaglami(s));
     const ref = savasDusmanGucuYas(s.yas) * dusmanAraziCarpani("ova", "karma");
-    expect(k.dusman.guc[0]).toBe(Math.round(ref * 0.95));
-    expect(k.dusman.guc[1]).toBe(Math.round(ref * 1.05));
+    expect(k.dusman.guc[0]).toBe(Math.round(ref * 0.935));
+    expect(k.dusman.guc[1]).toBe(Math.round(ref * 1.065));
     expect(k.oyuncu.saldiri).toBeGreaterThan(0);
     expect(erSayisi(s)).toBeGreaterThan(0);
   });

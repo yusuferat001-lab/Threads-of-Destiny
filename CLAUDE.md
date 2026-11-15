@@ -4,6 +4,8 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 
 ## Nasıl çalış (önemli)
 
+- **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Ana ekrandaki Kazanç ile mesleğin bütçe ekranındaki Kazanç BİREBİR aynıdır. Kullanıcı "kazançtan vergi / yüzde / eşik / tavan" derse bu SON ele kalan tutardır; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz. Hazine payı (Asker) dahil her kazanç vergisi/kesintisi bu tanıma göre kazançtan alınır ve görüntülenen Kazanç vergi SONRASIdır. Tek kaynak: `gameEngine.ts butceVeCebineKalan` + `stateManager.ts pasifEkonomiUygula` + `birlik.ts hazinePayiKazanctan`.
+
 - **Bu dosya kasıtlı olarak kısa.** Ayrıntılı oyun kuralları, formüller ve API tabloları `docs/referans/*.md` altında (aşağıdaki indeks). Hepsini okuma: önce `grep -n "anahtar kelime" docs/referans/*.md` ya da `grep -n "^## " docs/referans/<dosya>` ile bölümü bul, sonra `Read` ile yalnız o aralığı (`offset`/`limit`) oku.
 - **Olay verisini (`server/src/data/olaylar/*.ts`, ~48.000 satır) ve `stateManager.ts`/`gameEngine.ts`'i baştan sona okuma.** Belirli bir olay için `grep -n 'id: "<olay_id>"' server/src/data/olaylar/*.ts`.
 - **Çelişki kuralı:** docs'ta aynı konu birden çok tur güncellendi. Numarası/sürümü yüksek bölüm geçerlidir (ör. §45 v13 > §45 v8; §51–§53 > eski §13/§27). Bir sayıya güvenmeden önce koddaki sabiti de kontrol et.
@@ -30,11 +32,14 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 | `11-isletme.md` | 45 | **Meslek işletmesi** (Tüccar/Zanaatkâr/Din Adamı), v8→v33 tüm sürüm notları |
 | `12-gosterge-pc-aile2-hayvan-aranma.md` | 47, 48, 49, 50, 47 (Aranma II) | Gösterge detay, PC olay kutusu, eş/evlilik/doğum, evcil hayvan, aranma sistemi (not: iki ayrı §47 var) |
 | `13-garanti-sink-tema.md` | 51–53 | Olay garanti tabloları, geç oyun sink'leri/ekstra vergi/mağaza vitrini, PC tema |
+| `15-asker-denge-ozeti-v50-v66.md` | 54 | **Asker denge turu özeti**: güncel sayılar, düşman yüzdeleri (±%5 sapma, ±%5 tahmin, ±%7 zar), yapılanlar/yapılmayanlar |
 | `14-renk-paleti.md` | — | **Sayı/değer renk paleti** (yeşil gelir/artı, kırmızı gider/eksi, lacivert durum, eflatun şart/eşik); yeni ekran/özellikte uy |
 
 Sık sorulan: "bir endpoint ne yapar" → 01 · "bir alan ne anlama gelir" → 02 · "tur nasıl çözülür / formül" → 03 · "ekonomi/işletme sayısı" → 11 + 13 · "çeviri nasıl eklenir" → 07 (§30).
 
 ## Mimari özet
+
+- **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Ana ekrandaki Kazanç ile mesleğin bütçe ekranındaki Kazanç BİREBİR aynıdır. Kullanıcı "kazançtan vergi / yüzde / eşik / tavan" derse bu SON ele kalan tutardır; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz. Hazine payı (Asker) dahil her kazanç vergisi/kesintisi bu tanıma göre kazançtan alınır ve görüntülenen Kazanç vergi SONRASIdır. Tek kaynak: `gameEngine.ts butceVeCebineKalan` + `stateManager.ts pasifEkonomiUygula` + `birlik.ts hazinePayiKazanctan`.
 
 - Her karakter bir `CharacterState` (UUID). Bellekte `Map<id, Oturum>` + PostgreSQL `Session.data` (tam JSON); her mutasyondan sonra `oturumKaydet()`. Sunucu açılışında aktif oturumlar yüklenir.
 - Katmanlar: `routes/*.routes.ts` → `game/gameEngine.ts` (orkestrasyon, tur çözümleme, zorlanan olay kaskadı) → `game/stateManager.ts` (saf formüller) → `game/olaySecici.ts` (olay seçimi) → `data/olaylar/*.ts` (statik olay verisi) → `db/*Repository.ts`.
@@ -43,6 +48,8 @@ Sık sorulan: "bir endpoint ne yapar" → 01 · "bir alan ne anlama gelir" → 0
 - Olay verisinde **yasa dışı şıklar** `suc_sinifi` taşır, açık pozitif `suc_artis` yazılmaz (§9 adım 3.5). Para/mutluluk deltaları için denge guardrail testi var (`mutlulukDengesi.test.ts`).
 
 ## 1. Depo Yapısı & Komutlar
+
+> **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Ana ekrandaki Kazanç ile mesleğin bütçe ekranındaki Kazanç BİREBİR aynıdır. Kullanıcı "kazançtan vergi / yüzde / eşik / tavan" derse bu SON ele kalan tutardır; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz. Hazine payı (Asker) dahil her kazanç vergisi/kesintisi bu tanıma göre kazançtan alınır ve görüntülenen Kazanç vergi SONRASIdır. Tek kaynak: `gameEngine.ts butceVeCebineKalan` + `stateManager.ts pasifEkonomiUygula` + `birlik.ts hazinePayiKazanctan`.
 
 ```
 server/   Node.js + Express 5 + TypeScript + Prisma (PostgreSQL) — oyun motoru, tüm kurallar burada

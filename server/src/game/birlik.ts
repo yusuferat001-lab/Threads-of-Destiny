@@ -24,6 +24,7 @@ import {
   GOREV_SLOTLARI,
   KALE_KOMUTA_BONUSU,
   KIRALIK_KALITE_CARPANI,
+  SEFERBERLIK_TANIMLARI,
   KIRALIK_YILLIK,
   SAVAS_ER_BASI_CARPANI,
   LIMIT_ASIM_GIDER_CARPANI,
@@ -33,7 +34,6 @@ import {
   YAGMA_YIL,
   SAVAS_KISLA_INDIRIMI,
   GOREV_GELIR_CARPANI,
-  SUVARI_GOREV_GELIRI,
   ZIRHLI_OLU_AZALTMA,
   IKMAL_TANIMLARI,
   IKMAL_SIRASI,
@@ -45,6 +45,9 @@ import {
   KISLA_BAKIM,
   KISLA_ER_LIMITI,
   MORAL_BASLANGIC,
+  TALIM_BASLANGIC,
+  talimGucEtkisi,
+  talimKayipEtkisi,
   PIYADE,
   REVIR_KAYIP_KADEME,
   ROL_TANIMLARI,
@@ -54,6 +57,7 @@ import {
   SUBAY_RUTBE_TABANI,
   TALIM_GUC_KATSAYISI,
   TALIM_KAYIP_KATSAYISI,
+  KAYIP_CARPANI_TABANI,
   TALIM_TANIMLARI,
   TUR_TANIMLARI,
   VEBA_GOREV_CARPANI,
@@ -64,6 +68,10 @@ import {
   moralGucEtkisi,
   odenmeyenCeza,
   type GorevTanimi,
+  gorevGucOrani,
+  gorevErOrani,
+  yagmaEtkinGuc,
+  hazinePayi,
   BARIS_CATISMA_ILK_YIL,
   KALE_GELIR,
 } from "../data/birlik";
@@ -101,7 +109,7 @@ export function birlikVarsayilan(er: number): BirlikDurumu {
     birlik_turler: [],
     birlik_kilit_bitis: null,
     kusatma_seviye: 0,
-    talim: 0,
+    talim: TALIM_BASLANGIC,
     talim_politikasi: "orta",
     ganimet_payi: "dengeli",
     ganimet_kilit_bitis: null,
@@ -213,6 +221,9 @@ export function birlikHazirla(state: CharacterState): void {
     }
   }
   if (!Array.isArray(b.gorevler)) b.gorevler = ["devriye"];
+  // v64: tek görev; kalkan görevler (haydut avı, akın, muhafızlık) ve fazlalar ayıklanır.
+  b.gorevler = b.gorevler.filter((id, i, a) => GOREVLER.some((g) => g.id === id) && a.indexOf(id) === i).slice(0, 1);
+  if (b.gorevler.length === 0) b.gorevler = ["devriye"];
   if (!Array.isArray(b.doktrinler)) b.doktrinler = [];
   if (!Array.isArray(b.birlik_turler)) b.birlik_turler = [];
   // Eski "seviye" sistemi: yalnız seviye kadar tür açıktı; artık her açık tür %25. Tekrarları ve geçersizleri ayıkla.
@@ -225,11 +236,20 @@ export function birlikHazirla(state: CharacterState): void {
   }
   if (typeof b.moral !== "number") b.moral = MORAL_BASLANGIC;
   if (typeof b.sertlik !== "number") b.sertlik = 0;
-  if (typeof b.talim !== "number") b.talim = 0;
+  if (typeof b.talim !== "number") b.talim = TALIM_BASLANGIC;
+  // v55: talim nötr noktası 50 (eski kayıtlar talim 0'dan −%25 ceza yemesin).
+  if (!b.denge_v55) {
+    b.denge_v55 = true;
+    b.talim = Math.max(b.talim, TALIM_BASLANGIC);
+  }
   if (typeof b.zar_bonusu !== "number") b.zar_bonusu = 0;
   if (typeof b.erzak_oran !== "number") b.erzak_oran = 1;
   if (b.savas === undefined) b.savas = null;
   if (b.savas_karari === undefined) b.savas_karari = null;
+  // v59: seferberlik artık iki tür (%15 / %30); eski "dengeli" (%20) → büyük çağrı.
+  if ((b.savas?.seferberlik as string | undefined) === "dengeli") b.savas!.seferberlik = "genel";
+  if ((b.savas_karari?.seferberlik as string | null | undefined) === "dengeli") b.savas_karari!.seferberlik = "genel";
+  if (b.catisma_bekleyen === undefined) b.catisma_bekleyen = null;
   // Eski "kale çevresi" arazisi sık ormana dönüştü (ova / dağ geçidi / sık orman).
   if ((b.savas?.arazi as string | undefined) === "kale") b.savas!.arazi = "orman";
   if ((b.savas_karari?.arazi as string | null | undefined) === "kale") b.savas_karari!.arazi = "orman";
@@ -383,6 +403,21 @@ export function yolEtkisi(state: CharacterState) {
   return YOL_ETKILERI[yolDali(state) ?? ""] ?? {};
 }
 
+/**
+ * Etkin talim: savaşta çağrılan seferber erlerin giriş talimi, ana ordunun talimiyle ER SAYISINA GÖRE ağırlıklı ortalanır
+ * (savaş bitince seferberler gidince ordunun gerçek talimi `b.talim` olduğu gibi kalır).
+ */
+export function etkinTalim(state: CharacterState): number {
+  const b = birlikDurumu(state);
+  if (!b) return 0;
+  const sv = state.ulke.savasta ? b.savas : null;
+  const er = erSayisi(state);
+  const sef = Math.min(er, Math.max(0, Math.round(sv?.seferberlik_er ?? 0)));
+  if (!sv || sef <= 0 || er <= 0) return b.talim;
+  const giris = sv.seferberlik_talim ?? b.talim;
+  return (b.talim * (er - sef) + giris * sef) / er;
+}
+
 export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDokumu {
   const b = birlikDurumu(state);
   const er = erSayisi(state);
@@ -394,7 +429,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   const saglamOrani = er > 0 ? 1 - yaraliSayisi(state) / er : 1;
   const ham =
     (b.kalite.dusuk * KALITE_CARPANI.dusuk + b.kalite.orta * KALITE_CARPANI.orta + b.kalite.yuksek * KALITE_CARPANI.yuksek) * seferOrani * saglamOrani +
-    (b.savas?.kiralik_er ?? 0) * KIRALIK_KALITE_CARPANI;
+    Math.max(0, (b.savas?.kiralik_er ?? 0) - (b.savas?.kiralik_yarali ?? 0)) * KIRALIK_KALITE_CARPANI;
   const paylar = turPaylari(b);
   const turToplam = Object.values(paylar).reduce((t, x) => t + (x ?? 0), 0);
   const piyade = 1 - turToplam;
@@ -412,7 +447,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   const yol = yolEtkisi(state);
   const sub = subayToplami(state);
   ekle("moral", moralGucEtkisi(b.moral));
-  ekle("talim", Math.min(0.2, b.talim * TALIM_GUC_KATSAYISI));
+  ekle("talim", talimGucEtkisi(etkinTalim(state)));
   ekle("doktrin", doktrin.guc);
   ekle("yol", yol.guc ?? 0);
   ekle("taarruz_subay", sub.saldiri, "saldiri");
@@ -422,7 +457,7 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   if (doktrin.saldiri) ekle("doktrin_saldiri", doktrin.saldiri, "saldiri");
   if (doktrin.savunma) ekle("doktrin_savunma", doktrin.savunma, "savunma");
   ekle("erzak", 0.4 + 0.6 * clamp(b.erzak_oran, 0, 1) - 1);
-  const ceza = odenmeyenCeza(state.para, ctx.enflasyon ?? 1);
+  const ceza = odenmeyenCeza(state.para, ctx.enflasyon ?? 1, !!state.ulke.savasta);
   if (ceza) {
     ekle("odenmeyen_maas", ceza.maasGuc);
     ekle("odenmeyen_erzak", ceza.erzakGuc);
@@ -534,10 +569,10 @@ export function kayipCarpani(state: CharacterState): number {
   const revir = clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * REVIR_KAYIP_KADEME;
   const sub = subayToplami(state);
   const tabip = sub.oluFirarAzalt;
-  const talim = Math.min(0.15, b.talim * TALIM_KAYIP_KATSAYISI);
+  const talim = talimKayipEtkisi(etkinTalim(state)); // nötr 50'de 0; düşük talim kaybı artırır, yüksek azaltır
   const emir = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;
   const zirhli = ZIRHLI_OLU_AZALTMA * turOrani(b, "zirhli");
-  return Math.max(0.3, 1 - talim - revir - tabip - zirhli + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
+  return Math.max(KAYIP_CARPANI_TABANI, 1 - talim - revir - tabip - zirhli + sub.kayip + doktrin.kayip + (emir?.kayip ?? 0));
 }
 /** Doktrin (Levazım Disiplini vb.) + yol + ekip bonusu: er masrafı ve erzak çarpanı. */
 export function masrafCarpani(state: CharacterState): number {
@@ -611,22 +646,22 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const rol = ROL_TANIMLARI[karar.rol];
   const ikmal = IKMAL_TANIMLARI[karar.ikmal];
   const moralC = b.moral >= 70 ? 1.05 : b.moral < 40 ? 0.9 : 1;
-  const mizrakliAkin = (turPaylari(b).mizrakli ?? 0) > 0 ? 1 - 0.1 * clamp((turPaylari(b).mizrakli ?? 0) / 0.15, 0, 1.67) : 1;
   const gelirC = (1 + doktrin.gelir + (yol.gelir ?? 0)) * sertlikGelirCarpani(b) * moralC * bg.satisCarpani;
   const ganimetC =
     (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (savasta ? emirGetir(b.savas?.emir)?.ganimet ?? 0 : 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani * (imtiyazAktifMi(state, "sefer_emri") ? 1.25 : 1);
   const mC = masrafCarpani(state);
   const soldTam = SOLD[rutbe] * bg.enflasyon * (1 + doktrin.sold + (yol.sold ?? 0));
   // Maaş kalemi tek: sabit kısım (savaşta aynen) + asker başı ödeme (savaşta devlet %30 fazla öder, oyuncuya gelir).
-  const erBasiOdeme = er * ER_BASI_GELIR * bg.enflasyon * (savasta ? SAVAS_ER_BASI_CARPANI : 1);
+  // Asker başı ödeme yalnız ana kadroya: savaşta çağrılan seferber erler ödeme almaz (kiralık erler zaten ordu sayısında yok).
+  const odemeEri = Math.max(0, er - (savasta ? Math.round(b.savas?.seferberlik_er ?? 0) : 0));
+  const erBasiOdeme = odemeEri * ER_BASI_GELIR * bg.enflasyon * (savasta ? SAVAS_ER_BASI_CARPANI : 1);
   const sold = r2(soldTam + erBasiOdeme);
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
   const kazancC = GOREV_GELIR_CARPANI;
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
-    const akinC = (g.tur === "akin" ? mizrakliAkin : 1) * (g.tur === "akin" || g.tur === "haydut" ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1);
-    const gelir = gucPay * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
+    const gelir = gucPay * gorevGucOrani(gucPay) * gorevErOrani(p) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;
@@ -640,7 +675,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   // Yağma türü (sert 0,7 / orta 0,5 / yumuşak 0,3 × güç) ikmal kararından gelir; yalnız savaşın ilk YAGMA_YIL yılında.
   const yagmaTuru = ikmal.yagma;
   const yagma = savasta && b.savas?.sonuc !== "yenilgi" && (sec.savasYili ?? (b.savas?.yil_sayac ?? 0) + 1) <= YAGMA_YIL;
-  const yagmaBrut = yagma ? b.guc * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
+  const yagmaBrut = yagma ? yagmaEtkinGuc(b.guc) * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
   const toplamBrut = ganimetBrut + yagmaBrut;
   const devletPayi = 0; // askerde devlet payı/vergi yok
   // Er payı YALNIZ haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (olay anında, birlikYil). Görev ganimeti ve yağma doğrudan hazineye girer.
@@ -655,7 +690,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const giderEri = er + asim * (LIMIT_ASIM_GIDER_CARPANI - 1);
   const erMasrafi = giderEri * ER_MASRAFI * bg.giderEnflasyon * (1 + turBakim) * mC;
   const donem = state.ulke.savasta ? "savas" : state.veba?.aktif ? "veba" : state.ulke.donem?.tur ?? "durgunluk";
-  const seferEk = b.savas?.seferberlik ? { genel: 0.2, dengeli: 0.08, secme: 0 }[b.savas.seferberlik] : 0;
+  const seferEk = b.savas?.seferberlik ? SEFERBERLIK_TANIMLARI[b.savas.seferberlik]?.erzak ?? 0 : 0;
   const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (savasta ? 1 - ikmal.yagma.erzakIndirimi : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
   const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon * (savasta ? 1 - SAVAS_KISLA_INDIRIMI : 1);
   const techizatBakim = (b.kalite.dusuk * KALITE_BAKIM.dusuk + b.kalite.orta * KALITE_BAKIM.orta + b.kalite.yuksek * KALITE_BAKIM.yuksek) * bg.giderEnflasyon;
@@ -673,6 +708,16 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
     erMasrafi, erzak, kislaBakim, techizatBakim, birlikBakim, kusatmaBakim, talimMasrafi, toplamGelir, toplamGider,
     net: toplamGelir - toplamGider,
   };
+}
+
+/**
+ * HAZİNE PAYI — vergi KAZANÇ üzerinden alınır. KAZANÇ = oyuncunun ELİNE KALAN yıllık tutar:
+ *   ordu neti − subay maaşları − yaşam − kira − evcil hayvan − kredi taksidi + mülk geliri.
+ * Ordu netinden (yaşam/subay düşülmeden) ALINMAZ. `vergisizKazanc` bu toplamdır; dönen değer vergidir (kademeli, en çok %40, zararda 0).
+ */
+export function hazinePayiKazanctan(state: CharacterState, enflasyon: number, vergisizKazanc: number): number {
+  if (state.meslek !== "Asker") return 0;
+  return r2(hazinePayi(vergisizKazanc / enflasyon) * enflasyon);
 }
 
 /** Ele geçirilen kalelerin yıllık net gelir toplamı (enflasyonsuz); eski kayıtta eksik girişler aralığın ortasıyla tamamlanır. */

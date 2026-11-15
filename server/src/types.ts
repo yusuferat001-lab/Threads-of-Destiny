@@ -975,6 +975,8 @@ export interface IsletmeUyari {
     | "savas_sonu"
     | "esir"
     | "seferberlik_terhis"
+    | "kiralik_cekildi"
+    | "limit_asimi_seferber"
     | "baris_catisma"
     | "savas_ganimet"
     | "kale"
@@ -985,7 +987,8 @@ export interface IsletmeUyari {
     | "kazanc_ozet"
     | "kesif_savas"
     | "yarali_iyilesti"
-    | "limit_asimi";
+    | "limit_asimi"
+    | "savas_saglik";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
@@ -1017,6 +1020,8 @@ export interface IsletmeUyari {
   kaynak?: "gorev" | "catisma" | "savas";
   kaynakAd?: { tr: string; en: string };
   savasSonucu?: "zafer" | "yenilgi";
+  /** savas_sonu: sonuca göre şöhret değişimi (işaretli). */
+  sohretDegisim?: number;
   /** Barış çatışması (haydut / sınır) türü. */
   catismaTur?: "haydut" | "sinir";
   /** kazanc_ozet: yıl başında beklenen net ve fark nedeni (gerçekleşen `tutar`). */
@@ -1145,7 +1150,7 @@ export type BirlikRol = "onc" | "ana" | "yedek";
 /** Savaş planındaki ikmal kararı: yalnız üç yağma türü. */
 export type BirlikIkmal = "yagma_sert" | "yagma_orta" | "yagma_yumusak";
 export type BirlikEsirKarari = "idam" | "serbest" | "sat" | "karma";
-export type BirlikSeferberlik = "genel" | "secme" | "dengeli";
+export type BirlikSeferberlik = "genel" | "secme";
 
 /** Bir savaş yılının oyuncu kararları (Savaş Kararları penceresi). */
 export interface BirlikSavasKarari {
@@ -1167,6 +1172,54 @@ export interface BirlikSavasKarari {
   esir: BirlikEsirKarari;
 }
 
+/** Barış çatışması (haydut / sınır): çıktığında oyuncu karar verene dek zaman ilerlemez. */
+export interface BirlikCatismaBekleyen {
+  yil: number;
+  tur: "haydut" | "sinir";
+  /** Baskın: oyuncu savunmaya mecbur; değilse karşılaşma (saldırı ya da savunma seçilir). */
+  baskin: boolean;
+  dusmanTur: "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
+  /** Düşmanın o çatışma için çekilmiş mutlak gücü (oyuncuya aralık olarak gösterilir). */
+  dusmanGuc: number;
+  /** Zafer serisi: bu karşılaşmada düşmana uygulanan güç çarpanı (>1; yoksa uygulanmadı). */
+  hazirlik?: number;
+}
+
+/** Çatışma karar penceresi: iki tarafın saldırı/savunma gücü. */
+export interface CatismaKarariDurumu {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  dusmanTur: string;
+  ad: { tr: string; en: string };
+  oyuncu: { saldiri: number; savunma: number };
+  dusman: { saldiri: [number, number]; savunma: [number, number] };
+  /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
+  hazirlikli?: boolean;
+}
+
+/** Çatışma sonuç ekranı. */
+export interface CatismaSonucuGorunum {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  inisiyatif: "saldiri" | "savunma";
+  zafer: boolean;
+  oyuncuGuc: number;
+  dusmanGuc: number;
+  olu: number;
+  yarali: number;
+  firar: number;
+  kalanEr: number;
+  dusmanOlu: number;
+  ganimet: number;
+  esir: number;
+  nakitHasar: number;
+  talim: number;
+  /** Çatışmada kaybedilen sağlık (rütbe/tabip/revir sonrası). */
+  saglik?: number;
+  /** Sonuca göre şöhret değişimi (işaretli). */
+  sohret?: number;
+}
+
 /** Savaş Günü sonucu (Savaş Sonucu ekranı): güçler, zarlar, kayıplar, düşman kaybı tahmini, ganimet tahmini. */
 export interface SavasGunuSonucu {
   yil: number;
@@ -1184,6 +1237,9 @@ export interface SavasGunuSonucu {
   olu: number;
   yarali: number;
   firar: number;
+  /** Kiralık ordu (paralı) kaybı bu savaşta: ölü ve yaralı (firar yok). */
+  kiralikOlu?: number;
+  kiralikYarali?: number;
   kalanEr: number;
   /** Düşmanın tahmini kaybı ("~"). */
   dusmanOlu: number;
@@ -1247,6 +1303,21 @@ export interface BirlikSavasDurumu {
   emir?: string | null;
   /** Kiralık ordu: savaş süresince tutulan eğitimli paralı sayısı. */
   kiralik_er?: number;
+  /** Kiralık erlerden yaralı olanlar (savaş gücüne katılmaz, ordu yaralılarıyla aynı hızda iyileşir; ücret yine ödenir). */
+  kiralik_yarali?: number;
+  /** Savaşın ilk iki yılı için çekilmiş plan: yıl başına ölü/yaralı/firar % (ordunun yüzdesi; çarpanlar öncesi), iki yılın toplamı ≤ SAVAS_ON_YIL_TAVANI. */
+  on_yil_plan?: { olu: [number, number]; yarali: [number, number]; firar: [number, number]; sefer?: [number, number] };
+  /** Ön yıllarda şimdiye kadar uygulanan toplam kayıp % (çarpanlar sonrası). */
+  on_yil_kullanilan?: number;
+  /** Zafer serisi bonusu: bu savaşta düşmana uygulanan güç çarpanı (savaş başında çekilir; yoksa 1). */
+  hazirlik?: number;
+  /** Savaş başında çekilen toplam ham sağlık bedeli (5–20) ve şimdiye dek uygulanan ham kısmı. */
+  saglik_plan?: number;
+  saglik_uygulanan?: number;
+  /** Savaş boyunca oyuncunun gerçekten kaybettiği sağlık (rütbe/tabip/revir sonrası). */
+  saglik_kaybi?: number;
+  /** Seferber erlerin giriş talimi (etkin talim ağırlıklı ortalaması için; ordunun gerçek talimi bozulmaz). */
+  seferberlik_talim?: number;
   /** Savaş planında (ilk yıl) seçilen ikmal; savaş boyu geçerlidir, yalnız Ordu ekranından değiştirilebilir. */
   ikmal?: BirlikIkmal;
   /** Esirlerin kaderi (Rütbe 3+): ilk esir çıkınca bir kez sorulur, savaş boyu geçerlidir. Verilene dek "karma". */
@@ -1271,6 +1342,8 @@ export interface BirlikDurumu {
   /** Talim / savaş tecrübesi (0-100): ordunun ortalama eğitimi. */
   talim: number;
   talim_politikasi: BirlikTalim;
+  /** v55 dengesi: moral/talim nötr 50, ±%25 etki (eski kayıtlarda talim en az 50'ye çekilir). */
+  denge_v55?: boolean;
   ganimet_payi: BirlikGanimetPayi;
   /** Ganimet payı en erken bu oyun yılında yeniden değiştirilebilir (5 yılda bir); yoksa/null = serbest. */
   ganimet_kilit_bitis?: number | null;
@@ -1300,6 +1373,10 @@ export interface BirlikDurumu {
   erzak_oran: number;
   /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
   baris_bekleme?: number;
+  /** Her tür için (haydut, sınır, büyük savaş) arka arkaya zafer sayısı; yenilgide sıfırlanır; ≥3 iken düşman +%10–15 güçlenir. */
+  zafer_serisi?: { haydut: number; sinir: number; savas: number };
+  /** Çıkmış ama oyuncunun henüz karar vermediği barış çatışması (karar verilene dek zaman ilerlemez). */
+  catisma_bekleyen?: BirlikCatismaBekleyen | null;
   /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */
   kale_gelir?: number[];
   /** Ordunun bir kısmı seferde (Haçlı/sefer yolculuğu) mi. */

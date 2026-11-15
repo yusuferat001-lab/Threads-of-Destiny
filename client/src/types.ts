@@ -796,6 +796,7 @@ export interface IsletmeUyari {
     | 'savas_sonu'
     | 'esir'
     | 'seferberlik_terhis'
+    | 'kiralik_cekildi'
     | 'baris_catisma'
     | 'savas_ganimet'
     | 'kale'
@@ -806,7 +807,9 @@ export interface IsletmeUyari {
     | 'kazanc_ozet'
     | 'kesif_savas'
     | 'yarali_iyilesti'
-    | 'limit_asimi';
+    | 'limit_asimi'
+    | 'limit_asimi_seferber'
+    | 'savas_saglik';
   hat?: string;
   isim?: string;
   sonuc?:
@@ -837,6 +840,8 @@ export interface IsletmeUyari {
   kaynak?: 'gorev' | 'catisma' | 'savas';
   kaynakAd?: { tr: string; en: string };
   savasSonucu?: 'zafer' | 'yenilgi';
+  /** savas_sonu: sonuca göre şöhret değişimi (işaretli). */
+  sohretDegisim?: number;
   catismaTur?: 'haydut' | 'sinir';
   /** kazanc_ozet: yıl başında beklenen net ve fark nedeni (gerçekleşen `tutar`). */
   beklenen?: number;
@@ -1083,6 +1088,11 @@ export interface IsletmeButcesi {
   evcilHayvan: number;
   krediTaksit: number;
   cebineKalan: number;
+  /** Mülklerden gelen yıllık net gelir ve nihai "Kazanç" (= cebineKalan + mülk geliri; ana ekrandaki Kazanç ile aynı). */
+  mulkGeliri: number;
+  /** Hazine payı (yalnız Asker): KAZANÇ üzerinden alınan vergi; `kazanc` vergi sonrasıdır. */
+  hazinePayi?: number;
+  kazanc: number;
   /** Meslek geliri ve net'in ± aralığı (yıllık rastgelelik payı). */
   gelir: number;
   netAlt: number;
@@ -1096,7 +1106,7 @@ export type BirlikGanimetPayi = 'az' | 'dengeli' | 'comert';
 export type BirlikTalim = 'hafif' | 'orta' | 'agir';
 export type BirlikTon = 'merhametli' | 'dengeli' | 'sert';
 export type BirlikArazi = 'ova' | 'dag' | 'orman';
-export type BirlikSeferberlik = 'genel' | 'secme' | 'dengeli';
+export type BirlikSeferberlik = 'genel' | 'secme';
 interface DilMetni { tr: string; en: string }
 
 export interface BirlikKararGirdisi {
@@ -1160,7 +1170,7 @@ export interface BirlikGorunumu {
   gorevler: {
     slot: { kullanilan: number; toplam: number };
     secili: string[];
-    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
+    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
   };
   doktrin: {
     secilen: { id: string; simge: string; ad: DilMetni; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
@@ -1178,10 +1188,12 @@ export interface BirlikGorunumu {
     kararBekliyor: boolean;
     araziIhtimali: number;
     kiyas: {
-      /** Düşmanın tahmini gücü [alt, üst] (±%5); saldırı ve savunma ayrı. */
+      /** Düşmanın tahmini gücü [alt, üst] (±%6,5; Keşif ±%2,5'e kadar); saldırı ve savunma ayrı. */
       dusman: { guc: [number, number]; saldiri: [number, number]; savunma: [number, number] };
       oyuncu: { saldiri: number; savunma: number };
       son: { yil: number; inisiyatif: 'saldiri' | 'savunma'; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean } | null;
+      /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
+      hazirlikli?: boolean;
     };
     /** Savaş planı özeti (savaş boyu geçerli seçimler); savaş yoksa null. */
     plan: {
@@ -1194,7 +1206,14 @@ export interface BirlikGorunumu {
   };
   kale: number;
   emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
-  kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
+  kiralik: {
+    aktif: boolean;
+    er: number;
+    ucret: number;
+    mumkun: boolean;
+    /** İki seviye: tam sayı er, peşin ve yıllık ücret, askerî güç (şimdiki → sonraki). */
+    seviyeler: { id: 'kucuk' | 'buyuk'; ad: DilMetni; er: number; pesin: number; yillik: number; gucOnce: number; gucSonra: number }[];
+  };
   hesap: {
     soldAdi: DilMetni;
     savasOdenegiMi: boolean;
@@ -1230,6 +1249,52 @@ export interface SavasAdimBolumu {
   secenekler: { id: string; simge?: string; ad: DilMetni; aciklama: DilMetni }[];
 }
 
+/** Barış çatışması (haydut / sınır): çıktığında oyuncu karar verene dek zaman ilerlemez. */
+export interface BirlikCatismaBekleyen {
+  yil: number;
+  tur: "haydut" | "sinir";
+  /** Baskın: oyuncu savunmaya mecbur; değilse karşılaşma (saldırı ya da savunma seçilir). */
+  baskin: boolean;
+  dusmanTur: "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
+  /** Düşmanın o çatışma için çekilmiş mutlak gücü (oyuncuya aralık olarak gösterilir). */
+  dusmanGuc: number;
+}
+
+/** Çatışma karar penceresi: iki tarafın saldırı/savunma gücü. */
+export interface CatismaKarariDurumu {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  dusmanTur: string;
+  ad: { tr: string; en: string };
+  oyuncu: { saldiri: number; savunma: number };
+  dusman: { saldiri: [number, number]; savunma: [number, number] };
+  /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
+  hazirlikli?: boolean;
+}
+
+/** Çatışma sonuç ekranı. */
+export interface CatismaSonucuGorunum {
+  tur: "haydut" | "sinir";
+  baskin: boolean;
+  inisiyatif: "saldiri" | "savunma";
+  zafer: boolean;
+  oyuncuGuc: number;
+  dusmanGuc: number;
+  olu: number;
+  yarali: number;
+  firar: number;
+  kalanEr: number;
+  dusmanOlu: number;
+  ganimet: number;
+  esir: number;
+  nakitHasar: number;
+  talim: number;
+  /** Çatışmada kaybedilen sağlık (rütbe/tabip/revir sonrası). */
+  saglik?: number;
+  /** Sonuca göre şöhret değişimi (işaretli). */
+  sohret?: number;
+}
+
 /** Savaş Günü sonucu (Savaş Sonucu ekranı). */
 export interface SavasGunuSonucu {
   yil: number;
@@ -1244,6 +1309,9 @@ export interface SavasGunuSonucu {
   olu: number;
   yarali: number;
   firar: number;
+  /** Kiralık ordu (paralı) kaybı bu savaşta: ölü ve yaralı (firar yok). */
+  kiralikOlu?: number;
+  kiralikYarali?: number;
   kalanEr: number;
   dusmanOlu: number;
   ganimetTahmini: number;

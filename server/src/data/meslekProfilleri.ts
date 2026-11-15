@@ -149,7 +149,6 @@ const FIYAT_KISLA = [30, 90, 220, 500]; // kışla (tek ordu limiti)
 const FIYAT_OKUL = [20, 30, 45, 65];
 const FIYAT_ASEVI = [8, 15, 24, 36];
 const FIYAT_REVIR = [13, 22, 34, 50]; // Asker revir (≈1 yıllık net'ten başlar)
-const FIYAT_KARAKOL = [12, 20, 32, 48];
 const FIYAT_DEVSIRME = [20, 35, 52, 75];
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
@@ -309,22 +308,11 @@ const ASKER_YATIRIMLAR: YatirimTanimi[] = [
     simge: "📯",
     ad: { tr: "Devşirme Bürosu", en: "Recruiting Office" },
     aciklama: {
-      tr: "Yılda er çeker: 1. kademe +1, 2. +3, 3. +4, 4. +5.",
-      en: "Draws men each year: tier 1 +1, tier 2 +3, tier 3 +4, tier 4 +5.",
+      tr: "Yılda er çeker: 1. kademe +1, 2. +2, 3. +3, 4. +4.",
+      en: "Draws men each year: tier 1 +1, tier 2 +2, tier 3 +3, tier 4 +4.",
     },
     etki: "devsirme",
     fiyatlar: FIYAT_DEVSIRME,
-  },
-  {
-    id: "karakol",
-    simge: "🚧",
-    ad: { tr: "Karakol", en: "Outpost" },
-    aciklama: {
-      tr: "Rakip komutanların baskın ve sabotajını engelleyebilir: her kademe korumayı +0,15 artırır (en çok 0,6).",
-      en: "Can block rival raids and sabotage: each tier adds +0.15 protection (max 0.6).",
-    },
-    etki: "koruma",
-    fiyatlar: FIYAT_KARAKOL,
   },
 ];
 
@@ -354,7 +342,7 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat" | "birlik"
   birlik: {
     ana: { tr: "Askerî gücü artırır", en: "Raises military strength" },
     maliyet: { tr: "Er ve erzak masrafını düşürür", en: "Lowers soldier and supply costs" },
-    musteri: { tr: "Yılda +2…+5 er çeker", en: "Brings +2…+5 men a year" },
+    musteri: { tr: "Yılda +1…+4 er çeker", en: "Brings +1…+4 men a year" },
     guvenlik: { tr: "Ölü, firar ve yaralıyı azaltır", en: "Cuts deaths, desertion and wounded" },
     taarruz: { tr: "Saldırıyı ve ganimeti artırır, kaybı da artırır", en: "Raises attack and loot, also raises losses" },
     savunma: { tr: "Savunmayı güçlendirir, ölümü azaltır, ganimeti azaltır", en: "Strengthens defence, cuts deaths, trims loot" },

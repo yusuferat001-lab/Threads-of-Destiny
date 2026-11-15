@@ -67,6 +67,8 @@ import {
   birlikKiralik,
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
+  birlikCatismaGetir,
+  birlikCatismaVer,
   birlikIkmalDegistir,
   isletmeUrunSec,
   isletmeYatirimYap,
@@ -410,7 +412,8 @@ gameRouter.post("/:id/birlik/kusatma", async (req, res) => {
 
 gameRouter.post("/:id/birlik/kiralik", async (req, res) => {
   try {
-    res.json(await birlikKiralik(req.params.id));
+    const { seviye } = req.body ?? {};
+    res.json(await birlikKiralik(req.params.id, seviye === "kucuk" ? "kucuk" : "buyuk"));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
@@ -449,6 +452,24 @@ gameRouter.post("/:id/birlik/savas-karari", async (req, res) => {
   if (typeof secim !== "string") return res.status(400).json({ hata: "Geçersiz seçim." });
   try {
     res.json(await birlikSavasKarariVer(req.params.id, secim));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/birlik/catisma", async (req, res) => {
+  try {
+    res.json({ karar: await birlikCatismaGetir(req.params.id) });
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/catisma", async (req, res) => {
+  const { secim } = req.body ?? {};
+  if (typeof secim !== "string") return res.status(400).json({ hata: "Geçersiz seçim." });
+  try {
+    res.json(await birlikCatismaVer(req.params.id, secim));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

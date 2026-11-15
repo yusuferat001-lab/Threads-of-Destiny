@@ -11,6 +11,8 @@ import {
   techizatSec,
   kusatmaAyarla,
   savasKarariBekliyorMu,
+  catismaKarariDurumu,
+  catismaKarariVer,
   savasKarariDurumu,
   ikmalDegistir,
   savasKarariVer,
@@ -21,7 +23,7 @@ import {
   type BirlikKararGirdisi,
   type SavasKarariDurumu,
 } from "./birlikIslem";
-import { birlikSenkron, doktrinBekliyorMu, erSayisi } from "./birlik";
+import { birlikSenkron, doktrinBekliyorMu, erSayisi, hazinePayiKazanctan } from "./birlik";
 import { KISLA_ER_LIMITI } from "../data/birlik";
 import { subayEtkiSatirlari, type SubayEtkiSatiri } from "./subay";
 import { yeniErEkle } from "./birlikYil";
@@ -2842,10 +2844,13 @@ function kazancHesapla(state: CharacterState, maasYillik: number, toplamGider: n
     return { gelir, gider: paraYuvarla(gelir - net), net, alt: net, ust: net };
   }
   const butce = butceVeCebineKalan(state, isletmeBaglami(state));
-  const net = paraYuvarla(butce.cebineKalan + gay);
+  // Vergi sonrası KAZANÇ (butce.kazanc); aralığın uçları da vergi sonrası.
+  const enf = isletmeBaglami(state).enflasyon;
+  const vergiSonrasi = (x: number) => paraYuvarla(x - hazinePayiKazanctan(state, enf, x));
+  const net = paraYuvarla(butce.kazanc);
   const gelir = paraYuvarla(butce.gelir + Math.max(0, gay));
-  const alt = Math.min(net, paraYuvarla(butce.cebineKalan - (butce.net - butce.netAlt) + gay));
-  const ust = Math.max(net, paraYuvarla(butce.cebineKalan + (butce.netUst - butce.net) + gay));
+  const alt = Math.min(net, vergiSonrasi(butce.cebineKalan - (butce.net - butce.netAlt) + gay));
+  const ust = Math.max(net, vergiSonrasi(butce.cebineKalan + (butce.netUst - butce.net) + gay));
   return { gelir, gider: paraYuvarla(gelir - net), net, alt, ust };
 }
 
@@ -5071,7 +5076,7 @@ export interface IsletmeGorunumu {
   sonDokum: IsletmeDokum | null;
   beklenenBrutKar: number;
   /** v11: bu yılın dürüst tahmini bütçesi + cebine kalan (yaşam, kira, hayvan, kredi taksidi düşülmüş). */
-  butce: IsletmeButcesi & { yasamKira: number; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; cebineKalan: number };
+  butce: IsletmeButcesi & { yasamKira: number; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; cebineKalan: number; mulkGeliri: number; hazinePayi: number; kazanc: number };
   /** Vergi: bu yıl uygulanan oran (0-1) ve indirimin kalan yılı (yoksa 0). */
   vergi: { oran: number; indirimKalanYil: number };
   /** Koruma (0-1) ve ortalama dış hırsızlık aralığı (yıl). */
@@ -5192,7 +5197,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
-      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, gelir: 0, netAlt: 0, netUst: 0 },
+      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, mulkGeliri: 0, hazinePayi: 0, kazanc: 0, gelir: 0, netAlt: 0, netUst: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
       otorite: null, otoriteIliski: state.yonetim_iliski ?? 0, imtiyazlar: [],
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
@@ -5367,7 +5372,13 @@ function butceVeCebineKalan(state: CharacterState, b: IsletmeBaglami) {
   const g = giderKalemleriHesapla(state);
   const yasamKira = paraYuvarla(g.yasam + g.konut + g.evcilHayvan);
   const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
-  return { ...butce, yasamKira, yasam: paraYuvarla(g.yasam), kira: paraYuvarla(g.konut), evcilHayvan: paraYuvarla(g.evcilHayvan), krediTaksit, cebineKalan: paraYuvarla(butce.net - yasamKira - krediTaksit) };
+  const cebineKalan = paraYuvarla(butce.net - yasamKira - krediTaksit);
+  const mulkGeliri = gayrimenkulYillikGelirHesapla(state);
+  // HAZİNE PAYI KAZANÇ üzerinden: kazanç = ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; vergi bunun üstünden, ele kalan vergi sonrasıdır.
+  const vergisizKazanc = paraYuvarla(cebineKalan + mulkGeliri);
+  const hazinePayi = hazinePayiKazanctan(state, b.enflasyon, vergisizKazanc);
+  // `kazanc` = ana ekrandaki "Kazanç" (finans.kazanc.net) ile BİREBİR aynı: dükkân/ordu/cemaat neti − yaşam − kira − hayvan − kredi + mülk geliri.
+  return { ...butce, yasamKira, yasam: paraYuvarla(g.yasam), kira: paraYuvarla(g.konut), evcilHayvan: paraYuvarla(g.evcilHayvan), krediTaksit, cebineKalan, mulkGeliri, hazinePayi, kazanc: paraYuvarla(vergisizKazanc - hazinePayi) };
 }
 
 export async function isletmeDurumGetir(id: string): Promise<IsletmeGorunumu> {
@@ -5499,8 +5510,8 @@ export function birlikBirlikSec(id: string, turler: string[]) {
 export function birlikKusatma(id: string, seviye: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: kusatmaAyarla(state, seviye, bg) }));
 }
-export function birlikKiralik(id: string) {
-  return birlikEylemi(id, (state, bg) => ({ sonuc: kiralikOrduTut(state, bg) }));
+export function birlikKiralik(id: string, seviye?: "kucuk" | "buyuk") {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: kiralikOrduTut(state, bg, seviye) }));
 }
 export function birlikTerhis(id: string, adet: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: terhisEt(state, adet, bg) }));
@@ -5516,6 +5527,14 @@ export function birlikSavasKarariVer(id: string, secim: string) {
     savasKarariVer(state, secim, bg);
     return { sonraki: savasKarariDurumu(state, bg), gunSonucu: savasGunuSonucuAl(state) };
   });
+}
+/** Barış çatışması (haydut / sınır) karar penceresi: iki tarafın saldırı/savunma gücü. */
+export async function birlikCatismaGetir(id: string) {
+  const { state } = await oturumGetir(id);
+  return catismaKarariDurumu(state, isletmeBaglami(state));
+}
+export function birlikCatismaVer(id: string, secim: string) {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: catismaKarariVer(state, secim, bg) }));
 }
 /** Savaş sürerken ikmali değiştirir (Ordu ekranı; pencere açmaz). */
 export function birlikIkmalDegistir(id: string, ikmalId: string) {

@@ -47,7 +47,7 @@ import {
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
-import { BARIS_GANIMET_ARALIK, BARIS_GANIMET_TABAN, GANIMET_PAYI_TANIMLARI, ganimetBrutTemel } from "../data/birlik";
+import { BARIS_GANIMET_ARALIK, GANIMET_PAYI_TANIMLARI, ganimetBrutTemel } from "../data/birlik";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
 import { birlikYilIsle } from "./birlikYil";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
@@ -800,7 +800,7 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
 function barisGanimetiUst(state: CharacterState, b: IsletmeBaglami): number {
   const bd = state.isletme?.birlik;
   if (!bd || state.ulke.savasta || Math.round(bd.baris_bekleme ?? 0) > 0) return 0;
-  const brut = ganimetBrutTemel(bd.guc, BARIS_GANIMET_ARALIK[1], BARIS_GANIMET_TABAN) * b.enflasyon;
+  const brut = ganimetBrutTemel(bd.guc, BARIS_GANIMET_ARALIK[1]) * b.enflasyon;
   return r2(brut * (1 - GANIMET_PAYI_TANIMLARI[bd.ganimet_payi].oran));
 }
 
@@ -1152,7 +1152,9 @@ export function sureleriKontrolEt(state: CharacterState, uyarilar: IsletmeUyari[
 export function calisanSadakatKontrolleri(
   state: CharacterState,
   gelirTaban: number,
-  uyarilar: IsletmeUyari[]
+  uyarilar: IsletmeUyari[],
+  /** true: sızdırma ve iç hırsızlık yok (Asker: subaylar çalmaz); yalnız ayrılma riski kalır. */
+  hirsizlikYok = false
 ): { nakitHasar: number; ekstraGider: number } {
   const is = state.isletme!;
   const rakip = aktifRakip(state);
@@ -1161,13 +1163,13 @@ export function calisanSadakatKontrolleri(
   for (const uye of [...state.ekip]) {
     if (!uye.rol_turu || uye.sadakat >= SADAKAT_RISK_ESIGI) continue;
     const risk = SADAKAT_RISK_ESIGI - uye.sadakat;
-    if ((uye.sizdirma_son_yil === undefined || state.yil - uye.sizdirma_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 200) {
+    if (!hirsizlikYok && (uye.sizdirma_son_yil === undefined || state.yil - uye.sizdirma_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 200) {
       uye.sizdirma_son_yil = state.yil;
       // Hedefli: sızdırılan müşteri tamamen rakibe geçer (%2–4).
       if (rakip) musteriAktar(state, "oyuncu", rakipGrubu(rakip.ad), state.meslek_musteri * (0.02 + Math.random() * 0.02));
       uyarilar.push({ kod: "sizdirma", isim: uye.isim });
     }
-    if ((uye.ic_hirsizlik_son_yil === undefined || state.yil - uye.ic_hirsizlik_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 250) {
+    if (!hirsizlikYok && (uye.ic_hirsizlik_son_yil === undefined || state.yil - uye.ic_hirsizlik_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 250) {
       uye.ic_hirsizlik_son_yil = state.yil;
       const urunYuzde = 5 + Math.random() * 7;
       const nakitYuzde = 3 + Math.random() * 3;
@@ -1190,7 +1192,8 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   const beklenen = isletmeButcesi(state, b).net;
   const sonuc = isletmeYilIsleIc(state, b);
   const gercek = sonuc.net;
-  if (Math.abs(gercek - beklenen) >= Math.max(1, 0.1 * Math.abs(beklenen))) {
+  // Asker'de "beklenen / gerçekleşen" özeti yok (ordu için ayrı çatışma ve savaş ekranları var).
+  if (state.meslek !== "Asker" && Math.abs(gercek - beklenen) >= Math.max(1, 0.1 * Math.abs(beklenen))) {
     const kodlar = sonuc.dokum.uyarilar.map((u) => u.kod);
     const var_ = (...k: string[]) => kodlar.some((c) => k.includes(c));
     const sebep: IsletmeUyari["sebep"] = var_("baris_catisma", "savas_ganimet", "yagma", "esir")

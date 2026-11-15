@@ -10,8 +10,7 @@ import {
   kaliteToplami,
   komutaLimiti,
   limitAsimEri,
-  yaraliSayisi,
-} from "../src/game/birlik";
+  yaraliSayisi, kayipCarpani } from "../src/game/birlik";
 import {
   dagit,
   kayipUygula,
@@ -26,6 +25,7 @@ import {
 } from "../src/game/birlikYil";
 import {
   BARIS_KAYBI,
+  BARIS_YARALI_ORAN,
   ER_BASI_GELIR,
   KALE_GELIR,
   SAVAS_ER_BASI_CARPANI,
@@ -40,11 +40,13 @@ import {
   SAVAS_KARAR_KAYBI,
   SAVAS_KARAR_YILI,
   SAVAS_KAYIP_TAVANI,
-  SAVAS_ON_YIL_OLAYLARI,
+  SAVAS_ON_YIL_TAVANI,
+  SAVAS_ON_YIL_TOPLAM,
   SAVAS_SONRA_KAYBI,
   SEFERBERLIK_KALMA_YENILGI,
   SEFERBERLIK_KALMA_ZAFER,
   SEFERBERLIK_TANIMLARI,
+  SEFERBERLIK_SIRASI,
   YARALI_ORAN,
 } from "../src/data/birlik";
 import { birlikKararUygula } from "../src/game/birlikIslem";
@@ -123,12 +125,12 @@ describe("kayıp: ölü – yaralı – firar", () => {
     ordu(s, 100);
     expect(yaraliIyilesmeSuresi(s)).toBe(3);
     const oranlar0 = Array.from({ length: 50 }, () => yaraliOrani(s));
-    expect(Math.min(...oranlar0)).toBeGreaterThanOrEqual(1.4 - 1e-9);
-    expect(Math.max(...oranlar0)).toBeLessThanOrEqual(1.5 + 1e-9);
+    expect(Math.min(...oranlar0)).toBeGreaterThanOrEqual(1.5 - 1e-9);
+    expect(Math.max(...oranlar0)).toBeLessThanOrEqual(1.75 + 1e-9);
     s.isletme!.yatirimlar.revir = 4;
     expect(yaraliIyilesmeSuresi(s)).toBe(1);
     const oranlar4 = Array.from({ length: 50 }, () => yaraliOrani(s));
-    expect(Math.max(...oranlar4)).toBeLessThanOrEqual(1.5 - 0.16 + 1e-9);
+    expect(Math.max(...oranlar4)).toBeLessThanOrEqual(1.75 - 0.16 + 1e-9);
     expect(Math.min(...oranlar4)).toBeGreaterThanOrEqual(1);
   });
 
@@ -176,7 +178,8 @@ describe("kayıp: ölü – yaralı – firar", () => {
 });
 
 describe("savaş: 3. yıl tek karar savaşı", () => {
-  it("1–2. yıl olay zarı, 3. yıl karar, sonrası sonuca göre düşük kayıp; oranlar tablo aralıklarında", () => {
+  it("1–2. yıl: ölü + yaralı + firar toplamı en çok %6 (üç tür yaklaşık eşit, iki yıl farklı); 3. yıl karar, sonrası sonuca göre düşük kayıp; oranlar tablo aralıklarında", () => {
+    let yilFarkli = 0;
     for (let n = 0; n < 40; n++) {
       const s = asker();
       ordu(s, 100);
@@ -188,10 +191,12 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
       expect(f1.faz).toBe("on");
       expect(f2.faz).toBe("on");
       expect(f1.catisma).toBeNull();
-      for (const f of [f1, f2]) {
-        expect(f.oluPct).toBeLessThanOrEqual(Math.max(...SAVAS_ON_YIL_OLAYLARI.map((o) => o.olu[1])));
-        expect(f.firarPct).toBeLessThanOrEqual(Math.max(...SAVAS_ON_YIL_OLAYLARI.map((o) => o.firar[1])));
-      }
+      const kc = kayipCarpani(s);
+      const top = [f1, f2].reduce((t, f) => t + f.oluPct * kc + (f.yaraliPct ?? 0) + f.firarPct * Math.min(1.2, Math.max(0.4, kc)), 0);
+      expect(top).toBeLessThanOrEqual(SAVAS_ON_YIL_TAVANI + 1e-6);
+      expect(top).toBeGreaterThan(0);
+      for (const f of [f1, f2]) expect(f.yaraliPct).toBeGreaterThan(0); // yaralı ölüden bağımsız
+      if (Math.abs(f1.oluPct - f2.oluPct) > 1e-6) yilFarkli++;
       const f3 = savasYiliCoz(s, b, bg(s));
       expect(b.savas!.yil_sayac).toBe(SAVAS_KARAR_YILI);
       expect(f3.faz).toBe("karar");
@@ -215,23 +220,23 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
     }
   });
 
-  it("kümülatif tavan: zaferde ölü ≤%6 + firar ≤%4, yenilgide ölü ≤%27 + firar ≤%10 (savaş başı toplam üzerinden)", () => {
-    expect(SAVAS_KAYIP_TAVANI.zafer).toEqual({ olu: 6, firar: 4 });
-    expect(SAVAS_KAYIP_TAVANI.yenilgi).toEqual({ olu: 27, firar: 10 });
+  it("kümülatif tavan: zaferde ölü ≤%16 + firar ≤%9, yenilgide ölü ≤%31 + firar ≤%15 (savaş başı toplam üzerinden)", () => {
+    expect(SAVAS_KAYIP_TAVANI.zafer).toEqual({ olu: 16, firar: 9 });
+    expect(SAVAS_KAYIP_TAVANI.yenilgi).toEqual({ olu: 31, firar: 15 });
     const s = asker();
     ordu(s, 100);
-    const sv = savasa(s, "genel"); // 100 + 50 = 150
-    expect(sv.baslangic_toplam).toBe(150);
+    const sv = savasa(s, "genel"); // 100 + 30 = 130
+    expect(sv.baslangic_toplam).toBe(130);
     sv.sonuc = "zafer";
-    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 9, firar: 6 });
+    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 20, firar: 11 }); // 130 × %16 / %9
     sv.sonuc = "yenilgi";
-    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 40, firar: 15 });
+    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 40, firar: 19 }); // 130 × %31 / %15
     sv.olu_toplam = 38;
-    sv.firar_toplam = 15;
+    sv.firar_toplam = 19;
     expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 2, firar: 0 });
   });
 
-  it("savaş boyu toplam kayıp tavanı aşılmaz (yenilgi ≤%37, zafer ≤%10); tüm sayaçlar tam sayı", () => {
+  it("savaş boyu toplam kayıp tavanı aşılmaz (yenilgi ≤%38, zafer ≤%11); tüm sayaçlar tam sayı", () => {
     for (let n = 0; n < 40; n++) {
       const s = asker();
       ordu(s, 120);
@@ -258,31 +263,69 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
     const s = asker();
     ordu(s, 100);
     const b = birlikAl(s);
-    const sv = savasa(s, "genel"); // 100 ana + 50 seferber
-    expect(sv.seferberlik_er).toBe(50);
+    const sv = savasa(s, "genel"); // 100 ana + 30 seferber
+    expect(sv.seferberlik_er).toBe(30);
     const k = kayipUygula(s, b, { oluPct: 20, firarPct: 0 });
-    // 150 × %20 ≈ 30 ölü; seferberler payı 1/3 ≈ 10
-    expect(k.oluLevy).toBeGreaterThanOrEqual(Math.floor((k.olu * 50) / 150) - 1);
-    expect(k.oluLevy).toBeLessThanOrEqual(Math.ceil((k.olu * 50) / 150) + 1);
-    expect(sv.seferberlik_er).toBe(50 - k.oluLevy);
+    // 130 × %20 ≈ 26 ölü; seferberler payı 30/130
+    expect(k.oluLevy).toBeGreaterThanOrEqual(Math.floor((k.olu * 30) / 130) - 1);
+    expect(k.oluLevy).toBeLessThanOrEqual(Math.ceil((k.olu * 30) / 130) + 1);
+    expect(sv.seferberlik_er).toBe(30 - k.oluLevy);
   });
 });
 
 describe("seferberlik ve savaş sonu terhis", () => {
-  it("üç seçenek: genel +%50 düşük, dengeli +%28 orta, seçkin +%12 yüksek teçhizat; gönüllü yok", () => {
-    expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.5);
-    expect(SEFERBERLIK_TANIMLARI.dengeli.er).toBe(0.28);
-    expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.12);
-    for (const [tur, kalite] of [["genel", "dusuk"], ["dengeli", "orta"], ["secme", "yuksek"]] as const) {
+  it("iki seçenek: Gazi Çağrısı %15 orta, Tüm Erkekler %30 düşük; moral −4/−12; ilk 2 yıl ek firar toplamı %5/10; talim: Gazi ordunun talimi, Tüm Erkekler 0; savaş sonu hepsi kalır", () => {
+    expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.15);
+    expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.3);
+    expect(SEFERBERLIK_SIRASI).toEqual(["secme", "genel"]);
+    expect([SEFERBERLIK_TANIMLARI.secme.moral, SEFERBERLIK_TANIMLARI.genel.moral]).toEqual([-4, -12]);
+    expect([SEFERBERLIK_TANIMLARI.secme.firar, SEFERBERLIK_TANIMLARI.genel.firar]).toEqual([5, 10]);
+    expect(SEFERBERLIK_TANIMLARI.secme.talim).toBeNull(); // etkisi yok (ordunun talimi)
+    expect(SEFERBERLIK_TANIMLARI.genel.talim).toBe(0);
+    expect(SEFERBERLIK_KALMA_ZAFER).toEqual([1, 1]);
+    expect(SEFERBERLIK_KALMA_YENILGI).toEqual([1, 1]);
+    for (const [tur, kalite, adet] of [["secme", "orta", 15], ["genel", "dusuk", 30]] as const) {
       const s = asker();
       ordu(s, 100);
       const sv = savasa(s, tur);
+      expect(sv.seferberlik_er).toBe(adet);
       expect(sv.seferberlik_kalite).toBe(kalite);
-      expect(birlikAl(s).kalite[kalite]).toBe(100 * 0 + (kalite === "dusuk" ? 100 : 0) + sv.seferberlik_er);
+      expect(birlikAl(s).kalite[kalite]).toBe((kalite === "dusuk" ? 100 : 0) + adet);
     }
   });
+  it("seferber ek firarı yalnız savaşın ilk iki yılında, ayrı bir toplam: Gazi %5, Tüm Erkekler %10 (iki yıla rastgele bölünür); 3. yıldan sonra yok; savaş tavanına sayılmaz", () => {
+    for (const [tur, toplam] of [["secme", 5], ["genel", 10]] as const) {
+      let farkli = 0;
+      for (let n = 0; n < 30; n++) {
+        const s = asker();
+        ordu(s, 200);
+        const b = birlikAl(s);
+        const sv = savasa(s, tur);
+        const f1 = savasYiliCoz(s, b, bg(s));
+        const f2 = savasYiliCoz(s, b, bg(s));
+        expect((f1.seferFirarPct ?? 0) + (f2.seferFirarPct ?? 0)).toBeCloseTo(toplam, 2);
+        if (Math.abs((f1.seferFirarPct ?? 0) - (f2.seferFirarPct ?? 0)) > 1e-6) farkli++;
+        const f3 = savasYiliCoz(s, b, bg(s));
+        expect(f3.seferFirarPct ?? 0).toBe(0);
+        const f4 = savasYiliCoz(s, b, bg(s));
+        expect(f4.seferFirarPct ?? 0).toBe(0);
+        expect(sv.firar_toplam ?? 0).toBe(0); // ek firar kayıp tavanına sayılmaz (kayıp uygulanmadı)
+      }
+      expect(farkli).toBeGreaterThan(20);
+    }
+    // ek firar uygulanınca seferberlerden düşer, savaş firar sayacına girmez
+    const s = asker();
+    ordu(s, 200);
+    const b = birlikAl(s);
+    const sv = savasa(s, "genel");
+    const once = sv.seferberlik_er;
+    const k = kayipUygula(s, b, { oluPct: 0, firarPct: 0, levyFirarPct: 10 });
+    expect(k.firarLevy).toBeGreaterThan(0);
+    expect(sv.seferberlik_er).toBe(once - k.firarLevy);
+    expect(sv.firar_toplam ?? 0).toBe(0);
+  });
 
-  it("savaş sonu: kalan seferber zaferde %35–45, yenilgide %20–25 (hayatta kalanlar üzerinden), yaralı/sağlam oransal; ana ordu değişmez", () => {
+  it("savaş sonu: kalan seferber zafer ve yenilgide %45–55 (hayatta kalanlar üzerinden), yaralı/sağlam oransal; ana ordu değişmez", () => {
     for (const sonuc of ["zafer", "yenilgi"] as const) {
       for (let n = 0; n < 25; n++) {
         const s = asker();
@@ -312,34 +355,35 @@ describe("seferberlik ve savaş sonu terhis", () => {
     }
   });
 
-  it("gönüllü akını yok: zaferde ordu kalan seferberler dışında büyümez", () => {
+  it("gönüllü akını yok: savaş sonunda ordu en çok ana kadro + hayatta kalan seferberler kadar olur (hepsi kalır)", () => {
     const s = asker();
     ordu(s, 100);
     const b = birlikAl(s);
-    const sv = savasa(s, "dengeli");
+    const sv = savasa(s, "genel");
     sv.sonuc = "zafer";
     const ana = erSayisi(s) - sv.seferberlik_er;
     s.ulke.savasta = false;
     savasiBitir(s, b, bg(s), []);
-    expect(erSayisi(s)).toBeLessThanOrEqual(ana + Math.round(sv.seferberlik_er * 0.45) + 1);
+    expect(erSayisi(s)).toBeLessThanOrEqual(ana + sv.seferberlik_er + 1);
+    expect(erSayisi(s)).toBeGreaterThanOrEqual(ana + sv.seferberlik_er - 1); // seferberlerin hepsi sıradan er olarak kaldı
   });
 });
 
 describe("limit aşımı", () => {
-  it("kışla limitini aşan her er masraf ve erzakta ×3 öder; savaşta seferberlik erleri muaf", () => {
-    expect(LIMIT_ASIM_GIDER_CARPANI).toBe(3);
+  it("kışla limitini aşan her er masraf ve erzakta ×2,5 öder; savaşta seferberlik erleri muaf", () => {
+    expect(LIMIT_ASIM_GIDER_CARPANI).toBe(2.5);
     const s = asker();
-    ordu(s, 25, 0); // limit 25
+    ordu(s, 30, 0); // limit 30
     expect(komutaLimiti(s)).toBe(KISLA_ER_LIMITI[0]);
     const h0 = birlikHesapla(s, bg(s));
     expect(limitAsimEri(s)).toBe(0);
-    s.meslek_musteri = 35;
-    birlikAl(s).kalite = { dusuk: 35, orta: 0, yuksek: 0 };
+    s.meslek_musteri = 40;
+    birlikAl(s).kalite = { dusuk: 40, orta: 0, yuksek: 0 };
     expect(limitAsimEri(s)).toBe(10);
     const h1 = birlikHesapla(s, bg(s));
-    const birim = (h0.erMasrafi + h0.erzak) / 25;
-    expect(h1.erMasrafi + h1.erzak).toBeCloseTo(birim * (25 + 10 * 3), 4);
-    expect(h1.limitAsimGideri).toBeCloseTo(birim * 10 * 2, 4);
+    const birim = (h0.erMasrafi + h0.erzak) / 30;
+    expect(h1.erMasrafi + h1.erzak).toBeCloseTo(birim * (30 + 10 * 2.5), 4);
+    expect(h1.limitAsimGideri).toBeCloseTo(birim * 10 * 1.5, 4);
     // savaşta: seferberlik erleri aşım sayılmaz
     s.ulke.savasta = true;
     savasBaslat(s).seferberlik_er = 10;
@@ -348,25 +392,27 @@ describe("limit aşımı", () => {
 
   it("devşirme limitte durur (limit dolunca yıllık artış 0)", () => {
     const s = asker();
-    ordu(s, 25, 0);
+    ordu(s, 30, 0);
     birlikAl(s).zar_bonusu = 0;
     for (let i = 0; i < 5; i++) birlikYilKos(s);
-    expect(erSayisi(s)).toBeLessThanOrEqual(25);
+    expect(erSayisi(s)).toBeLessThanOrEqual(30);
   });
 });
 
-import { birlikYilIsle } from "../src/game/birlikYil";
+import { birlikYilIsle, barisCatismaOtomatik } from "../src/game/birlikYil";
 function birlikYilKos(s: CharacterState) {
   s.yil += 1;
   return birlikYilIsle(s, bg(s));
 }
 
 describe("barış çatışması (haydut / sınır): ölü – yaralı – firar", () => {
-  it("tablo: zafer ölü %0,5–1,5 firar 0; yenilgi ölü %2–4 firar %1–2", () => {
-    expect(BARIS_KAYBI.zafer.olu).toEqual([0.5, 1.5]);
-    expect(BARIS_KAYBI.zafer.firar).toEqual([0, 0]);
-    expect(BARIS_KAYBI.yenilgi.olu).toEqual([2, 4]);
-    expect(BARIS_KAYBI.yenilgi.firar).toEqual([1, 2]);
+  it("tablo: haydut zafer ölü %1,5–3 / yenilgi %4–7; sınır zafer %2–3,5 / yenilgi %5–8; firar ve yaralı oranı", () => {
+    expect(BARIS_KAYBI.haydut.zafer).toEqual({ olu: [1.5, 3], firar: [0, 0.5] });
+    expect(BARIS_KAYBI.haydut.yenilgi).toEqual({ olu: [4, 7], firar: [2, 3] });
+    expect(BARIS_KAYBI.sinir.zafer).toEqual({ olu: [2, 3.5], firar: [0, 0.5] });
+    expect(BARIS_KAYBI.sinir.yenilgi).toEqual({ olu: [5, 8], firar: [2, 4] });
+    expect(BARIS_YARALI_ORAN).toEqual([2, 2.5]); // çatışmada yaralı = ölü × 2–2,5 (savaşta 1,5–1,75)
+    expect(YARALI_ORAN).toEqual([1.5, 1.75]);
   });
   it("yıl işleme sayıları tam sayı kalır; ordu çekirdeğin altına inmez", () => {
     for (let n = 0; n < 20; n++) {
@@ -387,38 +433,49 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("her görevin güç başı net kazancı 0,49–0,735 arası, açılış eşiği (askeri güç) 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
+  it("5 görev: güç başı kazanç 0,65–0,9 arası, açılış eşiği (askeri güç) 8–200; kazandıran görev daha çok yaralı/ölü/firar verdirir; masraf alanı yok", () => {
+    expect(GOREVLER).toHaveLength(5);
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
-      expect(g.erBasi).toBeGreaterThanOrEqual(0.49 - 1e-6);
-      expect(g.erBasi).toBeLessThanOrEqual(0.735 + 1e-6);
+      expect(g.erBasi).toBeGreaterThanOrEqual(0.65 - 1e-6);
+      expect(g.erBasi).toBeLessThanOrEqual(0.9 + 1e-6);
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
-    expect(sira[0].minGuc).toBe(10);
-    expect(sira[sira.length - 1].minGuc).toBe(230);
-    expect(sira[0].erBasi).toBe(0.49);
-    expect(sira[sira.length - 1].erBasi).toBe(0.735);
-    expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
+    expect(sira[0].minGuc).toBe(8);
+    expect(sira[sira.length - 1].minGuc).toBe(200);
+    expect(sira[0].erBasi).toBe(0.65);
+    expect(sira[sira.length - 1].erBasi).toBe(0.9);
+    // kayıp: çoğunlukla yaralı, az ölü, ara sıra firar; kazandıran görevde artar
+    for (let i = 0; i < sira.length; i++) {
+      const k = sira[i].kayip;
+      expect(k.yarali).toBeGreaterThan(k.firar);
+      expect(k.firar).toBeGreaterThan(k.olu);
+      if (i > 0) {
+        expect(k.yarali).toBeGreaterThan(sira[i - 1].kayip.yarali);
+        expect(k.olu).toBeGreaterThan(sira[i - 1].kayip.olu);
+      }
+    }
+    expect(Math.max(...GOREVLER.map((g) => g.sohret ?? 0))).toBe(GOREVLER.find((g) => g.id === "komuta")!.sohret);
   });
-  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,15 / 0,30 / 0,45", () => {
+  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,15 / 0,27 / 0,40", () => {
     for (const v of Object.values(ERZAK_DONEM_CARPANI)) {
       expect(v).toBeGreaterThanOrEqual(0.8);
       expect(v).toBeLessThanOrEqual(1.3);
     }
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.3, yuksek: 0.45 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.27, yuksek: 0.4 });
     const s = asker();
     ordu(s, 40);
     birlikAl(s).kalite = { dusuk: 10, orta: 10, yuksek: 20 };
     const h = birlikHesapla(s, bg(s));
-    expect(h.techizatBakim).toBeCloseTo((10 * 0.15 + 10 * 0.3 + 20 * 0.45) * bg(s).giderEnflasyon, 4);
+    expect(h.techizatBakim).toBeCloseTo((10 * 0.15 + 10 * 0.27 + 20 * 0.4) * bg(s).giderEnflasyon, 4);
   });
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 9; asker başı 0,15, savaşta ×3", () => {
+  it("sabit maaş 9; asker başı 0,15, savaşta ×3 (0,45; yalnız ana kadro)", () => {
     expect(SOLD).toEqual([9, 9, 9, 9, 9]);
     expect(ER_BASI_GELIR).toBe(0.15);
     expect(SAVAS_ER_BASI_CARPANI).toBe(3);
@@ -437,8 +494,8 @@ describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
     expect(SAVAS_SONRA_KAYBI.yenilgi).toEqual({ olu: [4, 6], firar: [2, 3.5] });
     const ort = (a: [number, number]) => (a[0] + a[1]) / 2;
     const toplam = (sonuc: "zafer" | "yenilgi") => {
-      const on = SAVAS_ON_YIL_OLAYLARI.reduce((t, o) => t + o.ihtimal * ort(o.olu), 0) * 2;
-      const onF = SAVAS_ON_YIL_OLAYLARI.reduce((t, o) => t + o.ihtimal * ort(o.firar), 0) * 2;
+      const on = ort(SAVAS_ON_YIL_TOPLAM) / 3;
+      const onF = ort(SAVAS_ON_YIL_TOPLAM) / 3;
       return {
         olu: on + ort(SAVAS_KARAR_KAYBI[sonuc].olu) + ort(SAVAS_SONRA_KAYBI[sonuc].olu),
         firar: onF + ort(SAVAS_KARAR_KAYBI[sonuc].firar) + ort(SAVAS_SONRA_KAYBI[sonuc].firar),
@@ -489,10 +546,12 @@ describe("askeri güç belirleyici (v34)", () => {
     const s = asker();
     ordu(s, 60);
     const b = birlikAl(s);
-    b.gorevler = ["tahsilat"]; // 70 askeri güç
-    expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 düşük er ≈ 63 güç
+    b.gorevler = ["tahsilat"]; // 52 askeri güç (×0,75 ölçeği)
+    expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 düşük er ≈ 47 güç
     b.kalite = { dusuk: 0, orta: 60, yuksek: 0 };
-    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 orta er ≈ 88 güç
+    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 orta er ≈ 63 güç
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 60 };
+    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 yüksek er ≈ 79 güç (teçhizat 0,75 / 1 / 1,25)
     expect(() => birlikKararUygula(s, { gorevler: ["tahsilat"] }, bg(s))).not.toThrow();
   });
 
@@ -506,10 +565,11 @@ describe("askeri güç belirleyici (v34)", () => {
       const b = birlikAl(s);
       s.isletme!.baslangic_yili = s.yil - 10;
       b.baris_bekleme = 0;
-      const u = birlikYilIsle(s, bg(s)).dokum.uyarilar.find((x) => x.kod === "baris_catisma");
+      birlikYilIsle(s, bg(s));
+      const u = barisCatismaOtomatik(s, b, bg(s));
       if (!u) continue;
       n++;
-      if (u.savasSonucu === "zafer") zafer++;
+      if (u.zafer) zafer++;
     }
     expect(n).toBeGreaterThan(deneme / 2);
     return zafer / n;

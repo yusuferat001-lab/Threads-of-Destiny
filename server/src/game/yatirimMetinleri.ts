@@ -72,7 +72,7 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
       );
     }
     case "revir":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : d === "tr" ? `Savaş kaybı ${eksi(k * REVIR_KAYIP_KADEME * 100, d)} · moral +${sayi(k * 0.75, d)}/yıl` : `Combat losses ${eksi(k * REVIR_KAYIP_KADEME * 100, d)} · morale +${sayi(k * 0.75, d)}/yr`));
+      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : d === "tr" ? `Savaş kaybı ${eksi(k * REVIR_KAYIP_KADEME * 100, d)} · kendi sağlık kaybın ${eksi(k * 2.5, d)} · moral +${sayi(k * 0.75, d)}/yıl` : `Combat losses ${eksi(k * REVIR_KAYIP_KADEME * 100, d)} · your own health loss ${eksi(k * 2.5, d)} · morale +${sayi(k * 0.75, d)}/yr`));
     case "devsirme": {
       const i = Math.min(k, DEVSIRME_BUROSU_ER.length - 1);
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : d === "tr" ? `Yıllık +${DEVSIRME_BUROSU_ER[i]} er` : `+${DEVSIRME_BUROSU_ER[i]} soldiers/yr`));

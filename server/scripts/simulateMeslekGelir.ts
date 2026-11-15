@@ -56,7 +56,7 @@ import { ogretiBekleyenSeviye, faaliyetSlotSayisi, faaliyetKilitliMi } from "../
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import { FAALIYETLER } from "../src/data/cemaat";
 import { doktrinBekleyenSeviye } from "../src/game/birlik";
-import { catismaIzleyici, CatismaIzi } from "../src/game/birlikYil";
+import { catismaIzleyici, CatismaIzi, barisCatismaOtomatik, catismaBekliyorMu } from "../src/game/birlikYil";
 import { doktrinSecenekleri } from "../src/data/birlik";
 import { yolDali } from "../src/game/birlik";
 import { giderEnflasyonCarpani, isletmeBaglami } from "../src/game/stateManager";
@@ -521,6 +521,8 @@ const ASKER_V = process.env.SIM_ASKER ?? "v0"; // v0 = simulateBirlik 'dengeli' 
 async function askerYonet(id: string): Promise<void> {
   const state = await stateGetir(id);
   const b = state.isletme?.birlik;
+  // Haydut/sınır çatışması karar bekler: botta akıllı varsayılanla çözülür.
+  if (b && catismaBekliyorMu(state)) barisCatismaOtomatik(state, b, isletmeBaglami(state));
   if (!b || state.ulke.savasta) return;
   const genf = giderEnflasyonCarpani(state);
   const er = erSayisi(state);
@@ -881,6 +883,25 @@ function meslekRapor(baslik: string, izler: OyunIzi[]): any {
   };
   const t65 = tam(65), t75 = tam(75);
   console.log(`\nÖMÜR TOPLAMI: gelir ort ${ozet.omurGelirOrt} (medyan ${ozet.omurGelirMedyan}, p10 ${ozet.p10}, p90 ${ozet.p90}) | maaş ${ozet.omurMaasOrt} | gider ${ozet.omurGiderOrt} | net ${ozet.omurNetOrt} | ölümde nakit ort ${ozet.sonParaOrt} (medyan ${ozet.sonParaMedyan}) | borçla ölen %${ozet.borcluOlenYuzde}`);
+  if (process.env.SIM_BORC && izler.length) {
+    // Borçla ölenler neden borçlu? Ölüm yaşı, son/tepe er, son rütbe ve ölümdeki para dağılımı (borçlu vs değil).
+    const grup = (ad: string, g: OyunIzi[]) => {
+      if (!g.length) return;
+      const sonEr = g.map((i) => i.tur[i.tur.length - 1]?.er ?? 0);
+      const tepeEr = g.map((i) => Math.max(0, ...i.tur.map((t) => t.er)));
+      const tepeGuc = g.map((i) => Math.max(0, ...i.tur.map((t) => t.guc)));
+      const kucuk = g.filter((i) => (i.tur[i.tur.length - 1]?.er ?? 0) < 40).length / g.length;
+      const sav = g.map((i) => i.tur.filter((t) => t.savas).length / Math.max(1, i.tur.length));
+      console.log(`  [${ad}] n=${g.length} | ölüm yaşı medyan ${y2(medyan(g.map((i) => i.olumYasi)))} | son er medyan ${y2(medyan(sonEr))} | tepe er medyan ${y2(medyan(tepeEr))} | tepe güç medyan ${y2(medyan(tepeGuc))} | son rütbe ort ${y2(ortala(g.map((i) => i.sonRutbe)))} | son erde 40 altı %${y2(kucuk * 100)} | savaşta geçen tur payı %${y2(ortala(sav) * 100)} | ölümdeki para medyan ${y2(medyan(g.map((i) => i.sonPara)))}`);
+    };
+    console.log("[BORÇ TANISI]");
+    grup("borçla ölen", izler.filter((i) => i.sonPara < 0));
+    grup("borçsuz ölen", izler.filter((i) => i.sonPara >= 0));
+    for (const [a1, b1] of [[0, 40], [40, 60], [60, 80], [80, 200]] as [number, number][]) {
+      const g = izler.filter((i) => i.olumYasi >= a1 && i.olumYasi < b1);
+      if (g.length) console.log(`    ölüm yaşı ${a1}-${b1}: n=${g.length} borçlu %${y2((g.filter((i) => i.sonPara < 0).length / g.length) * 100)}`);
+    }
+  }
   console.log(`Yıl başına ort. gelir ${ozet.yilBasinaOrt}`);
   console.log(`≥65 yaşa ulaşanlar (n=${t65.n}): 15-65 arası (50 yıl) gelir ort ${t65.ort}, medyan ${t65.medyan}`);
   console.log(`≥75 yaşa ulaşanlar (n=${t75.n}): 15-75 arası (60 yıl) gelir ort ${t75.ort}, medyan ${t75.medyan}`);

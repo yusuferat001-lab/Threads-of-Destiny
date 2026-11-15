@@ -52,6 +52,7 @@ import {
   otomatikDepoDoldur,
   STOK_EKSI_NAKIT_LIMITI,
 } from "./isletme";
+import { hazinePayiKazanctan } from "./birlik";
 import { kesifSavasHaberi, savasZariDusmani } from "./birlikYil";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 import { ASKER_PAZAR_BASLANGIC, BASLANGIC_ER, ASKER_KARIYER_PUANI_KATSAYISI, ASKER_KARIYER_GUC_TAVANI, dusmanReferansGucuYas } from "../data/birlik";
@@ -2509,7 +2510,13 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
       // İşletme: gelir = o yılın satış − alım − depo kârı (eksi olabilir), maaş formülü yok.
       const sonuc = isletmeYilIsle(state, isletmeBaglami(state));
       yillikGelirler.push(sonuc.net);
-      netGelir += sonuc.net + sonuc.onOdenenAlim - gider;
+      // HAZİNE PAYI (Asker) KAZANÇ üzerinden: kazanç = ordu neti (subay sonrası) − yaşam − kira − hayvan − kredi taksidi + mülk geliri; ordu netinden DEĞİL.
+      let hazine = 0;
+      if (state.meslek === "Asker") {
+        const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
+        hazine = hazinePayiKazanctan(state, isletmeBaglami(state).enflasyon, sonuc.net - gider - krediTaksit + gayrimenkulYillikGelirHesapla(state));
+      }
+      netGelir += sonuc.net + sonuc.onOdenenAlim - gider - hazine;
       continue;
     }
     const dalga = 0.85 + Math.random() * 0.3; // 0.85x - 1.15x (büyük denge turu: kullanıcı isteğiyle bant 0.85–1.15)

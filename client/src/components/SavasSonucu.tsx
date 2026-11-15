@@ -13,14 +13,14 @@ const M = {
   baslik: { tr: 'Savaş Sonucu', en: 'Battle Result' },
   saldiri: { tr: 'Saldırıdaydın', en: 'You attacked' },
   savunma: { tr: 'Savunmadaydın', en: 'You defended' },
-  guclerin: { tr: 'Güçler ve zarlar', en: 'Forces and rolls' },
+  guclerin: { tr: 'Güçler', en: 'Forces' },
   sen: { tr: 'Sen', en: 'You' },
   dusman: { tr: 'Düşman', en: 'Enemy' },
-  zar: { tr: 'zar', en: 'roll' },
   kayiplarin: { tr: 'Kayıpların', en: 'Your losses' },
   olu: { tr: 'ölü', en: 'dead' },
   yarali: { tr: 'yaralı', en: 'wounded' },
   firar: { tr: 'firar', en: 'deserted' },
+  parali: { tr: 'Paralı askerler', en: 'Mercenaries' },
   kalan: { tr: 'Kalan er', en: 'Men left' },
   dusmanKaybi: { tr: 'Düşman kaybı (tahmini)', en: 'Enemy losses (estimate)' },
   ganimet: { tr: 'Savaş sonunda gelecek ganimet (tahmini)', en: 'Spoils due at war end (estimate)' },
@@ -47,7 +47,7 @@ export function SavasSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: SavasGunuSo
         <div className="savas-kiyas">
           <strong>{t('guclerin')}</strong>
           <div>
-            {t('sen')}: <strong>{sonuc.oyuncuGuc}</strong> ({t('zar')} {sonuc.oyuncuZar >= 0 ? '+' : ''}{sonuc.oyuncuZar}%) ↔ {t('dusman')}: <strong>{sonuc.dusmanGuc}</strong> ({t('zar')} {sonuc.dusmanZar >= 0 ? '+' : ''}{sonuc.dusmanZar}%)
+            {t('sen')}: <strong>{sonuc.oyuncuGuc}</strong> ↔ {t('dusman')}: <strong>{sonuc.dusmanGuc}</strong>
           </div>
         </div>
         <div className="savas-kiyas">
@@ -56,6 +56,14 @@ export function SavasSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: SavasGunuSo
             <span className="s-eksi">{sonuc.olu}</span> {t('olu')} · <span className="s-eksi">{sonuc.yarali}</span> {t('yarali')} · <span className="s-eksi">{sonuc.firar}</span> {t('firar')} · {t('kalan')}: <strong>{sonuc.kalanEr}</strong>
           </div>
         </div>
+        {(sonuc.kiralikOlu ?? 0) + (sonuc.kiralikYarali ?? 0) > 0 && (
+          <div className="savas-kiyas">
+            <strong>{t('parali')}</strong>
+            <div>
+              <span className="s-eksi">{sonuc.kiralikOlu ?? 0}</span> {t('olu')} · <span className="s-eksi">{sonuc.kiralikYarali ?? 0}</span> {t('yarali')}
+            </div>
+          </div>
+        )}
         <div className="savas-kiyas">
           <strong>{t('dusmanKaybi')}</strong>
           <div>

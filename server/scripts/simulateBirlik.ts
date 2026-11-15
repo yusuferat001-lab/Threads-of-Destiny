@@ -35,6 +35,7 @@ import { calisanLimiti, adaylariGerekirseYenile } from "../src/game/isletme";
 import { pazarPayiHesapla } from "../src/data/pazar";
 import { doktrinBekleyenSeviye, erSayisi, komutaLimiti, gorevSlotSayisi, birlikAl, gucHesapla } from "../src/game/birlik";
 import { birlikKararUygula, birlikSec, doktrinSec, techizatSec, savasKarariBekliyorMu, savasKarariDurumu, savasKarariVer } from "../src/game/birlikIslem";
+import { barisCatismaOtomatik } from "../src/game/birlikYil";
 import { GOREVLER, doktrinSecenekleri, DUSMAN_REFERANS_YAS } from "../src/data/birlik";
 import { EKSTRA_VERGI_ODEME_ILISKI } from "../src/data/ekstraVergi";
 import type { Cag, CharacterState, EkipUyesi } from "../src/types";
@@ -231,19 +232,20 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
     if (savasta && !s.ulke.savasta) o.savasKaybi.push(savasOncesi > 0 ? erSayisi(s) / savasOncesi : 1);
     savasta = !!s.ulke.savasta;
     const d = s.isletme?.son_dokum;
+    // Haydut/sınır çatışması artık karar bekler: botta akıllı varsayılanla çözülür (baskında savunma, değilse iyi oranlı yön).
+    const cs = birlikAl(s).catisma_bekleyen ? barisCatismaOtomatik(s, birlikAl(s), isletmeBaglami(s)) : null;
     o.net.push(d?.net ?? 0);
     o.cebine.push(s.para - para0 + gider - 0);
     o.cebineGercek.push(s.para - para0);
     {
       const bd = d?.birlik;
       const K = (k: string, v: number) => (o.kalem[k] = (o.kalem[k] ?? 0) + v / enflasyonCarpani(s));
+      if (cs) {
+        K("  ganimet:baris", cs.ganimet);
+        o.zafer[cs.tur][1] += 1;
+        if (cs.zafer) o.zafer[cs.tur][0] += 1;
+      }
       for (const u of d?.uyarilar ?? []) {
-        if (u.kod === "baris_catisma") {
-          K("  ganimet:baris", u.tutar ?? 0);
-          const k = u.catismaTur === "sinir" ? "sinir" : "haydut";
-          o.zafer[k][1] += 1;
-          if (u.savasSonucu === "zafer") o.zafer[k][0] += 1;
-        }
         if (u.kod === "savas_sonu") {
           o.zafer.savas[1] += 1;
           if (u.savasSonucu === "zafer") o.zafer.savas[0] += 1;
@@ -274,8 +276,8 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
       o.batti = true;
       if (process.env.SIM_BATMA) console.log(`  BATTI y${y + 1} ${tarz} R${s.rutbe_seviye} er=${erSayisi(s)} para=${s.para.toFixed(0)} net=${d?.net} savas=${s.ulke.savasta} kredi=${s.kredi?.kalanBorc ?? 0} ekip=${s.ekip.length} kalite=${JSON.stringify(birlikAl(s).kalite)} birlik=${birlikAl(s).birlik_turler.length}`);
     }
-    if (TRACE) for (const u of d?.uyarilar ?? []) if (u.kod === "baris_catisma") console.log(`    y${y + 1} çatışma ${u.catismaTur} ${u.savasSonucu} ganimet=${u.tutar} guc=${Math.round(birlikAl(s).guc)}`);
-    if (TRACE && y % 5 === 4) console.log(`  y${y + 1} R${s.rutbe_seviye} er=${erSayisi(s)} guc=${Math.round(birlikAl(s).guc)} pay=${(pazarPayiHesapla(s) * 100).toFixed(1)}% net=${d?.net} para=${s.para.toFixed(0)}`);
+    if (TRACE && cs) console.log(`    y${y + 1} çatışma ${cs.tur} ${cs.zafer ? "zafer" : "yenilgi"} ganimet=${cs.ganimet} guc=${Math.round(birlikAl(s).guc)}`);
+    if (TRACE && (y % 5 === 4 || y < 8)) console.log(`  y${y + 1} R${s.rutbe_seviye} er=${erSayisi(s)} guc=${Math.round(birlikAl(s).guc)} pay=${(pazarPayiHesapla(s) * 100).toFixed(1)}% net=${d?.net} para=${s.para.toFixed(0)} moral=${Math.round(birlikAl(s).moral)} talim=${Math.round(birlikAl(s).talim)} kalite=${JSON.stringify(birlikAl(s).kalite)} savas=${!!s.ulke.savasta}`);
     if (s.yas >= 90) {
       o.olduYil = y;
       break;
@@ -318,6 +320,21 @@ for (const cag of CAGLAR) {
     console.log(
       `  zafer% haydut/sınır/savaş = ${(["haydut", "sinir", "savas"] as const).map((k) => { const z = omurler.reduce((t, o) => t + o.zafer[k][0], 0); const n = omurler.reduce((t, o) => t + o.zafer[k][1], 0); return n ? `${f((z / n) * 100, 0)} (n=${n})` : "-"; }).join(" / ")}`
     );
+    if (process.env.SIM_DEKAD) {
+      // 10 yıllık yaş dekadlarında: ort/medyan er, askerî güç, "ele kalan" (kasaya giren net, nominal ve enflasyonsuz-reel) ve ordu neti. Yalnız o dekadda hâlâ oyunda olan (batmamış) ömürler.
+      console.log(`  DEKAD [${tarz}]: yaş | n | er ort | güç ort/medyan | ele kalan/yıl nominal ort/medyan | reel ort | ordu neti ort`);
+      for (const [a, b] of [[15, 19], [20, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 79]] as const) {
+        const idx = (o: Omur) => Array.from({ length: b - a + 1 }, (_, k) => a - 15 + k).filter((i) => i < o.er.length);
+        const sel = omurler.filter((o) => idx(o).length > 0);
+        if (!sel.length) continue;
+        const yillar = (fn: (o: Omur, i: number) => number) => sel.flatMap((o) => idx(o).map((i) => fn(o, i)));
+        const g = yillar((o, i) => o.guc[i]);
+        const eleKalan = yillar((o, i) => o.cebineGercek[i]);
+        console.log(
+          `    ${a}-${b} | ${sel.length} | ${f(ort(yillar((o, i) => o.er[i])), 0)} | ${f(ort(g), 0)} / ${f(med(g), 0)} | ${f(ort(eleKalan), 0)} / ${f(med(eleKalan), 0)} | ${f(ort(yillar((o, i) => o.cebineGercek[i] / o.enf[i])), 0)} | ${f(ort(yillar((o, i) => o.net[i])), 0)}`
+        );
+      }
+    }
     console.log(
       `[${tarz.padEnd(8)}] net@30/40/50 = ${f(yasNet(30))}/${f(yasNet(40))}/${f(yasNet(50))} | er@60 ort ${f(ort(er60), 0)} med ${f(med(er60), 0)} | pay@60 ${f(ort(omurler.map((o) => o.pay[Math.min(o.pay.length - 1, 44)] ?? 0)))}% | ganimet/gelir ${f(ganimet * 100, 0)}% | savaş sonrası kalan ${savasKalan.length ? f(med(savasKalan) * 100, 0) + "%" : "-"} (n=${savasKalan.length}) | batan ${f((omurler.filter((o) => o.batti).length / N) * 100, 0)}% | ${rutbeOrt.join(" ")}`
     );

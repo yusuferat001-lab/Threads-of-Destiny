@@ -28,6 +28,38 @@ describe("Kazanç tek kaynak (FinansOzeti.kazanc)", () => {
     expect(sonra.kazanc.net).toBeCloseTo(once - 7, 1);
   });
 
+  it("Asker: hazine payı KAZANÇ üzerinden alınır (ordu neti − subay − yaşam − kira − hayvan − kredi + mülk); kazanç vergi sonrasıdır", async () => {
+    const { hazinePayiKazanctan } = await import("../src/game/birlik");
+    const { isletmeBaglami } = await import("../src/game/stateManager");
+    const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "T", "tr", undefined, "ilerle");
+    await mesleğiAta(st.id, "Asker");
+    const state = await stateGetir(st.id);
+    state.rutbe_seviye = 5;
+    state.isletme!.yatirimlar.kisla = 4;
+    state.meslek_musteri = 320;
+    state.isletme!.birlik!.kalite = { dusuk: 0, orta: 320, yuksek: 0 };
+    state.isletme!.birlik!.gorevler = ["komuta"];
+    state.isletme!.birlik!.kale = 3; // ele geçirilmiş kaleler yıllık gelir verir
+    state.isletme!.birlik!.kale_gelir = [100, 100, 100];
+    state.isletme!.birlik!.moral = 100;
+    state.isletme!.birlik!.talim = 100;
+    state.ekip = [{ id: "o1", isim: "Test", rol: "Harp subayı", rol_turu: "ana", maas: 20, sadakat: 70, gercekKalite: 60, y_giris: 60, s_giris: 70, maas_taban: 5 } as never];
+    state.para_birimi = state.para_birimi;
+    const f = await finansGetir(st.id);
+    const d = await isletmeDurumGetir(st.id);
+    const e = isletmeBaglami(state).enflasyon;
+    const vergisiz = d.butce.cebineKalan + d.butce.mulkGeliri; // ordu neti (subay sonrası) − yaşam − kira − hayvan − kredi + mülk
+    expect(vergisiz).toBeGreaterThan(100 * e); // vergiye takılacak kadar kazanç
+    expect(d.butce.hazinePayi).toBeCloseTo(hazinePayiKazanctan(state, e, vergisiz), 1);
+    expect(d.butce.hazinePayi).toBeGreaterThan(0);
+    expect(d.butce.kazanc).toBeCloseTo(vergisiz - d.butce.hazinePayi, 1);
+    expect(f.kazanc.net).toBeCloseTo(d.butce.kazanc, 1); // ana ekran Kazanç == Ordu bütçesi Kazanç (vergi sonrası)
+    // Ordu netinden (yaşam/subay düşülmeden) alınsaydı vergi daha yüksek olurdu: kazançtan alınan, ordu netinden alınandan azdır.
+    expect(d.butce.hazinePayi).toBeLessThan(hazinePayiKazanctan(state, e, d.butce.net));
+    // Zararda vergi yok
+    expect(hazinePayiKazanctan(state, e, -500)).toBe(0);
+  });
+
   it("Asker'de subay maaşı net'ten düşer ve gelir sold + görev içerir", async () => {
     const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "T", "tr", undefined, "ilerle");
     await mesleğiAta(st.id, "Asker");
