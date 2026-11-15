@@ -124,6 +124,7 @@ const S = {
   ganimetYok: { tr: 'Yenilgide ganimet yok.', en: 'No spoils in defeat.' },
   hasar: { tr: 'Baskın kesene zarar verdi', en: 'The raid cost you coin' },
   saglik: { tr: 'Sağlığın', en: 'Your health' },
+  sohret: { tr: 'Şöhret', en: 'Renown' },
   tamam: { tr: 'Devam', en: 'Continue' },
 };
 
@@ -177,6 +178,11 @@ export function CatismaSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: CatismaSo
             </div>
           )}
         </div>
+        {(sonuc.sohret ?? 0) !== 0 && (
+          <div className="savas-kiyas">
+            {t('sohret')}: <span className={(sonuc.sohret ?? 0) > 0 ? 's-arti' : 's-eksi'}>{(sonuc.sohret ?? 0) > 0 ? '+' : '−'}{Math.abs(sonuc.sohret ?? 0)}</span>
+          </div>
+        )}
         {(sonuc.saglik ?? 0) > 0 && (
           <div className="savas-kiyas">
             {t('saglik')}: <span className="s-eksi">−{sonuc.saglik}</span>

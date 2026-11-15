@@ -23,8 +23,8 @@ export const ER_TAVANI = 500;
 export const ASKER_PAZAR_BASLANGIC: [number, number] = [185, 205];
 /** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
 export const KISLA_ER_LIMITI = [30, 70, 140, 280, 500];
-/** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu). Büyük kışla ordu büyüdükçe pahalı bir yük getirir. */
-export const KISLA_BAKIM = [4, 10, 25, 60, 120];
+/** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu). Düşük kademe yumuşak; er başı bakım kademeyle artar (tam dolu kışlada er başı ≈ 0,07 / 0,09 / 0,13 / 0,18 / 0,24). */
+export const KISLA_BAKIM = [2, 6, 18, 50, 120];
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
@@ -1116,3 +1116,13 @@ export function hazinePayi(reelNet: number): number {
   for (const [lo, hi, o] of HAZINE_KADEMELERI) t += Math.max(0, Math.min(reelNet, hi) - lo) * o;
   return t;
 }
+
+// ── Sonuca göre şöhret (v65): zafer kazandırır, yenilgi götürür; tam sayıya olasılıkla yuvarlanır ──
+/** [en az, en çok] şöhret değişimi büyüklüğü (zafer +, yenilgi −). Çatışmada güç farkına göre (ezici zafer/yenilgi üst uçta), savaşta aralıktan çekilir. */
+export const SOHRET_SONUCU: Record<"haydut" | "sinir" | "savas", { zafer: [number, number]; yenilgi: [number, number] }> = {
+  haydut: { zafer: [0, 1], yenilgi: [0, 1] },
+  sinir: { zafer: [1, 2], yenilgi: [1, 2] },
+  savas: { zafer: [2, 4], yenilgi: [3, 5] },
+};
+/** Baskın (zorunlu savunma): başarılı savunma ekstra şöhret, yenilgi ekstra itibar kaybı. */
+export const SOHRET_BASKIN = { zafer: 1, yenilgi: 1 };

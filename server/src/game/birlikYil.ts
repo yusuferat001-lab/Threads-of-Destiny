@@ -21,6 +21,8 @@ import {
   BASKIN_YENILGI_SAGLIK_EK,
   GOREV_SAGLIK,
   SAGLIK_REVIR_AZALTMA,
+  SOHRET_SONUCU,
+  SOHRET_BASKIN,
   BARIS_YILLIK_ER,
   CATISMA_SALDIRI,
   CATISMA_SAVUNMA,
@@ -253,6 +255,16 @@ export function saglikBedeliUygula(state: CharacterState, ham: number): number {
   state.saglik = Math.max(0, state.saglik - kayip);
   if (state.saglik <= 0) checkDeath(state, false, { tr: "Savaşta aldığı yaralardan öldü", en: "Died of wounds taken in war" });
   return kayip;
+}
+
+/** Sonuca göre şöhret: `agirlik` 0..1 (0 = aralığın alt ucu, 1 = üst ucu); tam sayıya olasılıkla yuvarlanır; uygulanan işaretli değeri döndürür. */
+export function sohretSonucuUygula(state: CharacterState, tur: "haydut" | "sinir" | "savas", zafer: boolean, agirlik: number, baskin = false): number {
+  const [lo, hi] = SOHRET_SONUCU[tur][zafer ? "zafer" : "yenilgi"];
+  const w = clamp(agirlik, 0, 1);
+  const buyukluk = lo + (hi - lo) * w + (baskin ? (zafer ? SOHRET_BASKIN.zafer : SOHRET_BASKIN.yenilgi) : 0);
+  const delta = (zafer ? 1 : -1) * olasilikliYuvarla(buyukluk);
+  state.un = clamp(state.un + delta, 0, 100);
+  return delta;
 }
 
 export function savasBaslat(state: CharacterState): BirlikSavasDurumu {
@@ -909,6 +921,8 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
       madalyaVer(state, b, "kale", uyarilar);
     }
   }
+  // Sonuca göre şöhret (büyük savaş): zafer + / yenilgi −; zaferde kanat zaferi oranı üst uca yaklaştırır.
+  sohretSonucuUygula(state, "savas", zafer, zafer ? (sv.kanat_zafer ?? 0) / Math.max(1, (sv.kanat_zafer ?? 0) + (sv.kanat_yenilgi ?? 0)) : Math.random());
   // Oyuncunun sağlığı: yıllık dilimlerden kalan + yenilgi eki.
   {
     const kalanHam = Math.max(0, (sv.saglik_plan ?? 0) - (sv.saglik_uygulanan ?? 0)) + (zafer ? 0 : SAVAS_SAGLIK_YENILGI_EK);
@@ -1033,6 +1047,8 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   b.moral = clamp(b.moral + CATISMA_ORDU_MORALI[tur][zafer ? "zafer" : "yenilgi"], 0, 100);
   state.mutluluk = clamp(state.mutluluk + CATISMA_KISI_MORALI[tur][zafer ? "zafer" : "yenilgi"], 0, 100);
   if (zafer) madalyaVer(state, b, "haydut", []);
+  // Sonuca göre şöhret: güç farkı büyüdükçe (ezici zafer / ezici yenilgi) aralığın üst ucu.
+  const sohretDegisim = sohretSonucuUygula(state, tur, zafer, zafer ? (oran - 1) / 0.5 : (1 - oran) / 0.4, k.baskin);
   const saglikKaybi = saglikBedeliUygula(
     state,
     aralikCek(BARIS_SAGLIK[tur][zafer ? "zafer" : "yenilgi"]) + (k.baskin && !zafer ? BASKIN_YENILGI_SAGLIK_EK : 0)
@@ -1057,6 +1073,7 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
     nakitHasar,
     talim: zafer ? BARIS_TALIM_ZAFER : BARIS_TALIM_YENILGI,
     saglik: saglikKaybi,
+    sohret: sohretDegisim,
   };
 }
 

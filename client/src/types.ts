@@ -1285,6 +1285,8 @@ export interface CatismaSonucuGorunum {
   talim: number;
   /** Çatışmada kaybedilen sağlık (rütbe/tabip/revir sonrası). */
   saglik?: number;
+  /** Sonuca göre şöhret değişimi (işaretli). */
+  sohret?: number;
 }
 
 /** Savaş Günü sonucu (Savaş Sonucu ekranı). */
