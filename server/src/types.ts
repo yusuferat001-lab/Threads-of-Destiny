@@ -1181,6 +1181,8 @@ export interface BirlikCatismaBekleyen {
   dusmanTur: "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
   /** Düşmanın o çatışma için çekilmiş mutlak gücü (oyuncuya aralık olarak gösterilir). */
   dusmanGuc: number;
+  /** Zafer serisi: bu karşılaşmada düşmana uygulanan güç çarpanı (>1; yoksa uygulanmadı). */
+  hazirlik?: number;
 }
 
 /** Çatışma karar penceresi: iki tarafın saldırı/savunma gücü. */
@@ -1191,6 +1193,8 @@ export interface CatismaKarariDurumu {
   ad: { tr: string; en: string };
   oyuncu: { saldiri: number; savunma: number };
   dusman: { saldiri: [number, number]; savunma: [number, number] };
+  /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
+  hazirlikli?: boolean;
 }
 
 /** Çatışma sonuç ekranı. */
@@ -1305,6 +1309,8 @@ export interface BirlikSavasDurumu {
   on_yil_plan?: { olu: [number, number]; yarali: [number, number]; firar: [number, number]; sefer?: [number, number] };
   /** Ön yıllarda şimdiye kadar uygulanan toplam kayıp % (çarpanlar sonrası). */
   on_yil_kullanilan?: number;
+  /** Zafer serisi bonusu: bu savaşta düşmana uygulanan güç çarpanı (savaş başında çekilir; yoksa 1). */
+  hazirlik?: number;
   /** Savaş başında çekilen toplam ham sağlık bedeli (5–20) ve şimdiye dek uygulanan ham kısmı. */
   saglik_plan?: number;
   saglik_uygulanan?: number;
@@ -1367,6 +1373,8 @@ export interface BirlikDurumu {
   erzak_oran: number;
   /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
   baris_bekleme?: number;
+  /** Her tür için (haydut, sınır, büyük savaş) arka arkaya zafer sayısı; yenilgide sıfırlanır; ≥3 iken düşman +%10–15 güçlenir. */
+  zafer_serisi?: { haydut: number; sinir: number; savas: number };
   /** Çıkmış ama oyuncunun henüz karar vermediği barış çatışması (karar verilene dek zaman ilerlemez). */
   catisma_bekleyen?: BirlikCatismaBekleyen | null;
   /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */

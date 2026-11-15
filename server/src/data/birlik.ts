@@ -273,7 +273,7 @@ export const BASKIN_IHTIMALI = 0.5;
  *   15–21 yaş: neredeyse düz (taban21 / 1,15'ten taban21'e doğrusal) — ilk 6 yıl çok artmaz.
  *   21–60 yaş: güç = taban21 × (1 + oran)^(yaş − 21)  (her yıl aynı yüzde; sıçrama yok).
  *   60 yaş sonrası: 60 yaşındaki artış hızı SABİT kalır (doğrusal; yaş 70→80 hızlanmaz).
- * Haydut en kolay, sınır (düzenli düşman) daha güçlü, büyük savaş en güçlü ve en hızlı artan. ±%5 sapma, zar ±%7 (SAVAS_ZAR_BOLEN).
+ * Haydut en kolay, sınır (düzenli düşman) daha güçlü, büyük savaş en güçlü ve en hızlı artan. ±%5 sapma, zar ±%4 (SAVAS_ZAR_BOLEN).
  */
 export type DusmanTuru = "haydut" | "sinir" | "savas";
 export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban21: number; oran: number }> = {
@@ -718,8 +718,8 @@ export const INISIYATIF_OYUNCU_SECER = 0.4;
 export const INISIYATIF_ZORUNLU_SALDIRI = 0.3;
 /** Büyük savaşta düşman gücü sapması: referans × [0,95; 1,05] (savaş başında bir kez çekilir; oyuncuya ±%5 aralık olarak gösterilir). */
 export const DUSMAN_ORAN: [number, number] = [0.95, 1.05];
-/** Savaş günü / çatışma zarı: her taraf güç × (1 ± %7) (d20: (zar − 10,5) / SAVAS_ZAR_BOLEN, uçlar ±9,5 → ±%7). */
-export const SAVAS_ZAR_YUZDE = 0.07;
+/** Savaş günü / çatışma zarı: her taraf güç × (1 ± %4) (d20: (zar − 10,5) / SAVAS_ZAR_BOLEN, uçlar ±9,5 → ±%4, iki taraf için de). */
+export const SAVAS_ZAR_YUZDE = 0.04;
 export const SAVAS_ZAR_BOLEN = 9.5 / SAVAS_ZAR_YUZDE;
 /**
  * Düşmanın MUTLAK gücü (bizim gücümüzden bağımsız). Referans karakterin YAŞINA göre büyür ("zamanla tehlike artar"):
@@ -1132,3 +1132,20 @@ export const SOHRET_SONUCU: Record<"haydut" | "sinir" | "savas", { zafer: [numbe
 };
 /** Baskın (zorunlu savunma): başarılı savunma ekstra şöhret, yenilgi ekstra itibar kaybı. */
 export const SOHRET_BASKIN = { zafer: 1, yenilgi: 1 };
+
+// ── Zafer serisi (v67): aynı türde arka arkaya 3 zafer → sıradaki karşılaşmada düşman +%10–15 güçlü ("hazırlıklı"); yenilgi sayacı sıfırlar ──
+/** Seri sayaçları her tür için AYRIDIR: haydut, sınır, büyük savaş. */
+export const ZAFER_SERISI_ESIGI = 3;
+export const ZAFER_SERISI_DUSMAN_ARTISI: Aralik = [0.1, 0.15];
+export type ZaferSerisi = { haydut: number; sinir: number; savas: number };
+export const ZAFER_SERISI_BOS: ZaferSerisi = { haydut: 0, sinir: 0, savas: 0 };
+
+// ── Görev gelirinde er sayısına bağlı azalan verim (v67): her er dilimi kendi çarpanıyla; güç bantlarına ek ──
+export const GOREV_ER_BANTLARI: [number, number, number][] = [[0, 200, 1], [200, 350, 0.85], [350, Infinity, 0.7]];
+/** Göreve çıkan er sayısı için gelir çarpanı: etkin er / er. */
+export function gorevErOrani(er: number): number {
+  if (er <= 0) return 1;
+  let t = 0;
+  for (const [lo, hi, f] of GOREV_ER_BANTLARI) t += Math.max(0, Math.min(er, hi) - lo) * f;
+  return t / er;
+}

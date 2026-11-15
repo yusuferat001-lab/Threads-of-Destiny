@@ -1188,10 +1188,12 @@ export interface BirlikGorunumu {
     kararBekliyor: boolean;
     araziIhtimali: number;
     kiyas: {
-      /** Düşmanın tahmini gücü [alt, üst] (±%5); saldırı ve savunma ayrı. */
+      /** Düşmanın tahmini gücü [alt, üst] (±%6,5; Keşif ±%2,5'e kadar); saldırı ve savunma ayrı. */
       dusman: { guc: [number, number]; saldiri: [number, number]; savunma: [number, number] };
       oyuncu: { saldiri: number; savunma: number };
       son: { yil: number; inisiyatif: 'saldiri' | 'savunma'; oyuncuGuc: number; dusmanGuc: number; oyuncuZar: number; dusmanZar: number; kanatZafer: boolean; genelZafer: boolean } | null;
+      /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
+      hazirlikli?: boolean;
     };
     /** Savaş planı özeti (savaş boyu geçerli seçimler); savaş yoksa null. */
     plan: {
@@ -1266,6 +1268,8 @@ export interface CatismaKarariDurumu {
   ad: { tr: string; en: string };
   oyuncu: { saldiri: number; savunma: number };
   dusman: { saldiri: [number, number]; savunma: [number, number] };
+  /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
+  hazirlikli?: boolean;
 }
 
 /** Çatışma sonuç ekranı. */

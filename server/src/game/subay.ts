@@ -24,15 +24,15 @@ export interface SubayTablosu {
 export const SUBAY_DEGERLERI = {
   taarruz: { saldiri: [0.09, 0.15, 0.2], ganimet: [0.04, 0.07, 0.1], kayipArtis: [0.03, 0.04, 0.06] },
   savunma: { savunma: [0.09, 0.15, 0.2], olu: [0.04, 0.07, 0.1], ganimetEksi: [0.02, 0.04, 0.05] },
-  kesif: { arazi: [0.22, 0.34, 0.46], tahmin: [0.041, 0.032, 0.023], pusu: [0.24, 0.48, 0.72] },
+  kesif: { arazi: [0.22, 0.34, 0.46], tahmin: [0.055, 0.04, 0.025], pusu: [0.24, 0.48, 0.72] },
   devsirme: { er: [1.5, 3, 3.8] },
   tabip: { oluFirar: [0.13, 0.22, 0.3], yarali: [0.08, 0.14, 0.21] },
 } as const;
 
 /** `devsirme`: tüm devşirme subaylarının toplamı en çok bu kadar er/yıl (tek subay da en çok 4: Y100 + sadık). */
 export const SUBAY_TAVANLARI = { saldiri: 0.3, savunma: 0.3, arazi: 0.95, oluFirar: 0.3, yarali: 0.3, devsirme: 4 } as const;
-/** Düşman tahmin aralığının tabanı (±%5); Keşif subayı bunu ±%4,1…%2,3'e daraltır. */
-export const TAHMIN_ARALIGI_TABAN = 0.05;
+/** Düşman tahmin aralığının tabanı (±%6,5); Keşif subayı bunu ±%5,5…%2,5'e daraltır. */
+export const TAHMIN_ARALIGI_TABAN = 0.065;
 
 export interface SubayEtkileri {
   saldiri: number;

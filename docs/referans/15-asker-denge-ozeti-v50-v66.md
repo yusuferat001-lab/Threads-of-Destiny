@@ -20,17 +20,22 @@ Bu dosya, Asker üzerinde yapılan tüm ayar konuşmalarının **tek yerde topla
 | Şöhret (v65/v66) | Haydut ±0–1, sınır ±1–2, baskın ±1 ek; **büyük savaş zaferi +6,5–8**, yenilgi −3…−5; çatışma ekranında ve savaş sonu bildiriminde görünür |
 | Çatışma ekranı | Etkileşimli (saldır/savun, baskında yalnız savunma), iki tarafın saldırı/savunması yan yana |
 
-## Düşmanla ilgili yüzdeler (üç ayrı yer)
-1. **±%5 gerçek sapma** — `BARIS_DUSMAN_SAPMA` / `DUSMAN_ORAN` [0,95; 1,05]: karşılaşmadaki düşmanın GERÇEK gücü = yaş/tür formülü × U(0,95; 1,05); karşılaşma kurulurken bir kez çekilir.
-2. **±%5 gösterilen tahmin aralığı** — `TAHMIN_ARALIGI_TABAN` (0,05): çatışma penceresinde düşmanın saldırı/savunması bu gerçek değerin ±%5'i olarak aralıkla gösterilir; Keşif subayı ±%4,1 / 3,2 / 2,3'e daraltır.
-3. **±%7 zar** — `SAVAS_ZAR_YUZDE` (0,07): sonuç çözülürken her iki taraf da (oyuncu ve düşman, bağımsız) gücünü `1 + (d20 − 10,5)/9,5 × 0,07` ile çarpar (d20 → −%7…+%7). Yalnız zar etkisiyle (ölçüm): güç oranı 1,00× → %52 · 1,03× → %68 · 1,05× → %77 · 1,10× → %94 · 1,15× → %99,8 kazanma; 0,90× → %4. Gerçek sapma (±%5) bunun üstüne biner.
+## Düşmanla ilgili yüzdeler (üç ayrı yer; v67 güncel)
+1. **±%5 gerçek sapma** — `BARIS_DUSMAN_SAPMA` / `DUSMAN_ORAN` [0,95; 1,05]: karşılaşmadaki düşmanın GERÇEK gücü = yaş/tür formülü × U(0,95; 1,05) (× zafer serisi hazırlığı); karşılaşma kurulurken bir kez çekilir.
+2. **±%6,5 gösterilen tahmin** — `TAHMIN_ARALIGI_TABAN` (0,065): düşmanın saldırı/savunması aralıkla gösterilir; Keşif subayı ±%5,5 / 4 / **2,5**'e daraltır ve aralığı GERÇEK değere ortalar (Keşif yoksa tablo değerine ortalanır, yani gerçek değer aralığın içinde ama ortası değil).
+3. **±%4 zar** — `SAVAS_ZAR_YUZDE` (0,04): çözülürken her iki taraf da (bağımsız) gücünü `1 + (d20 − 10,5)/9,5 × 0,04` ile çarpar. Yalnız zar etkisiyle güç oranına göre kazanma: 0,95× → %7 · 1,00× → %52 · 1,02× → %70 · 1,03× → %79 · 1,05× → %91 · 1,08× → %99,8 · 0,90× → ~%0. Gerçek sapma (±%5) bunun üstüne biner.
+
+## Zafer serisi (v67)
+Her tür (haydut, sınır, büyük savaş) için AYRI sayaç (`b.zafer_serisi`): zafer +1, yenilgi sıfırlar. Sayaç ≥3 iken sıradaki karşılaşmada düşman gücü ×1,10–1,15 ("hazırlıklı"; seri sürdükçe her karşılaşmada yeniden çekilir). Pencerede sayı yazılmaz, yalnız "Düşman seni tanıyor; bu sefer hazırlıklı." notu görünür. Çatışmada `catisma_bekleyen.hazirlik`, savaşta `sv.hazirlik` (savaş başında çekilir).
 
 ## Yapılmayanlar / bilinçli bırakılanlar
-- Görev gelirinde **er sayısına bağlı ek azalan verim** (B2) — yalnız güç bantları var.
-- **Aktif oyuncu için düşmanı sertleştirme**: kalite/talim/moral tam kullanan oyuncu hâlâ %94 civarı kazanıyor (düşman genel bota göre kalibre).
-- **İyi ikmal ile küçük sağlık yastığı**, savaş sağlık toplamını 5–15'e çekme alternatifi (5–20 uygulandı).
-- **Seferberde savaş boyu yıllık firar, yenilgide son 2 yıl çarpanı ve düşük moralde ek firar** geri getirilmedi (kullanıcı kararıyla kalktı).
-- **Borçla ölenleri azaltma** (%37–45 bandında, koşular arası ±4 puan): düşük rütbe ek ödenek / enflasyon farkı seçenekleri uygulanmadı.
-- **Asker geç ömür geliri diğer mesleklerin hâlâ ~5–9 katı** (aktif oyuncuda); ek bir tavan/vergi turu yapılmadı.
-- Hazine payı **yalnız Asker**; Tüccar/Zanaatkâr/Din Adamı'nda kazanç vergisi yok (kendi ekstra vergi sistemleri var).
-- Kayıt uyumu: eski kayıtlardaki kalkan görevler (haydut avı, akın, muhafızlık) ve fazla görevler ilk yüklemede ayıklanır; eski savaşlarda sağlık planı yoksa savaş başında çekilir.
+- **Seferberde savaş boyu yıllık firar, yenilgide son 2 yıl çarpanı ve düşük moralde ek firar**: geri getirilmedi — kullanıcının v61 kararı (ek firar yalnız ilk 2 yıl, %5/%10) ile çelişir; yön bekleniyor.
+- **Borçla ölenleri azaltma** (%41 civarı, koşular arası ±4 puan): düşük rütbe ek ödenek / enflasyon farkı uygulanmadı.
+- **Asker geç ömür geliri**: görev er bantları + hazine payı sonrası genel botta diğer mesleklerle aynı bantta; aktif oyuncuda hâlâ yüksek.
+- **Aktif oyuncunun kazanma oranı** (%96–98): düşman genel bota göre kalibre; zafer serisi bonusu bunu kısmen dengeliyor.
+- Hazine payı **yalnız Asker**.
+- Kayıt uyumu: eski kayıtlardaki kalkan görevler ve fazla görevler ilk yüklemede ayıklanır; eski savaşlarda sağlık planı/hazırlık yoksa varsayılan kullanılır.
+
+## v67'de eklenenler (eskiden "yapılmayanlar")
+- Görev gelirinde **er sayısına bağlı azalan verim** (`GOREV_ER_BANTLARI`: 0–200 er ×1 · 200–350 ×0,85 · 350+ ×0,70; güç bantlarına ek).
+- **Savaş sağlık kaybı ikmale bağlı**: yumuşak yağma (iyi ikmal) ×0,85, orta ×1, sert yağma ×1,15 (yağma kayıp çarpanıyla aynı). Savaş toplamı 5–20 kaldı.

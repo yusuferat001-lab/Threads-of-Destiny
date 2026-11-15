@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { yeniOyun, mesleğiAta, senaryoUret, secimUygula, liderlikTablosunaKaydet, gecmisSkorlariKaydet } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, senaryoUret, secimUygula, liderlikTablosunaKaydet, gecmisSkorlariKaydet, stateGetir } from "../src/game/gameEngine";
 import { skorKaydet } from "../src/db/scoreRepository";
 import { secimUygulaVeCoz } from "./testUtils";
 import { vergisizSenaryo } from "./_ogreti";
@@ -11,11 +11,18 @@ async function oyunuOlumeKadarOyna(meslek: string) {
   let aktif = true;
   let sonState = state;
   for (let tur = 0; tur < 150 && aktif; tur++) {
-    const senaryo = await vergisizSenaryo(state);
-    const idx = senaryo.secenekler.findIndex((s) => !s.kilitli);
-    const sonuc = await secimUygulaVeCoz(state.id, idx >= 0 ? idx : 0);
-    aktif = sonuc.state.aktif;
-    sonState = sonuc.state;
+    try {
+      const senaryo = await vergisizSenaryo(state);
+      const idx = senaryo.secenekler.findIndex((s) => !s.kilitli);
+      const sonuc = await secimUygulaVeCoz(state.id, idx >= 0 ? idx : 0);
+      aktif = sonuc.state.aktif;
+      sonState = sonuc.state;
+    } catch (e) {
+      // Bekleyen kararları çözerken (ör. savaş yılı) karakter ölmüş olabilir: oyun bitmiştir.
+      if (!/Oyun zaten bitmiş/.test(String((e as Error).message))) throw e;
+      sonState = await stateGetir(state.id);
+      aktif = false;
+    }
   }
   return sonState;
 }

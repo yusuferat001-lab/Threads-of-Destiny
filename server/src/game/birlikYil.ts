@@ -23,6 +23,9 @@ import {
   SAGLIK_REVIR_AZALTMA,
   SOHRET_SONUCU,
   SOHRET_BASKIN,
+  ZAFER_SERISI_ESIGI,
+  ZAFER_SERISI_DUSMAN_ARTISI,
+  ZAFER_SERISI_BOS,
   BARIS_YILLIK_ER,
   CATISMA_SALDIRI,
   CATISMA_SAVUNMA,
@@ -257,6 +260,22 @@ export function saglikBedeliUygula(state: CharacterState, ham: number): number {
   return kayip;
 }
 
+/** İkmal (yağma türü) sağlık yastığı: yumuşak yağma (iyi ikmal, ordu iyi beslenir) −%15, sert yağma +%15 — yağma kayıp çarpanıyla aynı. */
+function ikmalSaglikCarpani(id: string | undefined): number {
+  return IKMAL_TANIMLARI[(id as keyof typeof IKMAL_TANIMLARI) ?? "yagma_orta"]?.yagma.kayip ?? 1;
+}
+
+/** Zafer serisi (her tür ayrı): ≥3 arka arkaya zaferden sonraki karşılaşmada düşman gücü çarpanı (1,10–1,15); yoksa 1. */
+export function hazirlikCek(b: BirlikDurumu, tur: "haydut" | "sinir" | "savas"): number {
+  const seri = (b.zafer_serisi ??= { ...ZAFER_SERISI_BOS })[tur] ?? 0;
+  return seri >= ZAFER_SERISI_ESIGI ? 1 + rnd(ZAFER_SERISI_DUSMAN_ARTISI[0], ZAFER_SERISI_DUSMAN_ARTISI[1]) : 1;
+}
+/** Sonuçla seri güncellenir: zafer +1, yenilgi sıfırlar. */
+export function zaferSerisiIsle(b: BirlikDurumu, tur: "haydut" | "sinir" | "savas", zafer: boolean): void {
+  const z = (b.zafer_serisi ??= { ...ZAFER_SERISI_BOS });
+  z[tur] = zafer ? Math.min(99, (z[tur] ?? 0) + 1) : 0;
+}
+
 /** Sonuca göre şöhret: `agirlik` 0..1 (0 = aralığın alt ucu, 1 = üst ucu); tam sayıya olasılıkla yuvarlanır; uygulanan işaretli değeri döndürür. */
 export function sohretSonucuUygula(state: CharacterState, tur: "haydut" | "sinir" | "savas", zafer: boolean, agirlik: number, baskin = false): number {
   const [lo, hi] = SOHRET_SONUCU[tur][zafer ? "zafer" : "yenilgi"];
@@ -287,6 +306,7 @@ export function savasBaslat(state: CharacterState): BirlikSavasDurumu {
     kanat_yenilgi: 0,
     genel_zafer: 0,
     genel_yenilgi: 0,
+    hazirlik: hazirlikCek(b, "savas"),
     saglik_plan: aralikCek(SAVAS_SAGLIK_TOPLAM),
     saglik_uygulanan: 0,
     saglik_kaybi: 0,
@@ -655,7 +675,7 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   // Kıyas yönü: SALDIRIDAYSAN senin saldırı gücün düşmanın SAVUNMA gücüyle, SAVUNMADAYSAN senin savunma gücün düşmanın SALDIRI gücüyle yarışır.
   const oyuncuG = inisiyatif === "saldiri" ? d.saldiri : d.savunma;
   // Düşmanın gücü MUTLAKTIR (yaşa göre referans × savaş başında çekilen ±%5): bizim gücümüz sonucu doğrudan belirler.
-  const E = dusmanReferansGucu(state) * sv.dusman_orani;
+  const E = dusmanReferansGucu(state) * sv.dusman_orani * (sv.hazirlik ?? 1);
   const dagilim = dusmanSaldiriSavunma(sv.dusman_tur);
   // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo).
   const dusmanG = E * (inisiyatif === "saldiri" ? dagilim.savunma : dagilim.saldiri) * dusmanAraziCarpani(arazi, sv.dusman_tur);
@@ -691,6 +711,7 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   if (genelZafer) sv.genel_zafer += 1;
   else sv.genel_yenilgi += 1;
   sv.sonuc = genelZafer ? "zafer" : "yenilgi";
+  zaferSerisiIsle(b, "savas", genelZafer);
   // Karar savaşı sonucu oyuncunun kendi morali (mutluluk) için; ordu morali yıl işlemede (MORAL_ZAFER / MORAL_YENILGI).
   state.mutluluk = clamp(state.mutluluk + SAVAS_KISI_MORALI[genelZafer ? "zafer" : "yenilgi"], 0, 100);
   catismaIzleyici.fn?.({ tur: "savas", zafer: genelZafer, yas: state.yas, oyuncuGuc: d.guc, dusmanGuc: E, oyuncuEtkin: oyuncuG, dusmanEtkin: dusmanG, tablo: dusmanReferansGucu(state) });
@@ -926,7 +947,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
   // Oyuncunun sağlığı: yıllık dilimlerden kalan + yenilgi eki.
   {
     const kalanHam = Math.max(0, (sv.saglik_plan ?? 0) - (sv.saglik_uygulanan ?? 0)) + (zafer ? 0 : SAVAS_SAGLIK_YENILGI_EK);
-    const toplamKayip = (sv.saglik_kaybi ?? 0) + saglikBedeliUygula(state, kalanHam);
+    const toplamKayip = (sv.saglik_kaybi ?? 0) + saglikBedeliUygula(state, kalanHam * ikmalSaglikCarpani(sv.ikmal));
     if (toplamKayip > 0 && state.aktif) uyarilar.push({ kod: "savas_saglik" });
   }
   uyarilar.push({ kod: "savas_sonu", savasSonucu: zafer ? "zafer" : "yenilgi", sohretDegisim: savasSohret });
@@ -982,8 +1003,9 @@ export function barisCatismaKur(state: CharacterState, b: BirlikDurumu): BirlikC
   const tur: "haydut" | "sinir" = Math.random() < 0.5 ? "haydut" : "sinir";
   const dtur = (["okcu", "suvari", "mizrakli", "zirhli", "karma"] as const)[Math.floor(Math.random() * 5)];
   const baskin = Math.random() < BASKIN_IHTIMALI;
-  const E = barisDusmanGucuYas(state.yas, tur) * rnd(BARIS_DUSMAN_SAPMA[0], BARIS_DUSMAN_SAPMA[1]);
-  b.catisma_bekleyen = { yil: state.yil, tur, baskin, dusmanTur: dtur, dusmanGuc: Math.round(E * 100) / 100 };
+  const hazirlik = hazirlikCek(b, tur);
+  const E = barisDusmanGucuYas(state.yas, tur) * rnd(BARIS_DUSMAN_SAPMA[0], BARIS_DUSMAN_SAPMA[1]) * hazirlik;
+  b.catisma_bekleyen = { yil: state.yil, tur, baskin, dusmanTur: dtur, dusmanGuc: Math.round(E * 100) / 100, ...(hazirlik > 1 ? { hazirlik: Math.round(hazirlik * 1000) / 1000 } : {}) };
   return b.catisma_bekleyen;
 }
 
@@ -1017,6 +1039,7 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   const oyuncuEff = oyuncuTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN + b.zar_bonusu);
   const dusmanEff = dusmanTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN);
   const zafer = oyuncuEff >= dusmanEff;
+  zaferSerisiIsle(b, tur, zafer);
   // Güç farkı kaybı belirler (savaştaki gibi): ezici üstünlükte aralığın alt yarısı, çekişmeli/zayıf durumda üst yarısı. Seçilmiş saldırı/savunma ganimet ve kaybı çarpar (baskında seçim yok).
   const oran = oyuncuEff / dusmanEff;
   const konum = oran < 0.75 ? "ust" : oran >= 1.2 ? "alt" : "tam";
@@ -1165,7 +1188,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
       sv.saglik_plan ??= aralikCek(SAVAS_SAGLIK_TOPLAM);
       const dilim = Math.min(sv.saglik_plan / SAVAS_SAGLIK_YIL_BOLEN, Math.max(0, sv.saglik_plan - (sv.saglik_uygulanan ?? 0)));
       sv.saglik_uygulanan = (sv.saglik_uygulanan ?? 0) + dilim;
-      sv.saglik_kaybi = (sv.saglik_kaybi ?? 0) + saglikBedeliUygula(state, dilim);
+      sv.saglik_kaybi = (sv.saglik_kaybi ?? 0) + saglikBedeliUygula(state, dilim * ikmalSaglikCarpani(sv.ikmal ?? b.savas_karari?.ikmal));
     }
     if (catisma && b.savas!.son_catisma) uyarilar.push({ kod: "savas_catisma", catisma: { ...b.savas!.son_catisma } });
     ganimetCarpani = b.savas!.sonuc === "zafer" ? 1.3 : b.savas!.sonuc === "yenilgi" ? 0 : 1;

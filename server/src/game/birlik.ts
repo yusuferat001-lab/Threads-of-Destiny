@@ -69,6 +69,7 @@ import {
   odenmeyenCeza,
   type GorevTanimi,
   gorevGucOrani,
+  gorevErOrani,
   yagmaEtkinGuc,
   hazinePayi,
   BARIS_CATISMA_ILK_YIL,
@@ -660,7 +661,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const kazancC = GOREV_GELIR_CARPANI;
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
-    const gelir = gucPay * gorevGucOrani(gucPay) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC;
+    const gelir = gucPay * gorevGucOrani(gucPay) * gorevErOrani(p) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;

@@ -27,6 +27,7 @@ import {
   GOREV_GELIR_CARPANI,
   BARIS_CATISMALARI,
   DUSMAN_ORAN,
+  barisDusmanGucuYas,
   dusmanAraziCarpani,
   dusmanSaldiriSavunma,
   SAVAS_KARAR_YILI,
@@ -417,7 +418,9 @@ export function catismaKarariDurumu(state: CharacterState, bg: IsletmeBaglami): 
   const dag = dusmanSaldiriSavunma(k.dusmanTur);
   const kesif = subayToplami(state).tahminAralik;
   const yay = Math.min(kesif, TAHMIN_ARALIGI_TABAN);
-  const ref = k.dusmanGuc;
+  // Keşif subayı varsa aralık GERÇEK değere ortalanır (dar); yoksa tablo değerine (× zafer serisi hazırlığı) ortalanır ve geniştir (±%6,5).
+  const kesifli = kesif < TAHMIN_ARALIGI_TABAN;
+  const ref = kesifli ? k.dusmanGuc : barisDusmanGucuYas(state.yas, k.tur) * (k.hazirlik ?? 1);
   const aralik = (x: number): [number, number] => [Math.round(x * (1 - yay)), Math.round(x * (1 + yay))];
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: k.tur });
   return {
@@ -427,6 +430,7 @@ export function catismaKarariDurumu(state: CharacterState, bg: IsletmeBaglami): 
     ad: BARIS_CATISMALARI[k.tur].ad[state.cag === "Sanayi Devrimi" ? "sanayi" : "orta"],
     oyuncu: { saldiri: Math.round(d.saldiri), savunma: Math.round(d.savunma) },
     dusman: { saldiri: aralik(ref * dag.saldiri), savunma: aralik(ref * dag.savunma) },
+    hazirlikli: (k.hazirlik ?? 1) > 1,
   };
 }
 
@@ -858,6 +862,8 @@ export interface SavasKiyasi {
   oyuncu: { saldiri: number; savunma: number };
   /** Son karar savaşının dökümü (kıyaslanan güçler ve iki zar, %). */
   son: NonNullable<BirlikSavasDurumu["son_catisma"]> | null;
+  /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
+  hazirlikli?: boolean;
 }
 
 export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): SavasKiyasi {
@@ -868,17 +874,19 @@ export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): S
   const arazi = sv?.arazi ?? null;
   const dagilim = dusmanSaldiriSavunma(tur);
   const araziC = arazi ? dusmanAraziCarpani(arazi, tur) : 1;
-  // Keşif subayı tahmin aralığını daraltır (±%5 → ±%4,1…%2,3) ve aralığı gerçek değere ortalar; yoksa referans × [0,95; 1,05].
+  // Keşif subayı tahmin aralığını daraltır (±%6,5 → ±%5,5…%2,5) ve aralığı gerçek değere ortalar; yoksa referans (× zafer serisi hazırlığı) ± %6,5.
   const kesifAralik = subayToplami(state).tahminAralik;
   const daralt = kesifAralik < TAHMIN_ARALIGI_TABAN && !!sv;
-  const oran = sv?.dusman_orani ?? 1;
+  const oran = (sv?.dusman_orani ?? 1) * (sv?.hazirlik ?? 1);
+  const hazir = sv?.hazirlik ?? 1;
   const aralik = (taban: number): [number, number] =>
-    daralt ? [Math.round(taban * oran * (1 - kesifAralik)), Math.round(taban * oran * (1 + kesifAralik))] : [Math.round(taban * DUSMAN_ORAN[0]), Math.round(taban * DUSMAN_ORAN[1])];
+    daralt ? [Math.round(taban * oran * (1 - kesifAralik)), Math.round(taban * oran * (1 + kesifAralik))] : [Math.round(taban * hazir * (1 - TAHMIN_ARALIGI_TABAN)), Math.round(taban * hazir * (1 + TAHMIN_ARALIGI_TABAN))];
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(sv && arazi ? { savas: { arazi, dusmanTur: tur, inisiyatif: "savunma" as const } } : {}) });
   return {
     dusman: { guc: aralik(ref * araziC), saldiri: aralik(ref * dagilim.saldiri * araziC), savunma: aralik(ref * dagilim.savunma * araziC) },
     oyuncu: { saldiri: Math.round(d.saldiri), savunma: Math.round(d.savunma) },
     son: sv?.son_catisma ?? null,
+    hazirlikli: hazir > 1,
   };
 }
 

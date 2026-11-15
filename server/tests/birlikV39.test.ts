@@ -135,7 +135,7 @@ describe("v39 subaylar", () => {
     expect(e("savunma", 60).kayip).toBeCloseTo(-0.07, 6);
     expect(e("savunma", 60).ganimet).toBeCloseTo(-0.04, 6);
     expect(e("kesif", 30).arazi).toBeCloseTo(0.22, 6);
-    expect(e("kesif", 90).tahminAralik).toBeCloseTo(0.023, 6);
+    expect(e("kesif", 90).tahminAralik).toBeCloseTo(0.025, 6);
     expect(e("kesif", 60).pusuAzalt).toBeCloseTo(0.48, 6);
     expect(e("musteri", 30).devsirme).toBe(2); // 1,5 → 2
     expect(e("musteri", 90).devsirme).toBe(4); // en çok 4 (Y100 + sadık dahil)
@@ -167,7 +167,7 @@ describe("v39 subaylar", () => {
     const taban = araziIhtimali(s);
     s.ekip.push({ id: "k1", isim: "Kâşif", rol: "Keşif subayı", gercekKalite: 90, tahminiMin: 80, tahminiMax: 90, maas: 5, sadakat: 50, kisilik: "Sıradan", rol_turu: "kesif" });
     expect(araziIhtimali(s)).toBeCloseTo(Math.min(0.95, taban + 0.46), 6);
-    expect(subayToplami(s).tahminAralik).toBeCloseTo(0.023, 6);
+    expect(subayToplami(s).tahminAralik).toBeCloseTo(0.025, 6);
   });
 
   it("yatırım fiyatları: Revir 13/22/34/50; Karakol (koruma yatırımı) yok", () => {

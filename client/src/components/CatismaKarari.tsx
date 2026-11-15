@@ -31,6 +31,7 @@ const M = {
   saldirIpucu: { tr: 'Daha çok ganimet, daha çok kayıp.', en: 'More spoils, heavier losses.' },
   savunIpucu: { tr: 'Daha az kayıp, daha az ganimet.', en: 'Lighter losses, smaller spoils.' },
   mecburi: { tr: 'Baskın: yalnızca savunabilirsin', en: 'Ambush: you can only defend' },
+  hazirlikli: { tr: 'Düşman seni tanıyor; bu sefer hazırlıklı.', en: 'The enemy knows you now; this time they are prepared.' },
 };
 
 const aralik = (a: [number, number]) => (a[0] === a[1] ? `${a[0]}` : `${a[0]}–${a[1]}`);
@@ -40,7 +41,7 @@ const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen 
 /** Haydut / sınır çatışması karar penceresi: iki tarafın saldırı ve savunma gücü yan yana; baskında yalnız savunma. */
 export function CatismaKarari({ karar, yukleniyor, onSec }: { karar: CatismaKarariDurumu; yukleniyor: boolean; onSec: (s: 'saldiri' | 'savunma') => void }) {
   const { dil } = useDil();
-  const t = (k: 'baslik' | 'sen' | 'dusman' | 'saldiri' | 'savunma' | 'saldirGec' | 'savunGec' | 'saldirAlt' | 'savunAlt' | 'mecburi' | 'saldirIpucu' | 'savunIpucu') => M[k][dil];
+  const t = (k: 'baslik' | 'sen' | 'dusman' | 'saldiri' | 'savunma' | 'saldirGec' | 'savunGec' | 'saldirAlt' | 'savunAlt' | 'mecburi' | 'saldirIpucu' | 'savunIpucu' | 'hazirlikli') => M[k][dil];
   const metin = (karar.baskin ? M.baskinMetin : M.karsilasmaMetin)[karar.tur][dil];
   const tur = DUSMAN_TUR[karar.dusmanTur];
   return (
@@ -55,6 +56,7 @@ export function CatismaKarari({ karar, yukleniyor, onSec }: { karar: CatismaKara
             {t('dusman')}: {tur[dil]}
           </small>
         )}
+        {karar.hazirlikli && <small className="s-eksi">{t('hazirlikli')}</small>}
         <table className="savas-kiyas-tablo">
           <thead>
             <tr>

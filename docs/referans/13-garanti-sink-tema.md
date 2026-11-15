@@ -531,3 +531,11 @@ Bu blok v54–v58'in seferberlik, savaş kaybı, görev geliri ve kışla/limit 
 - **Düzeltme:** v64–v65'te hazine payı ordu netinden (yaşam ve subay maaşı düşülmeden) alınıyordu — YANLIŞ. Doğrusu: **KAZANÇ = ordu neti (subay maaşı sonrası) − yaşam − kira − evcil hayvan − kredi taksidi + mülk geliri**; vergi bu son tutarın üstünden, kademeli (0–100 %0 · 100–250 %15 · 250–500 %25 · 500–900 %35 · 900+ %40, enflasyonsuz; zararda yok). Görüntülenen Kazanç (ana ekran ve Ordu bütçesi, birebir aynı) vergi SONRASIDIR. `birlikHesapla` artık vergi içermez (`hesap.net` vergisiz ordu neti); vergi `hazinePayiKazanctan` (`birlik.ts`) ile `gameEngine.butceVeCebineKalan` (görüntü) ve `stateManager.pasifEkonomiUygula` (gerçek nakit) içinde hesaplanır. `butce.hazinePayi` ve `butce.kazanc` (vergi sonrası). Test: `tests/kazanc.test.ts`.
 - **Büyük savaş zaferi şöhreti** `SOHRET_SONUCU.savas.zafer` 2–4 → **6,5–8** (yenilgi −3…−5 aynı; tam sayıya olasılıkla yuvarlanır).
 - **Ölçüm** (genel bot N=400): kazanma haydut %82 · sınır %79 · savaş %66; borçla ölen %41 (örnekleme gürültüsü ±4 puan); dengeli bot 65 yıl 24,5k, aktif 39,8k (vergi sonrası ele kalan).
+
+### §45 Asker v67 (2026-11): tahmin ±%6,5 / Keşif ±%2,5, zar ±%4, zafer serisi, görev er bantları, ikmale bağlı sağlık
+- **Tahmin aralığı** `TAHMIN_ARALIGI_TABAN` 0,05 → **0,065**; Keşif subayı eğrisi `[0,055; 0,04; 0,025]` (Y30/60/90; en iyi ±%2,5). Keşif yoksa aralık tablo değerine (× hazırlık) ortalanır; Keşif varsa gerçek değere.
+- **Zar** `SAVAS_ZAR_YUZDE` 0,07 → **0,04** (iki taraf için de).
+- **Zafer serisi:** her tür ayrı sayaç; ≥3 arka arkaya zaferden sonra sıradaki karşılaşmada düşman ×1,10–1,15; yenilgi sıfırlar. Pencerede yalnız "hazırlıklı" notu. Ayrıntı: §54 (docs/15).
+- **Görev geliri er bantları** `GOREV_ER_BANTLARI` (0–200 ×1 · 200–350 ×0,85 · 350+ ×0,70), güç bantlarına ek. **Savaş sağlık kaybı ikmal çarpanı** (yumuşak ×0,85 / orta ×1 / sert ×1,15).
+- **Ölçüm** (genel bot N=400): kazanma haydut %81 · sınır %78 · savaş %66 (değişmedi); dengeli bot kazanma %93/91/88, aktif %98/96/96; 65 yıl ele kalan dengeli 22,1k, aktif 37,9k (vergi sonrası); genel bot 70–79 yaş yıllık net ≈113; borçla ölen %41.
+- `tests/gameFlow.test.ts`: oyun sırasında karakterin ölmesi (savaş sağlığı) artık hata değil, oyun sonu sayılır.

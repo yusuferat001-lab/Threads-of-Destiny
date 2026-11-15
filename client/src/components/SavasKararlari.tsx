@@ -27,6 +27,7 @@ const M = {
     tr: 'Saldırırsan senin saldırın düşmanın savunmasıyla, savunursan senin savunman düşmanın saldırısıyla yarışır.',
     en: 'If you attack, your attack meets their defence; if you defend, your defence meets their attack.',
   },
+  hazirlikli: { tr: 'Düşman seni tanıyor; bu sefer hazırlıklı.', en: 'The enemy knows you now; this time they are prepared.' },
   sen: { tr: 'Sen', en: 'You' },
   dusmanKisa: { tr: 'Düşman', en: 'Enemy' },
   saldiriK: { tr: 'Saldırı', en: 'Attack' },
@@ -93,6 +94,7 @@ export function SavasKararlari({ karar, yukleniyor, onSec }: { karar: SavasKarar
               </tbody>
             </table>
             <small>{M.kiyasNot[dil]}</small>
+            {k.hazirlikli && <small className="s-eksi">{M.hazirlikli[dil]}</small>}
           </div>
         )}
         {karar.adimlar.map((bolum) => (

@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCharacter, mesleğiSec, isletmeBaglami } from "../src/game/stateManager";
 import { birlikAl } from "../src/game/birlik";
-import { barisCatismaCoz, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula } from "../src/game/birlikYil";
+import { barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
+import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
+import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, IKMAL_TANIMLARI } from "../src/data/birlik";
 import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
@@ -89,5 +91,86 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
       if (zafer) expect(s.un).toBeGreaterThanOrEqual(56);
       else expect(s.un).toBeLessThanOrEqual(47);
     }
+  });
+
+  it("tahmin aralığı ±%6,5, Keşif ile ±%2,5'e kadar iner; zar ±%4", () => {
+    expect(TAHMIN_ARALIGI_TABAN).toBe(0.065);
+    expect(SAVAS_ZAR_YUZDE).toBe(0.04);
+  });
+
+  it("zafer serisi: her tür ayrı sayılır; 3 arka arkaya zaferden sonra düşman +%10–15, yenilgi sıfırlar", () => {
+    const s = asker();
+    const b = birlikAl(s);
+    for (let i = 0; i < 2; i++) zaferSerisiIsle(b, "haydut", true);
+    expect(hazirlikCek(b, "haydut")).toBe(1);
+    zaferSerisiIsle(b, "haydut", true);
+    expect(b.zafer_serisi!.haydut).toBe(ZAFER_SERISI_ESIGI);
+    expect(b.zafer_serisi!.sinir).toBe(0); // türler ayrı
+    for (let i = 0; i < 40; i++) {
+      const h = hazirlikCek(b, "haydut");
+      expect(h).toBeGreaterThanOrEqual(1.1);
+      expect(h).toBeLessThanOrEqual(1.15);
+    }
+    expect(hazirlikCek(b, "sinir")).toBe(1);
+    zaferSerisiIsle(b, "haydut", true); // seri sürer
+    expect(hazirlikCek(b, "haydut")).toBeGreaterThan(1);
+    zaferSerisiIsle(b, "haydut", false); // yenilgi sıfırlar
+    expect(b.zafer_serisi!.haydut).toBe(0);
+    expect(hazirlikCek(b, "haydut")).toBe(1);
+  });
+
+  it("çatışma: seri varsa düşman gerçekten güçlenir ve penceredeki 'hazırlıklı' işareti çıkar; sonuç seriyi günceller", async () => {
+    const { catismaKarariDurumu } = await import("../src/game/birlikIslem");
+    const s = asker();
+    s.meslek_musteri = 100;
+    const b = birlikAl(s);
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    b.zafer_serisi = { haydut: 3, sinir: 3, savas: 0 };
+    const k = barisCatismaKur(s, b);
+    expect(k.hazirlik).toBeGreaterThan(1.09);
+    expect(catismaKarariDurumu(s, bg(s))!.hazirlikli).toBe(true);
+    vi.restoreAllMocks();
+    const tur = k.tur;
+    b.catisma_bekleyen = { ...k, dusmanGuc: 1 }; // kesin zafer
+    barisCatismaCoz(s, b, bg(s), "savunma");
+    expect(b.zafer_serisi![tur]).toBe(4);
+    b.catisma_bekleyen = { yil: s.yil, tur, baskin: false, dusmanTur: "karma", dusmanGuc: 100000 };
+    barisCatismaCoz(s, b, bg(s), "savunma");
+    expect(b.zafer_serisi![tur]).toBe(0);
+    // seri yokken pencere işaretsiz
+    b.catisma_bekleyen = { yil: s.yil, tur, baskin: false, dusmanTur: "karma", dusmanGuc: 10 };
+    expect(catismaKarariDurumu(s, bg(s))!.hazirlikli).toBe(false);
+  });
+
+  it("görev gelirinde er sayısına bağlı azalan verim: ≤200 er ×1, 350 → ~0,93, 500 → ~0,86; gelir ere göre hep artar", () => {
+    expect(gorevErOrani(100)).toBe(1);
+    expect(gorevErOrani(200)).toBe(1);
+    expect(gorevErOrani(350)).toBeCloseTo((200 + 150 * 0.85) / 350, 8);
+    expect(gorevErOrani(500)).toBeCloseTo((200 + 127.5 + 150 * 0.7) / 500, 8);
+    let onceki = 0;
+    for (let e = 10; e <= 500; e += 10) {
+      expect(e * gorevErOrani(e)).toBeGreaterThan(onceki);
+      onceki = e * gorevErOrani(e);
+    }
+  });
+
+  it("savaş sağlık kaybı iyi ikmalle (yumuşak yağma) azalır, sert yağmayla artar", () => {
+    expect(IKMAL_TANIMLARI.yagma_yumusak.yagma.kayip).toBeLessThan(IKMAL_TANIMLARI.yagma_orta.yagma.kayip);
+    const kayip = (ikmal: "yagma_sert" | "yagma_orta" | "yagma_yumusak") => {
+      const s = asker();
+      s.meslek_musteri = 100;
+      s.ulke.savasta = true;
+      const b = birlikAl(s);
+      const sv = savasBaslat(s);
+      sv.ikmal = ikmal;
+      sv.saglik_plan = 20;
+      sv.sonuc = "zafer";
+      s.ulke.savasta = false;
+      s.saglik = 100;
+      savasiBitir(s, b, bg(s), []);
+      return 100 - s.saglik;
+    };
+    expect(kayip("yagma_yumusak")).toBeLessThan(kayip("yagma_orta"));
+    expect(kayip("yagma_sert")).toBeGreaterThan(kayip("yagma_orta"));
   });
 });
