@@ -840,6 +840,8 @@ export interface IsletmeUyari {
   kaynak?: 'gorev' | 'catisma' | 'savas';
   kaynakAd?: { tr: string; en: string };
   savasSonucu?: 'zafer' | 'yenilgi';
+  /** savas_sonu: sonuca göre şöhret değişimi (işaretli). */
+  sohretDegisim?: number;
   catismaTur?: 'haydut' | 'sinir';
   /** kazanc_ozet: yıl başında beklenen net ve fark nedeni (gerçekleşen `tutar`). */
   beklenen?: number;
@@ -1168,7 +1170,7 @@ export interface BirlikGorunumu {
   gorevler: {
     slot: { kullanilan: number; toplam: number };
     secili: string[];
-    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
+    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
   };
   doktrin: {
     secilen: { id: string; simge: string; ad: DilMetni; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];

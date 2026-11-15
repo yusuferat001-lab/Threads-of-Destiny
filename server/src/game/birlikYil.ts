@@ -660,7 +660,7 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo).
   const dusmanG = E * (inisiyatif === "saldiri" ? dagilim.savunma : dagilim.saldiri) * dusmanAraziCarpani(arazi, sv.dusman_tur);
   const rol = ROL_TANIMLARI[karar?.rol ?? "ana"];
-  const zarYuzde = () => (d20() - 10.5) / SAVAS_ZAR_BOLEN; // ±%8
+  const zarYuzde = () => (d20() - 10.5) / SAVAS_ZAR_BOLEN; // ±%7 (SAVAS_ZAR_YUZDE)
   let sonBizimZar = 0;
   let sonDusmanZar = 0;
   const bizimZar = () => {
@@ -922,14 +922,14 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     }
   }
   // Sonuca göre şöhret (büyük savaş): zafer + / yenilgi −; zaferde kanat zaferi oranı üst uca yaklaştırır.
-  sohretSonucuUygula(state, "savas", zafer, zafer ? (sv.kanat_zafer ?? 0) / Math.max(1, (sv.kanat_zafer ?? 0) + (sv.kanat_yenilgi ?? 0)) : Math.random());
+  const savasSohret = sohretSonucuUygula(state, "savas", zafer, zafer ? (sv.kanat_zafer ?? 0) / Math.max(1, (sv.kanat_zafer ?? 0) + (sv.kanat_yenilgi ?? 0)) : Math.random());
   // Oyuncunun sağlığı: yıllık dilimlerden kalan + yenilgi eki.
   {
     const kalanHam = Math.max(0, (sv.saglik_plan ?? 0) - (sv.saglik_uygulanan ?? 0)) + (zafer ? 0 : SAVAS_SAGLIK_YENILGI_EK);
     const toplamKayip = (sv.saglik_kaybi ?? 0) + saglikBedeliUygula(state, kalanHam);
     if (toplamKayip > 0 && state.aktif) uyarilar.push({ kod: "savas_saglik" });
   }
-  uyarilar.push({ kod: "savas_sonu", savasSonucu: zafer ? "zafer" : "yenilgi" });
+  uyarilar.push({ kod: "savas_sonu", savasSonucu: zafer ? "zafer" : "yenilgi", sohretDegisim: savasSohret });
   b.savas = null;
   b.baris_bekleme = Math.max(Math.round(b.baris_bekleme ?? 0), 1);
   return sonuc;

@@ -860,6 +860,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Kiralık ordu yalnız savaşta tutulur.": "Hired troops can only be taken on in wartime.",
   "Kiralık ordu zaten tutuldu.": "You have already hired troops.",
   "Kiralayacak kadar ordun yok.": "You do not have enough of an army to hire for.",
+  "Aynı anda yalnız tek görev yürütebilirsin.": "You can only run one duty at a time.",
   "Bu göreve ayıracak yeterli askeri gücün yok.": "You don't have enough military strength to assign to this duty.",
   "Bu kadar görevi aynı anda yürütemezsin; rütben yükselince yeni yer açılır.": "You can't run this many duties at once; a new slot opens as your rank rises.",
   "Bu mesleğin bir birliği yok.": "This profession has no army.",

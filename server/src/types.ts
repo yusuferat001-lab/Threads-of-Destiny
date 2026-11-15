@@ -1020,6 +1020,8 @@ export interface IsletmeUyari {
   kaynak?: "gorev" | "catisma" | "savas";
   kaynakAd?: { tr: string; en: string };
   savasSonucu?: "zafer" | "yenilgi";
+  /** savas_sonu: sonuca göre şöhret değişimi (işaretli). */
+  sohretDegisim?: number;
   /** Barış çatışması (haydut / sınır) türü. */
   catismaTur?: "haydut" | "sinir";
   /** kazanc_ozet: yıl başında beklenen net ve fark nedeni (gerçekleşen `tutar`). */

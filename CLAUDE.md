@@ -32,6 +32,7 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 | `11-isletme.md` | 45 | **Meslek işletmesi** (Tüccar/Zanaatkâr/Din Adamı), v8→v33 tüm sürüm notları |
 | `12-gosterge-pc-aile2-hayvan-aranma.md` | 47, 48, 49, 50, 47 (Aranma II) | Gösterge detay, PC olay kutusu, eş/evlilik/doğum, evcil hayvan, aranma sistemi (not: iki ayrı §47 var) |
 | `13-garanti-sink-tema.md` | 51–53 | Olay garanti tabloları, geç oyun sink'leri/ekstra vergi/mağaza vitrini, PC tema |
+| `15-asker-denge-ozeti-v50-v66.md` | 54 | **Asker denge turu özeti**: güncel sayılar, düşman yüzdeleri (±%5 sapma, ±%5 tahmin, ±%7 zar), yapılanlar/yapılmayanlar |
 | `14-renk-paleti.md` | — | **Sayı/değer renk paleti** (yeşil gelir/artı, kırmızı gider/eksi, lacivert durum, eflatun şart/eşik); yeni ekran/özellikte uy |
 
 Sık sorulan: "bir endpoint ne yapar" → 01 · "bir alan ne anlama gelir" → 02 · "tur nasıl çözülür / formül" → 03 · "ekonomi/işletme sayısı" → 11 + 13 · "çeviri nasıl eklenir" → 07 (§30).

@@ -349,9 +349,13 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
           : `⚔️ Karar savaşı: senin ${yon} gücün ${c.oyuncuGuc} ↔ düşman ${kars} ${c.dusmanGuc} — ${c.genelZafer ? 'zafer' : 'yenilgi'}.`;
       }
       case 'savas_sonu':
-        return u.savasSonucu === 'zafer'
-          ? (en ? '🏆 The war ended in victory.' : '🏆 Savaş zaferle bitti.')
-          : (en ? '🏳️ The war ended in defeat; your army is worn thin.' : '🏳️ Savaş yenilgiyle bitti; ordun yıprandı.');
+        {
+          const sh = u.sohretDegisim ?? 0;
+          const shMetin = sh !== 0 ? (en ? ` Renown ${sh > 0 ? '+' : '−'}${Math.abs(sh)}.` : ` Şöhret ${sh > 0 ? '+' : '−'}${Math.abs(sh)}.`) : '';
+          return u.savasSonucu === 'zafer'
+            ? (en ? '🏆 The war ended in victory.' : '🏆 Savaş zaferle bitti.') + shMetin
+            : (en ? '🏳️ The war ended in defeat; your army is worn thin.' : '🏳️ Savaş yenilgiyle bitti; ordun yıprandı.') + shMetin;
+        }
       case 'baris_catisma': {
         const hd = u.catismaTur === 'sinir';
         const kazan = u.savasSonucu === 'zafer';

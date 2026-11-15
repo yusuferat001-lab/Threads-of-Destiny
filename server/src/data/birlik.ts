@@ -621,6 +621,11 @@ export const GOREVLER: GorevTanimi[] = [
   },
 ];
 /** Görev kaybı: firar her yıl değil, bu olasılıkla "ara sıra" olur (olduğunda beklenen yıllık oranın 1/olasılık katı); bildirim yalnız belirgin yıllarda. */
+/** Görevin kayıp riski seviyesi (1–5; arayüzde sayı yazılmaz, yalnız işaret): kayıp oranlarının sırasına göre. */
+export function gorevRiski(g: GorevTanimi): number {
+  const sira = [...GOREVLER].sort((a, b) => a.kayip.yarali - b.kayip.yarali);
+  return sira.findIndex((x) => x.id === g.id) + 1;
+}
 export const GOREV_FIRAR_YIL_IHTIMALI = 0.3;
 /** Barışta görev kaybı bildirimi: kayıp ordunun %5'ini (en az 4 er) aşarsa her zaman; daha azsa yalnız bu olasılıkla ("ara sıra"). */
 export const GOREV_KAYIP_BILDIRIM_ESIGI = { mutlak: 4, oran: 0.05, ihtimal: 0.3 };

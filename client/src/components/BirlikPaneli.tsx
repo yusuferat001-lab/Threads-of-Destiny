@@ -61,6 +61,8 @@ const M = {
   minEr: { tr: 'en az', en: 'min' },
   yalnizSavas: { tr: 'yalnız savaşta', en: 'wartime only' },
   gorevAc: { tr: 'Aç', en: 'Open' },
+  risk: { tr: 'risk', en: 'risk' },
+  riskIpucu: { tr: 'Kazandıran görev daha çok yaralı, ölü ve firar verdirir.', en: 'The better a duty pays, the more wounded, dead and deserters it costs.' },
   gorevKapat: { tr: 'Kapat', en: 'Close' },
   gelir: { tr: 'gelir', en: 'income' },
   ganimet: { tr: 'ganimet', en: 'loot' },
@@ -358,7 +360,7 @@ export function BirlikPaneli({
                 )}
               </div>
               <small>
-                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{gucBirim}</span>
+                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span title={t('riskIpucu')}>{t('risk')} {'●'.repeat(g.risk)}{'○'.repeat(Math.max(0, 5 - g.risk))}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{gucBirim}</span>
                 {g.aktif ? <span className="s-gelir"> · {formatPara(g.gelir)} {pb}{g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}</span> : null}
               </small>
             </div>

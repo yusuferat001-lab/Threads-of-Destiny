@@ -159,6 +159,7 @@ export function subayEtkiSatirlari(rol: IsletmeRolTuru | null | undefined, yeten
     case "guvenlik":
       ekle(`Ölü ve firar −%${yz(e.oluFirarAzalt)}`, `Deaths and desertion −${yz(e.oluFirarAzalt)}%`, true);
       ekle(`Yaralı −%${yz(e.yaraliAzalt)}`, `Wounded −${yz(e.yaraliAzalt)}%`, true);
+      ekle(`Savaşta kendi sağlık kaybın −%${yz(e.oluFirarAzalt)}`, `Your own health loss in war −${yz(e.oluFirarAzalt)}%`, true);
       break;
     default:
       break;
