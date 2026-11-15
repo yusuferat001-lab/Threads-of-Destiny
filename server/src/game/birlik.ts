@@ -609,8 +609,6 @@ export interface BirlikHesabi {
   kiralikMasrafi: number;
   kaleGeliri: number;
   devletPayi: number;
-  /** Hazine payı: ordu neti (enflasyonsuz) üzerinden kademeli vergi, en çok %40; gider kalemlerine dahildir. */
-  hazinePayi: number;
   erPayi: number;
   ganimetNet: number;
   /** Beklenen esir sayısı (ondalık; yıl işlemede olasılıklı yuvarlanır). */
@@ -703,15 +701,22 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const kaleGeliri = r2(kaleGelirToplami(b) * bg.enflasyon);
   const limitAsimGideri = giderEri > er ? (erMasrafi + erzak) * (1 - er / giderEri) : 0;
   const toplamGelir = sold + erBasiGelir + gorevGeliri + ganimetNet + kaleGeliri;
-  const giderVergisiz = kiralikMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi + yaraliGideri;
-  // Hazine payı: vergiden önceki yıllık ordu neti (enflasyonsuz) üzerinden kademeli.
-  const hazine = r2(hazinePayi((toplamGelir - giderVergisiz) / bg.enflasyon) * bg.enflasyon);
-  const toplamGider = giderVergisiz + hazine;
+  const toplamGider = kiralikMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi + yaraliGideri;
   return {
-    er, sold, erBasiGelir, gorevler, gorevGeliri, ganimetBrut: toplamBrut, savasOdenegi, yaraliGideri, limitAsimGideri, yagmaBrut, kiralikMasrafi, kaleGeliri, devletPayi, hazinePayi: hazine, erPayi, ganimetNet, esirBeklenen,
+    er, sold, erBasiGelir, gorevler, gorevGeliri, ganimetBrut: toplamBrut, savasOdenegi, yaraliGideri, limitAsimGideri, yagmaBrut, kiralikMasrafi, kaleGeliri, devletPayi, erPayi, ganimetNet, esirBeklenen,
     erMasrafi, erzak, kislaBakim, techizatBakim, birlikBakim, kusatmaBakim, talimMasrafi, toplamGelir, toplamGider,
     net: toplamGelir - toplamGider,
   };
+}
+
+/**
+ * HAZİNE PAYI — vergi KAZANÇ üzerinden alınır. KAZANÇ = oyuncunun ELİNE KALAN yıllık tutar:
+ *   ordu neti − subay maaşları − yaşam − kira − evcil hayvan − kredi taksidi + mülk geliri.
+ * Ordu netinden (yaşam/subay düşülmeden) ALINMAZ. `vergisizKazanc` bu toplamdır; dönen değer vergidir (kademeli, en çok %40, zararda 0).
+ */
+export function hazinePayiKazanctan(state: CharacterState, enflasyon: number, vergisizKazanc: number): number {
+  if (state.meslek !== "Asker") return 0;
+  return r2(hazinePayi(vergisizKazanc / enflasyon) * enflasyon);
 }
 
 /** Ele geçirilen kalelerin yıllık net gelir toplamı (enflasyonsuz); eski kayıtta eksik girişler aralığın ortasıyla tamamlanır. */

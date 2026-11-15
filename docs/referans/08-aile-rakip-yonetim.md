@@ -1,3 +1,5 @@
+> **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Ana ekrandaki Kazanç ile mesleğin bütçe ekranındaki Kazanç BİREBİR aynıdır. Kullanıcı "kazançtan vergi / yüzde / eşik / tavan" derse bu SON ele kalan tutardır; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz. Hazine payı (Asker) dahil her kazanç vergisi/kesintisi bu tanıma göre kazançtan alınır ve görüntülenen Kazanç vergi SONRASIdır. Tek kaynak: `gameEngine.ts butceVeCebineKalan` + `stateManager.ts pasifEkonomiUygula` + `birlik.ts hazinePayiKazanctan`.
+
 # Kader Çarkı Referansı — Aile Ekranı, Rakipler/Tefeci/Hediye, Kariyer & Yönetim
 
 > `CLAUDE.md`'den bölünmüş referans (içerik birebir aynı, §numaraları korunur). Tamamını okuma; `grep -n "^## "` ile bölüm bul, gerekli bölümü `Read offset/limit` ile oku. **Çelişkide numarası/sürümü yüksek olan bölüm geçerlidir** (ör. §45 v13 > §45 v8, §51-§53 > eski §13/§27).

@@ -4,6 +4,8 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 
 ## Nasıl çalış (önemli)
 
+- **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Ana ekrandaki Kazanç ile mesleğin bütçe ekranındaki Kazanç BİREBİR aynıdır. Kullanıcı "kazançtan vergi / yüzde / eşik / tavan" derse bu SON ele kalan tutardır; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz. Hazine payı (Asker) dahil her kazanç vergisi/kesintisi bu tanıma göre kazançtan alınır ve görüntülenen Kazanç vergi SONRASIdır. Tek kaynak: `gameEngine.ts butceVeCebineKalan` + `stateManager.ts pasifEkonomiUygula` + `birlik.ts hazinePayiKazanctan`.
+
 - **Bu dosya kasıtlı olarak kısa.** Ayrıntılı oyun kuralları, formüller ve API tabloları `docs/referans/*.md` altında (aşağıdaki indeks). Hepsini okuma: önce `grep -n "anahtar kelime" docs/referans/*.md` ya da `grep -n "^## " docs/referans/<dosya>` ile bölümü bul, sonra `Read` ile yalnız o aralığı (`offset`/`limit`) oku.
 - **Olay verisini (`server/src/data/olaylar/*.ts`, ~48.000 satır) ve `stateManager.ts`/`gameEngine.ts`'i baştan sona okuma.** Belirli bir olay için `grep -n 'id: "<olay_id>"' server/src/data/olaylar/*.ts`.
 - **Çelişki kuralı:** docs'ta aynı konu birden çok tur güncellendi. Numarası/sürümü yüksek bölüm geçerlidir (ör. §45 v13 > §45 v8; §51–§53 > eski §13/§27). Bir sayıya güvenmeden önce koddaki sabiti de kontrol et.
@@ -36,6 +38,8 @@ Sık sorulan: "bir endpoint ne yapar" → 01 · "bir alan ne anlama gelir" → 0
 
 ## Mimari özet
 
+- **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Ana ekrandaki Kazanç ile mesleğin bütçe ekranındaki Kazanç BİREBİR aynıdır. Kullanıcı "kazançtan vergi / yüzde / eşik / tavan" derse bu SON ele kalan tutardır; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz. Hazine payı (Asker) dahil her kazanç vergisi/kesintisi bu tanıma göre kazançtan alınır ve görüntülenen Kazanç vergi SONRASIdır. Tek kaynak: `gameEngine.ts butceVeCebineKalan` + `stateManager.ts pasifEkonomiUygula` + `birlik.ts hazinePayiKazanctan`.
+
 - Her karakter bir `CharacterState` (UUID). Bellekte `Map<id, Oturum>` + PostgreSQL `Session.data` (tam JSON); her mutasyondan sonra `oturumKaydet()`. Sunucu açılışında aktif oturumlar yüklenir.
 - Katmanlar: `routes/*.routes.ts` → `game/gameEngine.ts` (orkestrasyon, tur çözümleme, zorlanan olay kaskadı) → `game/stateManager.ts` (saf formüller) → `game/olaySecici.ts` (olay seçimi) → `data/olaylar/*.ts` (statik olay verisi) → `db/*Repository.ts`.
 - Tur akışı: `POST /:id/scenario` (olay üret) → `POST /:id/choice` (seçimi uygula, zar, deltalar, yıl ilerlet). Tur harcamayan yan uçlar (mülk, mağaza, konut, işletme, ilişkiler…) için bkz. docs/01.
@@ -43,6 +47,8 @@ Sık sorulan: "bir endpoint ne yapar" → 01 · "bir alan ne anlama gelir" → 0
 - Olay verisinde **yasa dışı şıklar** `suc_sinifi` taşır, açık pozitif `suc_artis` yazılmaz (§9 adım 3.5). Para/mutluluk deltaları için denge guardrail testi var (`mutlulukDengesi.test.ts`).
 
 ## 1. Depo Yapısı & Komutlar
+
+> **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Ana ekrandaki Kazanç ile mesleğin bütçe ekranındaki Kazanç BİREBİR aynıdır. Kullanıcı "kazançtan vergi / yüzde / eşik / tavan" derse bu SON ele kalan tutardır; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz. Hazine payı (Asker) dahil her kazanç vergisi/kesintisi bu tanıma göre kazançtan alınır ve görüntülenen Kazanç vergi SONRASIdır. Tek kaynak: `gameEngine.ts butceVeCebineKalan` + `stateManager.ts pasifEkonomiUygula` + `birlik.ts hazinePayiKazanctan`.
 
 ```
 server/   Node.js + Express 5 + TypeScript + Prisma (PostgreSQL) — oyun motoru, tüm kurallar burada

@@ -1082,7 +1082,6 @@ export interface IsletmeDokum {
     kiralikMasrafi?: number;
     kaleGeliri?: number;
     devletPayi: number;
-    hazinePayi?: number;
     erPayi: number;
     erMasrafi: number;
     erzak: number;

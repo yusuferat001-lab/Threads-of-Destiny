@@ -32,12 +32,19 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
   it("şöhret aralıkları: haydut < sınır < savaş; yenilgi zaferden az değil (savaşta daha ağır)", () => {
     expect(SOHRET_SONUCU.haydut.zafer[1]).toBeLessThan(SOHRET_SONUCU.sinir.zafer[1]);
     expect(SOHRET_SONUCU.sinir.zafer[1]).toBeLessThan(SOHRET_SONUCU.savas.zafer[1]);
-    expect(SOHRET_SONUCU.savas.yenilgi[1]).toBeGreaterThan(SOHRET_SONUCU.savas.zafer[1]);
+    expect(SOHRET_SONUCU.savas.zafer).toEqual([6.5, 8]);
+    expect(SOHRET_SONUCU.savas.yenilgi[1]).toBeGreaterThan(SOHRET_SONUCU.sinir.yenilgi[1]);
     const s = asker();
-    expect(sohretSonucuUygula(s, "savas", true, 1)).toBe(4);
-    expect(s.un).toBe(54);
+    expect(sohretSonucuUygula(s, "savas", true, 1)).toBe(8);
+    expect(s.un).toBe(58);
+    for (let i = 0; i < 50; i++) {
+      s.un = 50;
+      const d = sohretSonucuUygula(s, "savas", true, 0.5);
+      expect([7, 8]).toContain(d); // 7,25 → 7 ya da 8
+    }
+    s.un = 50;
     expect(sohretSonucuUygula(s, "savas", false, 1)).toBe(-5);
-    expect(s.un).toBe(49);
+    expect(s.un).toBe(45);
     s.un = 1;
     sohretSonucuUygula(s, "savas", false, 1);
     expect(s.un).toBe(0); // alt sınır 0
@@ -79,7 +86,7 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
       sv.sonuc = zafer ? "zafer" : "yenilgi";
       s.ulke.savasta = false;
       savasiBitir(s, b, bg(s), []);
-      if (zafer) expect(s.un).toBeGreaterThanOrEqual(52);
+      if (zafer) expect(s.un).toBeGreaterThanOrEqual(56);
       else expect(s.un).toBeLessThanOrEqual(47);
     }
   });

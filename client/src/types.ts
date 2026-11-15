@@ -893,7 +893,6 @@ export interface IsletmeDokum {
     kiralikMasrafi?: number;
     kaleGeliri?: number;
     devletPayi: number;
-    hazinePayi?: number;
     erPayi: number;
     erMasrafi: number;
     erzak: number;
@@ -1089,6 +1088,8 @@ export interface IsletmeButcesi {
   cebineKalan: number;
   /** Mülklerden gelen yıllık net gelir ve nihai "Kazanç" (= cebineKalan + mülk geliri; ana ekrandaki Kazanç ile aynı). */
   mulkGeliri: number;
+  /** Hazine payı (yalnız Asker): KAZANÇ üzerinden alınan vergi; `kazanc` vergi sonrasıdır. */
+  hazinePayi?: number;
   kazanc: number;
   /** Meslek geliri ve net'in ± aralığı (yıllık rastgelelik payı). */
   gelir: number;
@@ -1220,7 +1221,6 @@ export interface BirlikGorunumu {
     gorevGeliri: number;
     ganimetNet: number;
     devletPayi: number;
-    hazinePayi: number;
     erPayi: number;
     toplamGelir: number;
     erMasrafi: number;

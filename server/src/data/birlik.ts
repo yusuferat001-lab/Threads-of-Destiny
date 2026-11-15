@@ -622,7 +622,8 @@ export const GOREVLER: GorevTanimi[] = [
 ];
 /** Görev kaybı: firar her yıl değil, bu olasılıkla "ara sıra" olur (olduğunda beklenen yıllık oranın 1/olasılık katı); bildirim yalnız belirgin yıllarda. */
 export const GOREV_FIRAR_YIL_IHTIMALI = 0.3;
-export const GOREV_KAYIP_BILDIRIM_ESIGI = { mutlak: 6, oran: 0.035 };
+/** Barışta görev kaybı bildirimi: kayıp ordunun %5'ini (en az 4 er) aşarsa her zaman; daha azsa yalnız bu olasılıkla ("ara sıra"). */
+export const GOREV_KAYIP_BILDIRIM_ESIGI = { mutlak: 4, oran: 0.05, ihtimal: 0.3 };
 /** Görev geliri güçle azalan verimle ödenir: her güç dilimi kendi çarpanıyla sayılır (etkin güç / güç = gelir çarpanı). */
 export const GOREV_BANTLARI: [number, number, number][] = [[0, 150, 1], [150, 300, 0.9], [300, 450, 0.75], [450, 600, 0.6], [600, Infinity, 0.45]];
 export function gorevGucOrani(guc: number): number {
@@ -1108,7 +1109,7 @@ export const MAAS_ADLARI: Record<string, DilliMetin> = {
 };
 export const maasAdi = (cag: string, bolge: string): DilliMetin => MAAS_ADLARI[`${cag}|${bolge}`] ?? { tr: "Maaş", en: "Pay" };
 
-// ── Hazine payı (v64): ordu neti (yıllık, enflasyonsuz) üzerinden kademeli vergi, en çok %40. Zararda vergi yok. ──
+// ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %40. Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
 export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 100, 0], [100, 250, 0.15], [250, 500, 0.25], [500, 900, 0.35], [900, Infinity, 0.4]];
 export function hazinePayi(reelNet: number): number {
   if (!(reelNet > 0)) return 0;
@@ -1122,7 +1123,7 @@ export function hazinePayi(reelNet: number): number {
 export const SOHRET_SONUCU: Record<"haydut" | "sinir" | "savas", { zafer: [number, number]; yenilgi: [number, number] }> = {
   haydut: { zafer: [0, 1], yenilgi: [0, 1] },
   sinir: { zafer: [1, 2], yenilgi: [1, 2] },
-  savas: { zafer: [2, 4], yenilgi: [3, 5] },
+  savas: { zafer: [6.5, 8], yenilgi: [3, 5] },
 };
 /** Baskın (zorunlu savunma): başarılı savunma ekstra şöhret, yenilgi ekstra itibar kaybı. */
 export const SOHRET_BASKIN = { zafer: 1, yenilgi: 1 };

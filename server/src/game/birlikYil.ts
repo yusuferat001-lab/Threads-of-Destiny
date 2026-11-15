@@ -1275,7 +1275,12 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const yaralananOlu = kayip.yaralanan - (kayip.yaralananEk ?? 0);
   const yaralananEk = kayip.yaralananEk ?? 0;
   // Barışta görev kaybı her yıl bildirilmez: yalnız belirgin yıllarda (toplam eşiği aşınca) ya da moral/borç firarında ekrana gelir; kayıp her durumda uygulanır.
-  const gorevBildir = savasta || ayar.tetik || olen + firar + kayip.yaralanan >= Math.max(GOREV_KAYIP_BILDIRIM_ESIGI.mutlak, eskiEr * GOREV_KAYIP_BILDIRIM_ESIGI.oran);
+  const gorevKayipToplam = olen + firar + kayip.yaralanan;
+  const gorevBildir =
+    savasta ||
+    ayar.tetik ||
+    (gorevKayipToplam > 0 &&
+      (gorevKayipToplam >= Math.max(GOREV_KAYIP_BILDIRIM_ESIGI.mutlak, eskiEr * GOREV_KAYIP_BILDIRIM_ESIGI.oran) || Math.random() < GOREV_KAYIP_BILDIRIM_ESIGI.ihtimal));
   if (gorevBildir) {
     if (firar > 0) uyarilar.push({ kod: "firar", sayi: firar });
     if (olen > 0) uyarilar.push({ kod: "savas_kayip", sayi: olen, kaynak: kayipKaynak, ...(yaralananOlu > 0 ? { yaralanan: yaralananOlu } : {}) });
@@ -1408,7 +1413,6 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
       kiralikMasrafi: r2(h.kiralikMasrafi),
       kaleGeliri: r2(h.kaleGeliri),
       devletPayi: 0,
-      hazinePayi: r2(h.hazinePayi),
       erPayi: r2(h.erPayi + (savasSonu?.erPayi ?? 0)),
       erMasrafi: r2(h.erMasrafi),
       erzak: r2(h.erzak),

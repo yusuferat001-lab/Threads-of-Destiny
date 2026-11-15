@@ -23,30 +23,38 @@ function asker(): CharacterState {
 const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("v39 barış kaybı ve sabit büyüme", () => {
-  it("barış görev kayıpları ölü değil yaralı olur ve kaynağı görev adıyla yazılır", () => {
+  it("barış görev kayıpları çoğunlukla yaralıdır (ölü az) ve kaynağı görev adıyla yazılır; her yıl bildirilmez", () => {
     const s = asker();
-    s.rutbe_seviye = 3;
+    s.rutbe_seviye = 5;
     s.isletme!.yatirimlar.kisla = 4;
-    s.meslek_musteri = 200;
+    s.meslek_musteri = 300;
+    s.saglik = 100;
     const b = birlikAl(s);
-    b.kalite = { dusuk: 200, orta: 0, yuksek: 0 };
-    b.gorevler = ["haydut", "devriye"];
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 300 };
+    b.gorevler = ["komuta"];
     b.baris_bekleme = 99; // çatışma çıkmasın
     let olu = 0;
     let yar = 0;
     let kaynakli = 0;
-    for (let i = 0; i < 6; i++) {
+    let bildirimYili = 0;
+    const yillar = 40;
+    for (let i = 0; i < yillar; i++) {
+      s.meslek_musteri = 300;
+      b.yarali = 0;
       const u: IsletmeUyari[] = birlikYilIsle(s, bg(s)).dokum.uyarilar ?? [];
+      let bu = false;
       for (const x of u) {
         if (x.kod !== "savas_kayip") continue;
+        bu = true;
         olu += x.sayi ?? 0;
         yar += x.yaralanan ?? 0;
         if (x.kaynak === "gorev" && x.kaynakAd?.tr) kaynakli++;
       }
+      if (bu) bildirimYili++;
     }
-    expect(olu).toBe(0);
-    expect(yar).toBeGreaterThan(0);
+    expect(yar).toBeGreaterThan(olu * 3);
     expect(kaynakli).toBeGreaterThan(0);
+    expect(bildirimYili).toBeLessThan(yillar);
   });
 
   it("her yıl en az +1 er gelir (savaşsız, subaysız, şöhretsiz)", () => {
@@ -504,7 +512,7 @@ describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", (
     }
   });
 
-  it("hazine payı: 0–100 %0 · 100–250 %15 · 250–500 %25 · 500–900 %35 · 900+ %40; zararda yok; gider kalemlerinde ve netin içinde", () => {
+  it("hazine payı kademeleri: 0–100 %0 · 100–250 %15 · 250–500 %25 · 500–900 %35 · 900+ %40; zararda yok; ordu hesabına (hesap.net) girmez, KAZANÇ üzerinden alınır", () => {
     expect(hazinePayi(-50)).toBe(0);
     expect(hazinePayi(100)).toBe(0);
     expect(hazinePayi(250)).toBeCloseTo(22.5, 8);
@@ -513,22 +521,9 @@ describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", (
     expect(hazinePayi(1900)).toBeCloseTo(625, 8);
     expect(hazinePayi(100000) / 100000).toBeLessThan(0.4);
     const s = asker();
-    s.rutbe_seviye = 5;
-    s.isletme!.yatirimlar.kisla = 4;
-    s.meslek_musteri = 480;
-    const b = birlikAl(s);
-    b.kalite = { dusuk: 0, orta: 0, yuksek: 480 };
-    b.gorevler = ["komuta"];
     const h = birlikHesapla(s, bg(s));
-    expect(h.gorevler[0].aktif).toBe(true);
-    const e = bg(s).enflasyon;
-    const vergisizNet = h.toplamGelir - (h.toplamGider - h.hazinePayi);
-    expect(h.hazinePayi).toBeCloseTo(hazinePayi(vergisizNet / e) * e, 1);
-    expect(h.net).toBeCloseTo(vergisizNet - h.hazinePayi, 6);
-    // küçük ordu vergi ödemez
-    const k = asker();
-    k.meslek_musteri = 30;
-    expect(birlikHesapla(k, bg(k)).hazinePayi).toBe(0);
+    expect(h).not.toHaveProperty("hazinePayi");
+    expect(h.net).toBeCloseTo(h.toplamGelir - h.toplamGider, 6); // vergisiz ordu neti
   });
 
   it("görev kaybı: çoğunlukla yaralı, az ölü, ara sıra firar; her yıl bildirilmez", () => {

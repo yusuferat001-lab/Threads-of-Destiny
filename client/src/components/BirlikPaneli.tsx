@@ -489,7 +489,7 @@ export function BirlikPaneli({
             {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-gider">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
             {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
             <div>{t('gTalim')}: <strong className="s-gider">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
-            {(b.hesap.hazinePayi ?? 0) > 0 && <div>{t('gHazine')}: <strong className="s-gider">−{formatPara(b.hesap.hazinePayi)}</strong></div>}
+            {(durum.butce.hazinePayi ?? 0) > 0 && <div>{t('gHazine')}: <strong className="s-gider">−{formatPara(durum.butce.hazinePayi ?? 0)}</strong></div>}
             {durum.butce.maas > 0 && <div>{t('gSubay')}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>}
             <div>{t('gYasam')}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
             <div>{t('gKira')}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>
