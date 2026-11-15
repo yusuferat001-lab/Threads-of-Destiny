@@ -240,6 +240,26 @@ export const BARIS_KAYBI: Record<"haydut" | "sinir", Record<"zafer" | "yenilgi",
 };
 /** Barış çatışmasında yaralı = ölü × U(a; b) (savaşta YARALI_ORAN); revir, Tabip ve mızraklı düşürür, alt sınır YARALI_ORAN_TABAN. */
 export const BARIS_YARALI_ORAN: Aralik = [2, 2.5];
+
+// ── Oyuncunun kendi sağlığı (v63): savaş ve çatışma komutanı da yıpratır; alt limit YOK, sağlık 0'a inerse savaşta ölebilir ──
+/** Büyük savaşın toplam ham sağlık bedeli (savaş başında çekilir). */
+export const SAVAS_SAGLIK_TOPLAM: Aralik = [5, 20];
+/** Yıllık pay = toplam / bu kadar yıl; savaş bundan önce biterse kalanı bitişte, daha uzun sürerse fazlası alınmaz. */
+export const SAVAS_SAGLIK_YIL_BOLEN = 6;
+/** Yenilgiyle biten savaşın bitişinde ek ham bedel ("yaralı döndün"). */
+export const SAVAS_SAGLIK_YENILGI_EK = 3;
+/** Haydut / sınır çatışması ham sağlık bedeli (zafer / yenilgi); baskın yenilgisinde ek. */
+export const BARIS_SAGLIK: Record<"haydut" | "sinir", { zafer: Aralik; yenilgi: Aralik }> = {
+  haydut: { zafer: [0, 1], yenilgi: [2, 4] },
+  sinir: { zafer: [1, 2], yenilgi: [3, 6] },
+};
+export const BASKIN_YENILGI_SAGLIK_EK = 1;
+/** Tehlikeli görevlerin yıllık ham sağlık bedeli (açık görev başına). */
+export const GOREV_SAGLIK: Record<string, Aralik> = { haydut: [0, 1], akin: [0, 1] };
+/** Rütbeye göre cepheye maruz kalma (S1..S5): komutanlar cephede değil. */
+export const SAGLIK_RUTBE_MARUZ = [1, 1, 0.8, 0.6, 0.4];
+/** Revir yatırımı seviyesi başına sağlık bedeli azalması (en çok 4 seviye = %10). Tabip subayı ayrıca ölü/firar azaltma oranıyla düşürür. */
+export const SAGLIK_REVIR_AZALTMA = 0.025;
 /** Çatışma kararı: saldırıda ganimet ve kayıp artar, (seçilmiş) savunmada ikisi de azalır. Baskında savunma zorunludur, bu çarpan uygulanmaz. */
 export const CATISMA_SALDIRI = { ganimet: 1.3, kayip: 1.3 } as const;
 export const CATISMA_SAVUNMA = { ganimet: 0.8, kayip: 0.8 } as const;

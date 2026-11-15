@@ -808,7 +808,8 @@ export interface IsletmeUyari {
     | 'kesif_savas'
     | 'yarali_iyilesti'
     | 'limit_asimi'
-    | 'limit_asimi_seferber';
+    | 'limit_asimi_seferber'
+    | 'savas_saglik';
   hat?: string;
   isim?: string;
   sonuc?:
@@ -1280,6 +1281,8 @@ export interface CatismaSonucuGorunum {
   esir: number;
   nakitHasar: number;
   talim: number;
+  /** Çatışmada kaybedilen sağlık (rütbe/tabip/revir sonrası). */
+  saglik?: number;
 }
 
 /** Savaş Günü sonucu (Savaş Sonucu ekranı). */

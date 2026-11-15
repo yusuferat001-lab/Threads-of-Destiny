@@ -501,3 +501,11 @@ Bu blok v54–v58'in seferberlik, savaş kaybı, görev geliri ve kışla/limit 
 - **Ölçüm** (genel bot, N=250/çağ): kazanma haydut %78 · sınır %75 · savaş %64; dekadlar arası dalgalanma az (haydut %68–86, sınır %66–80, savaş %55–72 — son dekad hariç, oyuncu gücü doyuma ulaşınca); ömür geliri ort ≈30,6k, borçla ölen %42.
 - `simulateBirlik.ts` yeni `SIM_DEKAD=1` çıktısı: 10 yıllık dekadlarda er, güç, ele kalan (nominal/reel) ve ordu neti.
 - Test: `birlikV39` "düşman gücü SABİT artar…".
+
+### §45 Asker v63 (2026-11): oyuncunun kendi sağlığı savaşta ve çatışmada yıpranır (alt limit yok)
+- **Büyük savaş:** savaş başında toplam ham bedel `SAVAS_SAGLIK_TOPLAM` **5–20** çekilir (`sv.saglik_plan`); her savaş yılı toplamın `1/SAVAS_SAGLIK_YIL_BOLEN` (1/6) dilimi alınır, savaş 6 yıldan önce biterse kalan bitişte tahsil edilir; yenilgiyle biterse ek `SAVAS_SAGLIK_YENILGI_EK` (3). Savaş sonunda tek bir "sağlığın yıprandı" uyarısı (`savas_saglik`, sayısız).
+- **Barış çatışması** (`BARIS_SAGLIK`): haydut zafer 0–1 / yenilgi 2–4; sınır zafer 1–2 / yenilgi 3–6; baskın yenilgisi +1. Sonuç ekranında "Sağlığın −N" satırı (`CatismaSonucuGorunum.saglik`). **Görev riski** (`GOREV_SAGLIK`): haydut avı ve akın açıkken yılda 0–1.
+- **Azaltanlar** (`saglikBedeliUygula`, tek formül): ham × rütbe maruziyeti (`SAGLIK_RUTBE_MARUZ` S1..S5 = 1/1/0,8/0,6/0,4) × (1 − Tabip subayı ölü/firar azaltma, tavan %30) × (1 − revir seviyesi × %2,5, en çok %10). Kesirli sonuç olasılıkla yuvarlanır.
+- **Alt limit YOK:** sağlık 0'a inerse oyuncu "Savaşta aldığı yaralardan öldü" nedeniyle ölür (`checkDeath`).
+- **Ölçüm** (genel bot, N=400): ölüm yaşı ort 73,6 → 69,0, medyan 76 → 67; 60–69 dekadında yaşayan %72,6 → %57,8; ömür geliri ort 30,6k → 27,7k. Bot sağlık aksiyonu kullanmaz; gerçek oyuncu iyileşme yollarıyla bunu azaltabilir.
+- Test: `tests/birlikSaglik.test.ts`.

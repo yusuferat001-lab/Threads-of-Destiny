@@ -311,6 +311,8 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en
           ? `🏚️ The war is over and the conscripts stayed in the ranks: ${u.sayi ?? 0} men over your barracks limit. Discharge them (Disband) or upgrade the barracks, or their upkeep keeps costing extra.`
           : `🏚️ Savaş bitti, seferberler orduda kaldı: kışla limitini ${u.sayi ?? 0} er aşıyorsun. Terhis edebilir ya da kışlanı yükseltebilirsin; yoksa bu erler fazladan masraf yazar.`;
+      case 'savas_saglik':
+        return en ? '🩸 The hardships and wounds of war wore down your health.' : '🩸 Savaşın yorgunluğu ve yaraları sağlığını yıprattı.';
       case 'esir':
         return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
       case 'kiralik_cekildi':

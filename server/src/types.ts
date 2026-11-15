@@ -987,7 +987,8 @@ export interface IsletmeUyari {
     | "kazanc_ozet"
     | "kesif_savas"
     | "yarali_iyilesti"
-    | "limit_asimi";
+    | "limit_asimi"
+    | "savas_saglik";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
@@ -1207,6 +1208,8 @@ export interface CatismaSonucuGorunum {
   esir: number;
   nakitHasar: number;
   talim: number;
+  /** Çatışmada kaybedilen sağlık (rütbe/tabip/revir sonrası). */
+  saglik?: number;
 }
 
 /** Savaş Günü sonucu (Savaş Sonucu ekranı): güçler, zarlar, kayıplar, düşman kaybı tahmini, ganimet tahmini. */
@@ -1298,6 +1301,11 @@ export interface BirlikSavasDurumu {
   on_yil_plan?: { olu: [number, number]; yarali: [number, number]; firar: [number, number]; sefer?: [number, number] };
   /** Ön yıllarda şimdiye kadar uygulanan toplam kayıp % (çarpanlar sonrası). */
   on_yil_kullanilan?: number;
+  /** Savaş başında çekilen toplam ham sağlık bedeli (5–20) ve şimdiye dek uygulanan ham kısmı. */
+  saglik_plan?: number;
+  saglik_uygulanan?: number;
+  /** Savaş boyunca oyuncunun gerçekten kaybettiği sağlık (rütbe/tabip/revir sonrası). */
+  saglik_kaybi?: number;
   /** Seferber erlerin giriş talimi (etkin talim ağırlıklı ortalaması için; ordunun gerçek talimi bozulmaz). */
   seferberlik_talim?: number;
   /** Savaş planında (ilk yıl) seçilen ikmal; savaş boyu geçerlidir, yalnız Ordu ekranından değiştirilebilir. */

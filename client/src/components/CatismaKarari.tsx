@@ -123,6 +123,7 @@ const S = {
   esir: { tr: 'esir', en: 'prisoners' },
   ganimetYok: { tr: 'Yenilgide ganimet yok.', en: 'No spoils in defeat.' },
   hasar: { tr: 'Baskın kesene zarar verdi', en: 'The raid cost you coin' },
+  saglik: { tr: 'Sağlığın', en: 'Your health' },
   tamam: { tr: 'Devam', en: 'Continue' },
 };
 
@@ -176,6 +177,11 @@ export function CatismaSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: CatismaSo
             </div>
           )}
         </div>
+        {(sonuc.saglik ?? 0) > 0 && (
+          <div className="savas-kiyas">
+            {t('saglik')}: <span className="s-eksi">−{sonuc.saglik}</span>
+          </div>
+        )}
         <button type="button" className="savas-onay" onClick={onKapat}>
           {t('tamam')}
         </button>
