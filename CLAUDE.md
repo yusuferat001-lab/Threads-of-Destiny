@@ -55,7 +55,7 @@ Git deposudur; geliştirme dalı ve push kuralları oturum talimatında verilir.
 |---|---|---|
 | `npm run dev` | server/ | `tsx watch src/server.ts` — API sunucusu (varsayılan :3001) |
 | `npm run dev` | client/ | Vite dev server (varsayılan :5180, README'de belirtilen) |
-| `npm test` | server/ | `vitest run` — 54 test dosyası (bkz. §22) |
+| `npm test` | server/ | `vitest run` — 77 test dosyası (bkz. §22) |
 | `npm run build` / `start` | server/ | `tsc` derleme / `node dist/server.js` |
 | `npm run simulate` | server/ | `scripts/simulateEconomy.ts` — ekonomiyi bin ömür simüle eder |
 | `npm run analyze-olaylar` | server/ | `scripts/analyzeOlaylar.ts` — olay bankası istatistikleri (bölge/meslek/yaş dağılımı, gerçek `olaySec()` ile simülasyon) |

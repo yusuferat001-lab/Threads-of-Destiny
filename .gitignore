@@ -32,3 +32,7 @@ server/data/
 
 # Gömülü yerel Postgres cluster (npm run db:local)
 server/.localdb/
+
+# Python bayt kodu (UI UX Pro Max skill betikleri çalışınca oluşur)
+__pycache__/
+*.pyc

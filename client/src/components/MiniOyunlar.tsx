@@ -60,8 +60,9 @@ export function HazardWidget({
   const rakipZar = bitti ? sonuc!.rakipZar : sahteRakipZar;
 
   return (
-    <div className="mini-oyun mini-oyun-hazard" title={m.moHazardAciklama}>
+    <div className="mini-oyun mini-oyun-hazard">
       <h4 className="mini-oyun-baslik">{m.moHazardBaslik}</h4>
+      <p className="mini-oyun-kural">{m.moHazardAciklama}</p>
 
       <div className={`hazard-masa${donuyor ? ' hazard-donuyor' : ''}`} aria-hidden="true">
         <div className={`hazard-taraf${bitti && sonuc!.kazandi ? ' hazard-taraf-kazanan' : ''}`}>
@@ -146,8 +147,9 @@ export function UcKagitciWidget({
   }
 
   return (
-    <div className="mini-oyun mini-oyun-uckagit" title={m.moUcKagitAciklama}>
+    <div className="mini-oyun mini-oyun-uckagit">
       <h4 className="mini-oyun-baslik">{m.moUcKagitBaslik}</h4>
+      <p className="mini-oyun-kural">{m.moUcKagitAciklama}</p>
 
       <div className={`uc-bardaklar uc-asama-${asama}`}>
         {[0, 1, 2].map((i) => {
@@ -273,8 +275,9 @@ export function BilekGuresiWidget({
   const oran = Math.min(1, tik / BILEK_HEDEF);
 
   return (
-    <div className="mini-oyun mini-oyun-bilek" title={m.moBilekAciklama}>
+    <div className="mini-oyun mini-oyun-bilek">
       <h4 className="mini-oyun-baslik">{m.moBilekBaslik}</h4>
+      <p className="mini-oyun-kural">{m.moBilekAciklama}</p>
 
       <div className="bilek-bar">
         <div className="bilek-bar-dolgu" style={{ width: `${oran * 100}%` }} />

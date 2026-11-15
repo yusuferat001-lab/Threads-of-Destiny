@@ -645,7 +645,13 @@ export function BirlikPaneli({
       <h4>{t('birlikBaslik')}</h4>
       <div className="birlik-hak">
         {t('birlikHak')}: <strong className="s-esik">{seciliTurler.length}/{b.birlik.limit}</strong>
-        {birlikKilitli && <small> · 🔒 {b.birlik.kilitKalanYil} {t('yilSonra')}</small>}
+        {birlikKilitli && <small> · 🔒 {b.birlik.kilitKalanYil} {t('yilSonra')} — {t('kilitTerhis')}</small>}
+        {limitDolu && (
+          <small>
+            {' '}
+            · {t('limitDolu')} {b.birlik.limit} {t('limitDoluSon')}
+          </small>
+        )}
       </div>
       <div className="birlik-kartlar">
         {b.birlik.turler.map((tur) => {

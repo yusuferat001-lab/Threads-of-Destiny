@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
 import { useDil } from '../DilContext';
 
 interface AltGezinmeProps {
   /** Hangi ekranın aktif olduğu — ilgili ikonu vurgulamak için (bkz. App.tsx `Ekran`). */
   ekran: string;
   devreDisi: boolean;
+  /** Çözülmesi gereken bir olay var: düğmeler kapalıyken nedeni söylenir. */
+  olayBekliyor?: boolean;
   aileTalepVar: boolean;
   aileEvlilikRozeti: boolean;
   onEv: () => void;
@@ -22,6 +25,7 @@ interface AltGezinmeProps {
 export function AltGezinme({
   ekran,
   devreDisi,
+  olayBekliyor = false,
   aileTalepVar,
   aileEvlilikRozeti,
   onEv,
@@ -31,6 +35,13 @@ export function AltGezinme({
 }: AltGezinmeProps) {
   const { m } = useDil();
   const aileBildirimi = aileTalepVar || aileEvlilikRozeti;
+  // Kapalı düğmeler dokunuşu yutmaz (CSS pointer-events:none) → nav yakalar, kısa süreli ipucu çıkar.
+  const [ipucu, setIpucu] = useState(false);
+  useEffect(() => {
+    if (!ipucu) return;
+    const z = setTimeout(() => setIpucu(false), 2400);
+    return () => clearTimeout(z);
+  }, [ipucu]);
 
   const dugme = (id: string, ikon: string, etiket: string, fn: () => void, bildirim = false) => (
     <button
@@ -48,11 +59,28 @@ export function AltGezinme({
   );
 
   return (
-    <nav className="alt-gezinme" aria-label={m.agBaslik}>
+    <>
+      {ipucu && olayBekliyor && (
+        <p className="alt-gezinme-ipucu" role="status">
+          {m.agOnceKarar}
+        </p>
+      )}
+    <nav
+      className="alt-gezinme"
+      aria-label={m.agBaslik}
+      aria-describedby={olayBekliyor ? 'alt-gezinme-neden' : undefined}
+      onClick={devreDisi && olayBekliyor ? () => setIpucu(true) : undefined}
+    >
+      {olayBekliyor && (
+        <span id="alt-gezinme-neden" className="sr-only">
+          {m.agOnceKarar}
+        </span>
+      )}
       {dugme('finans', '🏠', m.shEvinKisa, onEv)}
       {dugme('sosyallesme', '🍷', m.shSosyallesme, onSosyallesme)}
       {dugme('magaza', '🛒', m.shMagaza, onMagaza)}
       {dugme('aile', '💞', m.agAile, onAile, aileBildirimi)}
     </nav>
+    </>
   );
 }

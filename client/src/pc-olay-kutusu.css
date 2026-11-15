@@ -224,3 +224,26 @@
     font-size: 0.6rem;
   }
 }
+
+/* Rakam kısayolu görünür: şıkkın köşesinde küçük numara rozeti (yalnız klavyeli PC düzeninde render edilir). */
+@media (min-width: 768px) {
+  .olay-kutusu .secenek {
+    position: relative;
+  }
+  .olay-kutusu .secenek-no {
+    position: absolute;
+    top: 0.3em;
+    left: 0.4em;
+    min-width: 1.35em;
+    padding: 0 0.3em;
+    text-align: center;
+    font-size: 0.8em;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--renk-altin-parlak);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(var(--renk-altin-rgb), 0.5);
+    border-radius: 0.5em;
+    pointer-events: none;
+  }
+}

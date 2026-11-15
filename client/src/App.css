@@ -7581,3 +7581,34 @@ button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
   .ogreti-kartlar { grid-template-columns: 1fr; }
   .ogreti-kutu { padding: 0.9rem; }
 }
+
+/* Yalnız ekran okuyucuya görünen metin (ör. oyun ekranının gizli <h1>'i). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Eskiden yalnız fare üstü ipucunda (title) duran bilgiler artık görünür (dokunmatik/klavye). */
+.mini-oyun-kural {
+  margin: 0.1rem 0 0.6rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+.isletme-engel {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-style: italic;
+  opacity: 0.75;
+}
+.sosyal-icki-neden {
+  flex: 1 1 100%;
+}
