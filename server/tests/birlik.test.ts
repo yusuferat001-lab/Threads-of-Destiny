@@ -1335,3 +1335,82 @@ describe("v67 Madde 4 — güç formülü", () => {
     expect(SUBAY_DEGERLERI.taarruz.saldiri).toEqual([0.081, 0.135, 0.18]);
   });
 });
+
+describe("v67 Madde 5 — düşman gücü", () => {
+  it("formül: (yaşa bağlı taban + oyuncu gücünün %30'u) × tür çarpanı; taban 20 yaşta başlar (7 / 8,5 / 10,5), oran %6,1 / %6,3 / %7,1", async () => {
+    const d = await import("../src/data/birlik");
+    expect(d.DUSMAN_OYUNCU_PAYI).toBe(0.3);
+    expect(d.DUSMAN_TUR_CARPANI).toEqual({ haydut: 0.9, sinir: 1.1, savas: 1.3 });
+    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 7, oran: 0.061 }, sinir: { taban20: 8.5, oran: 0.063 }, savas: { taban20: 10.5, oran: 0.071 } });
+    for (const t of ["haydut", "sinir", "savas"] as const) {
+      expect(d.dusmanGucuYas(20, t)).toBeCloseTo(d.DUSMAN_PARAMETRELERI[t].taban20, 9);
+      expect(d.dusmanGucuYas(21, t) / d.dusmanGucuYas(20, t)).toBeCloseTo(1 + d.DUSMAN_PARAMETRELERI[t].oran, 9);
+      for (const guc of [0, 50, 200]) {
+        expect(d.dusmanGucuHesapla(35, t, guc)).toBeCloseTo((d.dusmanGucuYas(35, t) + 0.3 * guc) * d.DUSMAN_TUR_CARPANI[t], 9);
+      }
+      // oyuncu gücü arttıkça düşman da artar; 100 güç → tam 30 × çarpan
+      expect(d.dusmanGucuHesapla(35, t, 100) - d.dusmanGucuHesapla(35, t, 0)).toBeCloseTo(30 * d.DUSMAN_TUR_CARPANI[t], 9);
+    }
+  });
+
+  it("barış çatışması düşmanı oyuncu gücüyle büyür; baskın ihtimali ve düşman birliği türe göre", async () => {
+    const d = await import("../src/data/birlik");
+    const { barisCatismaKur } = await import("../src/game/birlikYil");
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const kur = (er: number) => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 3;
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = er;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: er, orta: 0, yuksek: 0 };
+      b.zafer_serisi = { haydut: 0, sinir: 0, savas: 0 };
+      return barisCatismaKur(s, b);
+    };
+    const zayif = kur(40);
+    const guclu = kur(120);
+    expect(zayif.tur).toBe(guclu.tur);
+    expect(guclu.dusmanGuc).toBeGreaterThan(zayif.dusmanGuc);
+    vi.restoreAllMocks();
+    // tür dağılımı ~%60 haydut / %40 sınır; baskın ihtimali haydutta yüksek, sınırda düşük; birlik karışımı türe özgü
+    const sayim = { haydut: 0, sinir: 0, baskinHaydut: 0, baskinSinir: 0 };
+    for (let i = 0; i < 1200; i++) {
+      const k = kur(60);
+      sayim[k.tur]++;
+      if (k.baskin) sayim[k.tur === "haydut" ? "baskinHaydut" : "baskinSinir"]++;
+      if (k.tur === "haydut") expect(["suvari", "okcu", "karma"]).toContain(k.dusmanTur);
+      else expect(["mizrakli", "zirhli", "okcu", "suvari"]).toContain(k.dusmanTur);
+    }
+    expect(sayim.haydut / 1200).toBeGreaterThan(0.54);
+    expect(sayim.haydut / 1200).toBeLessThan(0.66);
+    expect(sayim.baskinHaydut / sayim.haydut).toBeGreaterThan(0.58);
+    expect(sayim.baskinHaydut / sayim.haydut).toBeLessThan(0.72);
+    expect(sayim.baskinSinir / sayim.sinir).toBeGreaterThan(0.32);
+    expect(sayim.baskinSinir / sayim.sinir).toBeLessThan(0.48);
+    expect(d.BARIS_DUSMAN_BIRLIGI_AGIRLIGI.haydut.mizrakli).toBeUndefined();
+  });
+
+  it("barış ganimet aralığı türe göre: haydut 2,2–2,8, sınır 3,2–4,0; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
+    const d = await import("../src/data/birlik");
+    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [2.2, 2.8], sinir: [3.2, 4] });
+    expect(d.BARIS_GANIMET_UST).toBe(4);
+    expect(d.ZAFER_SERISI_ESIGI).toBe(2);
+    expect(d.ZAFER_SERISI_DUSMAN_ARTISI).toBe(0.2);
+    expect(d.ZAFER_SERISI_ESIGI_2).toBe(4);
+    expect(d.ZAFER_SERISI_DUSMAN_ARTISI_2).toBe(0.5);
+  });
+
+  it("görünüm gerçek düşman oranını sızdırmaz", async () => {
+    const { birlikGorunumuHesapla } = await import("../src/game/birlikIslem");
+    const s = asker();
+    const b = birlikAl(s);
+    b.savas = {
+      baslangic_yili: s.yil, seferberlik: null, seferberlik_er: 0, yil_sayac: 0, sonuc: null, olu_toplam: 0, firar_toplam: 0,
+      arazi: "ova", inisiyatif: "savunma", dusman_orani: 1.03, dusman_tur: "karma", kanat_zafer: 0, kanat_yenilgi: 0, genel_zafer: 0, genel_yenilgi: 0,
+    } as never;
+    const json = JSON.stringify(birlikGorunumuHesapla(s, bg(s)));
+    expect(json).not.toContain("dusmanOrani");
+    expect(json).not.toContain("1.03");
+  });
+});

@@ -1181,7 +1181,6 @@ export interface BirlikGorunumu {
     arazi: BirlikArazi | null;
     araziAd: DilMetni | null;
     dusmanTur: string | null;
-    dusmanOrani: number | null;
     seferberlik: BirlikSeferberlik | null;
     kanatZafer: number;
     kanatYenilgi: number;

@@ -37,7 +37,11 @@ import {
   BARIS_DUSMAN_KAYBI,
   BASKIN_PUSU_CEZASI,
   BASKIN_NAKIT_HASARI,
-  BASKIN_IHTIMALI,
+  BARIS_TUR_AGIRLIGI,
+  BARIS_BASKIN_IHTIMALI,
+  BARIS_DUSMAN_BIRLIGI_AGIRLIGI,
+  agirlikliSec,
+  dusmanGucuHesapla,
   BARIS_DUSMAN_SAPMA,
   barisDusmanGucuYas,
   SAVAS_KARAR_YILI,
@@ -238,7 +242,7 @@ export function kesifSavasHaberi(state: CharacterState, yaklasan: { yil: number;
   if (!is?.birlik || !is.son_dokum) return;
   const sub = subayToplami(state);
   if (!sub.kesifVar || !yaklasan.dusmanTur || yaklasan.dusmanOrani == null) return;
-  const E = savasDusmanGucuYas(state.yas + 1) * yaklasan.dusmanOrani;
+  const E = dusmanGucuHesapla(state.yas + 1, "savas", gucHesapla(state).guc) * yaklasan.dusmanOrani;
   const r = Math.min(sub.tahminAralik, TAHMIN_ARALIGI_TABAN);
   is.son_dokum.uyarilar.push({
     kod: "kesif_savas",
@@ -269,11 +273,12 @@ function ikmalSaglikCarpani(id: string | undefined): number {
   return IKMAL_TANIMLARI[(id as keyof typeof IKMAL_TANIMLARI) ?? "yagma_orta"]?.yagma.kayip ?? 1;
 }
 
-/** Zafer serisi (her tür ayrı): ≥3 arka arkaya zafer → düşman ×1,10–1,15, ≥5 → ×1,20–1,25 (seri sürdükçe kalıcı); yenilgi sıfırlar; yoksa 1. */
+/** Zafer serisi (her tür ayrı): ≥2 arka arkaya zafer → düşman ×1,2, ≥4 → ×1,5 (seri sürdükçe kalıcı, üst üste binmez); yenilgi sıfırlar; yoksa 1. */
 export function hazirlikCek(b: BirlikDurumu, tur: "haydut" | "sinir" | "savas"): number {
   const seri = (b.zafer_serisi ??= { ...ZAFER_SERISI_BOS })[tur] ?? 0;
-  if (seri >= ZAFER_SERISI_ESIGI_2) return 1 + rnd(ZAFER_SERISI_DUSMAN_ARTISI_2[0], ZAFER_SERISI_DUSMAN_ARTISI_2[1]);
-  return seri >= ZAFER_SERISI_ESIGI ? 1 + rnd(ZAFER_SERISI_DUSMAN_ARTISI[0], ZAFER_SERISI_DUSMAN_ARTISI[1]) : 1;
+  // Bonuslar üst üste binmez: 4 ve üstü zaferde (5, 6, 7…) ×1,5'te kalır; 2-3 zaferde ×1,2; yenilgi sayacı sıfırlar.
+  if (seri >= ZAFER_SERISI_ESIGI_2) return 1 + ZAFER_SERISI_DUSMAN_ARTISI_2;
+  return seri >= ZAFER_SERISI_ESIGI ? 1 + ZAFER_SERISI_DUSMAN_ARTISI : 1;
 }
 /** Sonuçla seri güncellenir: zafer +1, yenilgi sıfırlar. */
 export function zaferSerisiIsle(b: BirlikDurumu, tur: "haydut" | "sinir" | "savas", zafer: boolean): void {
@@ -682,7 +687,7 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   // Kıyas yönü: SALDIRIDAYSAN senin saldırı gücün düşmanın SAVUNMA gücüyle, SAVUNMADAYSAN senin savunma gücün düşmanın SALDIRI gücüyle yarışır.
   const oyuncuG = inisiyatif === "saldiri" ? d.saldiri : d.savunma;
   // Düşmanın gücü MUTLAKTIR (yaşa göre referans × savaş başında çekilen ±%5 × zafer serisi hazırlığı): bizim gücümüz sonucu doğrudan belirler.
-  const E = dusmanReferansGucu(state) * sv.dusman_orani * (sv.hazirlik ?? 1);
+  const E = dusmanGucuHesapla(state.yas, "savas", gucHesapla(state, { enflasyon: bg.enflasyon }).guc) * sv.dusman_orani * (sv.hazirlik ?? 1);
   const dagilim = dusmanSaldiriSavunma(sv.dusman_tur);
   // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo).
   const dusmanG = E * (inisiyatif === "saldiri" ? dagilim.savunma : dagilim.saldiri) * dusmanAraziCarpani(arazi, sv.dusman_tur);
@@ -750,7 +755,7 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
   const firarPct = aralikCek(yariAralik(t.firar, konum)) * yk;
   const tavan = savasKayipTavani(state, b);
   const kayip = kayipUygula(state, b, { oluPct, firarPct, oluTavan: tavan.olu, firarTavan: tavan.firar });
-  const E = dusmanReferansGucu(state) * sv.dusman_orani;
+  const E = dusmanGucuHesapla(state.yas, "savas", gucHesapla(state, { enflasyon: bg.enflasyon }).guc) * sv.dusman_orani;
   const dk = BARIS_DUSMAN_KAYBI; // düşman kaybı tahmini: kazanırsak büyük, kaybedersek küçük
   const doktrin = doktrinToplami(b.doktrinler);
   const yol = yolEtkisi(state);
@@ -1013,11 +1018,12 @@ function barisCatismaVadesi(b: BirlikDurumu, savasta: boolean): boolean {
  * Zaman, oyuncu kararını verene (`barisCatismaCoz`) dek ilerlemez; hiçbir etki bu aşamada uygulanmaz.
  */
 export function barisCatismaKur(state: CharacterState, b: BirlikDurumu): BirlikCatismaBekleyen {
-  const tur: "haydut" | "sinir" = Math.random() < 0.5 ? "haydut" : "sinir";
-  const dtur = (["okcu", "suvari", "mizrakli", "zirhli", "karma"] as const)[Math.floor(Math.random() * 5)];
-  const baskin = Math.random() < BASKIN_IHTIMALI;
+  const tur: "haydut" | "sinir" = Math.random() < BARIS_TUR_AGIRLIGI.haydut ? "haydut" : "sinir";
+  const dtur = agirlikliSec(BARIS_DUSMAN_BIRLIGI_AGIRLIGI[tur]);
+  const baskin = Math.random() < BARIS_BASKIN_IHTIMALI[tur];
   const hazirlik = hazirlikCek(b, tur);
-  const E = barisDusmanGucuYas(state.yas, tur) * rnd(BARIS_DUSMAN_SAPMA[0], BARIS_DUSMAN_SAPMA[1]) * hazirlik;
+  // Düşman: (yaşa bağlı taban + oyuncu gücünün %30'u) × tür çarpanı × ±%5 sapma × zafer serisi; güç kurulduğu anda sabitlenir.
+  const E = dusmanGucuHesapla(state.yas, tur, gucHesapla(state).guc) * rnd(BARIS_DUSMAN_SAPMA[0], BARIS_DUSMAN_SAPMA[1]) * hazirlik;
   b.catisma_bekleyen = { yil: state.yil, tur, baskin, dusmanTur: dtur, dusmanGuc: Math.round(E * 100) / 100, ...(hazirlik > 1 ? { hazirlik: Math.round(hazirlik * 1000) / 1000 } : {}) };
   return b.catisma_bekleyen;
 }
@@ -1059,7 +1065,7 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   const sm = k.baskin ? { ganimet: 1, kayip: 1 } : inisiyatif === "saldiri" ? CATISMA_SALDIRI : CATISMA_SAVUNMA;
   catismaIzleyici.fn?.({ tur, zafer, yas: state.yas, oyuncuGuc: guc, dusmanGuc: E, oyuncuEtkin: oyuncuTaraf, dusmanEtkin: dusmanTaraf, tablo: barisDusmanGucuYas(state.yas, tur) });
   const carpan = (1 + sub.ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
-  const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK)) * bg.enflasyon * carpan * sm.ganimet : 0;
+  const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK[tur])) * bg.enflasyon * carpan * sm.ganimet : 0;
   const erPayi = brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
   const net = brut - erPayi;
   const esirSayisi = zafer ? olasilikliYuvarla(guc * t.esir) : 0;

@@ -99,19 +99,15 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(SAVAS_ZAR_YUZDE).toBe(0.04);
   });
 
-  it("zafer serisi: her tür ayrı sayılır; 3 arka arkaya zaferden sonra düşman +%10–15, yenilgi sıfırlar", () => {
+  it("zafer serisi: her tür ayrı sayılır; 2 arka arkaya zaferden sonra düşman ×1,2, yenilgi sıfırlar", () => {
     const s = asker();
     const b = birlikAl(s);
-    for (let i = 0; i < 2; i++) zaferSerisiIsle(b, "haydut", true);
-    expect(hazirlikCek(b, "haydut")).toBe(1);
+    zaferSerisiIsle(b, "haydut", true);
+    expect(hazirlikCek(b, "haydut")).toBe(1); // 1 zafer: bonus yok
     zaferSerisiIsle(b, "haydut", true);
     expect(b.zafer_serisi!.haydut).toBe(ZAFER_SERISI_ESIGI);
     expect(b.zafer_serisi!.sinir).toBe(0); // türler ayrı
-    for (let i = 0; i < 40; i++) {
-      const h = hazirlikCek(b, "haydut");
-      expect(h).toBeGreaterThanOrEqual(1.1);
-      expect(h).toBeLessThanOrEqual(1.15);
-    }
+    expect(hazirlikCek(b, "haydut")).toBeCloseTo(1.2, 9); // sabit ×1,2 (rastgele aralık yok)
     expect(hazirlikCek(b, "sinir")).toBe(1);
     zaferSerisiIsle(b, "haydut", true); // seri sürer
     expect(hazirlikCek(b, "haydut")).toBeGreaterThan(1);
@@ -175,24 +171,20 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(kayip("yagma_sert")).toBeGreaterThan(kayip("yagma_orta"));
   });
 
-  it("zafer serisi 5'e ulaşınca düşman bonusu +%20–25'e çıkar (3–4'te +%10–15); etki seri sürdükçe kalıcıdır; yenilgi sıfırlar", () => {
+  it("zafer serisi 4'e ulaşınca düşman ×1,5 (2–3'te ×1,2); bonuslar üst üste binmez, 5-6-7 zaferde de ×1,5 kalır; yenilgi sıfırlar", () => {
     const s = asker();
     const b = birlikAl(s);
     b.zafer_serisi = { haydut: 0, sinir: 0, savas: 0 };
     for (let i = 0; i < ZAFER_SERISI_ESIGI_2 - 1; i++) zaferSerisiIsle(b, "sinir", true);
-    for (let i = 0; i < 40; i++) {
-      const h = hazirlikCek(b, "sinir"); // seri 4
-      expect(h).toBeGreaterThanOrEqual(1.1);
-      expect(h).toBeLessThanOrEqual(1.15);
+    expect(b.zafer_serisi!.sinir).toBe(3);
+    expect(hazirlikCek(b, "sinir")).toBeCloseTo(1.2, 9); // seri 3: hâlâ ×1,2
+    zaferSerisiIsle(b, "sinir", true); // seri 4
+    expect(hazirlikCek(b, "sinir")).toBeCloseTo(1.5, 9);
+    for (const seri of [5, 6, 7]) {
+      zaferSerisiIsle(b, "sinir", true); // seri 5, 6, 7: bonus ×1,5'te kalır, 1,2×1,5'e binmez
+      expect(b.zafer_serisi!.sinir).toBe(seri);
+      expect(hazirlikCek(b, "sinir")).toBeCloseTo(1.5, 9);
     }
-    zaferSerisiIsle(b, "sinir", true); // seri 5
-    for (let i = 0; i < 40; i++) {
-      const h = hazirlikCek(b, "sinir");
-      expect(h).toBeGreaterThanOrEqual(1.2);
-      expect(h).toBeLessThanOrEqual(1.25);
-    }
-    for (let i = 0; i < 6; i++) zaferSerisiIsle(b, "sinir", true); // kalıcı: seri sürerken bonus düşmez
-    expect(hazirlikCek(b, "sinir")).toBeGreaterThanOrEqual(1.2);
     expect(hazirlikCek(b, "haydut")).toBe(1); // türler ayrı
     zaferSerisiIsle(b, "sinir", false);
     expect(hazirlikCek(b, "sinir")).toBe(1);

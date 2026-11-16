@@ -275,31 +275,60 @@ export const BARIS_DUSMAN_KAYBI = { zafer: [0.12, 0.2], yenilgi: [0.03, 0.06] } 
 export const BASKIN_PUSU_CEZASI = 0.1;
 export const BASKIN_NAKIT_HASARI = 0.04;
 /** Çatışmanın baskın (oyuncu savunmada) olma ihtimali; kalanı av (oyuncu saldırıda). */
-export const BASKIN_IHTIMALI = 0.5;
+/** Barış çatışmasında tür seçimi ağırlığı (v67: haydut sık, sınır seyrek) ve baskın (zorunlu savunma) ihtimali türe göre. */
+export const BARIS_TUR_AGIRLIGI: Record<"haydut" | "sinir", number> = { haydut: 0.6, sinir: 0.4 };
+export const BARIS_BASKIN_IHTIMALI: Record<"haydut" | "sinir", number> = { haydut: 0.65, sinir: 0.4 };
+/** Düşmanın baskın birliği ağırlıkları (haydut: süvari/okçu ağırlıklı çeteler; sınır: düzenli ordu, mızraklı/zırhlı ağırlıklı). */
+export type DusmanBirlik = "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
+export const BARIS_DUSMAN_BIRLIGI_AGIRLIGI: Record<"haydut" | "sinir", Partial<Record<DusmanBirlik, number>>> = {
+  haydut: { suvari: 0.35, okcu: 0.3, karma: 0.35 },
+  sinir: { mizrakli: 0.3, zirhli: 0.25, okcu: 0.25, suvari: 0.2 },
+};
+/** Ağırlıklı seçim (ağırlıkların toplamı 1 olmak zorunda değil). */
+export function agirlikliSec<T extends string>(agirliklar: Partial<Record<T, number>>, rnd01 = Math.random()): T {
+  const girdiler = Object.entries(agirliklar) as [T, number][];
+  const toplam = girdiler.reduce((t, [, w]) => t + w, 0);
+  let x = rnd01 * toplam;
+  for (const [k, w] of girdiler) {
+    x -= w;
+    if (x < 0) return k;
+  }
+  return girdiler[girdiler.length - 1][0];
+}
 /**
- * Düşmanın yaşa göre mutlak gücü: SABİT HIZLA artan, üç tür için ayrı taban ve yıllık artış oranı ("çarpan"):
- *   15–21 yaş: neredeyse düz (taban21 / 1,15'ten taban21'e doğrusal) — ilk 6 yıl çok artmaz.
- *   21–60 yaş: güç = taban21 × (1 + oran)^(yaş − 21)  (her yıl aynı yüzde; sıçrama yok).
+ * Düşman gücü (v67): E = (yaşa bağlı TABAN + oyuncu gücünün DUSMAN_OYUNCU_PAYI'ı) × tür çarpanı × sapma × zafer serisi hazırlığı.
+ * TABAN (`dusmanGucuYas`) yaşla SABİT HIZLA artar, üç tür için ayrı başlangıç ve yıllık oran:
+ *   15–20 yaş: neredeyse düz (taban20 / 1,15'ten taban20'ye doğrusal) — ilk yıllar çok artmaz.
+ *   20–60 yaş: taban20 × (1 + oran)^(yaş − 20)  (her yıl aynı yüzde; sıçrama yok).
  *   60 yaş sonrası: 60 yaşındaki artış hızı SABİT kalır (doğrusal; yaş 70→80 hızlanmaz).
- * Haydut en kolay, sınır (düzenli düşman) daha güçlü, büyük savaş en güçlü ve en hızlı artan. ±%5 sapma, zar ±%4 (SAVAS_ZAR_BOLEN).
+ * Tür çarpanı: haydut en kolay, sınır (düzenli düşman) daha güçlü, büyük savaş en güçlü. Oyuncu güçlendikçe düşman da büyür.
  */
 export type DusmanTuru = "haydut" | "sinir" | "savas";
-export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban21: number; oran: number }> = {
-  haydut: { taban21: 15.5, oran: 0.056 },
-  sinir: { taban21: 18, oran: 0.058 },
-  savas: { taban21: 21, oran: 0.067 },
+export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban20: number; oran: number }> = {
+  haydut: { taban20: 7, oran: 0.061 },
+  sinir: { taban20: 8.5, oran: 0.063 },
+  savas: { taban20: 10.5, oran: 0.071 },
 };
+/** Düşman gücüne eklenen oyuncu askerî gücü payı ve tür çarpanları. */
+export const DUSMAN_OYUNCU_PAYI = 0.3;
+export const DUSMAN_TUR_CARPANI: Record<DusmanTuru, number> = { haydut: 0.9, sinir: 1.1, savas: 1.3 };
 export const DUSMAN_ILK_YIL_ORANI = 1.15;
+export const DUSMAN_BASLANGIC_YASI = 20;
 export const DUSMAN_SABIT_ARTIS_YASI = 60;
+/** Yaşa bağlı TABAN (oyuncu gücü hariç). */
 export function dusmanGucuYas(yas: number, tur: DusmanTuru): number {
-  const { taban21, oran } = DUSMAN_PARAMETRELERI[tur];
-  if (yas < 21) {
-    const e15 = taban21 / DUSMAN_ILK_YIL_ORANI;
-    return e15 + ((taban21 - e15) * Math.max(0, yas - 15)) / 6;
+  const { taban20, oran } = DUSMAN_PARAMETRELERI[tur];
+  if (yas < DUSMAN_BASLANGIC_YASI) {
+    const e15 = taban20 / DUSMAN_ILK_YIL_ORANI;
+    return e15 + ((taban20 - e15) * Math.max(0, yas - 15)) / (DUSMAN_BASLANGIC_YASI - 15);
   }
-  const e = (y: number) => taban21 * Math.pow(1 + oran, y - 21);
+  const e = (y: number) => taban20 * Math.pow(1 + oran, y - DUSMAN_BASLANGIC_YASI);
   if (yas <= DUSMAN_SABIT_ARTIS_YASI) return e(yas);
   return e(DUSMAN_SABIT_ARTIS_YASI) * (1 + oran * (yas - DUSMAN_SABIT_ARTIS_YASI));
+}
+/** Düşmanın gücü (sapma ve zafer serisi hazırlığı ÇAĞIRANDA): (taban + oyuncu gücü × pay) × tür çarpanı. */
+export function dusmanGucuHesapla(yas: number, tur: DusmanTuru, oyuncuGuc: number): number {
+  return (dusmanGucuYas(yas, tur) + DUSMAN_OYUNCU_PAYI * Math.max(0, oyuncuGuc)) * DUSMAN_TUR_CARPANI[tur];
 }
 /** Tablo görünümü (5 yılda bir; test ve belge için). */
 export const BARIS_DUSMAN_TABLOLARI: Record<"haydut" | "sinir", [number, number][]> = {
@@ -462,7 +491,12 @@ export const ERZAK_BIRIMI = 0.13;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
 export const GANIMET_PAYI_KILIT_YIL = 5;
 /** Barış çatışması (haydut / sınır) zafer ganimeti = max(40; askerî güç) × U(a; b) × güç bantları (ganimetEtkinGuc; yenilgide ganimet yok). */
-export const BARIS_GANIMET_ARALIK: Aralik = [2.6, 3.2];
+export const BARIS_GANIMET_ARALIK: Record<"haydut" | "sinir", Aralik> = { haydut: [2.2, 2.8], sinir: [3.2, 4.0] };
+/** Bütçe önizlemeleri için: tüm türlerdeki en yüksek çarpan ve tür ağırlıklı ortalama orta nokta. */
+export const BARIS_GANIMET_UST = Math.max(BARIS_GANIMET_ARALIK.haydut[1], BARIS_GANIMET_ARALIK.sinir[1]);
+export const BARIS_GANIMET_ORTA =
+  BARIS_TUR_AGIRLIGI.haydut * ((BARIS_GANIMET_ARALIK.haydut[0] + BARIS_GANIMET_ARALIK.haydut[1]) / 2) +
+  BARIS_TUR_AGIRLIGI.sinir * ((BARIS_GANIMET_ARALIK.sinir[0] + BARIS_GANIMET_ARALIK.sinir[1]) / 2);
 /** Ganimet tabanı: askerî gücü bunun altındaki ordu da zaferde (haydut, sınır ve savaş) 40 güçlük bir ordunun ganimetini alır. */
 export const GANIMET_TABAN_GUC = 40;
 /**
@@ -1149,13 +1183,13 @@ export const SOHRET_SONUCU: Record<"haydut" | "sinir" | "savas", { zafer: [numbe
 /** Baskın (zorunlu savunma): başarılı savunma ekstra şöhret, yenilgi ekstra itibar kaybı. */
 export const SOHRET_BASKIN = { zafer: 1, yenilgi: 1 };
 
-// ── Zafer serisi (v67): aynı türde arka arkaya 3 zafer → sıradaki karşılaşmada düşman +%10–15 güçlü ("hazırlıklı"); yenilgi sayacı sıfırlar ──
-/** Seri sayaçları her tür için AYRIDIR: haydut, sınır, büyük savaş. */
-export const ZAFER_SERISI_ESIGI = 3;
-export const ZAFER_SERISI_DUSMAN_ARTISI: Aralik = [0.1, 0.15];
-/** Aynı türde arka arkaya 5 zafer: bonus kademe atlar (düşman +%20–25); yenilgi sayacı sıfırlar, etki seri sürdükçe KALICIDIR. */
-export const ZAFER_SERISI_ESIGI_2 = 5;
-export const ZAFER_SERISI_DUSMAN_ARTISI_2: Aralik = [0.2, 0.25];
+// ── Zafer serisi (v67): aynı türde arka arkaya 2 zafer → sıradaki karşılaşmada düşman ×1,2 ("hazırlıklı"); 4 zafer → ×1,5; yenilgi sayacı sıfırlar ──
+/** Seri sayaçları her tür için AYRIDIR: haydut, sınır, büyük savaş. Bonuslar ÜST ÜSTE BİNMEZ: 2-3 zaferde ×1,2, 4 ve üstü (5, 6, 7…) ×1,5. */
+export const ZAFER_SERISI_ESIGI = 2;
+export const ZAFER_SERISI_DUSMAN_ARTISI = 0.2;
+/** Aynı türde arka arkaya 4 zafer: bonus kademe atlar (düşman ×1,5); yenilgi sayacı sıfırlar, etki seri sürdükçe KALICIDIR. */
+export const ZAFER_SERISI_ESIGI_2 = 4;
+export const ZAFER_SERISI_DUSMAN_ARTISI_2 = 0.5;
 export type ZaferSerisi = { haydut: number; sinir: number; savas: number };
 export const ZAFER_SERISI_BOS: ZaferSerisi = { haydut: 0, sinir: 0, savas: 0 };
 

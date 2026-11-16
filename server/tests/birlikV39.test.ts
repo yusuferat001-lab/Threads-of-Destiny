@@ -92,8 +92,8 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut/sınır 2,6–3,2, savaş zaferi 11–14, yaralı 0,20, ganimet politikası morali −7/0/+4", () => {
-    expect(BARIS_GANIMET_ARALIK).toEqual([2.6, 3.2]);
+  it("sabitler: haydut 2,2–2,8, sınır 3,2–4,0, savaş zaferi 11–14, yaralı 0,20, ganimet politikası morali −7/0/+4", () => {
+    expect(BARIS_GANIMET_ARALIK).toEqual({ haydut: [2.2, 2.8], sinir: [3.2, 4] }); // tür başı (haydut düşük, sınır yüksek)
     expect(SAVAS_ZAFER_GANIMET).toEqual([11, 14]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
@@ -187,17 +187,17 @@ describe("v39 haydut / sınır çatışması", () => {
       expect(barisDusmanGucuYas(yas, "haydut")).toBeLessThan(barisDusmanGucuYas(yas, "sinir"));
       expect(barisDusmanGucuYas(yas, "sinir")).toBeLessThan(savasDusmanGucuYas(yas));
     }
-    // ilk 6 yılda artış çok küçük (haydut ≤ +%25, sınır ≤ +%25, savaş ≤ +%20)
+    // ilk 6 yılda artış çok küçük (taban 20 yaşta başlar: 15→20 +%15, sonra yıllık oran; üçü de ≤ +%25)
     expect(barisDusmanGucuYas(21, "haydut") / barisDusmanGucuYas(15, "haydut")).toBeLessThan(1.25);
     expect(barisDusmanGucuYas(21, "sinir") / barisDusmanGucuYas(15, "sinir")).toBeLessThan(1.25);
-    expect(savasDusmanGucuYas(21) / savasDusmanGucuYas(15)).toBeLessThan(1.2);
+    expect(savasDusmanGucuYas(21) / savasDusmanGucuYas(15)).toBeLessThan(1.25);
     // sonra hızlı artış
-    expect(barisDusmanGucuYas(65, "haydut")).toBeGreaterThan(100);
+    expect(barisDusmanGucuYas(65, "haydut")).toBeGreaterThan(90);
     // haydut ve sınır savaştan daha YAVAŞ artar (40 → 80 yaş büyüme oranı)
     const buyume = (f: (y: number) => number) => f(80) / f(40);
     expect(buyume((y) => barisDusmanGucuYas(y, "haydut"))).toBeLessThan(buyume(savasDusmanGucuYas));
     expect(buyume((y) => barisDusmanGucuYas(y, "sinir"))).toBeLessThan(buyume(savasDusmanGucuYas));
-    expect(savasDusmanGucuYas(80)).toBeGreaterThan(500);
+    expect(savasDusmanGucuYas(80)).toBeGreaterThan(350);
     for (const tablo of [BARIS_DUSMAN_TABLOLARI.haydut, BARIS_DUSMAN_TABLOLARI.sinir, SAVAS_DUSMAN_YAS]) {
       for (let i = 1; i < tablo.length; i++) {
         expect(tablo[i][0]).toBeGreaterThan(tablo[i - 1][0]);
@@ -206,12 +206,12 @@ describe("v39 haydut / sınır çatışması", () => {
     }
   });
 
-  it("düşman gücü SABİT artar: 21–60 arası her yıl aynı yüzde, 60 sonrası hız sabit (70→80 sıçraması yok), türlerin oranı farklı", async () => {
+  it("düşman gücü SABİT artar: 20–60 arası her yıl aynı yüzde, 60 sonrası hız sabit (70→80 sıçraması yok), türlerin oranı farklı", async () => {
     const { dusmanGucuYas, DUSMAN_PARAMETRELERI } = await import("../src/data/birlik");
     const turler = ["haydut", "sinir", "savas"] as const;
     for (const t of turler) {
       const oran = DUSMAN_PARAMETRELERI[t].oran;
-      for (const yas of [22, 30, 45, 59]) expect(dusmanGucuYas(yas + 1, t) / dusmanGucuYas(yas, t)).toBeCloseTo(1 + oran, 5);
+      for (const yas of [20, 22, 30, 45, 59]) expect(dusmanGucuYas(yas + 1, t) / dusmanGucuYas(yas, t)).toBeCloseTo(1 + oran, 5);
       // 60 sonrası yıllık mutlak artış sabit
       const d1 = dusmanGucuYas(71, t) - dusmanGucuYas(70, t);
       const d2 = dusmanGucuYas(81, t) - dusmanGucuYas(80, t);

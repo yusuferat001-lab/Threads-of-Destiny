@@ -106,3 +106,26 @@ Testler: `birlik.test.ts` "v67 Madde 2" bloğu (net talim, politika morali, ücr
 **Simülasyon** (`simulateBirlik.ts`, N=60, Orta Çağ; Madde 3 sonrası → Madde 4): dengeli güç @25/35/45/55 24/60/107/198 → **26/59/123/188**, zafer % (haydut/sınır/savaş) 64/55/53 → **68/66/60**, S3 yaşı 39 (%55) → 40 (%70), batan %18 → **%20**; aktif (özel birlik + ağır talim) güç @35 60 → **32**, zafer 68/64/62 → **54/45/39**, batan %10 → **%15**, S5'e ulaşma %55 → %28. Yani özel birlik + ağır talim yolu en çok zayıflayan; dengeli yol (az özel birlik) korunuyor. Düşman gücü Madde 5'te değişir. Testler: `birlik.test.ts` "v67 Madde 4" bloğu + `birlik*.test.ts` sabit beklentileri.
 
 **v67 Madde 4 ek — birlik rolleri (kullanıcı):** saldırı/savunma uzmanlığı keskinleştirildi ve her birliğin güç artışı +1 puan yükseltildi: **Okçu 1,75/1,35 (+%11, hafif saldırı eğilimli melez) · Süvari 2,6/0,6 (+%12, saldırı uzmanı) · Kalkan-Mızrak 1,0/2,2 (+%12, savunma uzmanı) · Zırhlı 1,5/2,4 (+%19, melez)**; dördü birden ≈ +%54. Güç (saldırı+savunma)/2 olduğundan uzmanlık güçte değil, çatışma yönünde hissedilir: av/saldırıda `oyuncu.saldiri` düşman savunmasıyla, baskın/savunmada `oyuncu.savunma` düşman saldırısıyla kıyaslanır. Bakım oranları aynı (er başı 0,20/0,25/0,25/0,40): 100 erde güç artışı başına yıllık bakım ≈ 0,36 / 0,42 / 0,42 / 0,42 (düz er eklemek ≈ 0,72); geçiş ücreti güç artışı başına ≈ 1,3 / 1,4 / 1,25 / 1,4.
+
+## v67 — Madde 5 (5a + 5b): düşman gücü (2026-11)
+
+**Formül** (`dusmanGucuHesapla`, `data/birlik.ts`; barış çatışması kurulumu, büyük savaş karar savaşı, iki tahmin ekranı ve Keşif haberi aynı fonksiyonu kullanır):
+`E = (taban(yaş, tür) + 0,30 × oyuncu gücü) × tür çarpanı × U(0,95; 1,05) × zafer serisi hazırlığı`
+
+- **Taban** (`dusmanGucuYas`, oyuncu gücü HARİÇ): 15–20 yaş doğrusal (`taban20/1,15` → `taban20`), 20–60 bileşik, 60 sonrası doğrusal. `taban20` **haydut 7,0 · sınır 8,5 · savaş 10,5**; yıllık oran **%6,1 · %6,3 · %7,1** (eski taban21 15,5/18/21, %5,6/%5,8/%6,7). Eski taban oyuncu gücünden bağımsızdı; yeni formülde onun işini oyuncu gücünün %30'u yapar, bu yüzden taban küçüldü.
+- **Oyuncu gücü payı %30** (`DUSMAN_OYUNCU_PAYI`); **tür çarpanı** haydut 0,9 · sınır 1,1 · savaş 1,3 (`DUSMAN_TUR_CARPANI`). Oyuncu gücü = `gucHesapla(state).guc` (arazi/karşı tür/senaryo bonusları hariç); barışta çatışma kurulurken sabitlenir, savaşta karar savaşında hesaplanır.
+- **Zafer serisi** (tür başına ayrı sayaç): **2 zafer → ×1,2, 4 zafer → ×1,5**, sabit (eski 3→+%10–15, 5→+%20–25 rastgele aralık); bonuslar **üst üste binmez** (4 ve üstü, yani 5-6-7 zaferde de ×1,5), yenilgide sayaç sıfırlanır.
+- Örnek düşman gücü (oyuncu gücü dengeli bot ortalaması, seri hariç): 25 yaş haydut 16 / sınır 22 / savaş 30 (güç 28); 35 yaş 30/42/60 (güç 56); 45 yaş 51/71/109 (güç 85); 55 yaş 77/113/190 (güç 101).
+- **Sızıntı:** `BirlikGorunumu.savas.dusmanOrani` (gizli gerçek düşman oranı) istemciye gitmez.
+
+**Üç savaş türü farklılaştırıldı (5b):**
+| | Haydut | Sınır | Büyük savaş |
+|---|---|---|---|
+| Tür çarpanı | 0,9 | 1,1 | 1,3 |
+| Çatışma tür seçimi (`BARIS_TUR_AGIRLIGI`) | %60 | %40 | savaş dönemi |
+| Baskın ihtimali (`BARIS_BASKIN_IHTIMALI`) | %65 | %40 | inisiyatif %40/30/30 |
+| Düşman birliği (`BARIS_DUSMAN_BIRLIGI_AGIRLIGI`) | süvari %35 · okçu %30 · karma %35 | mızraklı %30 · zırhlı %25 · okçu %25 · süvari %20 | beşi eşit |
+| Barış ganimet aralığı (`BARIS_GANIMET_ARALIK`, × etkin güç) | 2,2–2,8 | 3,2–4,0 | 11–14 |
+Bütçe önizlemeleri `BARIS_GANIMET_UST` (4,0) ve `BARIS_GANIMET_ORTA` (tür ağırlıklı ortalama) kullanır. Ölü/yaralı, sağlık, şöhret, ordu morali ve esir tabloları zaten türe göre ayrıydı.
+
+**Simülasyon** (`simulateBirlik.ts`, N=60, Orta Çağ; BİLGİ — hedef sayı yok): dengeli zafer % (haydut/sınır/savaş) **72 / 74 / 47**, güç @25/35/45/55 28/56/96/130, S3 41y %82, S4 53y %53, batan %15; aktif **70 / 68 / 45**, batan %12, S5 %28 (Madde 4 sonrası dengeli 68/66/60, aktif 54/45/39). Testler: `birlik.test.ts` "v67 Madde 5" bloğu + `birlikV39/V65/Arazi` beklentileri. **Açık:** 5c (senaryo kataloğu, barışa arazi, birlik×arazi saldırı/savunma ayrı tablo) ayrı onayla.

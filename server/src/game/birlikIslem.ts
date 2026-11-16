@@ -27,12 +27,12 @@ import {
   GOREV_GELIR_CARPANI,
   BARIS_CATISMALARI,
   DUSMAN_ORAN,
-  barisDusmanGucuYas,
+  dusmanGucuHesapla,
   dusmanAraziCarpani,
   dusmanSaldiriSavunma,
   SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
-  BARIS_GANIMET_ARALIK,
+  BARIS_GANIMET_ORTA,
   GANIMET_PAYI_KILIT_YIL,
   ganimetBrutTemel,
   KUSATMA_ACIK,
@@ -420,7 +420,7 @@ export function catismaKarariDurumu(state: CharacterState, bg: IsletmeBaglami): 
   const yay = Math.min(kesif, TAHMIN_ARALIGI_TABAN);
   // Keşif subayı varsa aralık GERÇEK değere ortalanır (dar); yoksa tablo değerine (× zafer serisi hazırlığı) ortalanır ve geniştir (±%6,5).
   const kesifli = kesif < TAHMIN_ARALIGI_TABAN;
-  const ref = kesifli ? k.dusmanGuc : barisDusmanGucuYas(state.yas, k.tur) * (k.hazirlik ?? 1);
+  const ref = kesifli ? k.dusmanGuc : dusmanGucuHesapla(state.yas, k.tur, gucHesapla(state, { enflasyon: bg.enflasyon }).guc) * (k.hazirlik ?? 1);
   const aralik = (x: number): [number, number] => [Math.round(x * (1 - yay)), Math.round(x * (1 + yay))];
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: k.tur });
   return {
@@ -806,7 +806,6 @@ export interface BirlikGorunumu {
     arazi: BirlikArazi | null;
     araziAd: { tr: string; en: string } | null;
     dusmanTur: string | null;
-    dusmanOrani: number | null;
     seferberlik: BirlikSeferberlik | null;
     kanatZafer: number;
     kanatYenilgi: number;
@@ -872,7 +871,7 @@ export interface SavasKiyasi {
 export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): SavasKiyasi {
   const b = birlikAl(state);
   const sv = b.savas;
-  const ref = dusmanReferansGucu(state);
+  const ref = dusmanGucuHesapla(state.yas, "savas", gucHesapla(state, { enflasyon: bg.enflasyon }).guc);
   const tur = sv?.dusman_tur ?? "karma";
   const arazi = sv?.arazi ?? null;
   const dagilim = dusmanSaldiriSavunma(tur);
@@ -1019,7 +1018,6 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       arazi: b.savas?.arazi ?? null,
       araziAd: b.savas ? (cag === "Sanayi Devrimi" ? ARAZI_ADLARI[b.savas.arazi].sanayi : ARAZI_ADLARI[b.savas.arazi].orta) : null,
       dusmanTur: b.savas?.dusman_tur ?? null,
-      dusmanOrani: b.savas?.dusman_orani ?? null,
       seferberlik: b.savas?.seferberlik ?? null,
       kanatZafer: b.savas?.kanat_zafer ?? 0,
       kanatYenilgi: b.savas?.kanat_yenilgi ?? 0,
@@ -1058,7 +1056,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim), birlikBakim: r2(h.birlikBakim),
       techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
-      barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, (BARIS_GANIMET_ARALIK[0] + BARIS_GANIMET_ARALIK[1]) / 2) * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
+      barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, BARIS_GANIMET_ORTA) * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
     },
     yol,
   };

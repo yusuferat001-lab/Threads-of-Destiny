@@ -12,6 +12,7 @@ import {
   dusmanAraziCarpani,
   dusmanSaldiriSavunma,
   dusmanReferansGucuYas,
+  dusmanGucuHesapla,
   savasDusmanGucuYas,
 } from "../src/data/birlik";
 import type { CharacterState } from "../src/types";
@@ -114,7 +115,8 @@ describe("düşman gücü: yaşa göre, ±%5, saldırı/savunma ayrımlı", () =
       arazi: "ova", inisiyatif: "savunma", dusman_orani: 1, dusman_tur: "karma", kanat_zafer: 0, kanat_yenilgi: 0, genel_zafer: 0, genel_yenilgi: 0,
     };
     const k = savasKiyasiHesapla(s, isletmeBaglami(s));
-    const ref = savasDusmanGucuYas(s.yas) * dusmanAraziCarpani("ova", "karma");
+    // düşman: (yaşa bağlı taban + oyuncu gücünün %30'u) × savaş çarpanı; kıyas özeti aynı fonksiyonu kullanır
+    const ref = dusmanGucuHesapla(s.yas, "savas", gucHesapla(s, { enflasyon: isletmeBaglami(s).enflasyon }).guc) * dusmanAraziCarpani("ova", "karma");
     expect(k.dusman.guc[0]).toBe(Math.round(ref * 0.935));
     expect(k.dusman.guc[1]).toBe(Math.round(ref * 1.065));
     expect(k.oyuncu.saldiri).toBeGreaterThan(0);
