@@ -59,3 +59,27 @@ Yalnız TÜM ORDU (büyük savaş) yenilgisinde, karar savaşından sonraki ilk 
 **Yüksekte pasif düşüş (yeni):** yıl başında moral ya da talim **70'in üstündeyse** o yıl ek olarak −(değer−70)×0,20 düşer (80'de −2, 90'da −4, 100'de −6; `yuksekPasifDusus`, `PASIF_DUSUS_ESIGI/KATSAYI`; `birlikYil.ts` adım 8 ve 9). **Yeni er giriş talimi 15** (`TALIM_YENI_ER_GIRIS`, eski 25).
 
 Testler: `birlik.test.ts` "v67 Madde 2" bloğu (net talim, politika morali, ücretsiz talim, ganimet payı, bolluk, pasif düşüş, metin) + `birlikV39.test.ts` sabit beklentileri. `simulateBirlik.ts` (N=40, Orta Çağ): dengeli/aktif net pozitif, batan %3-5, zafer %77-88 — ekonomi bozulmadı. Not: "görev kaybı" testine `para` verildi (moral gelir bonusu ×1,05 yokken ordu borca girip erzak firarını tetikliyordu). Açık: komuta tonu (moral ±3) hâlâ var (Madde 7), moral/talimin güce etkisi ±%25 (Madde 4).
+
+## v67 — Madde 3: ekonomi sabitleri (2026-11)
+
+| Kalem | Eski → Yeni | Sabit |
+|---|---|---|
+| Er masrafı (oyuncu öder) | 0,19 → **0,23** | `ER_MASRAFI` |
+| Erzak (er başı) | 0,14 → **0,13** | `ERZAK_BIRIMI` |
+| Devlet er başı ödemesi | 0,15 (değişmedi) | `ER_BASI_GELIR` |
+| Sold (rütbeden bağımsız) | 9 → **8,5** | `SOLD` |
+| Teçhizat bakımı hafif/standart/ağır | 0,15/0,27/0,40 → **0,13/0,24/0,36** | `KALITE_BAKIM` |
+| Kışla bakımı K0…K4 | 2/6/18/50/120 → **3/8/22/60/150** | `KISLA_BAKIM` |
+| Görev asgari güç | 8/25/55/110/200 → **10/40/80/145/250** | `GOREVLER[].minGuc` |
+| Görev katsayısı (er başı) | 0,65…0,90 → **0,55 / 0,5875 / 0,625 / 0,6625 / 0,70** ×**1,05** | `erBasi`, `GOREV_GELIR_CARPANI` |
+| Savaş ödenek çarpanı | 3 → **2** | `SAVAS_ER_BASI_CARPANI` |
+| Yıllık sabit gönüllü er | 1 → **0** | `BARIS_YILLIK_ER` |
+| Devşirme Bürosu fiyatı | 20/35/52/75 → **24/42/62/90** (×1,2) | `FIYAT_DEVSIRME` (`meslekProfilleri.ts`) |
+| Revir fiyatı | 13/22/34/50 → **16/26/41/60** (×1,2) | `FIYAT_REVIR` |
+| Hazine payı ilk dilim (0–100) | %0 → **%10** (15/25/35/40 aynı) | `HAZINE_KADEMELERI` |
+
+**Görev geliri artık ER bazlı:** `gelir = er × gorevErOrani(er) × erBasi × GOREV_GELIR_CARPANI × …` (eski: `güç × gorevGucOrani(güç) × …`); güç yalnız görevin AÇILIŞ eşiği için kullanılır. İstemci etiketi "Er başı gelir" ("/er"). `gorevGucOrani`/`GOREV_BANTLARI` yalnız eski test/gösterge için duruyor.
+
+**Gider örneği** (enflasyonsuz, tam ağır teçhizat, özel birlik yok; talim ücretsiz): 40 er (K1) 36,8 · 80 er (K2) 79,6 · 150 er (K3) 168,0; sold geliri 14,5 / 20,5 / 31,0 → görevsiz net −22 / −59 / −137 (açığı görev + ganimet kapatır). Özel birlik bakımı Madde 4.
+
+**Simülasyon** (`simulateBirlik.ts`, Orta Çağ, dengeli bot; "batan" = ordunun kendini geçindirememesi): Madde 2 sonrası **%5**, er@60 229 → sabitler + er bazlı görev + yıllık +1 er YOK + büro/revir ×1,8 **%30** (er@60 109) → aynısı güç bazlı görevle **%53** → yıllık +1 er kalır, büro/revir eski fiyat **%8** (er@60 220) → **seçilen (yıllık er yok, büro/revir ×1,2): %18** (dengeli), **%10** (aktif); er@60 143-153; zafer %53-68. Yani seçilen kombinasyon eski dengeden sıkı; büyüme yalnız devşirme subayı, büro, şöhret, doktrin, yatkınlıktan. Madde 4-5 (güç/düşman) sonrası yeniden ölçülmeli. Testler: `birlik.test.ts` "v67 Madde 3" bloğu + `birlik*.test.ts` sabit beklentileri.

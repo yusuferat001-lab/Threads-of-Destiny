@@ -26,7 +26,7 @@ const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
   it("kışla bakımı düşük kademede yumuşak; tam dolu kışlada er başı bakım kademeyle artar", () => {
-    expect(KISLA_BAKIM).toEqual([2, 6, 18, 50, 120]);
+    expect(KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
     const erBasi = KISLA_BAKIM.map((x, i) => x / KISLA_ER_LIMITI[i]);
     for (let i = 1; i < erBasi.length; i++) expect(erBasi[i]).toBeGreaterThan(erBasi[i - 1]);
     for (let i = 1; i < KISLA_BAKIM.length; i++) expect(KISLA_BAKIM[i]).toBeGreaterThan(KISLA_BAKIM[i - 1]);
@@ -243,19 +243,17 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     b.kalite = { dusuk: 200, orta: 0, yuksek: 0 };
     b.gorevler = ["tahsilat"];
     b.birlik_turler = [];
-    const guc0 = gucHesapla(s).guc;
     const g0 = birlikHesapla(s, bg(s)).gorevGeliri;
     b.birlik_turler = ["suvari"];
-    const guc1 = gucHesapla(s).guc;
     const g1 = birlikHesapla(s, bg(s)).gorevGeliri;
     expect(g0).toBeGreaterThan(0);
     expect(SUVARI_GOREV_GELIRI).toBe(0.1);
-    expect(g1 / g0).toBeGreaterThan(1.05 * (guc1 / guc0) * 0.9); // güç değişimi + %10 bonus (güç/er bantları aynı bantta)
+    expect(g1 / g0).toBeCloseTo(1.1, 3); // görev geliri er bazlı: yalnız %10 süvari bonusu
     b.gorevler = ["eskort"];
     b.birlik_turler = [];
-    const e0 = birlikHesapla(s, bg(s)).gorevGeliri / gucHesapla(s).guc;
+    const e0 = birlikHesapla(s, bg(s)).gorevGeliri;
     b.birlik_turler = ["suvari"];
-    const e1 = birlikHesapla(s, bg(s)).gorevGeliri / gucHesapla(s).guc;
-    expect(e1 / e0).toBeCloseTo(1, 1); // eskortta bonus yok
+    const e1 = birlikHesapla(s, bg(s)).gorevGeliri;
+    expect(e1 / e0).toBeCloseTo(1, 3); // eskortta bonus yok
   });
 });

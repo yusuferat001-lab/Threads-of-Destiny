@@ -68,7 +68,6 @@ import {
   moralGucEtkisi,
   odenmeyenCeza,
   type GorevTanimi,
-  gorevGucOrani,
   gorevErOrani,
   SUVARI_GOREV_GELIRI,
   SUVARI_BONUS_GOREVLERI,
@@ -664,7 +663,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const suvariC = SUVARI_BONUS_GOREVLERI.includes(g.id) ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1;
-    const gelir = gucPay * gorevGucOrani(gucPay) * gorevErOrani(p) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
+    const gelir = p * gorevErOrani(p) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;

@@ -148,8 +148,8 @@ const FIYAT_KAPASITE = [20, 45, 90, 160]; // depo ve ibadethane
 const FIYAT_KISLA = [30, 90, 220, 500]; // kışla (tek ordu limiti)
 const FIYAT_OKUL = [20, 30, 45, 65];
 const FIYAT_ASEVI = [8, 15, 24, 36];
-const FIYAT_REVIR = [13, 22, 34, 50]; // Asker revir (≈1 yıllık net'ten başlar)
-const FIYAT_DEVSIRME = [20, 35, 52, 75];
+const FIYAT_REVIR = [16, 26, 41, 60]; // v67: ×1,2 // Asker revir (≈1 yıllık net'ten başlar)
+const FIYAT_DEVSIRME = [24, 42, 62, 90]; // v67: ×1,2
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
   simge: "🏚️",

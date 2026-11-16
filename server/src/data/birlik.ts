@@ -24,7 +24,7 @@ export const ASKER_PAZAR_BASLANGIC: [number, number] = [185, 205];
 /** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
 export const KISLA_ER_LIMITI = [30, 70, 140, 280, 500];
 /** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu). Düşük kademe yumuşak; er başı bakım kademeyle artar (tam dolu kışlada er başı ≈ 0,07 / 0,09 / 0,13 / 0,18 / 0,24). */
-export const KISLA_BAKIM = [2, 6, 18, 50, 120];
+export const KISLA_BAKIM = [3, 8, 22, 60, 150];
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
@@ -45,7 +45,7 @@ export const KALITE_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.75, orta:
 /** Düşükten verilen kaliteye yükseltmenin er başı fiyatı (enflasyonsuz). */
 export const KALITE_FIYATI: Record<BirlikKalite, number> = { dusuk: 0, orta: 0, yuksek: 0 };
 /** Teçhizat bakımı: er başı yıllık (enflasyonlu), seviyeye göre. */
-export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.15, orta: 0.27, yuksek: 0.4 };
+export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.13, orta: 0.24, yuksek: 0.36 };
 /** Teçhizat seviyesinin yıllık moral etkisi (kalite karışımının ağırlıklı ortalaması) ve talim kazancı çarpanı. */
 export const KALITE_MORAL: Record<BirlikKalite, number> = { dusuk: -1, orta: 0, yuksek: 1 };
 export const KALITE_TALIM_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.9, orta: 1, yuksek: 1.1 };
@@ -440,20 +440,20 @@ export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [9, 9, 9, 9, 9];
+export const SOLD = [8.5, 8.5, 8.5, 8.5, 8.5];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir); yalnız ana kadro içindir, seferber ve kiralık erler ödeme almaz. */
 export const ER_BASI_GELIR = 0.15;
 /** Görev geliri ek çarpanı (1 = yok). Teçhizat çarpanı 0,75/1/1,25'e inince güç ≈×0,75 oldu; güçle orantılı gelirler (görev, yağma, ganimet) ×1,33 ile yeniden dengelendi (1,11 × 1,333). */
-export const GOREV_GELIR_CARPANI = 1;
+export const GOREV_GELIR_CARPANI = 1.05; // v67: görev geliri +%5
 /** Her rütbede sabit yıllık gönüllü er (savaşta ayrıca çarpılmaz; vebada kısılır, kışla limitine takılır). */
-export const BARIS_YILLIK_ER = 1;
+export const BARIS_YILLIK_ER = 0; // v67: yıllık sabit gönüllü er kalktı (büyüme yalnız devşirme subayı, büro, şöhret, doktrin, yatkınlık)
 /** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haraç ve vergi tahsilatı görev gelirini artırır. */
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
-export const SAVAS_ER_BASI_CARPANI = 3;
-export const ER_MASRAFI = 0.19;
-export const ERZAK_BIRIMI = 0.14;
+export const SAVAS_ER_BASI_CARPANI = 2;
+export const ER_MASRAFI = 0.23;
+export const ERZAK_BIRIMI = 0.13;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
 export const GANIMET_PAYI_KILIT_YIL = 5;
 /** Barış çatışması (haydut / sınır) zafer ganimeti = max(40; askerî güç) × U(a; b) × güç bantları (ganimetEtkinGuc; yenilgide ganimet yok). */
@@ -601,31 +601,31 @@ export interface GorevTanimi {
 }
 export const GOREVLER: GorevTanimi[] = [
   {
-    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 8, erBasi: 0.65, moral: 0.2, yalnizSavas: false, ganimet: 0,
+    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 10, erBasi: 0.55, moral: 0.2, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.003, olu: 0.0003, firar: 0.0005 }, sertlik: 0, savasCarpani: 1.1, senaryo: null,
     ad: { orta: { tr: "Nöbet ve Devriye", en: "Watch & Patrol" }, sanayi: { tr: "Asayiş ve Devriye", en: "Policing & Patrol" } },
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 25, erBasi: 0.7125, sohret: 0.3, otorite: 0.3, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 40, erBasi: 0.5875, sohret: 0.3, otorite: 0.3, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.006, olu: 0.0006, firar: 0.001 }, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
   },
   {
-    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 55, erBasi: 0.775, otorite: 0.4, sohret: -0.3, yalnizSavas: false, ganimet: 0,
+    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 80, erBasi: 0.625, otorite: 0.4, sohret: -0.3, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.01, olu: 0.001, firar: 0.002 }, sertlik: 1.2, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Haraç ve Vergi Tahsilatı", en: "Tribute & Tax Collection" }, sanayi: { tr: "Jandarma ve Vergi Tahsilatı", en: "Gendarmerie & Tax Collection" } },
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 110, erBasi: 0.8375, moral: 0.3, otorite: 0.5, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 145, erBasi: 0.6625, moral: 0.3, otorite: 0.5, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.015, olu: 0.0017, firar: 0.003 }, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "İstikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 200, erBasi: 0.9, moral: 0.6, sohret: 1.2, otorite: 0.6, yalnizSavas: false, ganimet: 0.05,
+    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 250, erBasi: 0.7, moral: 0.6, sohret: 1.2, otorite: 0.6, yalnizSavas: false, ganimet: 0.05,
     kayip: { yarali: 0.022, olu: 0.0025, firar: 0.004 }, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
     aciklama: { tr: "Büyük ordu ister; en yüksek kazanç ve şöhret, en çok kayıp.", en: "Needs a big army; the highest earnings and renown, and the heaviest losses." },
@@ -640,7 +640,7 @@ export function gorevRiski(g: GorevTanimi): number {
 export const GOREV_FIRAR_YIL_IHTIMALI = 0.3;
 /** Barışta görev kaybı bildirimi: kayıp ordunun %5'ini (en az 4 er) aşarsa her zaman; daha azsa yalnız bu olasılıkla ("ara sıra"). */
 export const GOREV_KAYIP_BILDIRIM_ESIGI = { mutlak: 4, oran: 0.05, ihtimal: 0.3 };
-/** Görev geliri güçle azalan verimle ödenir: her güç dilimi kendi çarpanıyla sayılır (etkin güç / güç = gelir çarpanı). */
+/** (v67: görev geliri artık ER sayısına bağlı — gorevErOrani; bu güç bantları yalnız eski gösterge/test içindir.) Görev geliri güçle azalan verimle ödenirdi: her güç dilimi kendi çarpanıyla sayılırdı. */
 export const GOREV_BANTLARI: [number, number, number][] = [[0, 150, 1], [150, 300, 0.9], [300, 450, 0.75], [450, 600, 0.6], [600, Infinity, 0.45]];
 export function gorevGucOrani(guc: number): number {
   if (guc <= 0) return 1;
@@ -1126,7 +1126,7 @@ export const MAAS_ADLARI: Record<string, DilliMetin> = {
 export const maasAdi = (cag: string, bolge: string): DilliMetin => MAAS_ADLARI[`${cag}|${bolge}`] ?? { tr: "Maaş", en: "Pay" };
 
 // ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %40. Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
-export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 100, 0], [100, 250, 0.15], [250, 500, 0.25], [500, 900, 0.35], [900, Infinity, 0.4]];
+export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 100, 0.1], [100, 250, 0.15], [250, 500, 0.25], [500, 900, 0.35], [900, Infinity, 0.4]];
 export function hazinePayi(reelNet: number): number {
   if (!(reelNet > 0)) return 0;
   let t = 0;

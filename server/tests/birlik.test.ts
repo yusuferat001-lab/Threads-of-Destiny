@@ -320,8 +320,8 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 9 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
+  it("sabit maaş 8,5 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([8.5, 8.5, 8.5, 8.5, 8.5]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -849,9 +849,9 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(birlikAl(s).kalite.yuksek).toBe(erSayisi(s));
   });
 
-  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,15/0,27/0,40; güç başına gider yükseldikçe biraz azalır (yükseltme teşvik edilir, ama hiçbiri baskın değil)", () => {
+  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,13/0,24/0,36; güç başına gider yükseldikçe biraz azalır (yükseltme teşvik edilir, ama hiçbiri baskın değil)", () => {
     expect(KALITE_CARPANI).toEqual({ dusuk: 0.75, orta: 1, yuksek: 1.25 });
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.27, yuksek: 0.4 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
     const g = (q: "dusuk" | "orta" | "yuksek") => (ER_MASRAFI + ERZAK_BIRIMI + KALITE_BAKIM[q]) / KALITE_CARPANI[q];
     expect(g("yuksek")).toBeLessThan(g("orta"));
     expect(g("orta")).toBeLessThan(g("dusuk"));
@@ -1206,5 +1206,58 @@ describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
     const agir = talimArtiEksi("agir");
     expect(agir.arti.some((m) => m.tr === "Talim yılda +7 değişir")).toBe(true);
     expect(agir.eksi.some((m) => m.tr.includes("morali −5"))).toBe(true);
+  });
+});
+
+describe("v67 Madde 3 — ekonomi sabitleri", () => {
+  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,15, sold 8,5, savaş ödeneği ×2, yıllık sabit er yok", async () => {
+    const d = await import("../src/data/birlik");
+    expect(d.ER_MASRAFI).toBe(0.23);
+    expect(d.ERZAK_BIRIMI).toBe(0.13);
+    expect(d.ER_BASI_GELIR).toBe(0.15);
+    expect(d.SOLD).toEqual([8.5, 8.5, 8.5, 8.5, 8.5]);
+    expect(d.SAVAS_ER_BASI_CARPANI).toBe(2);
+    expect(d.BARIS_YILLIK_ER).toBe(0);
+    expect(d.KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
+    expect(d.KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
+  });
+
+  it("görev asgari güçleri 10/40/80/145/250; er başı katsayı 0,55…0,70 eşit adımlı", () => {
+    const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
+    expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
+    expect(sira.map((g) => g.erBasi)).toEqual([0.55, 0.5875, 0.625, 0.6625, 0.7]);
+  });
+
+  it("gider (tam ağır teçhizat, özel birlik yok): 40 er 36,8 · 80 er 79,6 · 150 er 168,0 (enflasyonsuz); talim ücretsiz", () => {
+    for (const [er, kisla, beklenen] of [[40, 1, 36.8], [80, 2, 79.6], [150, 3, 168.0]] as const) {
+      const s = asker();
+      s.ulke.donem = undefined as never; // dönem erzak çarpanı karışmasın
+      s.isletme!.yatirimlar.kisla = kisla;
+      s.meslek_musteri = er;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 0, yuksek: er };
+      b.birlik_turler = [];
+      b.yarali = 0;
+      const h = birlikHesapla(s, bg(s));
+      expect(h.talimMasrafi).toBe(0);
+      expect(h.toplamGider / bg(s).giderEnflasyon).toBeCloseTo(beklenen, 1);
+    }
+  });
+
+  it("görev geliri er bazlı: aynı er sayısında teçhizat/güç değişse de gelir sabit; er arttıkça artar", () => {
+    const gelir = (er: number, kalite: "dusuk" | "yuksek") => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 3;
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = er;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 0, yuksek: 0, [kalite]: er } as never;
+      b.gorevler = ["devriye"];
+      b.moral = 50;
+      return birlikHesapla(s, bg(s)).gorevGeliri;
+    };
+    expect(gelir(100, "yuksek") / gelir(100, "dusuk")).toBeCloseTo(1, 1);
+    expect(gelir(150, "dusuk")).toBeGreaterThan(gelir(100, "dusuk"));
   });
 });
