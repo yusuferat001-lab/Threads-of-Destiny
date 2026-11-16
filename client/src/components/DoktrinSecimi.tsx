@@ -3,6 +3,8 @@ import type { BirlikGorunumu } from '../types';
 import { isletmeGetir } from '../api';
 import { useDil } from '../DilContext';
 import { DoktrinEtkiSatiri } from './BirlikPaneli';
+import { KararKatman, KararOnay, KararSatiri, RutbeYolu } from './KararKabuk';
+import { kolOlarak, useKolEtiketi } from './kararKol';
 
 const M = {
   baslik: { tr: 'Doktrinini Seç', en: 'Choose Your Doctrine' },
@@ -11,62 +13,82 @@ const M = {
     en: 'Your rank has risen; choose a new doctrine to shape how your army fights. The choice is permanent and the game waits for it.',
   },
   seviye: { tr: 'Seviye', en: 'Level' },
-  sec: { tr: 'Bu doktrini seç', en: 'Choose this doctrine' },
-  acimasiz: { tr: '⚡ Acımasız: sertliği ve firarı artırır', en: '⚡ Ruthless: raises harshness and desertion' },
+  onayla: { tr: 'Bu doktrini onayla', en: 'Confirm this doctrine' },
+  sec: { tr: 'Bir doktrin seç.', en: 'Pick a doctrine.' },
+  islenir: { tr: 'Seçimin bu basamağa işlenir.', en: 'Your choice is set on this step.' },
+  acimasiz: { tr: 'Acımasız kol: sertliği ve firarı artırır.', en: 'Ruthless path: raises harshness and desertion.' },
   yukleniyor: { tr: 'Yükleniyor…', en: 'Loading…' },
 };
 
-type Secenek = NonNullable<BirlikGorunumu['doktrin']['bekleyen']>['secenekler'][number];
+type Birlik = NonNullable<BirlikGorunumu>;
+type Bekleyen = NonNullable<Birlik['doktrin']['bekleyen']>;
 
-/** Kapatılamaz tam ekran doktrin seçimi (Asker terfisi). OgretiSecimi ile aynı desen. */
+/** Kapatılamaz tam ekran doktrin seçimi (Asker terfisi): rütbe yolu + kol renkli seçenek satırları + onay. */
 export function DoktrinSecimi({ stateId, doktrinSayisi, yukleniyor, onSec }: { stateId: string; doktrinSayisi: number; yukleniyor: boolean; onSec: (id: string) => void }) {
   const { dil } = useDil();
-  const [secenekler, setSecenekler] = useState<Secenek[] | null>(null);
-  const [seviye, setSeviye] = useState(1);
+  const kolEtiketi = useKolEtiketi();
+  const [bekleyen, setBekleyen] = useState<Bekleyen | null | undefined>(undefined);
+  const [secilen, setSecilen] = useState<Birlik['doktrin']['secilen']>([]);
   const [odemeAdi, setOdemeAdi] = useState<string | undefined>(undefined);
+  const [secim, setSecim] = useState<string | null>(null);
   useEffect(() => {
     let iptal = false;
-    setSecenekler(null);
+    setBekleyen(undefined);
+    setSecim(null);
     isletmeGetir(stateId)
       .then((g) => {
         if (iptal) return;
-        setSecenekler(g.birlik?.doktrin.bekleyen?.secenekler ?? []);
-        setSeviye(g.birlik?.doktrin.bekleyen?.seviye ?? 1);
+        setBekleyen(g.birlik?.doktrin.bekleyen ?? null);
+        setSecilen(g.birlik?.doktrin.secilen ?? []);
         setOdemeAdi(g.birlik?.hesap.soldAdi[dil]);
       })
       .catch(() => {
-        if (!iptal) setSecenekler([]);
+        if (!iptal) setBekleyen(null);
       });
     return () => {
       iptal = true;
     };
-  }, [stateId, doktrinSayisi]);
+  }, [stateId, doktrinSayisi, dil]);
+  const seviye = bekleyen?.seviye ?? 1;
+  const secenekler = bekleyen?.secenekler ?? [];
+  const seciliSecenek = secenekler.find((o) => o.id === secim);
   return (
-    <div className="ogreti-katman zemin-koyu" role="dialog" aria-modal="true">
-      <div className="ogreti-kutu">
-        <h2>🎖️ {M.baslik[dil]}</h2>
-        <p>{M.alt[dil]}</p>
-        <p className="ogreti-seviye">
-          {M.seviye[dil]} {seviye}
-        </p>
-        {secenekler === null ? (
-          <p>{M.yukleniyor[dil]}</p>
-        ) : (
-          <div className="ogreti-kartlar">
-            {secenekler.map((o) => (
-              <div key={o.id} className={`ogreti-kart${o.acimasiz ? ' ogreti-kart-fanatik' : ''}`}>
-                <div className="ogreti-simge">{o.simge}</div>
-                <strong>{o.ad[dil]}</strong>
-                <p><DoktrinEtkiSatiri etki={o.etki} dil={dil} odemeAdi={odemeAdi} /></p>
-                {o.acimasiz && <small>{M.acimasiz[dil]}</small>}
-                <button disabled={yukleniyor} onClick={() => onSec(o.id)}>
-                  {M.sec[dil]}
-                </button>
-              </div>
-            ))}
+    <KararKatman simge="🎖️" baslik={M.baslik[dil]} alt={M.alt[dil]} rozet={`${M.seviye[dil]} ${seviye} / 5`}>
+      <RutbeYolu
+        simdi={seviye}
+        adimlar={secilen.map((o) => ({ seviye: o.seviye, simge: o.simge, ad: o.ad[dil], kol: kolOlarak(o.kaynak) }))}
+      />
+      {bekleyen === undefined ? (
+        <p className="kk-alt">{M.yukleniyor[dil]}</p>
+      ) : (
+        <>
+          <div className="kk-liste kk-secimler">
+            {secenekler.map((o) => {
+              const kol = kolOlarak(o.kaynak);
+              return (
+                <KararSatiri
+                  key={o.id}
+                  kol={kol}
+                  simge={o.simge}
+                  dal={kolEtiketi(kol)}
+                  ad={o.ad[dil]}
+                  cipler={<DoktrinEtkiSatiri etki={o.etki} dil={dil} odemeAdi={odemeAdi} cip />}
+                  secili={secim === o.id}
+                  disabled={yukleniyor}
+                  onClick={() => setSecim(o.id)}
+                />
+              );
+            })}
           </div>
-        )}
-      </div>
-    </div>
+          <KararOnay
+            not={!seciliSecenek ? M.sec[dil] : seciliSecenek.acimasiz ? M.acimasiz[dil] : M.islenir[dil]}
+            acimasiz={!!seciliSecenek?.acimasiz}
+            etiket={M.onayla[dil]}
+            disabled={yukleniyor || !seciliSecenek}
+            onClick={() => seciliSecenek && onSec(seciliSecenek.id)}
+          />
+        </>
+      )}
+    </KararKatman>
   );
 }
