@@ -91,11 +91,11 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut/sınır 2,6–3,2, savaş zaferi 11–14, yaralı 0,20, ganimet politikası morali −8/0/+6", () => {
+  it("sabitler: haydut/sınır 2,6–3,2, savaş zaferi 11–14, yaralı 0,20, ganimet politikası morali −7/0/+4", () => {
     expect(BARIS_GANIMET_ARALIK).toEqual([2.6, 3.2]);
     expect(SAVAS_ZAFER_GANIMET).toEqual([11, 14]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
-    expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-8, 0, 6]);
+    expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
   });
 
   it("görev ganimeti savaş yılında yok; yağma yalnız ilk 3 savaş yılında, yenilgiden sonra yok", () => {
@@ -345,11 +345,11 @@ describe("v40 görev geliri ve birim küçük artıları", () => {
     expect(Math.min(...v)).toBeCloseTo(0.65, 6);
     expect(Math.max(...v)).toBeCloseTo(0.9, 6);
     for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
-    // her görev farklı bir karışımla şöhret/moral/otorite/ahlak etkiler; sıfır olmayan her etki en az 0,3
+    // her görev farklı bir karışımla şöhret/moral/otorite/ahlak etkiler; sıfır olmayan her etki en az 0,2
     for (const g of GOREVLER) {
       const etkiler = [g.sohret, g.moral, g.otorite, g.ahlak].filter((x): x is number => typeof x === "number" && x !== 0);
       expect(etkiler.length).toBeGreaterThan(0);
-      for (const e of etkiler) expect(Math.abs(e)).toBeGreaterThanOrEqual(0.3 - 1e-9);
+      for (const e of etkiler) expect(Math.abs(e)).toBeGreaterThanOrEqual(0.2 - 1e-9);
     }
     expect(GOREVLER.find((g) => g.id === "komuta")!.sohret).toBeGreaterThan(GOREVLER.find((g) => g.id === "devriye")!.sohret ?? 0);
   });
@@ -528,6 +528,7 @@ describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", (
 
   it("görev kaybı: çoğunlukla yaralı, az ölü, ara sıra firar; her yıl bildirilmez", () => {
     const s = asker();
+    s.para = 1_000_000; // bu test kayıp sıklığını ölçer; borç/erzak kıtlığı firar etkisi karışmasın
     s.rutbe_seviye = 5;
     s.isletme!.yatirimlar.kisla = 4;
     s.meslek_musteri = 300;
@@ -808,8 +809,8 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
   });
   it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
     const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");
-    expect(CATISMA_ORDU_MORALI.haydut).toEqual({ zafer: 3, yenilgi: -3 });
-    expect(CATISMA_ORDU_MORALI.sinir).toEqual({ zafer: 4, yenilgi: -5 });
+    expect(CATISMA_ORDU_MORALI.haydut).toEqual({ zafer: 2, yenilgi: -3 });
+    expect(CATISMA_ORDU_MORALI.sinir).toEqual({ zafer: 3, yenilgi: -5 });
     expect(CATISMA_KISI_MORALI.sinir.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.haydut.yenilgi);
     expect(SAVAS_KISI_MORALI.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.sinir.yenilgi);
     const s = asker();
@@ -849,7 +850,7 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     birlikHazirla(s); // eski kayıt yüklenirken normalleşir
     expect(birlikAl(s).talim).toBe(50);
   });
-  it("bakım yoksa moral ve talim zamanla düşer: barışta moral −1, talim −2 (hafif talim, nötr etkenler)", () => {
+  it("hafif talimde moral yılda +0,5 artar (politika +1, doğal −0,5), talim −2 söner; yeni erler (giriş 15) seyreltir", () => {
     const s = asker();
     const b = birlikAl(s);
     b.baris_bekleme = 99;
@@ -860,8 +861,8 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     b.hedef_kalite = "orta";
     b.kalite = { dusuk: 0, orta: 20, yuksek: 0 };
     birlikYilIsle(s, bg(s));
-    expect(b.moral).toBeLessThan(50);
-    expect(b.talim).toBeLessThan(50); // doğal unutma −2 ve yeni erlerin (giriş talimi 25) seyreltmesi
+    expect(b.moral).toBeGreaterThan(50);
+    expect(b.talim).toBeLessThan(50); // doğal unutma −2 ve yeni erlerin (giriş talimi 15) seyreltmesi
     expect(b.talim).toBeGreaterThan(44);
   });
   it("dipteki moral toparlanır (<30 → +2)", () => {
@@ -873,9 +874,9 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     expect(b.moral).toBeGreaterThanOrEqual(10 - 16 + 2 > 0 ? 0 : 0);
     expect(b.moral).toBeGreaterThan(0);
   });
-  it("savaş morali: ordu zafer +10 / yenilgi −17; kanat bozgunu −9", async () => {
+  it("savaş morali: ordu zafer +6 / yenilgi −17; kanat bozgunu −9", async () => {
     const { MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN } = await import("../src/data/birlik");
-    expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([10, -17, -9]);
+    expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([6, -17, -9]);
   });
   it("etkin talim: Gazi etkisiz (ordunun talimi), Tüm Erkekler talimi seyreltir; ordunun gerçek talimi bozulmaz; savaş sonu katılan kadroya işler", async () => {
     const { etkinTalim } = await import("../src/game/birlik");

@@ -47,7 +47,7 @@ export const KALITE_FIYATI: Record<BirlikKalite, number> = { dusuk: 0, orta: 0, 
 /** Teçhizat bakımı: er başı yıllık (enflasyonlu), seviyeye göre. */
 export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.15, orta: 0.27, yuksek: 0.4 };
 /** Teçhizat seviyesinin yıllık moral etkisi (kalite karışımının ağırlıklı ortalaması) ve talim kazancı çarpanı. */
-export const KALITE_MORAL: Record<BirlikKalite, number> = { dusuk: -1, orta: 0, yuksek: 1.5 };
+export const KALITE_MORAL: Record<BirlikKalite, number> = { dusuk: -1, orta: 0, yuksek: 1 };
 export const KALITE_TALIM_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.9, orta: 1, yuksek: 1.1 };
 /** Kalite değişiminden sonra yeniden değiştirmek için beklenecek yıl. */
 export const KALITE_KILIT_YIL = 5;
@@ -163,9 +163,10 @@ export interface TalimTanimi {
   ad: DilliMetin;
 }
 export const TALIM_TANIMLARI: Record<BirlikTalim, TalimTanimi> = {
-  hafif: { delta: 0, tavan: 100, masraf: 0.01, moral: 0, ad: { tr: "Hafif talim", en: "Light drill" } },
-  orta: { delta: 5, tavan: 70, masraf: 0.025, moral: -1, ad: { tr: "Orta talim", en: "Regular drill" } },
-  agir: { delta: 12, tavan: 100, masraf: 0.045, moral: -3, ad: { tr: "Ağır talim", en: "Hard drill" } },
+  // Yıllık NET talim değişimi (doğal unutma −TALIM_DOGAL_DUSUS dahil, standart teçhizat): hafif −2 / orta +2 / ağır +7. Talim ücretsizdir; morale etkisi +1 / −1 / −5.
+  hafif: { delta: 0, tavan: 100, masraf: 0, moral: 1, ad: { tr: "Hafif talim", en: "Light drill" } },
+  orta: { delta: 4, tavan: 70, masraf: 0, moral: -1, ad: { tr: "Orta talim", en: "Regular drill" } },
+  agir: { delta: 9, tavan: 100, masraf: 0, moral: -5, ad: { tr: "Ağır talim", en: "Hard drill" } },
 };
 /** Güç bonusu = seviye × katsayı (en çok +%20). */
 export const TALIM_GUC_KATSAYISI = 0.002;
@@ -173,8 +174,8 @@ export const TALIM_GUC_KATSAYISI = 0.002;
 export const KAYIP_CARPANI_TABANI = 0.5;
 /** Kayıp çarpanı azalması = seviye × katsayı (en çok −%15). */
 export const TALIM_KAYIP_KATSAYISI = 0.0015;
-export const TALIM_SAVAS_ZAFER = 10;
-export const TALIM_SAVAS_YENILGI = 5;
+export const TALIM_SAVAS_ZAFER = 6;
+export const TALIM_SAVAS_YENILGI = 3;
 export const TALIM_SECKIN_GIRIS = 70;
 
 // ── Moral ve sertlik ────────────────────────────────────────────────────────
@@ -184,7 +185,7 @@ export const TALIM_BASLANGIC = 50;
 export const MORAL_NOTR = 50;
 export const TALIM_NOTR = 50;
 /** Yeni katılan erlerin (gönüllü, devşirme, esir) giriş talimi; ordunun talim ortalamasını seyreltir. Seferber erlerin giriş talimi ayrıdır. */
-export const TALIM_YENI_ER_GIRIS = 25;
+export const TALIM_YENI_ER_GIRIS = 15;
 /** Moral ve talimin güce etkisi: nötrde 0, 0'da −%25, 100'de +%25 (doğrusal). */
 export const MORAL_TALIM_GUC_ARALIGI = 0.25;
 /** Doğal moral düşüşü (yıllık, savaşta daha sert) ve dipteki toparlanma (moral bu eşiğin altındaysa +MORAL_DIP_TOPARLANMA). */
@@ -194,6 +195,12 @@ export const MORAL_DIP_ESIGI = 30;
 export const MORAL_DIP_TOPARLANMA = 2;
 /** Talim bakım görmezse her yıl bu kadar unutulur; moral dipteyken (MORAL_DIP_ESIGI altı) talim kazancı yarıya iner. */
 export const TALIM_DOGAL_DUSUS = 2;
+/** Yüksekte pasif düşüş: yıl başındaki değer bu eşiğin üstündeyse o yıl ek olarak −(değer−eşik)×katsayı düşer (moral ve talim için; 80'de −2, 90'da −4, 100'de −6). */
+export const PASIF_DUSUS_ESIGI = 70;
+export const PASIF_DUSUS_KATSAYI = 0.2;
+export function yuksekPasifDusus(deger: number): number {
+  return deger > PASIF_DUSUS_ESIGI ? (deger - PASIF_DUSUS_ESIGI) * PASIF_DUSUS_KATSAYI : 0;
+}
 export const MORAL_YONELIM = 1;
 /** Moral dipteyken yıllık geri çekilmenin üst sınırı (puan). */
 export const MORAL_YONELIM_TAVAN = 5;
@@ -335,9 +342,9 @@ export function talimKayipEtkisi(talim: number): number {
 }
 /** Yıllık moral etkenleri. */
 export const GANIMET_PAYI_TANIMLARI: Record<BirlikGanimetPayi, { oran: number; moral: number; ad: DilliMetin }> = {
-  az: { oran: 0.3, moral: -8, ad: { tr: "Az pay", en: "Small share" } },
-  dengeli: { oran: 0.45, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
-  comert: { oran: 0.6, moral: 6, ad: { tr: "Cömert pay", en: "Generous share" } },
+  az: { oran: 0.3, moral: -7, ad: { tr: "Az pay", en: "Small share" } },
+  dengeli: { oran: 0.5, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
+  comert: { oran: 0.7, moral: 4, ad: { tr: "Cömert pay", en: "Generous share" } },
 };
 export const GANIMET_SIRASI: BirlikGanimetPayi[] = ["az", "dengeli", "comert"];
 export const TON_TANIMLARI: Record<BirlikTon, { moral: number; sertlik: number; ad: DilliMetin; aciklama: DilliMetin }> = {
@@ -376,14 +383,18 @@ export function talimArtiEksi(id: BirlikTalim): ArtiEksi {
   const arti: DilliMetin[] = [];
   const eksi: DilliMetin[] = [];
   if (d.delta > 0) {
-    arti.push({ tr: `Talim yılda +${d.delta} artar (unutma −${TALIM_DOGAL_DUSUS} düşülür)`, en: `Drill rises +${d.delta}/yr (minus ${TALIM_DOGAL_DUSUS} forgetting)` });
+    // Tek sayı: unutma düşülmüş gerçek yıllık değişim.
+    const net = d.delta - TALIM_DOGAL_DUSUS;
+    arti.push({ tr: `Talim yılda ${isaretli(net, sayiTr)} değişir`, en: `Drill ${isaretli(net, sayiEn)}/yr` });
     arti.push({ tr: `En çok +%${guc} güç, −%${kayip} kayıp`, en: `Up to +${guc}% power, −${kayip}% losses` });
     if (d.tavan < 100) eksi.push({ tr: `Talim ${d.tavan}'te durur`, en: `Drill stops at ${d.tavan}` });
   } else {
     eksi.push({ tr: `Talim yılda −${TALIM_DOGAL_DUSUS} söner; güç ve kayıp avantajı erir`, en: `Drill fades −${TALIM_DOGAL_DUSUS}/yr; power and loss edge melt away` });
   }
-  if (d.masraf <= 0.01) arti.push({ tr: `En ucuz: er başı ${sayiTr(d.masraf)}/yıl`, en: `Cheapest: ${sayiEn(d.masraf)} per man/yr` });
+  if (d.masraf <= 0) arti.push({ tr: "Ücretsiz", en: "Free" });
+  else if (d.masraf <= 0.01) arti.push({ tr: `En ucuz: er başı ${sayiTr(d.masraf)}/yıl`, en: `Cheapest: ${sayiEn(d.masraf)} per man/yr` });
   else eksi.push({ tr: `Er başı ${sayiTr(d.masraf)}/yıl masraf`, en: `${sayiEn(d.masraf)} per man/yr upkeep` });
+  if (d.moral > 0) arti.push(moralMetni(d.moral));
   if (d.moral < 0) eksi.push(moralMetni(d.moral));
   return { arti, eksi };
 }
@@ -416,12 +427,12 @@ export const ASIRI_COOLDOWN_YIL = 3;
 export const MORAL_SAVAS_YILLIK = MORAL_DOGAL_DUSUS_SAVAS;
 export const MORAL_BARIS_YILLIK = MORAL_DOGAL_DUSUS_BARIS;
 export const MORAL_KITLIK_YILLIK = -1.5;
-export const MORAL_BOLLUK_YILLIK = 1.5;
+export const MORAL_BOLLUK_YILLIK = 0; // bolluk dönemi artık ordu morali vermez
 export const MORAL_YUKSEK_KAYIP_ESIGI = 0.1;
 export const MORAL_YUKSEK_KAYIP = -4;
-export const REVIR_MORAL_KADEME = 0.75;
+export const REVIR_MORAL_KADEME = 0.4;
 /** Bir kerelik moral etkileri. */
-export const MORAL_ZAFER = 10;
+export const MORAL_ZAFER = 6;
 export const MORAL_KANAT_BOZGUN = -9;
 export const MORAL_YENILGI = -17;
 export const MORAL_IDAM = -3;
@@ -500,14 +511,14 @@ export const BARIS_CATISMALARI: Record<"haydut" | "sinir", BarisCatismaTanimi> =
     ad: { orta: { tr: "Düşman Akıncıları", en: "Enemy Raiders" }, sanayi: { tr: "Sınır Çatışması", en: "Border Clash" } },
   },
 };
-export const BARIS_TALIM_ZAFER = 5;
-export const BARIS_TALIM_YENILGI = 2;
+export const BARIS_TALIM_ZAFER = 3;
+export const BARIS_TALIM_YENILGI = 1;
 export const BARIS_MORAL_ZAFER = 4;
 export const BARIS_MORAL_YENILGI = -4;
 /** Çatışma türüne göre ordu morali (haydut hafif, sınır daha ağır) ve oyuncunun kendi morali (mutluluk). Savaş türü: ordu morali MORAL_ZAFER/MORAL_YENILGI (yıl işleme), kişi morali SAVAS_KISI_MORALI. */
 export const CATISMA_ORDU_MORALI: Record<"haydut" | "sinir", { zafer: number; yenilgi: number }> = {
-  haydut: { zafer: 3, yenilgi: -3 },
-  sinir: { zafer: 4, yenilgi: -5 },
+  haydut: { zafer: 2, yenilgi: -3 },
+  sinir: { zafer: 3, yenilgi: -5 },
 };
 export const CATISMA_KISI_MORALI: Record<"haydut" | "sinir", { zafer: number; yenilgi: number }> = {
   haydut: { zafer: 1, yenilgi: -2 },
@@ -590,7 +601,7 @@ export interface GorevTanimi {
 }
 export const GOREVLER: GorevTanimi[] = [
   {
-    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 8, erBasi: 0.65, moral: 0.3, yalnizSavas: false, ganimet: 0,
+    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 8, erBasi: 0.65, moral: 0.2, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.003, olu: 0.0003, firar: 0.0005 }, sertlik: 0, savasCarpani: 1.1, senaryo: null,
     ad: { orta: { tr: "Nöbet ve Devriye", en: "Watch & Patrol" }, sanayi: { tr: "Asayiş ve Devriye", en: "Policing & Patrol" } },
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
@@ -608,13 +619,13 @@ export const GOREVLER: GorevTanimi[] = [
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 110, erBasi: 0.8375, moral: 0.5, otorite: 0.5, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 110, erBasi: 0.8375, moral: 0.3, otorite: 0.5, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.015, olu: 0.0017, firar: 0.003 }, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "İstikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 200, erBasi: 0.9, moral: 1.2, sohret: 1.2, otorite: 0.6, yalnizSavas: false, ganimet: 0.05,
+    id: "komuta", tur: "komuta", simge: "🏯", minGuc: 200, erBasi: 0.9, moral: 0.6, sohret: 1.2, otorite: 0.6, yalnizSavas: false, ganimet: 0.05,
     kayip: { yarali: 0.022, olu: 0.0025, firar: 0.004 }, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
     aciklama: { tr: "Büyük ordu ister; en yüksek kazanç ve şöhret, en çok kayıp.", en: "Needs a big army; the highest earnings and renown, and the heaviest losses." },
@@ -1060,8 +1071,8 @@ export const KALE_SOHRET = 0.5;
 export const KALE_KOMUTA_BONUSU = 15;
 /** Haçlı/sefer yolculuğu: ordunun bu kesri seferde, kalanı görevlerine devam eder. */
 export const SEFER_ORDU_ORANI = 0.5;
-export const SEFER_DONUS_TALIM = 10;
-export const SEFER_DONUS_MORAL = 5;
+export const SEFER_DONUS_TALIM = 5;
+export const SEFER_DONUS_MORAL = 3;
 
 /** Komutan emirleri: savaş başında seçilir, savaş boyu sabit; içerik iki rütbede bir değişir (S1-2, S3-4, S5). */
 export interface EmirTanimi {

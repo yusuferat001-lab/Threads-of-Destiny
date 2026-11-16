@@ -47,3 +47,15 @@ Yalnız TÜM ORDU (büyük savaş) yenilgisinde, karar savaşından sonraki ilk 
 - Haydut avı/akın görevleri kalkınca **süvari birimi görev bonusu** kayboluyordu ve metni hâlâ "haydut ve akın geliri +%10" diyordu: bonus **Haraç ve Vergi Tahsilatı**'na taşındı (`SUVARI_BONUS_GOREVLERI`), metin TR/EN düzeltildi.
 - **Gelir & Gider ekranında (ButcePaneli) Hazine payı satırı** yoktu (Kazanç vergi sonrası ama liste toplamı tutmuyordu): `FinansOzeti.hazinePayi` ve satır eklendi.
 - Eskimiş yorumlar/metinler düzeltildi (zar ±%4, tahmin ±%6,5); CLAUDE.md indeksi güncellendi.
+
+## v67 — Madde 2: talim / moral / ganimet payı (2026-11)
+
+**Talim politikası** (`TALIM_TANIMLARI`, `data/birlik.ts`): **ücretsiz** (masraf 0/0/0); yıllık **net** talim değişimi (doğal unutma −2 dahil, standart teçhizat) **hafif −2 / orta +2 / ağır +7** — kodda politika artışı `0 / +4 / +9` + `TALIM_DOGAL_DUSUS = 2`; tavan 100/70/100; teçhizat kalitesi artışı çarpar (×0,9/1/1,1). Politikanın yıllık **ordu morali** **+1 / −1 / −5** (doğal barış düşüşü −0,5 ile birlikte hafif +0,5, orta −1,5, ağır −5,5). Oyuncu metni tek sayı: "Talim yılda +2 değişir" (`talimArtiEksi`), masraf yerine "Ücretsiz".
+
+**Ganimet payı** (`GANIMET_PAYI_TANIMLARI`): askere giden **%30 / %50 / %70** (sana %70/%50/%30), yıllık moral **−7 / 0 / +4** (eski %30/%45/%60, −8/0/+6). Kesinti yalnız çatışma ve savaş zaferi ganimetinde (görev ganimeti ve yağma kesintisiz). Ekran metni sabitten otomatik.
+
+**Moral/talim artış kaynakları kısıldı:** bolluk dönemi ordu morali **0** (eski +1,5); ağır teçhizat morali +1 (+1,5); revir +0,4/kademe (+0,75); görev morali devriye/garnizon/komuta 0,2/0,3/0,6 (0,3/0,5/1,2); haydut/sınır çatışması zafer morali +2/+3 (+3/+4); savaş kanat zaferi morali +6 (+10); sefer dönüşü moral/talim +3/+5 (+5/+10); barış çatışması talim zafer/yenilgi +3/+1 (+5/+2); savaş kanat talim +6/+3 (+10/+5).
+
+**Yüksekte pasif düşüş (yeni):** yıl başında moral ya da talim **70'in üstündeyse** o yıl ek olarak −(değer−70)×0,20 düşer (80'de −2, 90'da −4, 100'de −6; `yuksekPasifDusus`, `PASIF_DUSUS_ESIGI/KATSAYI`; `birlikYil.ts` adım 8 ve 9). **Yeni er giriş talimi 15** (`TALIM_YENI_ER_GIRIS`, eski 25).
+
+Testler: `birlik.test.ts` "v67 Madde 2" bloğu (net talim, politika morali, ücretsiz talim, ganimet payı, bolluk, pasif düşüş, metin) + `birlikV39.test.ts` sabit beklentileri. `simulateBirlik.ts` (N=40, Orta Çağ): dengeli/aktif net pozitif, batan %3-5, zafer %77-88 — ekonomi bozulmadı. Not: "görev kaybı" testine `para` verildi (moral gelir bonusu ×1,05 yokken ordu borca girip erzak firarını tetikliyordu). Açık: komuta tonu (moral ±3) hâlâ var (Madde 7), moral/talimin güce etkisi ±%25 (Madde 4).

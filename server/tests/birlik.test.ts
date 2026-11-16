@@ -89,6 +89,11 @@ import {
   maasAdi,
   moralGucEtkisi,
   odenmeyenCeza,
+  GANIMET_PAYI_TANIMLARI,
+  TALIM_YENI_ER_GIRIS,
+  MORAL_BOLLUK_YILLIK,
+  yuksekPasifDusus,
+  talimArtiEksi,
 } from "../src/data/birlik";
 import { rutbeTanimiGetir } from "../src/data/rutbeler";
 import { SAVAS_YILLIK_IHTIMAL, SAVAS_COOLDOWN_YIL, SAVAS_SURE } from "../src/data/dunyaDonemleri";
@@ -290,8 +295,8 @@ describe("limitler ve yeni er katılımı", () => {
     expect(erSayisi(s)).toBe(komutaLimiti(s));
     expect(b.kalite.orta).toBe(r.eklenen);
     expect(r.maliyet).toBe(0); // teçhizat yükseltme/katılım ücretsiz (yalnız yıllık bakım)
-    // talim = (60 × 20 + giriş talimi 25 × eklenen) / (20 + eklenen)
-    expect(b.talim).toBeCloseTo((60 * 20 + 25 * r.eklenen) / (20 + r.eklenen), 4);
+    // talim = (60 × 20 + giriş talimi 15 × eklenen) / (20 + eklenen)
+    expect(b.talim).toBeCloseTo((60 * 20 + 15 * r.eklenen) / (20 + r.eklenen), 4);
   });
 
   it("yeni erler hedef kaliteyle gelir; teçhizat ücreti yok", () => {
@@ -345,7 +350,7 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%30/%45/%60); görev ganimeti ve yağma doğrudan hazineye", () => {
+  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%30/%50/%70); görev ganimeti ve yağma doğrudan hazineye", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -365,7 +370,7 @@ describe("gelir ve gider", () => {
     expect(y.erPayi).toBe(0); // yağma direkt hazineye
     expect(y.ganimetNet).toBeCloseTo(y.yagmaBrut, 6);
     // savaş zaferi ganimetinden politikaya göre pay düşer
-    const oranlar: Record<string, number> = { az: 0.3, dengeli: 0.45, comert: 0.6 };
+    const oranlar: Record<string, number> = { az: 0.3, dengeli: 0.5, comert: 0.7 };
     for (const id of ["az", "dengeli", "comert"] as const) {
       const z = asker();
       z.meslek_musteri = 200;
@@ -418,7 +423,7 @@ describe("gelir ve gider", () => {
     const sonuc = savasiBitir(s, b, bg(s), uyar);
     expect(sonuc.zafer).toBe(true);
     expect(sonuc.brut).toBeGreaterThan(0);
-    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.45), 1);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.5), 1);
     expect(sonuc.kale).toBe(true);
     expect(b.kale).toBe(1);
     expect(s.unvanlar).toContain("Zafer Madalyası");
@@ -782,19 +787,20 @@ describe("savaş", () => {
 });
 
 describe("talim, doktrin, birlik, terhis", () => {
-  it("talim politikaları: hafif 0, orta +5 (tavan 70), ağır +12; her yıl −2 unutma; moral 0/−1/−3", () => {
+  it("talim politikaları: ücretsiz; politika artışı 0/+4/+9 (orta tavan 70), her yıl −2 unutma → net −2/+2/+7; moral +1/−1/−5", () => {
     expect(TALIM_TANIMLARI.hafif.delta).toBe(0);
-    expect(TALIM_TANIMLARI.orta.delta).toBe(5);
+    expect(TALIM_TANIMLARI.orta.delta).toBe(4);
     expect(TALIM_TANIMLARI.orta.tavan).toBe(70);
-    expect(TALIM_TANIMLARI.agir.delta).toBe(12);
-    expect([TALIM_TANIMLARI.hafif.moral, TALIM_TANIMLARI.orta.moral, TALIM_TANIMLARI.agir.moral]).toEqual([0, -1, -3]);
+    expect(TALIM_TANIMLARI.agir.delta).toBe(9);
+    expect([TALIM_TANIMLARI.hafif.masraf, TALIM_TANIMLARI.orta.masraf, TALIM_TANIMLARI.agir.masraf]).toEqual([0, 0, 0]);
+    expect([TALIM_TANIMLARI.hafif.moral, TALIM_TANIMLARI.orta.moral, TALIM_TANIMLARI.agir.moral]).toEqual([1, -1, -5]);
     const s = asker();
     const b = birlikAl(s);
     b.talim_politikasi = "agir";
     b.talim = 40;
     b.moral = 60;
     birlikYilIsle(s, bg(s));
-    expect(b.talim).toBeGreaterThan(44); // +12 × kalite çarpanı − 2
+    expect(b.talim).toBeGreaterThan(42); // +9 × kalite çarpanı − 2 (yeni erlerin giriş talimi 15 hafifçe seyreltir)
     b.talim_politikasi = "hafif";
     b.talim = 40;
     birlikYilIsle(s, bg(s));
@@ -1106,5 +1112,99 @@ describe("kışla kademesi düşürme", () => {
     expect(r.state.para).toBeCloseTo(once + odenen * 0.4, 1);
     s.meslek_musteri = 100; // K0 sınırı 25'i aşar
     await expect(isletmeYatirimDusur(s.id, "kisla")).rejects.toThrow(/sığmıyor/);
+  });
+});
+
+describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
+  /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir: yalnız politika etkisi ölçülür. */
+  function sabitOrdu(politika: "hafif" | "orta" | "agir", talim: number, moral = 60) {
+    const s = asker();
+    s.para = 1_000_000;
+    s.meslek_musteri = komutaLimiti(s);
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: s.meslek_musteri, yuksek: 0 };
+    b.hedef_kalite = "orta";
+    b.baris_bekleme = 99;
+    b.gorevler = [];
+    b.talim_politikasi = politika;
+    b.talim = talim;
+    b.moral = moral;
+    s.ulke.donem = undefined as never; // dönem (bolluk/kıtlık) moral etkisi karışmasın
+    return { s, b };
+  }
+
+  it("yıllık talim değişimi (unutma dahil): hafif −2, orta +2, ağır +7", () => {
+    for (const [politika, beklenen] of [["hafif", -2], ["orta", 2], ["agir", 7]] as const) {
+      const { s, b } = sabitOrdu(politika, 40);
+      birlikYilIsle(s, bg(s));
+      expect(b.talim).toBeCloseTo(40 + beklenen, 6);
+    }
+  });
+
+  it("orta talim tavan 70'te durur (üstünde artmaz, yalnız söner)", () => {
+    const { s, b } = sabitOrdu("orta", 69);
+    birlikYilIsle(s, bg(s));
+    expect(b.talim).toBeCloseTo(70 - 2 + 1 - 1 + 0, 0); // 69 + min(4, 70−69) − 2 = 68
+    const o = sabitOrdu("orta", 72);
+    birlikYilIsle(o.s, bg(o.s));
+    expect(o.b.talim).toBeLessThan(72);
+  });
+
+  it("talim ücretsiz: masraf kalemi 0", () => {
+    for (const politika of ["hafif", "orta", "agir"] as const) {
+      const { s } = sabitOrdu(politika, 50);
+      expect(birlikHesapla(s, bg(s)).talimMasrafi).toBe(0);
+    }
+  });
+
+  it("politika morali: hafif +1, orta −1, ağır −5 (doğal −0,5 ile birlikte +0,5 / −1,5 / −5,5)", () => {
+    for (const [politika, beklenen] of [["hafif", 0.5], ["orta", -1.5], ["agir", -5.5]] as const) {
+      const { s, b } = sabitOrdu(politika, 50, 60);
+      birlikYilIsle(s, bg(s));
+      expect(b.moral).toBeCloseTo(60 + beklenen, 6);
+    }
+  });
+
+  it("ganimet payı: askere %30/%50/%70, sana %70/%50/%30; yıllık moral −7/0/+4", () => {
+    expect(GANIMET_PAYI_TANIMLARI.az.oran).toBe(0.3);
+    expect(GANIMET_PAYI_TANIMLARI.dengeli.oran).toBe(0.5);
+    expect(GANIMET_PAYI_TANIMLARI.comert.oran).toBe(0.7);
+    expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
+  });
+
+  it("bolluk dönemi artık ordu morali vermez", () => {
+    expect(MORAL_BOLLUK_YILLIK).toBe(0);
+  });
+
+  it("yüksekte pasif düşüş: 70 üstü −(değer−70)×0,2 (80'de −2, 90'da −4, 100'de −6)", () => {
+    expect(yuksekPasifDusus(70)).toBe(0);
+    expect(yuksekPasifDusus(50)).toBe(0);
+    expect(yuksekPasifDusus(80)).toBeCloseTo(2, 9);
+    expect(yuksekPasifDusus(90)).toBeCloseTo(4, 9);
+    expect(yuksekPasifDusus(100)).toBeCloseTo(6, 9);
+    // hafif talim: talim 90 → 90 − 2 (unutma) − 4 (pasif) = 84
+    const t = sabitOrdu("hafif", 90);
+    birlikYilIsle(t.s, bg(t.s));
+    expect(t.b.talim).toBeCloseTo(84, 6);
+    // moral 90 (hafif +1, doğal −0,5, pasif −4) → 86,5
+    const m = sabitOrdu("hafif", 50, 90);
+    birlikYilIsle(m.s, bg(m.s));
+    expect(m.b.moral).toBeCloseTo(86.5, 6);
+  });
+
+  it("yeni er giriş talimi 15: ortalamayı seyreltir", () => {
+    expect(TALIM_YENI_ER_GIRIS).toBe(15);
+  });
+
+  it("politika metni: net sayı tek satır, ücretsiz, hafif talimin morali artı", () => {
+    const hafif = talimArtiEksi("hafif");
+    expect(hafif.arti.some((m) => m.tr === "Ücretsiz")).toBe(true);
+    expect(hafif.arti.some((m) => m.tr.includes("morali +1"))).toBe(true);
+    const orta = talimArtiEksi("orta");
+    expect(orta.arti.some((m) => m.tr === "Talim yılda +2 değişir")).toBe(true);
+    expect(orta.eksi.some((m) => m.tr.includes("unutma"))).toBe(false);
+    const agir = talimArtiEksi("agir");
+    expect(agir.arti.some((m) => m.tr === "Talim yılda +7 değişir")).toBe(true);
+    expect(agir.eksi.some((m) => m.tr.includes("morali −5"))).toBe(true);
   });
 });

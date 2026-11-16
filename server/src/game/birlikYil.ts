@@ -128,6 +128,7 @@ import {
   MORAL_DIP_ESIGI,
   MORAL_DIP_TOPARLANMA,
   TALIM_DOGAL_DUSUS,
+  yuksekPasifDusus,
   TALIM_YENI_ER_GIRIS,
   SEFERBERLIK_KALMA_ZAFER,
   SEFERBERLIK_TANIMLARI,
@@ -1362,7 +1363,8 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   // Talim: politikanın kazancı (kalite çarpanıyla; moral dipteyken yarıya iner, tavana kadar) − doğal unutma. Bakım yoksa talim kendiliğinden düşer.
   const talimKazanc = talimT.delta > 0 ? talimT.delta * kaliteKatsayi(KALITE_TALIM_CARPANI) * (b.moral < MORAL_DIP_ESIGI ? 0.5 : 1) : 0;
   const talimArti = talimKazanc > 0 ? Math.max(0, Math.min(talimT.tavan, b.talim + talimKazanc) - b.talim) : 0;
-  b.talim = clamp(b.talim + talimArti - TALIM_DOGAL_DUSUS, 0, 100);
+  // Yıl başında talim eşiğin (70) üstündeyse ek pasif düşüş (yuksekPasifDusus): çok yüksek talim kendiliğinden söner.
+  b.talim = clamp(b.talim + talimArti - TALIM_DOGAL_DUSUS - yuksekPasifDusus(b.talim), 0, 100);
   if (catisma) b.talim = clamp(b.talim + (catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI), 0, 100);
 
   // 9. Moral: yıllık etkenler + bir kerelik olaylar; nötr 50'den başlar, bakım yapılmazsa zamanla düşer.
@@ -1383,6 +1385,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     if (!catisma.genelZafer) moral += MORAL_YENILGI;
   }
   // Tek yıllık toplam düşüş sınırlı: art arda bozgun + yenilgi + yıllık yük morali bir yılda dibe çakmasın.
+  moral -= yuksekPasifDusus(b.moral); // yıl başında moral eşiğin (70) üstündeyse pasif düşüş
   moral = Math.max(moral, -MORAL_YILLIK_TABAN);
   b.moral = clamp(b.moral + moral, 0, 100);
   // Doğal düşüşün (MORAL_BARIS_YILLIK / MORAL_SAVAS_YILLIK) yanında yalnız dipteki moral toparlanır: ordu moral dibinde kalıp eriyip gitmesin.
