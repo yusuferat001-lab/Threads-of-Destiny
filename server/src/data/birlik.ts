@@ -102,25 +102,25 @@ export interface TurTanimi {
 }
 export const TUR_TANIMLARI: Record<BirlikTur, TurTanimi> = {
   okcu: {
-    saldiri: 1.7, savunma: 1.3, pay: TUR_PAYI, arazi: { ova: 0.8, dag: 1.25, orman: 1.35 }, ucret: 0.7, bakimEriBasi: 0.2, simge: "🏹",
+    saldiri: 1.75, savunma: 1.35, pay: TUR_PAYI, arazi: { ova: 0.8, dag: 1.25, orman: 1.35 }, ucret: 0.7, bakimEriBasi: 0.2, simge: "🏹",
     ad: { orta: { tr: "Okçu", en: "Archers" }, sanayi: { tr: "Nişancı", en: "Riflemen" } },
     arti: { tr: "Güçlü saldırı ve iyi savunma; dağda ve ormanda üstün; baskın cezası −%5", en: "Strong attack, good defence; excels in hills and forest; ambush penalty −5%" },
     eksi: { tr: "Açık ovada zayıf", en: "Weak on open ground" },
   },
   suvari: {
-    saldiri: 2.3, savunma: 0.8, pay: TUR_PAYI, arazi: { ova: 1.6, dag: 0.85, orman: 0.85 }, ucret: 0.85, bakimEriBasi: 0.25, simge: "🐎",
+    saldiri: 2.6, savunma: 0.6, pay: TUR_PAYI, arazi: { ova: 1.6, dag: 0.85, orman: 0.85 }, ucret: 0.85, bakimEriBasi: 0.25, simge: "🐎",
     ad: { orta: { tr: "Ağır Süvari", en: "Heavy Cavalry" }, sanayi: { tr: "Süvari", en: "Cavalry" } },
     arti: { tr: "En güçlü saldırı; ovada ezici; haraç ve vergi tahsilatı geliri +%10", en: "Strongest attack; crushing on open ground; tribute and tax collection income +10%" },
     eksi: { tr: "Zayıf savunma; dağ ve ormanda zayıf, pahalı", en: "Weak defence; poor in hills and forest, costly" },
   },
   mizrakli: {
-    saldiri: 1.2, savunma: 1.9, pay: TUR_PAYI, arazi: { ova: 1.1, dag: 1.5, orman: 0.85 }, ucret: 0.75, bakimEriBasi: 0.25, simge: "🛡️",
+    saldiri: 1.0, savunma: 2.2, pay: TUR_PAYI, arazi: { ova: 1.1, dag: 1.5, orman: 0.85 }, ucret: 0.75, bakimEriBasi: 0.25, simge: "🛡️",
     ad: { orta: { tr: "Kalkan-Mızrak", en: "Shield & Spear" }, sanayi: { tr: "Süngülü Piyade", en: "Bayonet Infantry" } },
     arti: { tr: "Çok güçlü savunma; dağ geçidinde duvar gibi; yaralı −%10", en: "Very strong defence; a wall in mountain passes; wounded −10%" },
     eksi: { tr: "Saldırısı düşük; sık ormanda zayıf", en: "Weak attack; poor in dense forest" },
   },
   zirhli: {
-    saldiri: 1.5, savunma: 2.3, pay: TUR_PAYI, arazi: { ova: 1.3, dag: 1.2, orman: 1.25 }, ucret: 1.35, bakimEriBasi: 0.4, simge: "⚔️",
+    saldiri: 1.5, savunma: 2.4, pay: TUR_PAYI, arazi: { ova: 1.3, dag: 1.2, orman: 1.25 }, ucret: 1.35, bakimEriBasi: 0.4, simge: "⚔️",
     ad: { orta: { tr: "Zırhlı Şövalye", en: "Armoured Knights" }, sanayi: { tr: "Zırhlı Birlik", en: "Armoured Corps" } },
     arti: { tr: "En güçlü savunma ve güçlü saldırı; her arazide iyi; ölü −%15", en: "Strongest defence and strong attack; good everywhere; deaths −15%" },
     eksi: { tr: "En pahalı bakım", en: "Costliest upkeep" },

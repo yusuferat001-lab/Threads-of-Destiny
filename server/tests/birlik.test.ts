@@ -1264,17 +1264,17 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
 });
 
 describe("v67 Madde 4 — güç formülü", () => {
-  it("piyade 0,95/1,05; özel birlik değerleri okçu 1,7/1,3, süvari 2,3/0,8, mızraklı 1,2/1,9, zırhlı 1,5/2,3", async () => {
+  it("piyade 0,95/1,05; özel birlik değerleri okçu 1,75/1,35, süvari 2,6/0,6 (saldırı), mızraklı 1,0/2,2 (savunma), zırhlı 1,5/2,4", async () => {
     const { PIYADE } = await import("../src/data/birlik");
     expect(PIYADE).toEqual({ saldiri: 0.95, savunma: 1.05 });
     const d = (t: "okcu" | "suvari" | "mizrakli" | "zirhli") => [TUR_TANIMLARI[t].saldiri, TUR_TANIMLARI[t].savunma];
-    expect(d("okcu")).toEqual([1.7, 1.3]);
-    expect(d("suvari")).toEqual([2.3, 0.8]);
-    expect(d("mizrakli")).toEqual([1.2, 1.9]);
-    expect(d("zirhli")).toEqual([1.5, 2.3]);
+    expect(d("okcu")).toEqual([1.75, 1.35]);
+    expect(d("suvari")).toEqual([2.6, 0.6]);
+    expect(d("mizrakli")).toEqual([1.0, 2.2]);
+    expect(d("zirhli")).toEqual([1.5, 2.4]);
   });
 
-  it("ağır teçhizat + 4 özel birlik güç artışı ≈ +%50 (eski +%77); dördü birden bile çarpan sınırı içinde", () => {
+  it("ağır teçhizat + 4 özel birlik güç artışı ≈ +%54 (eski +%77); dördü birden bile çarpan sınırı içinde", () => {
     const s = asker();
     s.ulke.donem = undefined as never;
     s.isletme!.yatirimlar.kisla = 3;
@@ -1288,8 +1288,8 @@ describe("v67 Madde 4 — güç formülü", () => {
     const duz = gucHesapla(s).guc;
     b.birlik_turler = ["okcu", "suvari", "mizrakli", "zirhli"];
     const dort = gucHesapla(s).guc;
-    expect(dort / duz).toBeGreaterThan(1.45);
-    expect(dort / duz).toBeLessThan(1.56);
+    expect(dort / duz).toBeGreaterThan(1.5);
+    expect(dort / duz).toBeLessThan(1.58);
   });
 
   it("özel birlik bakımı ayrı kalem: birlikteki er × er başı tutar (okçu 0,20 · süvari 0,25 · mızraklı 0,25 · zırhlı 0,40); er masrafı/erzak etkilenmez", () => {
