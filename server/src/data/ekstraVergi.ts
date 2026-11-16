@@ -22,9 +22,9 @@ export const EKSTRA_VERGI_KOTU_ILISKI = 25;
 /** Talebin süresi yoktur: oyuncu yanıtlayana dek oyun ilerlemez (`sonYil` yalnız tip uyumu için bu değeri taşır). */
 export const EKSTRA_VERGI_SONSUZ_YIL = 99999;
 
-/** Bekleyen ekstra vergi talebi var mı? (zorunlu pencere; zaman ilerleten yollar bu iken reddedilir.) */
-export function vergiBekliyorMu(state: { yonetim_talep?: { tur: string } | null }): boolean {
-  return state.yonetim_talep?.tur === "vergi";
+/** Yanıtlanmayı bekleyen otorite talebi (bağış / sadakat / açıklama / ekstra vergi) var mı? (zorunlu pencere; zaman ilerleten yollar bu iken reddedilir.) */
+export function talepBekliyorMu(state: { yonetim_talep?: { tur: string } | null }): boolean {
+  return !!state.yonetim_talep;
 }
 
 /** Ödeme: ilişki kazancı. */

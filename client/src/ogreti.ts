@@ -1,8 +1,8 @@
 import type { CharacterState } from './types';
 
-/** Yanıtlanmayı bekleyen ekstra vergi talebi var mı? (sunucudaki vergiBekliyorMu'nun aynası) */
-export function vergiBekliyor(k: CharacterState | null): boolean {
-  return !!k && k.aktif && k.yonetim_talep?.tur === 'vergi';
+/** Yanıtlanmayı bekleyen otorite talebi (bağış / sadakat / açıklama / ekstra vergi) var mı? (sunucudaki talepBekliyorMu'nun aynası) */
+export function talepBekliyor(k: CharacterState | null): boolean {
+  return !!k && k.aktif && !!k.yonetim_talep;
 }
 
 /** Din Adamı'nın seçilmeyi bekleyen bir öğretisi var mı? (sunucudaki ogretiBekliyorMu'nun aynası) */

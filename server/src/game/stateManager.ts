@@ -2051,7 +2051,6 @@ export function ekipSadakatYillikUygula(state: CharacterState, yasArtisi: number
 // Aile ekranıyla aynı felsefe: ilgilenmezsen ilişki soğur; yüksek ilişki küçük bir
 // sessiz perk verir; bazen yönetici/patron dayatılan bir bağış ya da sadakat yemini ister.
 const YONETIM_ILISKI_DUSUS_YILLIK = 0.5;
-const YONETIM_TALEP_SURESI_DOLMA_CEZA = 14;
 const YONETIM_TALEP_YILLIK_IHTIMAL = 0.13;
 
 /** Kariyer sayfası "yönetici" / "patron" talebi için insan-okunur gerekçeler. */
@@ -2068,6 +2067,12 @@ const SEHIR_TALEP_KALEMLERI: { bagis: string[]; sadakat: string[] } = {
     "rakip tüccarlarla iş yapmama taahhüdü",
     "şehre sadakat yemini",
   ],
+};
+
+/** Asker'in şehir yöneticisinden aldığı talepler: 2 bağış + 2 sadakat (askere uygun; diğer meslekler SEHIR_TALEP_KALEMLERI'ni kullanır). */
+const ASKER_TALEP_KALEMLERI: { bagis: string[]; sadakat: string[] } = {
+  bagis: ["şehir surlarının onarımı için katkı", "gazi ve şehit ailelerine yardım sandığına bağış"],
+  sadakat: ["şehre sadakat yemini", "yöneticinin emrinde sefere çıkma sözü"],
 };
 
 /** Din Adamı'nın şehir yöneticisinden aldığı "açıklama yap" talepleri (Yap / Yapma). */
@@ -2125,7 +2130,14 @@ export function yonetimTalebiUret(state: CharacterState): YonetimTalep {
   const servetEk = Math.max(0, Math.min(30, Math.round(gayrimenkulDegeriHesapla(state) * 0.04)));
   const tutar =
     tur === "bagis" ? paraYuvarla((14 + Math.floor(Math.random() * 32) + servetEk) * enf) : 0;
-  const havuz = tur === "aciklama" ? DIN_ACIKLAMA_KALEMLERI : isletmeMeslegiMi(state.meslek) ? SEHIR_TALEP_KALEMLERI[tur] : YONETIM_TALEP_KALEMLERI[kimden][tur];
+  const havuz =
+    tur === "aciklama"
+      ? DIN_ACIKLAMA_KALEMLERI
+      : state.meslek === "Asker"
+        ? ASKER_TALEP_KALEMLERI[tur]
+        : isletmeMeslegiMi(state.meslek)
+          ? SEHIR_TALEP_KALEMLERI[tur]
+          : YONETIM_TALEP_KALEMLERI[kimden][tur];
   return {
     id: randomUUID(),
     kimden,
@@ -2143,7 +2155,6 @@ export function yonetimTalebiUret(state: CharacterState): YonetimTalep {
  * talep üretimi. Bir anlatı cümlesi döndürebilir (aile deseni).
  */
 export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): string | null {
-  let not: string | null = null;
 
   state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
   state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
@@ -2167,20 +2178,8 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
     state.kariyer_puani += 0.5 * yasArtisi;
   }
 
-  // Bekleyen talebin süresi doldu mu?
-  // Ekstra vergi talebinin süresi yoktur: oyuncu yanıtlayana dek (zorunlu pencere) bekler.
-  if (state.yonetim_talep && state.yonetim_talep.tur !== "vergi" && state.yil > state.yonetim_talep.sonYil) {
-    const t = state.yonetim_talep;
-    if (t.kimden === "yonetici") {
-      state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_TALEP_SURESI_DOLMA_CEZA);
-    } else {
-      state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_TALEP_SURESI_DOLMA_CEZA);
-    }
-    state.mutluluk -= 4;
-    const kimAdi = t.kimden === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
-    not = T(state.dil, "{0}'in talebini görmezden geldin; aranız açıldı.", [kimAdi]);
-    state.yonetim_talep = null;
-  }
+  // Otorite talebi (bağış / sadakat / açıklama / ekstra vergi) zorunlu pencere olarak açılır: oyuncu yanıtlayana dek
+  // oyun ilerlemez (talepBekliyorMu guard'ları), bu yüzden süre dolumu / görmezden gelme cezası yoktur.
 
   // Ekstra vergi (işletmeli mesleklerde): ilk kez 32 yaşında, sonra 9-13 yılda bir; eşik üstü kârda yönetici net kârın 1 katını ister.
   // Asker muaf: vergi/aidat yok, kazancı sold + görev + ganimettir (birlik modu).
@@ -2207,9 +2206,6 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
         };
         state.yonetim_talep = vergi;
         state.ekstra_vergi_sonraki_yil = ekstraVergiSonrakiYil(state.yil);
-        if (!not) {
-          not = T(state.dil, "{0} senden bir şey bekliyor — Kariyer ekranından yanıtlayabilirsin.", [vergi.kimAdi]);
-        }
       }
     }
   }
@@ -2225,14 +2221,10 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
     const yeni = yonetimTalebiUret(state);
     state.yonetim_talep = yeni;
     state.yonetim_talep_sonraki_yil = state.yil + 6 + Math.floor(Math.random() * 5);
-    if (!not) {
-      not = T(state.dil, "{0} senden bir şey bekliyor — Kariyer ekranından yanıtlayabilirsin.", [
-        yeni.kimAdi,
-      ]);
-    }
   }
 
-  return not;
+  // Talep artık zorunlu pencere olarak açıldığı için yıl notu üretilmez.
+  return null;
 }
 
 /**

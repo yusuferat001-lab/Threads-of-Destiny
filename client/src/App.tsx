@@ -149,13 +149,13 @@ import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi, Tan
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
-import { ogretiBekliyor, vergiBekliyor, doktrinBekliyor, savasKarariOlasi, catismaBekliyor } from './ogreti';
+import { ogretiBekliyor, talepBekliyor, doktrinBekliyor, savasKarariOlasi, catismaBekliyor } from './ogreti';
 import { OgretiSecimi } from './components/OgretiSecimi';
 import { DoktrinSecimi } from './components/DoktrinSecimi';
 import { SavasKararlari } from './components/SavasKararlari';
 import { SavasSonucu } from './components/SavasSonucu';
 import { CatismaKarari, CatismaSonucu } from './components/CatismaKarari';
-import { VergiTalebi } from './components/VergiTalebi';
+import { OtoriteTalebi } from './components/OtoriteTalebi';
 import { UrunSecimi } from './components/UrunSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat, gecmisOlumNedeni } from './gecmisHayatlar';
@@ -905,7 +905,7 @@ function App() {
    * modunda henüz olay çıkmadıysa (ana ekran gösterilir) null döner.
    */
   async function senaryoGerekirseCek(state: CharacterState): Promise<SenaryoResponse | null> {
-    if (ogretiBekliyor(state) || doktrinBekliyor(state) || state.urun_secim_bekliyor || vergiBekliyor(state)) return null;
+    if (ogretiBekliyor(state) || doktrinBekliyor(state) || state.urun_secim_bekliyor || talepBekliyor(state)) return null;
     if (catismaBekliyor(state)) {
       const { karar } = await birlikCatismaGetir(state.id);
       if (karar) {
@@ -1262,12 +1262,12 @@ function App() {
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const vergiydi = vergiBekliyor(karakter);
+      const talepti = talepBekliyor(karakter);
       const sonuc = await yonetimTalebiKararlastir(karakter.id, karar);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
-      // Vergi yüzünden çekilemeyen bekleyen olay varsa, vergi yanıtlanınca şimdi çek.
-      if (vergiydi && !senaryo && sonuc.state.olay_bekliyor) {
+      // Talep yüzünden çekilemeyen bekleyen olay varsa, talep yanıtlanınca şimdi çek.
+      if (talepti && !senaryo && sonuc.state.olay_bekliyor) {
         const yeni = await senaryoGerekirseCek(sonuc.state);
         if (yeni) setSenaryo(yeni);
         setTepkiModu(false);
@@ -2168,7 +2168,6 @@ function App() {
         pazarDurum={pazarDurum}
         onEtkilesim={yonetimEtkilesimHandler}
         onIstek={yonetimIstekHandler}
-        onTalep={yonetimTalepHandler}
         onEkipCikar={ekipCikarHandler}
         onKotuIs={kotuIsHandler}
         dedikodular={dedikodular}
@@ -2291,10 +2290,12 @@ function App() {
         <UrunSecimi stateId={karakter.id} yukleniyor={yukleniyor} onSec={urunSecHandler} />
       )}
 
-      {karakter && vergiBekliyor(karakter) && karakter.yonetim_talep && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
-        <VergiTalebi
+      {karakter && talepBekliyor(karakter) && karakter.yonetim_talep && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <OtoriteTalebi
+          stateId={karakter.id}
           meslek={karakter.meslek}
           talep={karakter.yonetim_talep}
+          para={karakter.para}
           paraBirimi={karakter.para_birimi}
           yukleniyor={yukleniyor}
           onKarar={yonetimTalepHandler}

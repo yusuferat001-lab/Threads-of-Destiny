@@ -38,7 +38,7 @@ import {
   EKSTRA_VERGI_RUSVET_BASARISIZ_ILISKI,
   EKSTRA_VERGI_RUSVET_BEDEL_ORANI,
   EKSTRA_VERGI_RUSVET_SANS,
-  vergiBekliyorMu,
+  talepBekliyorMu,
 } from "../data/ekstraVergi";
 import { T, K, Khukumdar, ikiDilT, ikiDil } from "../i18n";
 import { musteriDagilimi, musteriAktar, musteriKaydir, rakipGrubu } from "./piyasa";
@@ -1311,7 +1311,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   if (doktrinBekliyorMu(oturum.state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(oturum.state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(oturum.state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
-  if (vergiBekliyorMu(oturum.state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
+  if (talepBekliyorMu(oturum.state)) throw new Error("Önce otorite talebini yanıtlamalısın.");
 
   // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
   // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
@@ -1840,7 +1840,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
-  if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
+  if (talepBekliyorMu(state)) throw new Error("Önce otorite talebini yanıtlamalısın.");
 
   // Bir önceki çağrıda onTepki'li bir seçenek seçilmişse, bu çağrı zar atmadan
   // doğrudan geri çekil (0) / ısrar et (1) sonucunu uygular; zaman burada ilerler.
@@ -1952,7 +1952,7 @@ export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: 
   if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
-  if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
+  if (talepBekliyorMu(state)) throw new Error("Önce otorite talebini yanıtlamalısın.");
   if (olayBekliyorMu(oturum)) throw new Error("Önce bekleyen olayı çözmelisin.");
 
   state.yil_sayaci = (state.yil_sayaci ?? 0) + 1;
