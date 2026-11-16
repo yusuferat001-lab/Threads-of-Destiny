@@ -60,6 +60,8 @@ function asker(): CharacterState {
   s.yas = 15;
   mesleğiSec(s, "Asker");
   s.ulke.savasta = false;
+  // Dönem rastgele gelir; sold/erzak sabit beklenen değerlerle karşılaştırıldığından nötr dönem (sold ×1, erzak ×1).
+  if (s.ulke.donem) s.ulke.donem = { ...s.ulke.donem, tur: "durgunluk", etki: { ...s.ulke.donem.etki, maas: 1, temelFiyat: 1 } };
   s.para = 1000;
   ogretileriTamamla(s);
   return s;

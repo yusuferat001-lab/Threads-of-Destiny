@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createCharacter, mesleğiSec, isletmeBaglami } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, isletmeBaglami, dunyaFinansEtkileri } from "../src/game/stateManager";
 import { birlikAl, birlikHesapla } from "../src/game/birlik";
 import { gucHesapla } from "../src/game/birlik";
 import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
@@ -257,5 +257,45 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     b.birlik_turler = ["suvari"];
     const e1 = birlikHesapla(s, bg(s)).gorevGeliri / gucHesapla(s).guc;
     expect(e1 / e0).toBeCloseTo(1, 1); // eskortta bonus yok
+  });
+});
+
+describe("dönem etkisi: sold, erzak ve ana ekran satırı (asker)", () => {
+  function nötrAsker() {
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    s.yas = 30;
+    mesleğiSec(s, "Asker");
+    s.ulke.savasta = false;
+    s.veba = undefined as never;
+    ogretileriTamamla(s);
+    s.isletme!.yatirimlar.kisla = 3;
+    s.meslek_musteri = 200;
+    birlikAl(s).kalite = { dusuk: 200, orta: 0, yuksek: 0 };
+    return s;
+  }
+  const donemKur = (s: ReturnType<typeof nötrAsker>, tur: "bolluk" | "durgunluk" | "kitlik", maas: number, temelFiyat: number) => {
+    s.ulke.donem = { ...s.ulke.donem!, tur, etki: { ...s.ulke.donem!.etki, maas, temelFiyat } };
+  };
+
+  it("sold dönemin maaş etkisiyle, erzak dönemin gıda fiyatıyla değişir", () => {
+    const a = nötrAsker(); donemKur(a, "durgunluk", 1, 1);
+    const b = nötrAsker(); donemKur(b, "kitlik", 0.9, 1.25);
+    const c = nötrAsker(); donemKur(c, "bolluk", 1.08, 0.93);
+    const ha = birlikHesapla(a, isletmeBaglami(a));
+    const hb = birlikHesapla(b, isletmeBaglami(b));
+    const hc = birlikHesapla(c, isletmeBaglami(c));
+    expect(hb.sold / ha.sold).toBeCloseTo(0.9, 2);
+    expect(hc.sold / ha.sold).toBeCloseTo(1.08, 2);
+    expect(hb.erzak / ha.erzak).toBeCloseTo(1.25, 2);
+    expect(hc.erzak / ha.erzak).toBeCloseTo(0.93, 2);
+  });
+
+  it("ana ekran dünya satırı Asker için maaş yerine sold/erzak/görev geliri yazar", () => {
+    const s = nötrAsker(); donemKur(s, "kitlik", 0.9, 1.25);
+    const metin = dunyaFinansEtkileri(s)[0].metin;
+    expect(metin).not.toMatch(/maaş/);
+    expect(metin).toMatch(/sold −%10/);
+    expect(metin).toMatch(/erzak \+%25/);
+    expect(metin).toMatch(/moral/);
   });
 });
