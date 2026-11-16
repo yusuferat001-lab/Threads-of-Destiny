@@ -61,3 +61,4 @@ Sorun: ana ekrandaki dünya satırı Asker için "maaş −%9 · yaşam gideri +
 - **Görev geliri** hiçbir dönemde %12'den fazla kısılmaz: `GOREV_DONEM_CARPANI` alt sınırı 0,88 (eskort 1,12/0,88/1 · tahsilat 1,12/1/0,88; üç dönem ortalaması hâlâ 1). Veba (`VEBA_GOREV_CARPANI` 0,55) ayrı kaldı.
 - **Kıtlık morali** −1,5 → **−1**/yıl (`MORAL_KITLIK_YILLIK`); bolluk +1,5 aynı.
 - **Savaşta ödeme zammı kalktı**: `SAVAS_ER_BASI_CARPANI` 3 → **1** (savaşta er başı 0,15, barışla aynı; yalnız ana kadro). Ana ekran savaş satırında ödeme adı/çarpan yazılmaz. Not: savaşta görev geliri de yok, yani savaş yıllarının nakdi artık yağma/ganimete ve ikmal kararına dayanır — denge ölçümü (`npm run simulate`) yapılmadı.
+- **"Sold" kelimesi hiçbir yerde yazılmaz** (doktrin çipleri dahil): `BirlikPaneli.tsx` `ETKI_ETIKET.sold` artık genel 'Ödeme'; çipler `odemeAdi` (= `hesap.soldAdi`, yerel ad) ile yazılır, `DoktrinSecimi` de aynı adı kullanır. Koruma: `server/tests/askerOdemeAdi.test.ts`.

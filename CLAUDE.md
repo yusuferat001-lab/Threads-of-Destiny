@@ -12,6 +12,7 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 - Mekanik değiştirince **ilgili test dosyasını** çalıştır (`cd server && npx vitest run tests/<dosya>.test.ts`); tüm paket bu ortamda çok uzun sürebilir. Sunucu tarafı tip kontrolü: `cd server && npx tsc --noEmit`.
 - **Yeni ekran/özellik eklerken sayı renklerini `docs/referans/14-renk-paleti.md` + `client/src/renk-paleti.css`'ten al; yeni renk uydurma.**
 - Mekanik/sabit değişince `docs/referans/` içindeki ilgili bölümü de güncelle (§ numarasını koru, yeni tur notunu bölüm sonuna ekle).
+- **Oyuncuya "sold" yazma:** asker ödemesinin adı çağ+ülkeye göre yereldir (`data/birlik.ts MAAS_ADLARI`: Ulûfe, Löhnung, Roga, Soldée, Prêt, Mevacib, Jalovanye…; savaşta da değişmez). Doktrin çipleri/ana ekran/bütçe hep bu adı kullanır; `tests/askerOdemeAdi.test.ts` tüm TR metin değişmezlerini tarar.
 - Yeni oyuncuya görünen metinlere mekanik eşik/süre/oran yazma; TR kaynak kanoniktir, İngilizce aynası `server/src/i18n/olaylar/*.en.ts` (§30).
 - Yeni olay eklemek için `/olay-ekle` skill'ini kullan (`.claude/skills/olay-ekle`). Her `.ts` düzenlemesinden sonra sunucu tip kontrolünü bir hook çalıştırır (`.claude/settings.json`).
 
