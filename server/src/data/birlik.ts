@@ -415,7 +415,7 @@ export const ASIRI_COOLDOWN_YIL = 3;
 /** Yıllık moral etkenleri: dönem, savaş yorgunluğu, kayıp, revir. */
 export const MORAL_SAVAS_YILLIK = MORAL_DOGAL_DUSUS_SAVAS;
 export const MORAL_BARIS_YILLIK = MORAL_DOGAL_DUSUS_BARIS;
-export const MORAL_KITLIK_YILLIK = -1.5;
+export const MORAL_KITLIK_YILLIK = -1;
 export const MORAL_BOLLUK_YILLIK = 1.5;
 export const MORAL_YUKSEK_KAYIP_ESIGI = 0.1;
 export const MORAL_YUKSEK_KAYIP = -4;
@@ -430,7 +430,7 @@ export const MORAL_SERBEST = 3;
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
 export const SOLD = [9, 9, 9, 9, 9];
-/** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir); yalnız ana kadro içindir, seferber ve kiralık erler ödeme almaz. */
+/** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta zam yok (SAVAS_ER_BASI_CARPANI = 1, v69; eskiden ×3); yalnız ana kadro içindir, seferber ve kiralık erler ödeme almaz. */
 export const ER_BASI_GELIR = 0.15;
 /** Görev geliri ek çarpanı (1 = yok). Teçhizat çarpanı 0,75/1/1,25'e inince güç ≈×0,75 oldu; güçle orantılı gelirler (görev, yağma, ganimet) ×1,33 ile yeniden dengelendi (1,11 × 1,333). */
 export const GOREV_GELIR_CARPANI = 1;
@@ -440,7 +440,7 @@ export const BARIS_YILLIK_ER = 1;
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
-export const SAVAS_ER_BASI_CARPANI = 3;
+export const SAVAS_ER_BASI_CARPANI = 1;
 export const ER_MASRAFI = 0.19;
 export const ERZAK_BIRIMI = 0.14;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
@@ -648,10 +648,10 @@ export const GOREV_SLOTLARI = [1, 1, 1, 1, 1];
 /** Görev × dönem gelir çarpanı (anahtar yoksa 1). */
 type DonemAnahtari = "bolluk" | "durgunluk" | "kitlik" | "veba";
 export const GOREV_DONEM_CARPANI: Partial<Record<GorevTuru, Partial<Record<DonemAnahtari, number>>>> = {
-  // Her görevin üç dönem ortalaması 1,00'dır; görevin `erBasi`'si doğrudan 3 dönem ortalamasıdır.
+  // Her görevin üç dönem ortalaması 1,00'dır; hiçbir dönemde görev geliri %12'den fazla kısılmaz (alt sınır 0,88, v69); görevin `erBasi`'si doğrudan 3 dönem ortalamasıdır.
   devriye: { bolluk: 1.1, durgunluk: 0.9, kitlik: 1 },
-  eskort: { bolluk: 1.364, durgunluk: 0.636, kitlik: 1 },
-  tahsilat: { bolluk: 1.3, durgunluk: 1, kitlik: 0.7 },
+  eskort: { bolluk: 1.12, durgunluk: 0.88, kitlik: 1 },
+  tahsilat: { bolluk: 1.12, durgunluk: 1, kitlik: 0.88 },
   garnizon: { bolluk: 0.9, durgunluk: 1.1, kitlik: 1 },
   komuta: { bolluk: 1.1, durgunluk: 0.95, kitlik: 0.95 },
 };
@@ -1034,7 +1034,7 @@ export const ASKER_SALDIRI_HASARLARI = {
 } as const;
 
 // ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
-/** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım ×SAVAS_ER_BASI_CARPANI. */
+/** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım barıştakiyle aynı (v69: savaş zammı kalktı). */
 /** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,7 / ölçülü 0,5 / yumuşak 0,3); yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %75/55/35 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
 export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.0053;

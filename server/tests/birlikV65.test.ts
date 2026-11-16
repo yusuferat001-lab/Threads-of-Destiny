@@ -5,7 +5,7 @@ import { gucHesapla } from "../src/game/birlik";
 import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
 import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
 import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
-import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU } from "../src/data/birlik";
+import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
 
@@ -277,7 +277,7 @@ describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", ()
     s.ulke.donem = { ...s.ulke.donem!, tur, etki: { ...s.ulke.donem!.etki, maas, temelFiyat } };
   };
 
-  it("sold dönemin maaş etkisiyle, erzak dönemin gıda fiyatıyla değişir", () => {
+  it("ödeme dönemin maaş etkisiyle değişir; erzak sabit 0,9–1,1 bandında kalır", () => {
     const a = nötrAsker(); donemKur(a, "durgunluk", 1, 1);
     const b = nötrAsker(); donemKur(b, "kitlik", 0.9, 1.25);
     const c = nötrAsker(); donemKur(c, "bolluk", 1.08, 0.93);
@@ -286,8 +286,21 @@ describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", ()
     const hc = birlikHesapla(c, isletmeBaglami(c));
     expect(hb.sold / ha.sold).toBeCloseTo(0.9, 2);
     expect(hc.sold / ha.sold).toBeCloseTo(1.08, 2);
-    expect(hb.erzak / ha.erzak).toBeCloseTo(1.25, 2);
-    expect(hc.erzak / ha.erzak).toBeCloseTo(0.93, 2);
+    expect(hb.erzak / ha.erzak).toBeCloseTo(1.1, 2); // zarlanan gıda fiyatı değil, sabit tablo (en çok +%10)
+    expect(hc.erzak / ha.erzak).toBeCloseTo(0.9, 2);
+  });
+
+  it("hiçbir görev, hiçbir dönemde %12'den fazla kısılmaz; üç dönem ortalaması 1", () => {
+    for (const t of Object.values(GOREV_DONEM_CARPANI)) {
+      const v = [t!.bolluk ?? 1, t!.durgunluk ?? 1, t!.kitlik ?? 1];
+      for (const x of v) expect(x).toBeGreaterThanOrEqual(0.88);
+      expect((v[0] + v[1] + v[2]) / 3).toBeCloseTo(1, 2);
+    }
+  });
+
+  it("savaşta er başı ödeme zammı yok; kıtlık morali yılda −1", () => {
+    expect(SAVAS_ER_BASI_CARPANI).toBe(1);
+    expect(MORAL_KITLIK_YILLIK).toBe(-1);
   });
 
   it("ana ekran dünya satırı Asker için maaş yerine sold/erzak/görev geliri yazar", () => {
@@ -296,7 +309,8 @@ describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", ()
     expect(metin).not.toMatch(/maaş/);
     expect(metin).toMatch(/Soldée −%10/); // Fransa (Orta Çağ) ödeme adı; "sold" kelimesi yazılmaz
     expect(metin).not.toMatch(/(^|[\s:·])sold(\s|$)/i);
-    expect(metin).toMatch(/erzak \+%25/);
+    expect(metin).toMatch(/erzak \+%10/);
+    expect(metin).toMatch(/moral −1\/yıl/);
     expect(metin).toMatch(/moral/);
   });
 });

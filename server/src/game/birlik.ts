@@ -572,17 +572,11 @@ export function soldDonemCarpani(state: CharacterState): number {
   return typeof m === "number" && m > 0 ? m : 1;
 }
 
-/**
- * ERZAK dönem çarpanı: savaşta/vebada sabit (ERZAK_DONEM_CARPANI); barışta dönemin zarlanan temel gıda fiyatı
- * (bolluk −%5…9 · durgunluk ±%2 · kıtlık +%15…30). Dönem yoksa (eski kayıt) sabit tablo.
- */
+/** ERZAK dönem çarpanı: sabit tablo (ERZAK_DONEM_CARPANI, 0,9–1,1 bandı); savaş ve veba dönemi geçersiz kılar. */
 export function erzakDonemCarpani(state: CharacterState): number {
   if (state.ulke.savasta) return ERZAK_DONEM_CARPANI.savas;
   if (state.veba?.aktif) return ERZAK_DONEM_CARPANI.veba;
-  const donem = state.ulke.donem;
-  const f = donem?.etki?.temelFiyat;
-  if (typeof f === "number" && f > 0) return f;
-  return ERZAK_DONEM_CARPANI[donem?.tur ?? "durgunluk"];
+  return ERZAK_DONEM_CARPANI[state.ulke.donem?.tur ?? "durgunluk"];
 }
 
 /** Seçili görevin bu dönemdeki gelir çarpanı (savaş/veba hariç saf dönem etkisi); görev yoksa null. */
