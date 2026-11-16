@@ -36,7 +36,11 @@ export async function oyunaBasla(page: Page, meslekIndeks = 1, dil: Dil = 'tr') 
   for (let i = 0; i < 6; i++) {
     if (await page.locator('.olay-kutusu').isVisible().catch(() => false)) break;
     const modal = page.locator('.ogreti-katman');
-    if (await modal.isVisible().catch(() => false)) {
+    const karar = page.locator('.kk-katman'); // doktrin / öğreti: satırı seç, sonra onayla
+    if (await karar.isVisible().catch(() => false)) {
+      await karar.locator('.kk-satir:not([disabled])').first().click();
+      await karar.locator('.kk-onay-btn:not([disabled])').click();
+    } else if (await modal.isVisible().catch(() => false)) {
       await modal.locator('button:not([disabled])').first().click();
     }
     await page.waitForTimeout(400);
