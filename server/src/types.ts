@@ -1179,6 +1179,10 @@ export interface BirlikCatismaBekleyen {
   /** Baskın: oyuncu savunmaya mecbur; değilse karşılaşma (saldırı ya da savunma seçilir). */
   baskin: boolean;
   dusmanTur: "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
+  /** Çatışma senaryosu (v67): tür × yön başına 4 senaryodan biri; eski kayıtta yok (arazisiz çözülür). */
+  senaryoId?: string;
+  /** Senaryonun arazisi (barış çatışmasında da arazi gücü etkiler). */
+  arazi?: BirlikArazi;
   /** Düşmanın o çatışma için çekilmiş mutlak gücü (oyuncuya aralık olarak gösterilir). */
   dusmanGuc: number;
   /** Zafer serisi: bu karşılaşmada düşmana uygulanan güç çarpanı (>1; yoksa uygulanmadı). */
@@ -1191,6 +1195,10 @@ export interface CatismaKarariDurumu {
   baskin: boolean;
   dusmanTur: string;
   ad: { tr: string; en: string };
+  /** Senaryo adı/metni ve arazi (eski kayıtta null). */
+  senaryo: { ad: { tr: string; en: string }; metin: { tr: string; en: string }; arazi: BirlikArazi; araziAd: { tr: string; en: string }; araziSimge: string } | null;
+  /** Bu arazide açık özel birliklerinin saldırıda/savunmada güçlü (≥1,15) ve zayıf (≤0,90) olanları (ad listeleri). */
+  birlikArazi: { saldiriGuclu: { tr: string; en: string }[]; saldiriZayif: { tr: string; en: string }[]; savunmaGuclu: { tr: string; en: string }[]; savunmaZayif: { tr: string; en: string }[] } | null;
   oyuncu: { saldiri: number; savunma: number };
   dusman: { saldiri: [number, number]; savunma: [number, number] };
   /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */

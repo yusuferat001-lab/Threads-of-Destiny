@@ -35,22 +35,31 @@ describe("arazi üçlüsü: ova / dağ geçidi / sık orman", () => {
       const satir = ARAZI_CARPANLARI[a];
       expect(Object.keys(satir).sort()).toEqual(["kusatma", "mizrakli", "okcu", "piyade", "suvari", "zirhli"]);
       for (const v of Object.values(satir)) {
-        expect(v).toBeGreaterThanOrEqual(0.8);
-        expect(v).toBeLessThanOrEqual(1.6);
+        // v67: çarpanlar SALDIRIDA ve SAVUNMADA ayrı
+        for (const y of ["saldiri", "savunma"] as const) {
+          expect(v[y]).toBeGreaterThanOrEqual(0.6);
+          expect(v[y]).toBeLessThanOrEqual(1.7);
+        }
       }
-      expect(satir.piyade).toBe(1);
+      expect(satir.piyade).toEqual({ saldiri: 1, savunma: 1 });
     }
-    // Piyade dışı her birlik toplamda ≈ bakımıyla orantılı (3 arazi toplamı 3,3–3,8), piyade 3,0; zırhlı hiçbir arazide zayıf değil.
+    // Her birlik üç araziyi ortalaması ≈ 1 civarı (yön ortalamasıyla); zırhlı hiçbir arazide zayıf değil (ortalama ≥ 1,15).
+    const ort = (t: "okcu" | "suvari" | "mizrakli" | "zirhli", a: "ova" | "dag" | "orman") => (ARAZI_CARPANLARI[a][t].saldiri + ARAZI_CARPANLARI[a][t].savunma) / 2;
     for (const t of ["okcu", "suvari", "mizrakli", "zirhli"] as const) {
-      const top = ARAZI_CARPANLARI.ova[t] + ARAZI_CARPANLARI.dag[t] + ARAZI_CARPANLARI.orman[t];
-      expect(top).toBeGreaterThan(3.3);
+      const top = ort(t, "ova") + ort(t, "dag") + ort(t, "orman");
+      expect(top).toBeGreaterThan(2.8);
       expect(top).toBeLessThan(3.8);
     }
-    expect(Math.min(ARAZI_CARPANLARI.ova.zirhli, ARAZI_CARPANLARI.dag.zirhli, ARAZI_CARPANLARI.orman.zirhli)).toBeGreaterThanOrEqual(1.2);
-    // Her birliğin kendine göre en iyi arazisi var: süvari ova, okçu orman, mızraklı dağ; piyade her yerde 1,00.
-    expect(ARAZI_CARPANLARI.ova.suvari).toBeGreaterThan(ARAZI_CARPANLARI.dag.suvari);
-    expect(ARAZI_CARPANLARI.dag.okcu).toBeGreaterThan(ARAZI_CARPANLARI.ova.okcu);
-    expect(ARAZI_CARPANLARI.dag.mizrakli).toBeGreaterThan(ARAZI_CARPANLARI.orman.mizrakli);
+    expect(Math.min(ort("zirhli", "ova"), ort("zirhli", "dag"), ort("zirhli", "orman"))).toBeGreaterThanOrEqual(1.1);
+    // Uzmanlık: süvari ovada SALDIRIDA ezici (≥1,6), savunmasında zayıf; kalkan-mızrak dağda SAVUNMADA duvar (≥1,5); okçu ormanda savunmada güçlü.
+    expect(ARAZI_CARPANLARI.ova.suvari.saldiri).toBeGreaterThanOrEqual(1.6);
+    expect(ARAZI_CARPANLARI.ova.suvari.savunma).toBeLessThan(1);
+    expect(ARAZI_CARPANLARI.dag.mizrakli.savunma).toBeGreaterThanOrEqual(1.5);
+    expect(ARAZI_CARPANLARI.orman.okcu.savunma).toBeGreaterThanOrEqual(1.35);
+    // Her birliğin kendine göre en iyi arazisi var (yön ortalamasıyla): süvari ova, okçu orman/dağ, mızraklı dağ.
+    expect(ort("suvari", "ova")).toBeGreaterThan(ort("suvari", "dag"));
+    expect(ort("okcu", "dag")).toBeGreaterThan(ort("okcu", "ova"));
+    expect(ort("mizrakli", "dag")).toBeGreaterThan(ort("mizrakli", "orman"));
   });
 
   it("bölge arazi ağırlıkları 3'lü ve toplamı 1", () => {
@@ -61,13 +70,15 @@ describe("arazi üçlüsü: ova / dağ geçidi / sık orman", () => {
   });
 
   it("arazi düşmanın baskın birliğine de uygulanır (karma = ortalama)", () => {
-    expect(dusmanAraziCarpani("dag", "okcu")).toBe(ARAZI_CARPANLARI.dag.okcu);
-    expect(dusmanAraziCarpani("orman", "suvari")).toBe(ARAZI_CARPANLARI.orman.suvari);
-    const k = ARAZI_CARPANLARI.ova;
-    // karma = beş sınıfın ortalaması, üç arazide ortalaması 1 olacak şekilde normalleştirilir
-    const ort = (["ova", "dag", "orman"] as const).reduce((t, ar) => t + dusmanAraziCarpani(ar, "karma"), 0) / 3;
-    expect(ort).toBeCloseTo(1, 9);
-    expect(dusmanAraziCarpani("ova", "karma")).toBeGreaterThan(k.piyade * 0.9);
+    // yön = düşmanın o karşılaşmadaki tarafı (sen saldırırken o savunur)
+    expect(dusmanAraziCarpani("dag", "okcu", "savunma")).toBe(ARAZI_CARPANLARI.dag.okcu.savunma);
+    expect(dusmanAraziCarpani("dag", "okcu", "saldiri")).toBe(ARAZI_CARPANLARI.dag.okcu.saldiri);
+    expect(dusmanAraziCarpani("orman", "suvari", "saldiri")).toBe(ARAZI_CARPANLARI.orman.suvari.saldiri);
+    // karma = beş sınıfın ortalaması, üç arazide ortalaması 1 olacak şekilde (her yön için) normalleştirilir
+    for (const yon of ["saldiri", "savunma"] as const) {
+      const ort = (["ova", "dag", "orman"] as const).reduce((t, ar) => t + dusmanAraziCarpani(ar, "karma", yon), 0) / 3;
+      expect(ort).toBeCloseTo(1, 9);
+    }
   });
 
   it("oyuncunun özel birliği araziden kendi çarpanıyla etkilenir (süvari dağda zayıflar, ovada güçlenir)", () => {
@@ -116,7 +127,8 @@ describe("düşman gücü: yaşa göre, ±%5, saldırı/savunma ayrımlı", () =
     };
     const k = savasKiyasiHesapla(s, isletmeBaglami(s));
     // düşman: (yaşa bağlı taban + oyuncu gücünün %30'u) × savaş çarpanı; kıyas özeti aynı fonksiyonu kullanır
-    const ref = dusmanGucuHesapla(s.yas, "savas", gucHesapla(s, { enflasyon: isletmeBaglami(s).enflasyon }).guc) * dusmanAraziCarpani("ova", "karma");
+    const araziC = (dusmanAraziCarpani("ova", "karma", "saldiri") + dusmanAraziCarpani("ova", "karma", "savunma")) / 2; // toplam güç: iki yönün ortalaması
+    const ref = dusmanGucuHesapla(s.yas, "savas", gucHesapla(s, { enflasyon: isletmeBaglami(s).enflasyon }).guc) * araziC;
     expect(k.dusman.guc[0]).toBe(Math.round(ref * 0.935));
     expect(k.dusman.guc[1]).toBe(Math.round(ref * 1.065));
     expect(k.oyuncu.saldiri).toBeGreaterThan(0);

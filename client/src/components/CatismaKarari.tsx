@@ -32,6 +32,11 @@ const M = {
   savunIpucu: { tr: 'Daha az kayıp, daha az ganimet.', en: 'Lighter losses, smaller spoils.' },
   mecburi: { tr: 'Baskın: yalnızca savunabilirsin', en: 'Ambush: you can only defend' },
   hazirlikli: { tr: 'Düşman seni tanıyor; bu sefer hazırlıklı.', en: 'The enemy knows you now; this time they are prepared.' },
+  arazi: { tr: 'Arazi', en: 'Terrain' },
+  saldiriGuclu: { tr: 'Saldırıda güçlü', en: 'Strong on attack' },
+  saldiriZayif: { tr: 'Saldırıda zayıf', en: 'Weak on attack' },
+  savunmaGuclu: { tr: 'Savunmada güçlü', en: 'Strong on defence' },
+  savunmaZayif: { tr: 'Savunmada zayıf', en: 'Weak on defence' },
 };
 
 const aralik = (a: [number, number]) => (a[0] === a[1] ? `${a[0]}` : `${a[0]}–${a[1]}`);
@@ -42,21 +47,33 @@ const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen 
 export function CatismaKarari({ karar, yukleniyor, onSec }: { karar: CatismaKarariDurumu; yukleniyor: boolean; onSec: (s: 'saldiri' | 'savunma') => void }) {
   const { dil } = useDil();
   const t = (k: 'baslik' | 'sen' | 'dusman' | 'saldiri' | 'savunma' | 'saldirGec' | 'savunGec' | 'saldirAlt' | 'savunAlt' | 'mecburi' | 'saldirIpucu' | 'savunIpucu' | 'hazirlikli') => M[k][dil];
-  const metin = (karar.baskin ? M.baskinMetin : M.karsilasmaMetin)[karar.tur][dil];
+  // Senaryo varsa onun metni; eski kayıtta genel metin.
+  const metin = karar.senaryo ? karar.senaryo.metin[dil] : (karar.baskin ? M.baskinMetin : M.karsilasmaMetin)[karar.tur][dil];
   const tur = DUSMAN_TUR[karar.dusmanTur];
   return (
     <div className="ogreti-katman zemin-koyu" role="dialog" aria-modal="true">
       <div className="ogreti-kutu savas-kutu">
         <h2>
-          ⚔️ {t('baslik')}: {karar.ad[dil]}
+          ⚔️ {t('baslik')}: {karar.senaryo ? karar.senaryo.ad[dil] : karar.ad[dil]}
         </h2>
         <p>{metin}</p>
+        {karar.senaryo && (
+          <small>
+            {karar.senaryo.araziSimge} {M.arazi[dil]}: {karar.senaryo.araziAd[dil]}
+          </small>
+        )}
         {tur && (
           <small>
             {t('dusman')}: {tur[dil]}
           </small>
         )}
         {karar.hazirlikli && <small className="s-eksi">{t('hazirlikli')}</small>}
+        {karar.birlikArazi && (
+          <div className="savas-arazi-birlikler">
+            {(['saldiriGuclu', 'savunmaGuclu'] as const).map((k) => karar.birlikArazi![k].length > 0 && <small key={k} className="s-arti">▲ {M[k][dil]}: {karar.birlikArazi![k].map((x) => x[dil]).join(', ')}</small>)}
+            {(['saldiriZayif', 'savunmaZayif'] as const).map((k) => karar.birlikArazi![k].length > 0 && <small key={k} className="s-eksi">▼ {M[k][dil]}: {karar.birlikArazi![k].map((x) => x[dil]).join(', ')}</small>)}
+          </div>
+        )}
         <table className="savas-kiyas-tablo">
           <thead>
             <tr>

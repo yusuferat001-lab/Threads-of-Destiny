@@ -89,8 +89,8 @@ export interface TurTanimi {
   savunma: number;
   /** Ordunun bu birliğe ayrılan kesri. */
   pay: number;
-  /** Savaşta kendi arazi çarpanı (ova / dağ geçidi / sık orman). Ortalama değil, birlik başına farklı; ≥1,15 güçlü, ≤0,90 zayıf sayılır. */
-  arazi: Record<BirlikArazi, number>;
+  /** Savaşta ve çatışmada kendi arazi çarpanı (ova / dağ geçidi / sık orman), SALDIRIDA ve SAVUNMADA ayrı (v67). Ortalama değil, birlik başına farklı; ortalaması ≥1,15 güçlü, ≤0,90 zayıf sayılır. */
+  arazi: Record<BirlikArazi, { saldiri: number; savunma: number }>;
   /** Birliğe geçen er başına tek seferlik ücret (enflasyonsuz). */
   ucret: number;
   /** Bakım: bu birliğin her eri için yıllık EK sabit tutar (enflasyonlu; v67). Birlikte kaç er varsa o kadar ödenir; teçhizat bakımı ayrı kalem. */
@@ -102,31 +102,31 @@ export interface TurTanimi {
 }
 export const TUR_TANIMLARI: Record<BirlikTur, TurTanimi> = {
   okcu: {
-    saldiri: 1.75, savunma: 1.35, pay: TUR_PAYI, arazi: { ova: 0.8, dag: 1.25, orman: 1.35 }, ucret: 0.7, bakimEriBasi: 0.2, simge: "🏹",
+    saldiri: 1.75, savunma: 1.35, pay: TUR_PAYI, arazi: { ova: { saldiri: 0.8, savunma: 0.9 }, dag: { saldiri: 1.1, savunma: 1.35 }, orman: { saldiri: 1.25, savunma: 1.4 } }, ucret: 0.7, bakimEriBasi: 0.2, simge: "🏹",
     ad: { orta: { tr: "Okçu", en: "Archers" }, sanayi: { tr: "Nişancı", en: "Riflemen" } },
     arti: { tr: "Güçlü saldırı ve iyi savunma; dağda ve ormanda üstün; baskın cezası −%5", en: "Strong attack, good defence; excels in hills and forest; ambush penalty −5%" },
     eksi: { tr: "Açık ovada zayıf", en: "Weak on open ground" },
   },
   suvari: {
-    saldiri: 2.6, savunma: 0.6, pay: TUR_PAYI, arazi: { ova: 1.6, dag: 0.85, orman: 0.85 }, ucret: 0.85, bakimEriBasi: 0.25, simge: "🐎",
+    saldiri: 2.6, savunma: 0.6, pay: TUR_PAYI, arazi: { ova: { saldiri: 1.7, savunma: 0.9 }, dag: { saldiri: 0.8, savunma: 0.7 }, orman: { saldiri: 0.8, savunma: 0.8 } }, ucret: 0.85, bakimEriBasi: 0.25, simge: "🐎",
     ad: { orta: { tr: "Ağır Süvari", en: "Heavy Cavalry" }, sanayi: { tr: "Süvari", en: "Cavalry" } },
     arti: { tr: "En güçlü saldırı; ovada ezici; haraç ve vergi tahsilatı geliri +%10", en: "Strongest attack; crushing on open ground; tribute and tax collection income +10%" },
     eksi: { tr: "Zayıf savunma; dağ ve ormanda zayıf, pahalı", en: "Weak defence; poor in hills and forest, costly" },
   },
   mizrakli: {
-    saldiri: 1.0, savunma: 2.2, pay: TUR_PAYI, arazi: { ova: 1.1, dag: 1.5, orman: 0.85 }, ucret: 0.75, bakimEriBasi: 0.25, simge: "🛡️",
+    saldiri: 1.0, savunma: 2.2, pay: TUR_PAYI, arazi: { ova: { saldiri: 1.0, savunma: 1.2 }, dag: { saldiri: 1.25, savunma: 1.6 }, orman: { saldiri: 0.8, savunma: 0.9 } }, ucret: 0.75, bakimEriBasi: 0.25, simge: "🛡️",
     ad: { orta: { tr: "Kalkan-Mızrak", en: "Shield & Spear" }, sanayi: { tr: "Süngülü Piyade", en: "Bayonet Infantry" } },
     arti: { tr: "Çok güçlü savunma; dağ geçidinde duvar gibi; yaralı −%10", en: "Very strong defence; a wall in mountain passes; wounded −10%" },
     eksi: { tr: "Saldırısı düşük; sık ormanda zayıf", en: "Weak attack; poor in dense forest" },
   },
   zirhli: {
-    saldiri: 1.5, savunma: 2.4, pay: TUR_PAYI, arazi: { ova: 1.3, dag: 1.2, orman: 1.25 }, ucret: 1.35, bakimEriBasi: 0.4, simge: "⚔️",
+    saldiri: 1.5, savunma: 2.4, pay: TUR_PAYI, arazi: { ova: { saldiri: 1.3, savunma: 1.3 }, dag: { saldiri: 1.05, savunma: 1.25 }, orman: { saldiri: 1.0, savunma: 1.2 } }, ucret: 1.35, bakimEriBasi: 0.4, simge: "⚔️",
     ad: { orta: { tr: "Zırhlı Şövalye", en: "Armoured Knights" }, sanayi: { tr: "Zırhlı Birlik", en: "Armoured Corps" } },
     arti: { tr: "En güçlü savunma ve güçlü saldırı; her arazide iyi; ölü −%15", en: "Strongest defence and strong attack; good everywhere; deaths −15%" },
     eksi: { tr: "En pahalı bakım", en: "Costliest upkeep" },
   },
   kusatma: {
-    saldiri: 1, savunma: 1.1, pay: 0.1, arazi: { ova: 1, dag: 1, orman: 1 }, ucret: 0.5, bakimEriBasi: 0.2, simge: "🏰",
+    saldiri: 1, savunma: 1.1, pay: 0.1, arazi: { ova: { saldiri: 1, savunma: 1 }, dag: { saldiri: 1, savunma: 1 }, orman: { saldiri: 1, savunma: 1 } }, ucret: 0.5, bakimEriBasi: 0.2, simge: "🏰",
     ad: { orta: { tr: "Kuşatma Kolu", en: "Siege Train" }, sanayi: { tr: "Topçu Bataryası", en: "Artillery Battery" } },
     arti: { tr: "Kale kuşatmasında eşiği düşürür", en: "Lowers the bar for taking a fort" },
     eksi: { tr: "Savaş ve çatışmada piyade sayılır", en: "Counts as infantry in battle" },
@@ -140,7 +140,8 @@ export function turAdi(tur: BirlikTur, cag: string): DilliMetin {
 export function turGucluZayif(tur: BirlikTur): { guclu: BirlikArazi[]; zayif: BirlikArazi[] } {
   const a = TUR_TANIMLARI[tur].arazi;
   const ids = Object.keys(a) as BirlikArazi[];
-  return { guclu: ids.filter((x) => a[x] >= 1.15), zayif: ids.filter((x) => a[x] <= 0.9) };
+  const ort = (x: BirlikArazi) => (a[x].saldiri + a[x].savunma) / 2;
+  return { guclu: ids.filter((x) => ort(x) >= 1.15), zayif: ids.filter((x) => ort(x) <= 0.9) };
 }
 
 /** Eski kuşatma seviyesi (kullanımdan kalktı; kuşatma artık gizli bir birlik türü). Veri uyumu için sabitler duruyor. */
@@ -278,12 +279,7 @@ export const BASKIN_NAKIT_HASARI = 0.04;
 /** Barış çatışmasında tür seçimi ağırlığı (v67: haydut sık, sınır seyrek) ve baskın (zorunlu savunma) ihtimali türe göre. */
 export const BARIS_TUR_AGIRLIGI: Record<"haydut" | "sinir", number> = { haydut: 0.6, sinir: 0.4 };
 export const BARIS_BASKIN_IHTIMALI: Record<"haydut" | "sinir", number> = { haydut: 0.65, sinir: 0.4 };
-/** Düşmanın baskın birliği ağırlıkları (haydut: süvari/okçu ağırlıklı çeteler; sınır: düzenli ordu, mızraklı/zırhlı ağırlıklı). */
 export type DusmanBirlik = "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
-export const BARIS_DUSMAN_BIRLIGI_AGIRLIGI: Record<"haydut" | "sinir", Partial<Record<DusmanBirlik, number>>> = {
-  haydut: { suvari: 0.35, okcu: 0.3, karma: 0.35 },
-  sinir: { mizrakli: 0.3, zirhli: 0.25, okcu: 0.25, suvari: 0.2 },
-};
 /** Ağırlıklı seçim (ağırlıkların toplamı 1 olmak zorunda değil). */
 export function agirlikliSec<T extends string>(agirliklar: Partial<Record<T, number>>, rnd01 = Math.random()): T {
   const girdiler = Object.entries(agirliklar) as [T, number][];
@@ -550,6 +546,84 @@ export const BARIS_CATISMALARI: Record<"haydut" | "sinir", BarisCatismaTanimi> =
     ad: { orta: { tr: "Düşman Akıncıları", en: "Enemy Raiders" }, sanayi: { tr: "Sınır Çatışması", en: "Border Clash" } },
   },
 };
+
+// ── Çatışma senaryoları (v67 Madde 5c): tür (haydut/sınır) × yön (karşılaşma/baskın) başına 4 senaryo; her biri arazi, düşman birliği, ganimet ve kayıp farkı getirir ──
+export interface CatismaSenaryosu {
+  id: string;
+  tur: "haydut" | "sinir";
+  /** true: baskın (zorunlu savunma); false: karşılaşma (saldırı ya da savunma seçilir). */
+  baskin: boolean;
+  arazi: BirlikArazi;
+  /** Düşmanın baskın birliği ağırlıkları (senaryoya özgü). */
+  dusman: Partial<Record<DusmanBirlik, number>>;
+  /** Zaferde ganimet ve genel kayıp çarpanı (küçük farklar). */
+  ganimet: number;
+  kayip: number;
+  ad: DilliMetin;
+  metin: DilliMetin;
+}
+export const CATISMA_SENARYOLARI: CatismaSenaryosu[] = [
+  // Haydut — karşılaşma
+  { id: "h_magara", tur: "haydut", baskin: false, arazi: "dag", dusman: { okcu: 0.5, karma: 0.5 }, ganimet: 1, kayip: 1.1,
+    ad: { tr: "Mağara Sığınağı", en: "Cave Hideout" },
+    metin: { tr: "Haydutlar dağ eteğindeki bir mağaraya çekilmiş. Üstlerine yürüyebilir ya da yolu tutabilirsin.", en: "Bandits hold a cave in the foothills. You may storm them or hold the road." } },
+  { id: "h_kervan", tur: "haydut", baskin: false, arazi: "orman", dusman: { suvari: 0.5, okcu: 0.5 }, ganimet: 1.1, kayip: 1,
+    ad: { tr: "Kervan Yolu Pusu", en: "Caravan Road Ambush" },
+    metin: { tr: "Kervan yolunun ormanlık kıvrımında bir çete pusuda bekliyor.", en: "A gang lies in wait at a wooded bend of the caravan road." } },
+  { id: "h_han", tur: "haydut", baskin: false, arazi: "ova", dusman: { karma: 0.6, suvari: 0.4 }, ganimet: 1.15, kayip: 0.95,
+    ad: { tr: "Han Baskını", en: "Inn Raid" },
+    metin: { tr: "Bir çete yol üstündeki hanı ele geçirmiş.", en: "A gang has seized an inn on the road." } },
+  { id: "h_nehir", tur: "haydut", baskin: false, arazi: "ova", dusman: { suvari: 0.5, karma: 0.5 }, ganimet: 1, kayip: 1,
+    ad: { tr: "Nehir Geçidi", en: "River Ford" },
+    metin: { tr: "Çete, bir nehir geçidinde yolcudan haraç topluyor.", en: "A gang is shaking down travellers at a river ford." } },
+  // Haydut — baskın
+  { id: "h_gece", tur: "haydut", baskin: true, arazi: "orman", dusman: { suvari: 0.4, okcu: 0.3, karma: 0.3 }, ganimet: 1, kayip: 1.1,
+    ad: { tr: "Gece Baskını", en: "Night Raid" },
+    metin: { tr: "Gece yarısı ormandan çıkan haydutlar ordugâhına daldı!", en: "Bandits burst from the forest into your camp at midnight!" } },
+  { id: "h_erzak", tur: "haydut", baskin: true, arazi: "dag", dusman: { okcu: 0.5, karma: 0.5 }, ganimet: 1, kayip: 1.05,
+    ad: { tr: "Erzak Arabası Pusu", en: "Supply Wagon Ambush" },
+    metin: { tr: "Erzak arabaların dar bir geçitte pusuya düştü!", en: "Your supply wagons are ambushed in a narrow pass!" } },
+  { id: "h_ordugah", tur: "haydut", baskin: true, arazi: "ova", dusman: { suvari: 0.5, karma: 0.5 }, ganimet: 0.95, kayip: 1,
+    ad: { tr: "Ordugâh Yağması", en: "Camp Plunder" },
+    metin: { tr: "Çete, nöbet değişiminde ordugâhın kenarından sızdı!", en: "A gang slips in at the edge of your camp during the watch change!" } },
+  { id: "h_koyyolu", tur: "haydut", baskin: true, arazi: "orman", dusman: { okcu: 0.4, suvari: 0.3, karma: 0.3 }, ganimet: 1, kayip: 1,
+    ad: { tr: "Köy Yolunda Pusu", en: "Village Road Ambush" },
+    metin: { tr: "Köy yolunda ormandan fırlayan haydutlar sütunu kesti!", en: "Bandits spring from the woods and cut your column on the village road!" } },
+  // Sınır — karşılaşma
+  { id: "s_kopru", tur: "sinir", baskin: false, arazi: "ova", dusman: { mizrakli: 0.5, zirhli: 0.5 }, ganimet: 1.1, kayip: 1.1,
+    ad: { tr: "Köprübaşı", en: "Bridgehead" },
+    metin: { tr: "Düşman bir köprübaşını tutmuş. Zorlayabilir ya da karşı yakada siper alabilirsin.", en: "The enemy holds a bridgehead. You may force it or dig in across the river." } },
+  { id: "s_dagkarakol", tur: "sinir", baskin: false, arazi: "dag", dusman: { mizrakli: 0.5, okcu: 0.5 }, ganimet: 1.15, kayip: 1.15,
+    ad: { tr: "Dağ Karakolu", en: "Mountain Outpost" },
+    metin: { tr: "Düşman bir dağ karakoluna yerleşmiş.", en: "The enemy has taken a mountain outpost." } },
+  { id: "s_akinci", tur: "sinir", baskin: false, arazi: "ova", dusman: { suvari: 0.7, okcu: 0.3 }, ganimet: 1, kayip: 0.95,
+    ad: { tr: "Akıncı Kolu Takibi", en: "Raiding Party Pursuit" },
+    metin: { tr: "Bir akıncı kolu sınırı geçmiş; peşine düşebilir ya da yolunu kesebilirsin.", en: "A raiding party has crossed the border; pursue it or cut it off." } },
+  { id: "s_ormandevriye", tur: "sinir", baskin: false, arazi: "orman", dusman: { okcu: 0.5, mizrakli: 0.5 }, ganimet: 0.95, kayip: 1,
+    ad: { tr: "Orman Kenarı Devriyesi", en: "Forest Edge Patrol" },
+    metin: { tr: "Sınır ormanında düşman devriyesiyle karşılaştın.", en: "You met an enemy patrol in the border forest." } },
+  // Sınır — baskın
+  { id: "s_gece", tur: "sinir", baskin: true, arazi: "orman", dusman: { suvari: 0.5, okcu: 0.5 }, ganimet: 1, kayip: 1.1,
+    ad: { tr: "Gece Akını", en: "Night Incursion" },
+    metin: { tr: "Sınırı aşan düşman akıncıları geceleyin ordugâhını bastı!", en: "Enemy raiders crossed the border and hit your camp by night!" } },
+  { id: "s_karakolkusatma", tur: "sinir", baskin: true, arazi: "dag", dusman: { mizrakli: 0.5, okcu: 0.5 }, ganimet: 1.05, kayip: 1.1,
+    ad: { tr: "Karakol Kuşatması", en: "Outpost Siege" },
+    metin: { tr: "Düşman karakolunu çembere aldı!", en: "The enemy has surrounded your outpost!" } },
+  { id: "s_koyyagma", tur: "sinir", baskin: true, arazi: "ova", dusman: { suvari: 0.6, zirhli: 0.4 }, ganimet: 1.1, kayip: 1.05,
+    ad: { tr: "Köy Yağması", en: "Village Sack" },
+    metin: { tr: "Düşman akıncıları sınır köyünü yağmalarken sana saldırdı!", en: "Enemy raiders struck you as they plundered a border village!" } },
+  { id: "s_hat", tur: "sinir", baskin: true, arazi: "ova", dusman: { zirhli: 0.5, mizrakli: 0.5 }, ganimet: 1, kayip: 1.15,
+    ad: { tr: "Sınır Hattı Yarılması", en: "Border Line Breach" },
+    metin: { tr: "Düşman sınır hattını yarmak için üzerine yürüyor!", en: "The enemy marches to break your border line!" } },
+];
+export function catismaSenaryosuGetir(id: string | undefined): CatismaSenaryosu | undefined {
+  return id ? CATISMA_SENARYOLARI.find((x) => x.id === id) : undefined;
+}
+/** Tür ve yöne göre EŞİT olasılıkla senaryo seçer. */
+export function catismaSenaryosuSec(tur: "haydut" | "sinir", baskin: boolean, rnd01 = Math.random()): CatismaSenaryosu {
+  const liste = CATISMA_SENARYOLARI.filter((x) => x.tur === tur && x.baskin === baskin);
+  return liste[Math.min(liste.length - 1, Math.floor(rnd01 * liste.length))];
+}
 export const BARIS_TALIM_ZAFER = 3;
 export const BARIS_TALIM_YENILGI = 1;
 export const BARIS_MORAL_ZAFER = 4;
@@ -720,27 +794,28 @@ export const ARAZI_ADLARI: Record<BirlikArazi, { orta: DilliMetin; sanayi: Dilli
  * Satır ortalaması ≈ 1 (ova 1,06 · dağ 1,01 · orman 0,94) → hiçbir arazi herkese birden avantaj vermez. "karma" = dört satırın ortalaması.
  */
 export type AraziBirimi = "piyade" | BirlikTur;
-const araziSatiri = (arazi: BirlikArazi): Record<AraziBirimi, number> => {
-  const r = { piyade: 1 } as Record<AraziBirimi, number>;
+export type AraziYonu = "saldiri" | "savunma";
+const araziSatiri = (arazi: BirlikArazi): Record<AraziBirimi, { saldiri: number; savunma: number }> => {
+  const r = { piyade: { saldiri: 1, savunma: 1 } } as Record<AraziBirimi, { saldiri: number; savunma: number }>;
   for (const t of Object.keys(TUR_TANIMLARI) as BirlikTur[]) r[t] = TUR_TANIMLARI[t].arazi[arazi];
   return r;
 };
-export const ARAZI_CARPANLARI: Record<BirlikArazi, Record<AraziBirimi, number>> = {
+export const ARAZI_CARPANLARI: Record<BirlikArazi, Record<AraziBirimi, { saldiri: number; savunma: number }>> = {
   ova: araziSatiri("ova"),
   dag: araziSatiri("dag"),
   orman: araziSatiri("orman"),
 };
-/** Karma düşmanın arazi ortalaması üç arazide ortalama 1 olsun diye bölünen sabit (karma hiçbir arazide kendiliğinden avantaj almaz). */
-const KARMA_ARAZI_NORMU =
-  (["ova", "dag", "orman"] as BirlikArazi[]).reduce((t, ar) => {
-    const a = ARAZI_CARPANLARI[ar];
-    return t + (a.piyade + a.mizrakli + a.okcu + a.suvari + a.zirhli) / 5;
-  }, 0) / 3;
-/** Düşmanın baskın türüne göre arazi çarpanı ("karma" = ortalama). */
-export function dusmanAraziCarpani(arazi: BirlikArazi, tur: BirlikTur | "karma"): number {
+/** Karma düşmanın arazi ortalaması üç arazide ortalama 1 olsun diye (her yön için ayrı) bölünen sabit: karma hiçbir arazide kendiliğinden avantaj almaz. */
+const karmaOrtalama = (a: Record<AraziBirimi, { saldiri: number; savunma: number }>, yon: AraziYonu) => (a.piyade[yon] + a.mizrakli[yon] + a.okcu[yon] + a.suvari[yon] + a.zirhli[yon]) / 5;
+const KARMA_ARAZI_NORMU: Record<AraziYonu, number> = {
+  saldiri: (["ova", "dag", "orman"] as BirlikArazi[]).reduce((t, ar) => t + karmaOrtalama(ARAZI_CARPANLARI[ar], "saldiri"), 0) / 3,
+  savunma: (["ova", "dag", "orman"] as BirlikArazi[]).reduce((t, ar) => t + karmaOrtalama(ARAZI_CARPANLARI[ar], "savunma"), 0) / 3,
+};
+/** Düşmanın baskın türüne göre arazi çarpanı; `yon` düşmanın o karşılaşmadaki tarafı (sen saldırırken o SAVUNUR, sen savunurken o SALDIRIR). "karma" = ortalama. */
+export function dusmanAraziCarpani(arazi: BirlikArazi, tur: BirlikTur | "karma", yon: AraziYonu): number {
   const a = ARAZI_CARPANLARI[arazi];
-  if (tur === "karma") return (a.piyade + a.mizrakli + a.okcu + a.suvari + a.zirhli) / 5 / KARMA_ARAZI_NORMU;
-  return a[tur];
+  if (tur === "karma") return karmaOrtalama(a, yon) / KARMA_ARAZI_NORMU[yon];
+  return a[tur][yon];
 }
 /** Düşmanın saldırı/savunma dağılımı (baskın türe göre; ikisinin ortalaması 1 → toplam güç değişmez). */
 export function dusmanSaldiriSavunma(tur: BirlikTur | "karma"): { saldiri: number; savunma: number } {
@@ -748,6 +823,22 @@ export function dusmanSaldiriSavunma(tur: BirlikTur | "karma"): { saldiri: numbe
   const t = TUR_TANIMLARI[tur];
   const top = t.saldiri + t.savunma;
   return { saldiri: (2 * t.saldiri) / top, savunma: (2 * t.savunma) / top };
+}
+/**
+ * Barış çatışmasında düşmanın arazi çarpanı katalog ortalamasına bölünür: senaryolar düşmanın elverişli birliğini elverişli arazisiyle eşleştirdiği için
+ * (süvari ovada, okçu dağ/ormanda…) ham çarpan ortalamada düşman lehine (~+%13–18) olurdu. Normalleştirilince senaryolar arası çeşitlilik kalır, ortalama 1'dir.
+ */
+export const BARIS_DUSMAN_ARAZI_NORMU: Record<AraziYonu, number> = (() => {
+  const ort = (yon: AraziYonu) =>
+    CATISMA_SENARYOLARI.reduce((t, sen) => {
+      const e = (Object.entries(sen.dusman) as [DusmanBirlik, number][]).reduce((u, [tur, w]) => u + w * dusmanAraziCarpani(sen.arazi, tur === "karma" ? "karma" : tur, yon), 0);
+      return t + e;
+    }, 0) / CATISMA_SENARYOLARI.length;
+  return { saldiri: ort("saldiri"), savunma: ort("savunma") };
+})();
+/** Barış çatışmasında düşmanın (normalleştirilmiş) arazi çarpanı. */
+export function barisDusmanAraziCarpani(arazi: BirlikArazi, tur: BirlikTur | "karma", yon: AraziYonu): number {
+  return dusmanAraziCarpani(arazi, tur, yon) / BARIS_DUSMAN_ARAZI_NORMU[yon];
 }
 /** Rütbe S1..S5 → seçtiğin arazinin gerçekleşme ihtimali. */
 export const ARAZI_TERCIH_IHTIMALI = [0, 0.15, 0.3, 0.55, 0.8];

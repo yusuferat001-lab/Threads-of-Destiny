@@ -1267,6 +1267,10 @@ export interface CatismaKarariDurumu {
   baskin: boolean;
   dusmanTur: string;
   ad: { tr: string; en: string };
+  /** Senaryo adı/metni ve arazi (eski kayıtta null). */
+  senaryo: { ad: { tr: string; en: string }; metin: { tr: string; en: string }; arazi: BirlikArazi; araziAd: { tr: string; en: string }; araziSimge: string } | null;
+  /** Bu arazide açık özel birliklerinin saldırıda/savunmada güçlü ve zayıf olanları (ad listeleri). */
+  birlikArazi: { saldiriGuclu: { tr: string; en: string }[]; saldiriZayif: { tr: string; en: string }[]; savunmaGuclu: { tr: string; en: string }[]; savunmaZayif: { tr: string; en: string }[] } | null;
   oyuncu: { saldiri: number; savunma: number };
   dusman: { saldiri: [number, number]; savunma: [number, number] };
   /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */

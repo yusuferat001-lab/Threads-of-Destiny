@@ -1381,6 +1381,8 @@ describe("v67 Madde 5 — düşman gücü", () => {
       if (k.baskin) sayim[k.tur === "haydut" ? "baskinHaydut" : "baskinSinir"]++;
       if (k.tur === "haydut") expect(["suvari", "okcu", "karma"]).toContain(k.dusmanTur);
       else expect(["mizrakli", "zirhli", "okcu", "suvari"]).toContain(k.dusmanTur);
+      expect(k.senaryoId).toBeTruthy(); // v67 5c: her çatışma bir senaryo taşır
+      expect(k.arazi).toBeTruthy();
     }
     expect(sayim.haydut / 1200).toBeGreaterThan(0.54);
     expect(sayim.haydut / 1200).toBeLessThan(0.66);
@@ -1388,7 +1390,6 @@ describe("v67 Madde 5 — düşman gücü", () => {
     expect(sayim.baskinHaydut / sayim.haydut).toBeLessThan(0.72);
     expect(sayim.baskinSinir / sayim.sinir).toBeGreaterThan(0.32);
     expect(sayim.baskinSinir / sayim.sinir).toBeLessThan(0.48);
-    expect(d.BARIS_DUSMAN_BIRLIGI_AGIRLIGI.haydut.mizrakli).toBeUndefined();
   });
 
   it("barış ganimet aralığı türe göre: haydut 2,2–2,8, sınır 3,2–4,0; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
@@ -1412,5 +1413,112 @@ describe("v67 Madde 5 — düşman gücü", () => {
     const json = JSON.stringify(birlikGorunumuHesapla(s, bg(s)));
     expect(json).not.toContain("dusmanOrani");
     expect(json).not.toContain("1.03");
+  });
+});
+
+describe("v67 Madde 5c — çatışma senaryoları ve arazi", () => {
+  it("katalog: tür × yön başına 4 senaryo (16), kimlikler eşsiz, TR/EN metinler dolu ve kısa, düşman birlikleri türe uygun", async () => {
+    const { CATISMA_SENARYOLARI, ARAZI_SIRASI } = await import("../src/data/birlik");
+    expect(CATISMA_SENARYOLARI).toHaveLength(16);
+    expect(new Set(CATISMA_SENARYOLARI.map((x) => x.id)).size).toBe(16);
+    for (const tur of ["haydut", "sinir"] as const) {
+      for (const baskin of [false, true]) expect(CATISMA_SENARYOLARI.filter((x) => x.tur === tur && x.baskin === baskin)).toHaveLength(4);
+    }
+    for (const x of CATISMA_SENARYOLARI) {
+      expect(ARAZI_SIRASI).toContain(x.arazi);
+      expect(x.ad.tr.length).toBeGreaterThan(2);
+      expect(x.ad.en.length).toBeGreaterThan(2);
+      expect(x.metin.tr.length).toBeGreaterThan(10);
+      expect(x.metin.tr.length).toBeLessThanOrEqual(110);
+      expect(x.metin.en.length).toBeLessThanOrEqual(125);
+      expect(x.ganimet).toBeGreaterThanOrEqual(0.9);
+      expect(x.ganimet).toBeLessThanOrEqual(1.2);
+      expect(x.kayip).toBeGreaterThanOrEqual(0.9);
+      expect(x.kayip).toBeLessThanOrEqual(1.2);
+      const anahtarlar = Object.keys(x.dusman);
+      if (x.tur === "haydut") for (const k of anahtarlar) expect(["suvari", "okcu", "karma"]).toContain(k);
+      else for (const k of anahtarlar) expect(["mizrakli", "zirhli", "okcu", "suvari"]).toContain(k);
+    }
+    // her türün katalogda üç arazinin de karşılığı var
+    for (const tur of ["haydut", "sinir"] as const) {
+      expect(new Set(CATISMA_SENARYOLARI.filter((x) => x.tur === tur).map((x) => x.arazi)).size).toBe(3);
+    }
+  });
+
+  it("senaryo seçimi eşit olasılıklı ve tür/yöne uygun; her çatışma kendi senaryosunun arazisini taşır", async () => {
+    const { catismaSenaryosuSec, catismaSenaryosuGetir } = await import("../src/data/birlik");
+    const { barisCatismaKur } = await import("../src/game/birlikYil");
+    const sayim: Record<string, number> = {};
+    for (let i = 0; i < 4000; i++) {
+      const x = catismaSenaryosuSec("sinir", true);
+      expect(x.tur).toBe("sinir");
+      expect(x.baskin).toBe(true);
+      sayim[x.id] = (sayim[x.id] ?? 0) + 1;
+    }
+    const degerler = Object.values(sayim);
+    expect(degerler).toHaveLength(4);
+    for (const v of degerler) {
+      expect(v / 4000).toBeGreaterThan(0.2);
+      expect(v / 4000).toBeLessThan(0.3);
+    }
+    for (let i = 0; i < 80; i++) {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      const b = birlikAl(s);
+      const k = barisCatismaKur(s, b);
+      const sen = catismaSenaryosuGetir(k.senaryoId)!;
+      expect(sen.tur).toBe(k.tur);
+      expect(sen.baskin).toBe(k.baskin);
+      expect(k.arazi).toBe(sen.arazi);
+    }
+  });
+
+  it("barışta arazi güce işler: süvari ordusu ovada saldırıda güçlü, dağda zayıf; düşmanın tarafı da yöne göre çarpılır", async () => {
+    const { catismaKarariDurumu } = await import("../src/game/birlikIslem");
+    const kur = (arazi: "ova" | "dag") => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 3;
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = 100;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+      b.birlik_turler = ["suvari"];
+      b.catisma_bekleyen = { yil: s.yil, tur: "haydut", baskin: false, senaryoId: "h_nehir", arazi, dusmanTur: "karma", dusmanGuc: 60 };
+      return catismaKarariDurumu(s, bg(s))!;
+    };
+    const ova = kur("ova");
+    const dag = kur("dag");
+    expect(ova.oyuncu.saldiri).toBeGreaterThan(dag.oyuncu.saldiri * 1.25); // süvari ordunun %20 payı: ova 1,7 saldırı çarpanı, dağ 0,8
+    expect(ova.senaryo?.arazi).toBe("ova");
+    expect(ova.birlikArazi?.saldiriGuclu.length).toBe(1); // süvari ovada saldırıda güçlü
+    expect(dag.birlikArazi?.saldiriZayif.length).toBe(1);
+    expect(dag.birlikArazi?.savunmaZayif.length).toBe(1);
+  });
+
+  it("barışta düşmanın arazi çarpanı katalog ortalamasına normalleştirilir (düşman elverişli birliğini elverişli arazide çıkarsa da ortalama 1)", async () => {
+    const { CATISMA_SENARYOLARI, barisDusmanAraziCarpani } = await import("../src/data/birlik");
+    for (const yon of ["saldiri", "savunma"] as const) {
+      let toplam = 0;
+      for (const sen of CATISMA_SENARYOLARI) {
+        for (const [tur, w] of Object.entries(sen.dusman) as ["okcu" | "suvari" | "mizrakli" | "zirhli" | "karma", number][]) toplam += w * barisDusmanAraziCarpani(sen.arazi, tur, yon);
+      }
+      expect(toplam / CATISMA_SENARYOLARI.length).toBeCloseTo(1, 6);
+    }
+  });
+
+  it("eski kayıt (senaryo ve arazi yok) arazisiz çözülür; eski senaryo bonusu artık yok", async () => {
+    const { catismaKarariDurumu } = await import("../src/game/birlikIslem");
+    const s = asker();
+    s.ulke.donem = undefined as never;
+    const b = birlikAl(s);
+    b.birlik_turler = ["suvari"];
+    b.catisma_bekleyen = { yil: s.yil, tur: "haydut", baskin: false, dusmanTur: "karma", dusmanGuc: 30 };
+    const durum = catismaKarariDurumu(s, bg(s))!;
+    expect(durum.senaryo).toBeNull();
+    expect(durum.birlikArazi).toBeNull();
+    const sonuc = barisCatismaCoz(s, b, bg(s), "saldiri");
+    expect(sonuc.tur).toBe("haydut");
+    expect(gucHesapla(s).bonuslar.some((x) => x.kod === "senaryo")).toBe(false);
   });
 });

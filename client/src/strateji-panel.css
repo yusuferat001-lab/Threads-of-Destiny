@@ -914,6 +914,7 @@
 
 /* ---- Savaş kararı penceresi (Savaş Planı / Savaş Günü / Esir): bölümlü, seçenek kartları ---- */
 .savas-kutu { width: min(960px, 100%); }
+.savas-arazi-birlikler { display: flex; flex-direction: column; gap: 0.15rem; margin: 0.3rem 0; }
 .savas-bolum { margin-top: 0.7rem; text-align: center; }
 .savas-bolum h3 { margin: 0; font-size: 1.05rem; }
 .savas-kiyas { margin: 0.6rem auto 0; padding: 0.5rem 0.8rem; max-width: 640px; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 8px; background: rgba(255, 255, 255, 0.05); font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.2rem; }

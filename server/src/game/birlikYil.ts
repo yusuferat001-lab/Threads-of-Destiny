@@ -39,7 +39,9 @@ import {
   BASKIN_NAKIT_HASARI,
   BARIS_TUR_AGIRLIGI,
   BARIS_BASKIN_IHTIMALI,
-  BARIS_DUSMAN_BIRLIGI_AGIRLIGI,
+  catismaSenaryosuGetir,
+  catismaSenaryosuSec,
+  barisDusmanAraziCarpani,
   agirlikliSec,
   dusmanGucuHesapla,
   BARIS_DUSMAN_SAPMA,
@@ -690,7 +692,8 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   const E = dusmanGucuHesapla(state.yas, "savas", gucHesapla(state, { enflasyon: bg.enflasyon }).guc) * sv.dusman_orani * (sv.hazirlik ?? 1);
   const dagilim = dusmanSaldiriSavunma(sv.dusman_tur);
   // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo).
-  const dusmanG = E * (inisiyatif === "saldiri" ? dagilim.savunma : dagilim.saldiri) * dusmanAraziCarpani(arazi, sv.dusman_tur);
+  const dusmanYon = inisiyatif === "saldiri" ? "savunma" : "saldiri"; // sen saldırırken düşman savunur, sen savunurken o saldırır
+  const dusmanG = E * dagilim[dusmanYon] * dusmanAraziCarpani(arazi, sv.dusman_tur, dusmanYon);
   const rol = ROL_TANIMLARI[karar?.rol ?? "ana"];
   const zarYuzde = () => (d20() - 10.5) / SAVAS_ZAR_BOLEN; // ±%4 (SAVAS_ZAR_YUZDE)
   let sonBizimZar = 0;
@@ -1019,12 +1022,14 @@ function barisCatismaVadesi(b: BirlikDurumu, savasta: boolean): boolean {
  */
 export function barisCatismaKur(state: CharacterState, b: BirlikDurumu): BirlikCatismaBekleyen {
   const tur: "haydut" | "sinir" = Math.random() < BARIS_TUR_AGIRLIGI.haydut ? "haydut" : "sinir";
-  const dtur = agirlikliSec(BARIS_DUSMAN_BIRLIGI_AGIRLIGI[tur]);
   const baskin = Math.random() < BARIS_BASKIN_IHTIMALI[tur];
+  // Senaryo (tür × yön başına 4, eşit olasılık): arazi, düşman birliği karışımı, ganimet ve kayıp farkı getirir.
+  const senaryo = catismaSenaryosuSec(tur, baskin);
+  const dtur = agirlikliSec(senaryo.dusman);
   const hazirlik = hazirlikCek(b, tur);
   // Düşman: (yaşa bağlı taban + oyuncu gücünün %30'u) × tür çarpanı × ±%5 sapma × zafer serisi; güç kurulduğu anda sabitlenir.
   const E = dusmanGucuHesapla(state.yas, tur, gucHesapla(state).guc) * rnd(BARIS_DUSMAN_SAPMA[0], BARIS_DUSMAN_SAPMA[1]) * hazirlik;
-  b.catisma_bekleyen = { yil: state.yil, tur, baskin, dusmanTur: dtur, dusmanGuc: Math.round(E * 100) / 100, ...(hazirlik > 1 ? { hazirlik: Math.round(hazirlik * 1000) / 1000 } : {}) };
+  b.catisma_bekleyen = { yil: state.yil, tur, baskin, senaryoId: senaryo.id, arazi: senaryo.arazi, dusmanTur: dtur, dusmanGuc: Math.round(E * 100) / 100, ...(hazirlik > 1 ? { hazirlik: Math.round(hazirlik * 1000) / 1000 } : {}) };
   return b.catisma_bekleyen;
 }
 
@@ -1047,14 +1052,18 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   const doktrin = doktrinToplami(b.doktrinler);
   const yol = yolEtkisi(state);
   const sub = subayToplami(state);
-  const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: tur });
-  const guc = d.guc;
   const inisiyatif: "saldiri" | "savunma" = k.baskin ? "savunma" : secim;
+  // Senaryo (v67): arazi hem senin hem düşmanın gücüne işler; eski kayıtta (senaryo yok) arazisiz çözülür.
+  const sen = catismaSenaryosuGetir(k.senaryoId);
+  const arazi = k.arazi ?? sen?.arazi;
+  const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(arazi ? { savas: { arazi, dusmanTur: k.dusmanTur, inisiyatif } } : {}) });
+  const guc = d.guc;
   const dagilim = dusmanSaldiriSavunma(k.dusmanTur);
   const E = k.dusmanGuc;
   const pusu = k.baskin ? BASKIN_PUSU_CEZASI * (1 - clamp(sub.pusuAzalt + OKCU_PUSU_AZALTMA * turOrani(b, "okcu"), 0, 1)) : 0;
   const oyuncuTaraf = (inisiyatif === "saldiri" ? d.saldiri : d.savunma) * (1 - pusu);
-  const dusmanTaraf = Math.max(1e-6, E * (inisiyatif === "saldiri" ? dagilim.savunma : dagilim.saldiri));
+  const dusmanYon = inisiyatif === "saldiri" ? "savunma" : "saldiri"; // sen saldırırken düşman savunur, sen savunurken o saldırır
+  const dusmanTaraf = Math.max(1e-6, E * dagilim[dusmanYon] * (arazi ? barisDusmanAraziCarpani(arazi, k.dusmanTur, dusmanYon) : 1));
   const oyuncuEff = oyuncuTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN + b.zar_bonusu);
   const dusmanEff = dusmanTaraf * (1 + (d20() - 10.5) / SAVAS_ZAR_BOLEN);
   const zafer = oyuncuEff >= dusmanEff;
@@ -1065,7 +1074,7 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   const sm = k.baskin ? { ganimet: 1, kayip: 1 } : inisiyatif === "saldiri" ? CATISMA_SALDIRI : CATISMA_SAVUNMA;
   catismaIzleyici.fn?.({ tur, zafer, yas: state.yas, oyuncuGuc: guc, dusmanGuc: E, oyuncuEtkin: oyuncuTaraf, dusmanEtkin: dusmanTaraf, tablo: barisDusmanGucuYas(state.yas, tur) });
   const carpan = (1 + sub.ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
-  const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK[tur])) * bg.enflasyon * carpan * sm.ganimet : 0;
+  const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK[tur])) * bg.enflasyon * carpan * sm.ganimet * (sen?.ganimet ?? 1) : 0;
   const erPayi = brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
   const net = brut - erPayi;
   const esirSayisi = zafer ? olasilikliYuvarla(guc * t.esir) : 0;
@@ -1074,8 +1083,8 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   const dk = BARIS_DUSMAN_KAYBI[zafer ? "zafer" : "yenilgi"];
   const dusmanOlu = Math.round(E * rnd(dk[0], dk[1]));
   const kayip = kayipUygula(state, b, {
-    oluPct: aralikCek(yariAralik(kayipAralik.olu, konum)) * sm.kayip,
-    firarPct: aralikCek(yariAralik(kayipAralik.firar, konum)) * sm.kayip,
+    oluPct: aralikCek(yariAralik(kayipAralik.olu, konum)) * sm.kayip * (sen?.kayip ?? 1),
+    firarPct: aralikCek(yariAralik(kayipAralik.firar, konum)) * sm.kayip * (sen?.kayip ?? 1),
     yaraliOran: Math.max(1, (aralikCek(BARIS_YARALI_ORAN) - clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * YARALI_REVIR_DUSUS) * (1 - sub.yaraliAzalt)),
   });
   let nakitHasar = 0;
@@ -1123,10 +1132,12 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
 export function barisCatismaOtomatik(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami): CatismaSonucuGorunum | null {
   const k = b.catisma_bekleyen;
   if (!k) return null;
-  const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: k.tur });
+  const arazi = k.arazi ?? catismaSenaryosuGetir(k.senaryoId)?.arazi;
+  const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(arazi ? { savas: { arazi, dusmanTur: k.dusmanTur, inisiyatif: "savunma" as const } } : {}) });
   const dag = dusmanSaldiriSavunma(k.dusmanTur);
-  const saldiriOran = d.saldiri / Math.max(1e-6, k.dusmanGuc * dag.savunma);
-  const savunmaOran = d.savunma / Math.max(1e-6, k.dusmanGuc * dag.saldiri);
+  const araziC = (yon: "saldiri" | "savunma") => (arazi ? barisDusmanAraziCarpani(arazi, k.dusmanTur, yon) : 1);
+  const saldiriOran = d.saldiri / Math.max(1e-6, k.dusmanGuc * dag.savunma * araziC("savunma"));
+  const savunmaOran = d.savunma / Math.max(1e-6, k.dusmanGuc * dag.saldiri * araziC("saldiri"));
   return barisCatismaCoz(state, b, bg, saldiriOran >= savunmaOran ? "saldiri" : "savunma");
 }
 

@@ -22,6 +22,9 @@ import type {
 } from "../types";
 import {
   ARAZI_ADLARI,
+  ARAZI_CARPANLARI,
+  catismaSenaryosuGetir,
+  barisDusmanAraziCarpani,
   ARAZI_SIRASI,
   ARAZI_TERCIH_IHTIMALI,
   GOREV_GELIR_CARPANI,
@@ -410,6 +413,25 @@ export function savasKarariBekliyorMu(state: CharacterState): boolean {
   return !!k && k.adim < k.adimlar.length;
 }
 
+/** Açık özel birliklerinin bu arazide saldırıda/savunmada güçlü (≥1,15) ve zayıf (≤0,90) olanları (ad listeleri). */
+function araziBirlikEtkisi(state: CharacterState, b: BirlikDurumu, arazi: BirlikArazi) {
+  const sonuc = {
+    saldiriGuclu: [] as { tr: string; en: string }[],
+    saldiriZayif: [] as { tr: string; en: string }[],
+    savunmaGuclu: [] as { tr: string; en: string }[],
+    savunmaZayif: [] as { tr: string; en: string }[],
+  };
+  for (const tur of Object.keys(turPaylari(b)) as BirlikTur[]) {
+    const c = ARAZI_CARPANLARI[arazi][tur];
+    const ad = turAdi(tur, state.cag);
+    if (c.saldiri >= 1.15) sonuc.saldiriGuclu.push(ad);
+    else if (c.saldiri <= 0.9) sonuc.saldiriZayif.push(ad);
+    if (c.savunma >= 1.15) sonuc.savunmaGuclu.push(ad);
+    else if (c.savunma <= 0.9) sonuc.savunmaZayif.push(ad);
+  }
+  return sonuc;
+}
+
 /** Barış çatışması karar penceresi: iki tarafın saldırı ve savunma gücü (düşman aralık olarak). */
 export function catismaKarariDurumu(state: CharacterState, bg: IsletmeBaglami): CatismaKarariDurumu | null {
   const b = state.isletme?.birlik;
@@ -422,14 +444,21 @@ export function catismaKarariDurumu(state: CharacterState, bg: IsletmeBaglami): 
   const kesifli = kesif < TAHMIN_ARALIGI_TABAN;
   const ref = kesifli ? k.dusmanGuc : dusmanGucuHesapla(state.yas, k.tur, gucHesapla(state, { enflasyon: bg.enflasyon }).guc) * (k.hazirlik ?? 1);
   const aralik = (x: number): [number, number] => [Math.round(x * (1 - yay)), Math.round(x * (1 + yay))];
-  const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: k.tur });
+  // Senaryo (v67): arazi hem senin hem düşmanın gücüne işler; eski kayıtta (senaryo yok) arazisiz.
+  const sen = catismaSenaryosuGetir(k.senaryoId);
+  const arazi = k.arazi ?? sen?.arazi ?? null;
+  const araziC = (yon: "saldiri" | "savunma") => (arazi ? barisDusmanAraziCarpani(arazi, k.dusmanTur, yon) : 1);
+  const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(arazi ? { savas: { arazi, dusmanTur: k.dusmanTur, inisiyatif: "savunma" as const } } : {}) });
+  const era = state.cag === "Sanayi Devrimi" ? "sanayi" : "orta";
   return {
     tur: k.tur,
     baskin: k.baskin,
     dusmanTur: k.dusmanTur,
-    ad: BARIS_CATISMALARI[k.tur].ad[state.cag === "Sanayi Devrimi" ? "sanayi" : "orta"],
+    ad: BARIS_CATISMALARI[k.tur].ad[era],
+    senaryo: sen && arazi ? { ad: sen.ad, metin: sen.metin, arazi, araziAd: ARAZI_ADLARI[arazi][era], araziSimge: ARAZI_ADLARI[arazi].simge } : null,
+    birlikArazi: arazi ? araziBirlikEtkisi(state, b, arazi) : null,
     oyuncu: { saldiri: Math.round(d.saldiri), savunma: Math.round(d.savunma) },
-    dusman: { saldiri: aralik(ref * dag.saldiri), savunma: aralik(ref * dag.savunma) },
+    dusman: { saldiri: aralik(ref * dag.saldiri * araziC("saldiri")), savunma: aralik(ref * dag.savunma * araziC("savunma")) },
     hazirlikli: (k.hazirlik ?? 1) > 1,
   };
 }
@@ -875,7 +904,9 @@ export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): S
   const tur = sv?.dusman_tur ?? "karma";
   const arazi = sv?.arazi ?? null;
   const dagilim = dusmanSaldiriSavunma(tur);
-  const araziC = arazi ? dusmanAraziCarpani(arazi, tur) : 1;
+  const araziCS = arazi ? dusmanAraziCarpani(arazi, tur, "saldiri") : 1; // düşmanın saldırı tarafı
+  const araziCV = arazi ? dusmanAraziCarpani(arazi, tur, "savunma") : 1; // düşmanın savunma tarafı
+  const araziC = (araziCS + araziCV) / 2;
   // Keşif subayı tahmin aralığını daraltır (±%6,5 → ±%5,5…%2,5) ve aralığı gerçek değere ortalar; yoksa referans (× zafer serisi hazırlığı) ± %6,5.
   const kesifAralik = subayToplami(state).tahminAralik;
   const daralt = kesifAralik < TAHMIN_ARALIGI_TABAN && !!sv;
@@ -885,7 +916,7 @@ export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): S
     daralt ? [Math.round(taban * oran * (1 - kesifAralik)), Math.round(taban * oran * (1 + kesifAralik))] : [Math.round(taban * hazir * (1 - TAHMIN_ARALIGI_TABAN)), Math.round(taban * hazir * (1 + TAHMIN_ARALIGI_TABAN))];
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(sv && arazi ? { savas: { arazi, dusmanTur: tur, inisiyatif: "savunma" as const } } : {}) });
   return {
-    dusman: { guc: aralik(ref * araziC), saldiri: aralik(ref * dagilim.saldiri * araziC), savunma: aralik(ref * dagilim.savunma * araziC) },
+    dusman: { guc: aralik(ref * araziC), saldiri: aralik(ref * dagilim.saldiri * araziCS), savunma: aralik(ref * dagilim.savunma * araziCV) },
     oyuncu: { saldiri: Math.round(d.saldiri), savunma: Math.round(d.savunma) },
     son: sv?.son_catisma ?? null,
     hazirlikli: hazir > 1,

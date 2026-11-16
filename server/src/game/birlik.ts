@@ -371,7 +371,6 @@ export interface GucSatiri {
 export interface GucBaglami {
   enflasyon?: number;
   savas?: { arazi: BirlikArazi; dusmanTur: BirlikTur | "karma"; inisiyatif: "saldiri" | "savunma" };
-  senaryo?: "haydut" | "sinir";
 }
 export interface GucDokumu {
   er: number;
@@ -387,18 +386,6 @@ export interface GucDokumu {
   savunma: number;
   /** Pazar payı için askerî güç = (saldırı + savunma)/2. */
   guc: number;
-}
-
-/** Savaşta ya da kaos yıllarında geçerli senaryo bonusu: tür payı/%15 × tablo. */
-const SENARYO_TABLOSU: Record<"haydut" | "sinir", Partial<Record<BirlikTur, number>>> = {
-  haydut: { suvari: 0.15, okcu: 0.05 },
-  sinir: { okcu: 0.1, mizrakli: 0.08, suvari: 0.05, zirhli: 0.06 },
-};
-export function senaryoBonusu(b: BirlikDurumu, senaryo: "haydut" | "sinir"): number {
-  const paylar = turPaylari(b);
-  let t = 0;
-  for (const [tur, pay] of Object.entries(paylar) as [BirlikTur, number][]) t += (SENARYO_TABLOSU[senaryo][tur] ?? 0) * clamp(pay / 0.15, 0, 1.67);
-  return t;
 }
 
 export function yolEtkisi(state: CharacterState) {
@@ -466,12 +453,12 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   }
   if (ctx.savas) {
     const ac = ARAZI_CARPANLARI[ctx.savas.arazi];
-    let a1 = piyade * PIYADE.saldiri * ac.piyade;
-    let s1 = piyade * PIYADE.savunma * ac.piyade;
+    let a1 = piyade * PIYADE.saldiri * ac.piyade.saldiri;
+    let s1 = piyade * PIYADE.savunma * ac.piyade.savunma;
     for (const [tur, pay] of Object.entries(paylar) as [BirlikTur, number][]) {
-      const c = ac[tur]; // her özel birliğin kendi arazi çarpanı (okçu / süvari / mızraklı)
-      a1 += pay * TUR_TANIMLARI[tur].saldiri * c;
-      s1 += pay * TUR_TANIMLARI[tur].savunma * c;
+      const c = ac[tur]; // her özel birliğin kendi arazi çarpanı: SALDIRIDA ve SAVUNMADA ayrı (v67)
+      a1 += pay * TUR_TANIMLARI[tur].saldiri * c.saldiri;
+      s1 += pay * TUR_TANIMLARI[tur].savunma * c.savunma;
     }
     if (sA > 0) ekle("arazi", a1 / sA - 1, "saldiri");
     if (sS > 0) ekle("arazi", s1 / sS - 1, "savunma");
@@ -481,7 +468,6 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
       if (pay > 0) ekle("karsi_tur", KARSI_TUR_BONUSU * clamp(pay / 0.15, 0, 1.67));
     }
   }
-  if (ctx.senaryo) ekle("senaryo", senaryoBonusu(b, ctx.senaryo));
   const ortak = bonuslar.filter((x) => x.taraf === "ortak").reduce((t, x) => t + x.deger, 0);
   const yan = (taraf: "saldiri" | "savunma") => bonuslar.filter((x) => x.taraf === taraf).reduce((t, x) => t + x.deger, 0);
   const cA = clamp(1 + ortak + yan("saldiri"), 0.5, 1.6);

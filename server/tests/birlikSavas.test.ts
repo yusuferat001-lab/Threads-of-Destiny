@@ -583,8 +583,10 @@ describe("askeri güç belirleyici (v34)", () => {
       b.birlik_turler = ["okcu", "suvari", "mizrakli"];
       b.birlik_seviye = 3;
     });
-    expect(zayif).toBeLessThan(0.2);
-    expect(guclu).toBeGreaterThan(0.9);
+    // v67: düşman gücünün %30'u oyuncu gücünden gelir; zayıf ordunun düşmanı da zayıftır, ama yine de güçlü ordudan çok az kazanır
+    expect(zayif).toBeLessThan(0.35);
+    expect(guclu).toBeGreaterThan(0.85);
+    expect(guclu).toBeGreaterThan(zayif + 0.5);
   });
 
   it("düşman gücü bizim gücümüzden bağımsızdır; yaşla büyür", () => {
