@@ -826,7 +826,7 @@ export interface BirlikGorunumu {
   emir: { ad: { tr: string; en: string }; simge: string; aciklama: { tr: string; en: string } } | null;
   kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean; seviyeler: ReturnType<typeof kiralikOnizleme>[] };
   hesap: {
-    /** Maaşın çağ+ülkeye göre adı; savaşta "savaş ödeneği" olarak ödenir. */
+    /** Maaşın çağ+ülkeye göre adı; savaşta da aynı ad kullanılır. */
     soldAdi: { tr: string; en: string };
     savasOdenegiMi: boolean;
     kaleGeliri: number;
@@ -1047,7 +1047,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       seviyeler: state.ulke.savasta && (b.savas?.kiralik_er ?? 0) === 0 ? KIRALIK_SIRASI.map((sv) => kiralikOnizleme(state, bg, sv)) : [],
     },
     hesap: {
-      soldAdi: state.ulke.savasta ? { tr: "Savaş ödeneği", en: "War allowance" } : maasAdi(state.cag, state.bolge),
+      soldAdi: maasAdi(state.cag, state.bolge),
       savasOdenegiMi: !!state.ulke.savasta,
       kaleGeliri: r2(h.kaleGeliri),
       kiralikMasrafi: r2(h.kiralikMasrafi),

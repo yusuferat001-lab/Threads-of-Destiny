@@ -23,6 +23,7 @@ export function DoktrinSecimi({ stateId, doktrinSayisi, yukleniyor, onSec }: { s
   const { dil } = useDil();
   const [secenekler, setSecenekler] = useState<Secenek[] | null>(null);
   const [seviye, setSeviye] = useState(1);
+  const [odemeAdi, setOdemeAdi] = useState<string | undefined>(undefined);
   useEffect(() => {
     let iptal = false;
     setSecenekler(null);
@@ -31,6 +32,7 @@ export function DoktrinSecimi({ stateId, doktrinSayisi, yukleniyor, onSec }: { s
         if (iptal) return;
         setSecenekler(g.birlik?.doktrin.bekleyen?.secenekler ?? []);
         setSeviye(g.birlik?.doktrin.bekleyen?.seviye ?? 1);
+        setOdemeAdi(g.birlik?.hesap.soldAdi[dil]);
       })
       .catch(() => {
         if (!iptal) setSecenekler([]);
@@ -55,7 +57,7 @@ export function DoktrinSecimi({ stateId, doktrinSayisi, yukleniyor, onSec }: { s
               <div key={o.id} className={`ogreti-kart${o.acimasiz ? ' ogreti-kart-fanatik' : ''}`}>
                 <div className="ogreti-simge">{o.simge}</div>
                 <strong>{o.ad[dil]}</strong>
-                <p><DoktrinEtkiSatiri etki={o.etki} dil={dil} /></p>
+                <p><DoktrinEtkiSatiri etki={o.etki} dil={dil} odemeAdi={odemeAdi} /></p>
                 {o.acimasiz && <small>{M.acimasiz[dil]}</small>}
                 <button disabled={yukleniyor} onClick={() => onSec(o.id)}>
                   {M.sec[dil]}

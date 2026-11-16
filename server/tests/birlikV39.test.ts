@@ -16,6 +16,8 @@ function asker(): CharacterState {
   s.yas = 30;
   mesleğiSec(s, "Asker");
   s.ulke.savasta = false;
+  // Dönem rastgele gelir; sold/erzak sabit beklenen değerlerle karşılaştırıldığından nötr dönem (sold ×1, erzak ×1).
+  if (s.ulke.donem) s.ulke.donem = { ...s.ulke.donem, tur: "durgunluk", etki: { ...s.ulke.donem.etki, maas: 1, temelFiyat: 1 } };
   s.para = 1000;
   ogretileriTamamla(s);
   return s;
@@ -804,7 +806,7 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     seferberlikUygula(s, "genel", bg(s));
     const sef = birlikHesapla(s, bg(s));
     expect(sef.sold).toBeCloseTo(yalin.sold, 6);
-    expect(yalin.sold).toBeCloseTo(9 * e + 100 * 0.45 * e, 3);
+    expect(yalin.sold).toBeCloseTo(9 * e + 100 * 0.15 * e, 3);
   });
   it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
     const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");

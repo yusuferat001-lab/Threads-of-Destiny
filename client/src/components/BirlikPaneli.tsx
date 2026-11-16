@@ -132,7 +132,6 @@ const M = {
   ikmalDegistir: { tr: 'İkmali değiştir (ücretsiz)', en: 'Change supply (free)' },
   yenilgi: { tr: 'yenilgi', en: 'defeat' },
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
-  sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
   erBasi: { tr: 'Güç başı gelir', en: 'Income per strength' },
   gorevGeliri: { tr: 'Görev kazancı', en: 'Duty earnings' },
   ganimetNet: { tr: 'Ganimet (net)', en: 'Loot (net)' },
@@ -202,18 +201,18 @@ const ETKI_ETIKET: Record<string, D> = {
   moral: { tr: 'Ordu morali', en: 'Army morale' },
   sertlik: { tr: 'Sertlik', en: 'Harshness' },
   ahlak: { tr: 'Ahlak', en: 'Morality' },
-  sold: { tr: 'Sold', en: 'Pay' },
+  sold: { tr: 'Ödeme', en: 'Pay' }, // yedek: asıl ad çağ+ülkeye göre (odemeAdi) verilir
   otorite: { tr: 'Otorite', en: 'Authority' },
   devsirme: { tr: 'Devşirme', en: 'Recruits' },
   firar: { tr: 'Firar', en: 'Desertion' },
 };
 /** Doktrin etkilerini kısa çiplere çevirir (kesirler yüzde, moral/sertlik/ahlak/otorite/devşirme düz sayı). */
-export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en'): string[] {
+export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en', odemeAdi?: string): string[] {
   const duz = new Set(['moral', 'sertlik', 'ahlak', 'otorite', 'devsirme']);
   return Object.entries(etki)
     .filter(([, v]) => v)
     .map(([k, v]) => {
-      const ad = (ETKI_ETIKET[k] ?? { tr: k, en: k })[dil];
+      const ad = k === 'sold' && odemeAdi ? odemeAdi : (ETKI_ETIKET[k] ?? { tr: k, en: k })[dil];
       const sayi = duz.has(k) ? `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 10) / 10)}` : `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 100))}%`;
       return `${ad} ${sayi}`;
     });
@@ -221,9 +220,10 @@ export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en')
 
 
 /** Doktrin etkilerini yeşil/kırmızı rozetlere çevirir (kayıp, masraf, firar, sertlik artarsa kötüdür). */
-export function DoktrinEtkiSatiri({ etki, dil }: { etki: Record<string, number>; dil: 'tr' | 'en' }) {
+/** `odemeAdi`: oyuncunun ülkesindeki ödeme adı (Ulûfe, Löhnung…); verilmezse genel 'Ödeme'. */
+export function DoktrinEtkiSatiri({ etki, dil, odemeAdi }: { etki: Record<string, number>; dil: 'tr' | 'en'; odemeAdi?: string }) {
   const tersi = new Set(['kayip', 'masraf', 'firar', 'sertlik']);
-  const metinler = doktrinEtkiMetni(etki, dil);
+  const metinler = doktrinEtkiMetni(etki, dil, odemeAdi);
   const anahtarlar = Object.entries(etki).filter(([, v]) => v).map(([k, v]) => ({ k, iyi: tersi.has(k) ? v < 0 : v > 0 }));
   return (
     <>
@@ -447,7 +447,7 @@ export function BirlikPaneli({
                       {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
                     </strong>
                     <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-                    <small><DoktrinEtkiSatiri etki={o.etki} dil={dil} /></small>
+                    <small><DoktrinEtkiSatiri etki={o.etki} dil={dil} odemeAdi={d(b.hesap.soldAdi)} /></small>
                   </div>
                 ))}
               </div>

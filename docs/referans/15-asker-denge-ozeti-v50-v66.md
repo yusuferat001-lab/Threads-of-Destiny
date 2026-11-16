@@ -47,3 +47,18 @@ Yalnız TÜM ORDU (büyük savaş) yenilgisinde, karar savaşından sonraki ilk 
 - Haydut avı/akın görevleri kalkınca **süvari birimi görev bonusu** kayboluyordu ve metni hâlâ "haydut ve akın geliri +%10" diyordu: bonus **Haraç ve Vergi Tahsilatı**'na taşındı (`SUVARI_BONUS_GOREVLERI`), metin TR/EN düzeltildi.
 - **Gelir & Gider ekranında (ButcePaneli) Hazine payı satırı** yoktu (Kazanç vergi sonrası ama liste toplamı tutmuyordu): `FinansOzeti.hazinePayi` ve satır eklendi.
 - Eskimiş yorumlar/metinler düzeltildi (zar ±%4, tahmin ±%6,5); CLAUDE.md indeksi güncellendi.
+
+## v69 — Dönemler Asker'i artık hissettiriyor (2026-11)
+Sorun: ana ekrandaki dünya satırı Asker için "maaş −%9 · yaşam gideri +%31" yazıyordu; Asker'in maaşı yok (devlet SOLD öder) ve dönem ordu giderini neredeyse hiç oynatmıyordu.
+- **Sold** (sabit sold + er başı ödeme) artık dönemin zarlanan `maas` etkisiyle çarpılır (`soldDonemCarpani`, bolluk +%6…10 · durgunluk −%10…−6 · kıtlık −%12…−8). Savaşta er başı ödeme ×3 aynen kalır, üstüne dönem çarpanı biner.
+- **Erzak** barışta dönemin zarlanan `temelFiyat` etkisiyle değişir (`erzakDonemCarpani`: bolluk −%5…9 · durgunluk ±%2 · kıtlık +%15…30; eski sabit ±%10 bandı yerine). Savaşta ×1,07 ve vebada ×1,03 sabit tablo (`ERZAK_DONEM_CARPANI`) geçerli kalır.
+- **Görev geliri** ve **moral** dönem etkisi zaten vardı (`GOREV_DONEM_CARPANI`, `MORAL_KITLIK/BOLLUK_YILLIK`); artık ana ekranda görünür.
+- **Ana ekran satırı (Asker)**: "Kıtlık: Ulûfe −%10 · erzak +%25 · görev geliri −%30 · moral −1,5/yıl · yaşam gideri +%10" (ödeme adı çağ+ülkeye göre `MAAS_ADLARI`; arayüzde "sold" yazılmaz); savaşta aynı ad: "Ulûfe (er başı) ×3 · erzak · görev geliri yok". Bütçe dökümünde de savaşta ad değişmez ("Savaş ödeneği" etiketi kaldırıldı), vebada "görev geliri −%45 · erzak +%3". Kaynak: `stateManager.ts dunyaFinansEtkileri` (EN aynası `anlatim.en.ts`).
+- Testler: `birlikV65.test.ts` "dönem etkisi…"; sold/erzak sabit değer bekleyen testler nötr dönem kurar (`asker()` yardımcıları).
+
+### v69 düzeltme turu (kullanıcı kararları)
+- **Erzak** dönemle yalnız sabit tablodan değişir (`ERZAK_DONEM_CARPANI`: bolluk 0,9 · durgunluk 1 · kıtlık 1,1; savaş 1,07, veba 1,03). İlk v69 taslağındaki zarlanan gıda fiyatı (kıtlık +%15…30) **geri alındı** — erzak 0,9–1,1 bandını aşamaz.
+- **Görev geliri** hiçbir dönemde %12'den fazla kısılmaz: `GOREV_DONEM_CARPANI` alt sınırı 0,88 (eskort 1,12/0,88/1 · tahsilat 1,12/1/0,88; üç dönem ortalaması hâlâ 1). Veba (`VEBA_GOREV_CARPANI` 0,55) ayrı kaldı.
+- **Kıtlık morali** −1,5 → **−1**/yıl (`MORAL_KITLIK_YILLIK`); bolluk +1,5 aynı.
+- **Savaşta ödeme zammı kalktı**: `SAVAS_ER_BASI_CARPANI` 3 → **1** (savaşta er başı 0,15, barışla aynı; yalnız ana kadro). Ana ekran savaş satırında ödeme adı/çarpan yazılmaz. Not: savaşta görev geliri de yok, yani savaş yıllarının nakdi artık yağma/ganimete ve ikmal kararına dayanır — denge ölçümü (`npm run simulate`) yapılmadı.
+- **"Sold" kelimesi hiçbir yerde yazılmaz** (doktrin çipleri dahil): `BirlikPaneli.tsx` `ETKI_ETIKET.sold` artık genel 'Ödeme'; çipler `odemeAdi` (= `hesap.soldAdi`, yerel ad) ile yazılır, `DoktrinSecimi` de aynı adı kullanır. Koruma: `server/tests/askerOdemeAdi.test.ts`.
