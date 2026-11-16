@@ -1230,6 +1230,8 @@ export interface BirlikGorunumu {
     erMasrafi: number;
     erzak: number;
     kislaBakim: number;
+    /** Özel birlik bakımı: birlikteki er sayısı × birliğin er başı sabit bakımı. */
+    birlikBakim: number;
     techizatBakim: number;
     yaraliGideri: number;
     limitAsimGideri: number;

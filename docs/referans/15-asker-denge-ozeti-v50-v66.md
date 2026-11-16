@@ -83,3 +83,24 @@ Testler: `birlik.test.ts` "v67 Madde 2" bloğu (net talim, politika morali, ücr
 **Gider örneği** (enflasyonsuz, tam ağır teçhizat, özel birlik yok; talim ücretsiz): 40 er (K1) 36,8 · 80 er (K2) 79,6 · 150 er (K3) 168,0; sold geliri 14,5 / 20,5 / 31,0 → görevsiz net −22 / −59 / −137 (açığı görev + ganimet kapatır). Özel birlik bakımı Madde 4.
 
 **Simülasyon** (`simulateBirlik.ts`, Orta Çağ, dengeli bot; "batan" = ordunun kendini geçindirememesi): Madde 2 sonrası **%5**, er@60 229 → sabitler + er bazlı görev + yıllık +1 er YOK + büro/revir ×1,8 **%30** (er@60 109) → aynısı güç bazlı görevle **%53** → yıllık +1 er kalır, büro/revir eski fiyat **%8** (er@60 220) → **seçilen (yıllık er yok, büro/revir ×1,2): %18** (dengeli), **%10** (aktif); er@60 143-153; zafer %53-68. Yani seçilen kombinasyon eski dengeden sıkı; büyüme yalnız devşirme subayı, büro, şöhret, doktrin, yatkınlıktan. Madde 4-5 (güç/düşman) sonrası yeniden ölçülmeli. Testler: `birlik.test.ts` "v67 Madde 3" bloğu + `birlik*.test.ts` sabit beklentileri.
+
+## v67 — Madde 4: güç formülü (2026-11)
+
+| Kalem | Eski → Yeni | Sabit / yer |
+|---|---|---|
+| Moral/talimin güce etkisi | ±%25 → **+%20 (100'de) / −%15 (0'da)**, 50'de 0 | `MORAL_TALIM_GUC_UST/ALT`, `moralGucEtkisi`, `talimGucEtkisi` |
+| Piyade saldırı/savunma | 1,00/1,10 → **0,95/1,05** | `PIYADE` |
+| Okçu / Süvari / Kalkan-Mızrak / Zırhlı (saldırı/savunma) | 2,1/1,4 · 3/0,8 · 1,3/2,3 · 1,9/2,9 → **1,7/1,3 · 2,3/0,8 · 1,2/1,9 · 1,5/2,3** | `TUR_TANIMLARI` |
+| Özel birlik bakımı | yüzde eki + erzak çarpanı → **birlikteki ER BAŞINA sabit yıllık tutar** Okçu 0,20 · Süvari 0,25 · Kalkan 0,25 · Zırhlı 0,40 (× gider enflasyonu; birlik eri = ordu eri × %20) | `TurTanimi.bakimEriBasi`; `birlikHesapla.birlikBakim` (ayrı gider kalemi) |
+| Doktrin faydalı bonus büyütmesi | ×1,4 → **×1,15** | `DOKTRIN_BONUS_CARPANI` |
+| Saldırı/savunma çarpan sınırı | [0,4; 2] → **[0,5; 1,6]** | `gucHesapla` |
+| Maksimum subay | 7'ye kadar → **4** | `SUBAY_MAKS`, `subayLimiti` |
+| Subay faydalı bonusları | **~%10 düşük** (saldırı/savunma 0,081/0,135/0,18; ganimet/ölü 0,036/0,063/0,09; arazi 0,20/0,31/0,41; pusu 0,22/0,43/0,65; devşirme 1,35/2,7/3,4; tabip 0,117/0,198/0,27 ve 0,072/0,126/0,19) | `SUBAY_DEGERLERI` |
+| Yağma oranı (sert/orta/yumuşak) | 0,56/0,40/0,24 → **0,51/0,35/0,19** | `IKMAL_TANIMLARI` |
+| Rütbe güç eşiği S2..S5 | 24/90/195/450 → **18/70/150/340** (güç düştüğü için ×0,75) | `RUTBE_GUC_ESIGI_ASKER` |
+
+**Etki** (70 er, ağır teçhizat, 4 özel birlik): nötr 50/50 güç 156 → **131**; moral/talim 70/70: 187 → **152**; 100/100: 234 → **183**. Dört özel birliğin güç artışı +%77 → **+%50**; bakımı 100 erde **22/yıl** (40 er 8,8 · 80 er 17,6 · 150 er 33,0; eski yüzde sistemi ≈6,8/13,7/25,7).
+
+**Arayüz:** birlik kartında maliyet "+%46" yerine "**+0,20 /er**" (tutar), Ordu bütçesine **"Özel birlik bakımı"** gider satırı (`BirlikGorunumu.hesap.birlikBakim`). "+%25 güç" metni sabitten otomatik "+%20".
+
+**Simülasyon** (`simulateBirlik.ts`, N=60, Orta Çağ; Madde 3 sonrası → Madde 4): dengeli güç @25/35/45/55 24/60/107/198 → **26/59/123/188**, zafer % (haydut/sınır/savaş) 64/55/53 → **68/66/60**, S3 yaşı 39 (%55) → 40 (%70), batan %18 → **%20**; aktif (özel birlik + ağır talim) güç @35 60 → **32**, zafer 68/64/62 → **54/45/39**, batan %10 → **%15**, S5'e ulaşma %55 → %28. Yani özel birlik + ağır talim yolu en çok zayıflayan; dengeli yol (az özel birlik) korunuyor. Düşman gücü Madde 5'te değişir. Testler: `birlik.test.ts` "v67 Madde 4" bloğu + `birlik*.test.ts` sabit beklentileri.

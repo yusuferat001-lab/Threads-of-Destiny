@@ -127,24 +127,24 @@ describe("v39 ganimet", () => {
 describe("v39 subaylar", () => {
   it("Taarruz/Savunma/Keşif/Devşirme/Tabip değerleri Y30/60/90 noktalarından geçer ve tavanlıdır", () => {
     const e = (rol: "taarruz" | "savunma" | "kesif" | "musteri" | "guvenlik", y: number) => subayDegeri({ rol_turu: rol, gercekKalite: y, sadakat: 50 });
-    expect(e("taarruz", 30).saldiri).toBeCloseTo(0.09, 6);
-    expect(e("taarruz", 60).saldiri).toBeCloseTo(0.15, 6);
-    expect(e("taarruz", 90).saldiri).toBeCloseTo(0.2, 6);
-    expect(e("taarruz", 60).ganimet).toBeCloseTo(0.07, 6);
+    expect(e("taarruz", 30).saldiri).toBeCloseTo(0.081, 6);
+    expect(e("taarruz", 60).saldiri).toBeCloseTo(0.135, 6);
+    expect(e("taarruz", 90).saldiri).toBeCloseTo(0.18, 6);
+    expect(e("taarruz", 60).ganimet).toBeCloseTo(0.063, 6);
     expect(e("taarruz", 60).kayip).toBeCloseTo(0.04, 6);
-    expect(e("savunma", 60).savunma).toBeCloseTo(0.15, 6);
-    expect(e("savunma", 60).kayip).toBeCloseTo(-0.07, 6);
+    expect(e("savunma", 60).savunma).toBeCloseTo(0.135, 6);
+    expect(e("savunma", 60).kayip).toBeCloseTo(-0.063, 6);
     expect(e("savunma", 60).ganimet).toBeCloseTo(-0.04, 6);
-    expect(e("kesif", 30).arazi).toBeCloseTo(0.22, 6);
+    expect(e("kesif", 30).arazi).toBeCloseTo(0.2, 6);
     expect(e("kesif", 90).tahminAralik).toBeCloseTo(0.025, 6);
-    expect(e("kesif", 60).pusuAzalt).toBeCloseTo(0.48, 6);
-    expect(e("musteri", 30).devsirme).toBe(2); // 1,5 → 2
-    expect(e("musteri", 90).devsirme).toBe(4); // en çok 4 (Y100 + sadık dahil)
+    expect(e("kesif", 60).pusuAzalt).toBeCloseTo(0.43, 6);
+    expect(e("musteri", 30).devsirme).toBe(1); // 1,35 → 1
+    expect(e("musteri", 90).devsirme).toBe(3); // 3,4 → 3
     expect(e("musteri", 100).devsirme).toBeLessThanOrEqual(4);
-    expect(e("guvenlik", 60).oluFirarAzalt).toBeCloseTo(0.22, 6);
-    expect(e("guvenlik", 60).yaraliAzalt).toBeCloseTo(0.14, 6);
+    expect(e("guvenlik", 60).oluFirarAzalt).toBeCloseTo(0.198, 6);
+    expect(e("guvenlik", 60).yaraliAzalt).toBeCloseTo(0.126, 6);
     // sadık ×1,05
-    expect(subayDegeri({ rol_turu: "taarruz", gercekKalite: 60, sadakat: 90 }).saldiri).toBeCloseTo(0.15 * 1.05, 6);
+    expect(subayDegeri({ rol_turu: "taarruz", gercekKalite: 60, sadakat: 90 }).saldiri).toBeCloseTo(0.135 * 1.05, 6);
   });
 
   it("toplam tavanlıdır: çok Taarruz komutanı saldırıyı en çok +%30 yapar", () => {
@@ -167,7 +167,7 @@ describe("v39 subaylar", () => {
     s.rutbe_seviye = 2;
     const taban = araziIhtimali(s);
     s.ekip.push({ id: "k1", isim: "Kâşif", rol: "Keşif subayı", gercekKalite: 90, tahminiMin: 80, tahminiMax: 90, maas: 5, sadakat: 50, kisilik: "Sıradan", rol_turu: "kesif" });
-    expect(araziIhtimali(s)).toBeCloseTo(Math.min(0.95, taban + 0.46), 6);
+    expect(araziIhtimali(s)).toBeCloseTo(Math.min(0.95, taban + 0.41), 6);
     expect(subayToplami(s).tahminAralik).toBeCloseTo(0.025, 6);
   });
 
@@ -386,7 +386,7 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     return { s, b, sv };
   }
 
-  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,56 / 0,4 / 0,24'ü", () => {
+  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,51 / 0,35 / 0,19'u", () => {
     expect(IKMAL_SIRASI).toEqual(["yagma_sert", "yagma_orta", "yagma_yumusak"]);
     const { s, b, sv } = savasAskeri();
     const brut: Record<string, number> = {};
@@ -396,8 +396,8 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
       const oran = IKMAL_TANIMLARI[id].yagma.gucOrani;
       expect(brut[id] / (b.guc * bg(s).enflasyon)).toBeGreaterThanOrEqual(oran);
     }
-    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.56 / 0.4, 6);
-    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.24 / 0.4, 6);
+    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.51 / 0.35, 6);
+    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.19 / 0.35, 6);
   });
 
   it("sert yağma ahlak ve oyuncu morali düşürür, ordu morali artırır; yumuşak tam tersi", () => {

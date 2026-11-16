@@ -192,10 +192,9 @@ describe("askerî güç ve pay", () => {
     expect(gucHesapla(s).piyadePayi).toBeCloseTo(0.2);
   });
 
-  it("birlik maliyeti: er maliyetine eklenen kesir okçu +%46, süvari +%55, mızraklı +%49, zırhlı +%88; gizli kuşatma pay almaz", () => {
-    for (const [tur, x] of [["okcu", 0.46], ["suvari", 0.55], ["mizrakli", 0.49], ["zirhli", 0.88]] as const) {
-      expect(TUR_TANIMLARI[tur].bakim).toBeCloseTo(x);
-      expect(TUR_TANIMLARI[tur].erzak).toBeCloseTo(1 + x);
+  it("özel birlik bakımı: birlik eri başına sabit tutar okçu 0,20, süvari 0,25, mızraklı 0,25, zırhlı 0,40; gizli kuşatma pay almaz", () => {
+    for (const [tur, x] of [["okcu", 0.2], ["suvari", 0.25], ["mizrakli", 0.25], ["zirhli", 0.4]] as const) {
+      expect(TUR_TANIMLARI[tur].bakimEriBasi).toBeCloseTo(x);
     }
     const s = asker();
     const b = birlikAl(s);
@@ -220,15 +219,15 @@ describe("askerî güç ve pay", () => {
     expect(d.guc / d.ham).toBeLessThanOrEqual(2.0 * 1.2 + 1e-6);
   });
 
-  it("moral güce etkisi: 50'de 0, 0'da −%25, 100'de +%25 (doğrusal)", () => {
-    expect(moralGucEtkisi(0)).toBeCloseTo(-0.25);
-    expect(moralGucEtkisi(25)).toBeCloseTo(-0.125);
+  it("moral güce etkisi: 50'de 0, 0'da −%15, 100'de +%20 (doğrusal, iki yönde farklı eğim)", () => {
+    expect(moralGucEtkisi(0)).toBeCloseTo(-0.15);
+    expect(moralGucEtkisi(25)).toBeCloseTo(-0.075);
     expect(moralGucEtkisi(50)).toBeCloseTo(0);
-    expect(moralGucEtkisi(75)).toBeCloseTo(0.125);
-    expect(moralGucEtkisi(100)).toBeCloseTo(0.25);
+    expect(moralGucEtkisi(75)).toBeCloseTo(0.1);
+    expect(moralGucEtkisi(100)).toBeCloseTo(0.2);
   });
 
-  it("talim güce etkisi: 50'de 0, 0'da −%25, 100'de +%25; moral nötrken", () => {
+  it("talim güce etkisi: 50'de 0, 0'da −%15, 100'de +%20; moral nötrken", () => {
     const s = asker();
     const b = birlikAl(s);
     b.moral = 50;
@@ -236,12 +235,12 @@ describe("askerî güç ve pay", () => {
     const g50 = gucHesapla(s).guc;
     b.talim = 0;
     const oran0 = gucHesapla(s).guc / g50; // ortak çarpana (erzak vb.) bağlı küçük sapma
-    expect(oran0).toBeGreaterThan(0.74);
-    expect(oran0).toBeLessThan(0.78);
+    expect(oran0).toBeGreaterThan(0.83);
+    expect(oran0).toBeLessThan(0.87);
     b.talim = 100;
     const oran100 = gucHesapla(s).guc / g50;
-    expect(oran100).toBeGreaterThan(1.22);
-    expect(oran100).toBeLessThan(1.26);
+    expect(oran100).toBeGreaterThan(1.17);
+    expect(oran100).toBeLessThan(1.23);
   });
 
   it("pay = güç / (güç + rakipler + diğer ordular); güç ikiye katlanınca pay artar", () => {
@@ -279,10 +278,12 @@ describe("limitler ve yeni er katılımı", () => {
     expect(komutaLimiti(s)).toBe(140); // seferberlik limiti büyütmez
   });
 
-  it("subay limiti: rütbe tabanı 1..5 + kışla bonusu", () => {
+  it("subay limiti: rütbe tabanı 1..5 + kışla bonusu, en çok 4", () => {
     expect(subayLimiti(1, 0)).toBe(1);
-    expect(subayLimiti(5, 4)).toBeGreaterThan(subayLimiti(5, 0));
     expect(subayLimiti(3, 0)).toBe(3);
+    expect(subayLimiti(3, 4)).toBe(4); // 3 + 2 = 5 → 4
+    expect(subayLimiti(5, 0)).toBe(4); // 5 → 4
+    expect(subayLimiti(5, 4)).toBe(4); // 7 → 4
   });
 
   it("yeniErEkle limiti aşmaz, hedef kalite ücretini nakitten çeker ve talimi seyreltir", () => {
@@ -1259,5 +1260,78 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
     };
     expect(gelir(100, "yuksek") / gelir(100, "dusuk")).toBeCloseTo(1, 1);
     expect(gelir(150, "dusuk")).toBeGreaterThan(gelir(100, "dusuk"));
+  });
+});
+
+describe("v67 Madde 4 — güç formülü", () => {
+  it("piyade 0,95/1,05; özel birlik değerleri okçu 1,7/1,3, süvari 2,3/0,8, mızraklı 1,2/1,9, zırhlı 1,5/2,3", async () => {
+    const { PIYADE } = await import("../src/data/birlik");
+    expect(PIYADE).toEqual({ saldiri: 0.95, savunma: 1.05 });
+    const d = (t: "okcu" | "suvari" | "mizrakli" | "zirhli") => [TUR_TANIMLARI[t].saldiri, TUR_TANIMLARI[t].savunma];
+    expect(d("okcu")).toEqual([1.7, 1.3]);
+    expect(d("suvari")).toEqual([2.3, 0.8]);
+    expect(d("mizrakli")).toEqual([1.2, 1.9]);
+    expect(d("zirhli")).toEqual([1.5, 2.3]);
+  });
+
+  it("ağır teçhizat + 4 özel birlik güç artışı ≈ +%50 (eski +%77); dördü birden bile çarpan sınırı içinde", () => {
+    const s = asker();
+    s.ulke.donem = undefined as never;
+    s.isletme!.yatirimlar.kisla = 3;
+    s.rutbe_seviye = 5;
+    s.meslek_musteri = 100;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 100 };
+    b.moral = 50;
+    b.talim = 50;
+    b.birlik_turler = [];
+    const duz = gucHesapla(s).guc;
+    b.birlik_turler = ["okcu", "suvari", "mizrakli", "zirhli"];
+    const dort = gucHesapla(s).guc;
+    expect(dort / duz).toBeGreaterThan(1.45);
+    expect(dort / duz).toBeLessThan(1.56);
+  });
+
+  it("özel birlik bakımı ayrı kalem: birlikteki er × er başı tutar (okçu 0,20 · süvari 0,25 · mızraklı 0,25 · zırhlı 0,40); er masrafı/erzak etkilenmez", () => {
+    const kur = (turler: ("okcu" | "suvari" | "mizrakli" | "zirhli")[]) => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 5;
+      s.isletme!.yatirimlar.kisla = 3;
+      s.meslek_musteri = 100;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 100, yuksek: 0 };
+      b.birlik_turler = turler;
+      return { s, h: birlikHesapla(s, bg(s)) };
+    };
+    const yok = kur([]);
+    const dort = kur(["okcu", "suvari", "mizrakli", "zirhli"]);
+    expect(yok.h.birlikBakim).toBe(0);
+    // 100 er × %20 = 20 er her birlikte: 20 × (0,20 + 0,25 + 0,25 + 0,40) = 22
+    expect(dort.h.birlikBakim / bg(dort.s).giderEnflasyon).toBeCloseTo(22, 6);
+    expect(dort.h.erMasrafi).toBeCloseTo(yok.h.erMasrafi, 6);
+    expect(dort.h.erzak).toBeCloseTo(yok.h.erzak, 6);
+    expect(dort.h.toplamGider - yok.h.toplamGider).toBeCloseTo(dort.h.birlikBakim, 6);
+    // ordu büyüdükçe orantılı artar
+    const buyuk = kur(["okcu"]);
+    buyuk.s.meslek_musteri = 200;
+    birlikAl(buyuk.s).kalite = { dusuk: 0, orta: 200, yuksek: 0 };
+    const iki = birlikHesapla(buyuk.s, bg(buyuk.s)).birlikBakim;
+    expect(iki / buyuk.h.birlikBakim).toBeCloseTo(2, 6);
+  });
+
+  it("rütbe güç eşikleri 18/70/150/340", async () => {
+    const { RUTBE_GUC_ESIGI_ASKER } = await import("../src/data/rutbeler");
+    expect(RUTBE_GUC_ESIGI_ASKER).toEqual({ 2: 18, 3: 70, 4: 150, 5: 340 });
+  });
+
+  it("yağma oranları 0,51 / 0,35 / 0,19; subay en çok 4; subay bonusları ~%10 düşük", async () => {
+    const { IKMAL_TANIMLARI, SUBAY_MAKS } = await import("../src/data/birlik");
+    expect(IKMAL_TANIMLARI.yagma_sert.yagma.gucOrani).toBe(0.51);
+    expect(IKMAL_TANIMLARI.yagma_orta.yagma.gucOrani).toBe(0.35);
+    expect(IKMAL_TANIMLARI.yagma_yumusak.yagma.gucOrani).toBe(0.19);
+    expect(SUBAY_MAKS).toBe(4);
+    const { SUBAY_DEGERLERI } = await import("../src/game/subay");
+    expect(SUBAY_DEGERLERI.taarruz.saldiri).toEqual([0.081, 0.135, 0.18]);
   });
 });

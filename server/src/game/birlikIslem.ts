@@ -767,6 +767,7 @@ export interface BirlikGorunumu {
       saldiri: number;
       savunma: number;
       ucret: number;
+      /** Birliğin her eri için yıllık ek bakım (enflasyonlu TUTAR; yüzde değil). */
       bakim: number;
       arti: { tr: string; en: string };
       eksi: { tr: string; en: string };
@@ -842,6 +843,8 @@ export interface BirlikGorunumu {
     erMasrafi: number;
     erzak: number;
     kislaBakim: number;
+    /** Özel birlik bakımı: birlikteki er sayısı × birliğin er başı sabit bakımı (yıllık, enflasyonlu). */
+    birlikBakim: number;
     techizatBakim: number;
     yaraliGideri: number;
     limitAsimGideri: number;
@@ -960,7 +963,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         saldiri: TUR_TANIMLARI[id].saldiri,
         savunma: TUR_TANIMLARI[id].savunma,
         ucret: r2(TUR_TANIMLARI[id].ucret * bg.giderEnflasyon),
-        bakim: TUR_TANIMLARI[id].bakim,
+        bakim: r2(TUR_TANIMLARI[id].bakimEriBasi * bg.giderEnflasyon),
         arti: TUR_TANIMLARI[id].arti,
         eksi: TUR_TANIMLARI[id].eksi,
         guclu: turGucluZayif(id).guclu.map((a) => araziAdiMetin(a, cag)),
@@ -1053,7 +1056,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kiralikMasrafi: r2(h.kiralikMasrafi),
       yagmaBrut: r2(h.yagmaBrut),
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
-      toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim),
+      toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim), birlikBakim: r2(h.birlikBakim),
       techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
       barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, (BARIS_GANIMET_ARALIK[0] + BARIS_GANIMET_ARALIK[1]) / 2) * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
     },

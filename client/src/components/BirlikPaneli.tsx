@@ -143,6 +143,7 @@ const M = {
   toplamKazanc: { tr: 'Toplam kazanç', en: 'Total earnings' },
   gKisla: { tr: 'Kışla bakımı', en: 'Barracks upkeep' },
   gTechizat: { tr: 'Teçhizat bakımı', en: 'Equipment upkeep' },
+  gBirlikBakim: { tr: 'Özel birlik bakımı', en: 'Special unit upkeep' },
   gKusatma: { tr: 'Kuşatma bakımı', en: 'Siege upkeep' },
   gTalim: { tr: 'Talim masrafı', en: 'Drill costs' },
   beklenenNet: { tr: 'Beklenen net', en: 'Expected net' },
@@ -487,6 +488,7 @@ export function BirlikPaneli({
             {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong className="s-gider">−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
             <div>{t('gKisla')}: <strong className="s-gider">−{formatPara(b.hesap.kislaBakim)}</strong></div>
             <div>{t('gTechizat')}: <strong className="s-gider">−{formatPara(b.hesap.techizatBakim)}</strong></div>
+            {b.hesap.birlikBakim > 0 && <div>{t('gBirlikBakim')}: <strong className="s-gider">−{formatPara(b.hesap.birlikBakim)}</strong></div>}
             {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong className="s-gider">−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
             {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-gider">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
             {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
@@ -709,7 +711,7 @@ export function BirlikPaneli({
                 )}
               </div>
               <div className="birlik-kart-etki">
-                ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · <span className="s-gider">{formatPara(tur.ucret)} {pb}{erBirim}</span> · {t('maliyetArti')} <span className="s-gider">+%{Math.round(tur.bakim * 100)}</span>
+                ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · <span className="s-gider">{formatPara(tur.ucret)} {pb}{erBirim}</span> · {t('maliyetArti')} <span className="s-gider">+{formatPara(tur.bakim)} {pb}{erBirim}</span>
               </div>
               <div className="birlik-arazi">
                 {tur.guclu.length > 0 && <span className="s-arti">▲ {t('guclu')}: {tur.guclu.map(d).join(', ')}</span>}
