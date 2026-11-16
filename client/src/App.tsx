@@ -197,6 +197,7 @@ import './pc-tema.css';
 import './acilis.css';
 import './renk-paleti.css';
 import './strateji-panel.css';
+import './karar-kabuk.css';
 
 // Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
 // oyuncuya gösterilmiyor. Alttaki mekanik/veri katmanına dokunulmadı — yeniden açmak için bunu

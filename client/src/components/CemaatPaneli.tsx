@@ -6,6 +6,7 @@ import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
+import { KararSatiri } from './KararKabuk';
 import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
 
 interface Props {
@@ -393,15 +394,16 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         {c.ogretiler.secilen.length === 0 ? (
           <p className="isletme-bos">{t('ogretiYok')}</p>
         ) : (
-          <div className="isletme-yatirimlar">
+          <div className="kk-liste kk-kucuk">
             {c.ogretiler.secilen.map((o) => (
-              <div key={o.id} className="isletme-yatirim" title={d(o.aciklama)}>
-                <strong>
-                  {o.simge} {d(o.ad)} {o.fanatik ? '⚡' : ''}
-                </strong>
-                <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-                <small>{d(o.aciklama)}</small>
-              </div>
+              <KararSatiri
+                key={o.id}
+                kol={o.fanatik ? 'sert' : 'evrensel'}
+                simge={o.simge}
+                dal={`${o.fanatik ? (dil === 'en' ? '⚡ Zealot' : '⚡ Fanatik') : dil === 'en' ? 'Doctrine' : 'Öğreti'} · ${dil === 'en' ? `Lv.${o.seviye}` : `Sv.${o.seviye}`}`}
+                ad={d(o.ad)}
+                detay={d(o.aciklama)}
+              />
             ))}
           </div>
         )}

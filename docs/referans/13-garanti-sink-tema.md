@@ -545,3 +545,11 @@ Bu blok v54–v58'in seferberlik, savaş kaybı, görev geliri ve kışla/limit 
 - **Zafer serisi:** ≥5 arka arkaya zaferde düşman ×1,20–1,25 (`ZAFER_SERISI_ESIGI_2`); 3–4'te ×1,10–1,15; etki seri sürdükçe kalıcı, yenilgi sıfırlar.
 - **Tamamlananlar:** süvari birimi görev bonusu Haraç ve Vergi Tahsilatı'na taşındı; Gelir & Gider ekranına Hazine payı satırı; eskimiş metin/yorumlar.
 - **Ölçüm** (N=400 genel bot): kazanma haydut %79 · sınır %77 · savaş %64; dengeli bot %96/94/91, aktif %95/93/93; 65 yıl ele kalan dengeli 22,6k, aktif 36,4k; borçla ölen %44 (±4).
+
+### §53 Faz 10 (2026-11) — Karar pencereleri ortak şablonu (doktrin, öğreti, savaş)
+Zorunlu karar pencereleri "kahve üstüne kahve" idi (`#2a1d10` kutu + %4 beyaz kart). Ortak şablon: **bordo kadife sahne** (olay kutusuyla aynı `#82202a→#591219→#360a10`), **altın çift çerçeveli koyu espresso panel**, **kahveli latte seçenek satırları** (`--c-lk-1/2` `#dcc7a4→#cdb38b`), **kol renkli madalyon** (sol şerit + halka: Evrensel mavi, Sadık/Kahraman altın, ⚡ Acımasız/Fanatik kızıl), **rütbe yolu** (S1–S5), seç + **onayla** düğmesi (artık tek tıkla gönderilmez).
+- **Dosyalar:** [karar-kabuk.css](client/src/karar-kabuk.css) (App.tsx'te en son import), [KararKabuk.tsx](client/src/components/KararKabuk.tsx) (`KararKatman`, `KararSatiri`, `RutbeYolu`, `KararOnay`), [kararKol.ts](client/src/components/kararKol.ts) (kol türü/etiketi). Renk tokenları `renk-paleti.css` (`--c-lk-*`, `--c-kol-*`).
+- **Kullananlar:** `DoktrinSecimi` (Asker), `OgretiSecimi` (Din Adamı), `SavasKararlari` (plan/gün/esir) tam şablon; `CatismaKarari`, `SavasSonucu`, `CatismaSonucu`, `UrunSecimi` eski `.ogreti-*` sınıflarını korur ama `karar-kabuk.css` kabuğu ve kart yüzeyini aynı dile çevirir. Ordu sayfası doktrin bloğu ve Cemaat öğreti listesi `KararSatiri` kompakt liste (`.kk-liste.kk-kucuk`).
+- **Sunucu:** `birlik.doktrin.secilen[]` artık `kaynak` (evrensel/sadik/kahraman/sert) taşır (rütbe yolu ve kol rengi için); istemci `types.ts` aynı.
+- **Tuzaklar:** genel `button:hover` (App.css) arka planı kahveye çevirir → `button.kk-satir:hover` kendi yüzeyini yeniden verir; `renk-paleti.css` içindeki `button … .s-arti` (açık yeşil) kuralını aşmak için çip renkleri `.kk-satir.kk-satir.kk-satir .s-arti` ile açık-yüzey değerlerine döner. Yeni karar penceresi yaparken `KararKatman` kullan, yeni hex uydurma.
+

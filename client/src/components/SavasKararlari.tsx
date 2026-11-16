@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { SavasKarariDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { KararKatman, KararOnay, KararSatiri } from './KararKabuk';
 
 const M = {
   baslik: {
@@ -59,74 +60,59 @@ export function SavasKararlari({ karar, yukleniyor, onSec }: { karar: SavasKarar
   const k = karar.kiyas;
   const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
   return (
-    <div className="ogreti-katman zemin-koyu" role="dialog" aria-modal="true">
-      <div className="ogreti-kutu savas-kutu">
-        <h2>⚔️ {M.baslik[karar.grup][dil]}</h2>
-        <small>{M.alt[karar.grup][dil]}</small>
-        {karar.bilgi.dusmanTur && karar.grup === 'gun' && (
-          <p>
-            <small>
-              {M.dusman[dil]}: {(DUSMAN_TUR[karar.bilgi.dusmanTur] ?? { tr: karar.bilgi.dusmanTur, en: karar.bilgi.dusmanTur })[dil]}
-            </small>
-          </p>
-        )}
-        {k && karar.grup === 'gun' && (
-          <div className="savas-kiyas">
-            <table className="savas-kiyas-tablo">
-              <thead>
-                <tr>
-                  <th />
-                  <th>{M.sen[dil]}</th>
-                  <th>{M.dusmanKisa[dil]}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th>⚔️ {M.saldiriK[dil]}</th>
-                  <td><strong>{k.oyuncu.saldiri}</strong></td>
-                  <td>{aralik(k.dusman.saldiri)}</td>
-                </tr>
-                <tr>
-                  <th>🛡️ {M.savunmaK[dil]}</th>
-                  <td><strong>{k.oyuncu.savunma}</strong></td>
-                  <td>{aralik(k.dusman.savunma)}</td>
-                </tr>
-              </tbody>
-            </table>
-            <small>{M.kiyasNot[dil]}</small>
-            {k.hazirlikli && <small className="s-eksi">{M.hazirlikli[dil]}</small>}
+    <KararKatman simge="⚔️" baslik={M.baslik[karar.grup][dil]} alt={M.alt[karar.grup][dil]} genis>
+      {karar.bilgi.dusmanTur && karar.grup === 'gun' && (
+        <p className="kk-alt">
+          {M.dusman[dil]}: <strong>{(DUSMAN_TUR[karar.bilgi.dusmanTur] ?? { tr: karar.bilgi.dusmanTur, en: karar.bilgi.dusmanTur })[dil]}</strong>
+        </p>
+      )}
+      {k && karar.grup === 'gun' && (
+        <div className="kk-kiyas">
+          <table className="savas-kiyas-tablo">
+            <thead>
+              <tr>
+                <th />
+                <th>{M.sen[dil]}</th>
+                <th>{M.dusmanKisa[dil]}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>⚔️ {M.saldiriK[dil]}</th>
+                <td><strong>{k.oyuncu.saldiri}</strong></td>
+                <td>{aralik(k.dusman.saldiri)}</td>
+              </tr>
+              <tr>
+                <th>🛡️ {M.savunmaK[dil]}</th>
+                <td><strong>{k.oyuncu.savunma}</strong></td>
+                <td>{aralik(k.dusman.savunma)}</td>
+              </tr>
+            </tbody>
+          </table>
+          <small>{M.kiyasNot[dil]}</small>
+          {k.hazirlikli && <small className="s-eksi">{M.hazirlikli[dil]}</small>}
+        </div>
+      )}
+      {karar.adimlar.map((bolum) => (
+        <section key={bolum.adim} className="kk-bolum">
+          <h3>{bolum.baslik[dil]}</h3>
+          <p className="kk-bolum-alt">{bolum.aciklama[dil]}</p>
+          <div className="kk-liste">
+            {bolum.secenekler.map((o) => (
+              <KararSatiri
+                key={o.id}
+                simge={o.simge}
+                ad={o.ad[dil]}
+                detay={o.aciklama[dil]}
+                secili={secim[bolum.adim] === o.id}
+                disabled={yukleniyor}
+                onClick={() => setSecim((s) => ({ ...s, [bolum.adim]: o.id }))}
+              />
+            ))}
           </div>
-        )}
-        {karar.adimlar.map((bolum) => (
-          <section key={bolum.adim} className="savas-bolum">
-            <h3>{bolum.baslik[dil]}</h3>
-            <p className="ogreti-seviye">{bolum.aciklama[dil]}</p>
-            <div className="ogreti-kartlar">
-              {bolum.secenekler.map((o) => (
-                <button
-                  key={o.id}
-                  type="button"
-                  className={`ogreti-kart savas-secenek${secim[bolum.adim] === o.id ? ' secili' : ''}`}
-                  aria-pressed={secim[bolum.adim] === o.id}
-                  disabled={yukleniyor}
-                  onClick={() => setSecim((s) => ({ ...s, [bolum.adim]: o.id }))}
-                >
-                  {o.simge && <div className="ogreti-simge">{o.simge}</div>}
-                  <strong>
-                    {secim[bolum.adim] === o.id ? '✓ ' : ''}
-                    {o.ad[dil]}
-                  </strong>
-                  <p>{o.aciklama[dil]}</p>
-                </button>
-              ))}
-            </div>
-          </section>
-        ))}
-        <button type="button" className="savas-onay" disabled={yukleniyor || !tamam} onClick={() => onSec(karar.adimlar.map((a) => secim[a.adim]))}>
-          {M.onayla[dil]}
-        </button>
-        {!tamam && <small>{M.eksik[dil]}</small>}
-      </div>
-    </div>
+        </section>
+      ))}
+      <KararOnay not={tamam ? '' : M.eksik[dil]} etiket={M.onayla[dil]} disabled={yukleniyor || !tamam} onClick={() => onSec(karar.adimlar.map((a) => secim[a.adim]))} />
+    </KararKatman>
   );
 }

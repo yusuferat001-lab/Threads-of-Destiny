@@ -5,6 +5,8 @@ import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
+import { KararSatiri } from './KararKabuk';
+import { kolOlarak, useKolEtiketi } from './kararKol';
 import { isletmeUyariMetni } from './IsletmePaneli';
 import { formatPara, formatMusteri, isaretSinifi } from '../format';
 
@@ -213,7 +215,7 @@ export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en',
     .filter(([, v]) => v)
     .map(([k, v]) => {
       const ad = k === 'sold' && odemeAdi ? odemeAdi : (ETKI_ETIKET[k] ?? { tr: k, en: k })[dil];
-      const sayi = duz.has(k) ? `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 10) / 10)}` : `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 100))}%`;
+      const sayi = duz.has(k) ? `${v > 0 ? '+' : '−'}${String(Math.abs(Math.round(v * 10) / 10)).replace('.', dil === 'tr' ? ',' : '.')}` : `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 100))}%`;
       return `${ad} ${sayi}`;
     });
 }
@@ -221,15 +223,15 @@ export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en',
 
 /** Doktrin etkilerini yeşil/kırmızı rozetlere çevirir (kayıp, masraf, firar, sertlik artarsa kötüdür). */
 /** `odemeAdi`: oyuncunun ülkesindeki ödeme adı (Ulûfe, Löhnung…); verilmezse genel 'Ödeme'. */
-export function DoktrinEtkiSatiri({ etki, dil, odemeAdi }: { etki: Record<string, number>; dil: 'tr' | 'en'; odemeAdi?: string }) {
+export function DoktrinEtkiSatiri({ etki, dil, odemeAdi, cip }: { etki: Record<string, number>; dil: 'tr' | 'en'; odemeAdi?: string; cip?: boolean }) {
   const tersi = new Set(['kayip', 'masraf', 'firar', 'sertlik']);
   const metinler = doktrinEtkiMetni(etki, dil, odemeAdi);
   const anahtarlar = Object.entries(etki).filter(([, v]) => v).map(([k, v]) => ({ k, iyi: tersi.has(k) ? v < 0 : v > 0 }));
   return (
     <>
       {metinler.map((m, i) => (
-        <span key={i} className={anahtarlar[i]?.iyi ? 's-arti' : 's-eksi'}>
-          {i > 0 ? ' · ' : ''}
+        <span key={i} className={`${anahtarlar[i]?.iyi ? 's-arti' : 's-eksi'}${cip ? ' kk-cip' : ''}`}>
+          {!cip && i > 0 ? ' · ' : ''}
           {m}
         </span>
       ))}
@@ -259,6 +261,7 @@ export function BirlikPaneli({
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
+  const kolEtiketi = useKolEtiketi();
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
   const erBirim = dil === 'en' ? '/man' : '/er';
@@ -440,16 +443,20 @@ export function BirlikPaneli({
             {b.doktrin.secilen.length === 0 ? (
               <p className="isletme-bos">{t('doktrinYok')}</p>
             ) : (
-              <div className="isletme-yatirimlar">
-                {b.doktrin.secilen.map((o) => (
-                  <div key={o.id} className="isletme-yatirim">
-                    <strong>
-                      {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
-                    </strong>
-                    <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-                    <small><DoktrinEtkiSatiri etki={o.etki} dil={dil} odemeAdi={d(b.hesap.soldAdi)} /></small>
-                  </div>
-                ))}
+              <div className="kk-liste kk-kucuk">
+                {b.doktrin.secilen.map((o) => {
+                  const kol = kolOlarak(o.kaynak);
+                  return (
+                    <KararSatiri
+                      key={o.id}
+                      kol={kol}
+                      simge={o.simge}
+                      dal={`${kolEtiketi(kol)} · ${dil === 'en' ? `Lv.${o.seviye}` : `Sv.${o.seviye}`}`}
+                      ad={d(o.ad)}
+                      cipler={<DoktrinEtkiSatiri etki={o.etki} dil={dil} odemeAdi={d(b.hesap.soldAdi)} cip />}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>

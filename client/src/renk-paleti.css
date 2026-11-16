@@ -23,6 +23,20 @@
   --c-eksi-koyu: #ff8a75;
   --c-lacivert-koyu: #8fb2f0;
   --c-esik-koyu: #c4a2f0;
+
+  /* Karar pencereleri (doktrin, öğreti, savaş kararı; karar-kabuk.css): kahveli latte yüzey + kol renkleri. */
+  --c-lk-1: #dcc7a4;
+  --c-lk-2: #cdb38b;
+  --c-lk-yazi: #2c1f15;
+  --c-lk-soluk: #5e4733;
+  --c-lk-kenar: #6e4f35;
+  --c-lk-cip: #f4ead6;
+  --c-kol-evrensel: #5f86c9;
+  --c-kol-evrensel-koyu: #1f4a8f;
+  --c-kol-sadik: #d1a843;
+  --c-kol-sadik-koyu: #7a5a12;
+  --c-kol-sert: #d8483a;
+  --c-kol-sert-koyu: #8a2a22;
 }
 
 /* Yardımcı sınıflar (açık zemin). Koyu zeminde üst kapsayıcıya `.zemin-koyu` ekle. */
