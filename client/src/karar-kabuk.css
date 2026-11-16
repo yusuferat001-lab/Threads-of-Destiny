@@ -158,3 +158,7 @@ button.ogreti-kart.savas-secenek:hover:not(:disabled) { background: linear-gradi
   .ogreti-kartlar { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .kk-satir { transition: none; } }
+
+/* Sonuç ekranları: açıklama notu ve "Devam" düğmesi alt alta. */
+.savas-sonuc > small { display: block; margin-top: 10px; color: #cdb98e; }
+.savas-sonuc .savas-onay { margin-top: 12px; }
