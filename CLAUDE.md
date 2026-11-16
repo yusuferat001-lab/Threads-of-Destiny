@@ -14,6 +14,7 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 - Mekanik/sabit değişince `docs/referans/` içindeki ilgili bölümü de güncelle (§ numarasını koru, yeni tur notunu bölüm sonuna ekle).
 - **Oyuncuya "sold" yazma:** asker ödemesinin adı çağ+ülkeye göre yereldir (`data/birlik.ts MAAS_ADLARI`: Ulûfe, Löhnung, Roga, Soldée, Prêt, Mevacib, Jalovanye…; savaşta da değişmez). Doktrin çipleri/ana ekran/bütçe hep bu adı kullanır; `tests/askerOdemeAdi.test.ts` tüm TR metin değişmezlerini tarar.
 - Yeni oyuncuya görünen metinlere mekanik eşik/süre/oran yazma; TR kaynak kanoniktir, İngilizce aynası `server/src/i18n/olaylar/*.en.ts` (§30).
+- **Yeni açılır ekran / karar penceresi:** `/acilirekranred` skill'i (`.claude/skills/acilirekranred/`: SKILL.md, kopyala-yapıştır `ornek.tsx`, tarayıcıda açılan `onizleme.html`). Bileşenler `client/src/components/KararKabuk.tsx`, stil `client/src/karar-kabuk.css`; yeni CSS yazma, şablonu kullan.
 - Yeni olay eklemek için `/olay-ekle` skill'ini kullan (`.claude/skills/olay-ekle`). Her `.ts` düzenlemesinden sonra sunucu tip kontrolünü bir hook çalıştırır (`.claude/settings.json`).
 
 ## Referans indeksi (`docs/referans/`)
