@@ -291,3 +291,57 @@
     min-height: 44px;
   }
 }
+
+/*
+ * UX turu 6 (mobil ≤767px): Kariyer/Yatırım (Strateji) ekranları, amaç çipi başlığı, ölüm ekranı.
+ */
+@media (max-width: 767px) {
+  /* Strateji ekranları: eylem düğmeleri ≥44px (fiyat −%20…+%20, Açık/Piyasa, Yükselt, İşe al, bağış çipleri…);
+     ✕ görünmez ::after ile 44×44. Genişlik değişmez, yalnız yükseklik. */
+  .strateji-sayfa button:not(.strateji-kapat) {
+    min-height: 44px;
+  }
+  .strateji-sayfa .strateji-kapat {
+    position: relative;
+  }
+  .strateji-sayfa .strateji-kapat::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+  }
+
+  /* Amaç çipi: oran başlığın yanında değil altında; başlık tüm genişliği kullanır ("Meyha|ne" kırpılmasın). */
+  .ust-amac-serit-satiri .amac-serit-ust {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.25rem;
+    align-items: baseline;
+  }
+  .ust-amac-serit-satiri .amac-serit-oran {
+    grid-column: 2;
+  }
+  .ust-amac-serit-satiri .amac-serit-baslik {
+    overflow-wrap: anywhere;
+  }
+
+  /* Ölüm ekranı: "Liderlik Tablosu / Yeniden Başla" uzun sayfanın en altında kalıyordu → sabit alt çubuk. */
+  .olum-mobil-govde .olum-butonlari {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    box-sizing: border-box;
+    width: calc(100% + 1.5rem);
+    max-width: none;
+    margin: 0.5rem -0.75rem 0;
+    padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, rgba(21, 15, 10, 0), rgba(21, 15, 10, 0.95) 30%);
+  }
+  .olum-mobil-govde .olum-butonlari button {
+    min-height: 48px;
+  }
+}
+
+/* Strateji ekranlarındaki küçük açıklamalar (<small>, tarayıcı varsayılanı ≈10–11 px) ≥12 px (mobil + PC). */
+.strateji-sayfa small {
+  font-size: max(0.75rem, 0.833em);
+}

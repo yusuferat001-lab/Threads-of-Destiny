@@ -71,6 +71,23 @@ test.describe('oyun ekranı', () => {
     expect(o.yatayTasma, 'yatay taşma').toBe(false);
     expect(o.kucukHedef, 'dokunma hedefi < 44px').toEqual([]);
     expect(o.kucukYazi, `yazı < ${MIN_YAZI()}px`).toEqual([]);
+    if (mobilMi()) {
+      // Üstteki 3'lü amaç çiplerinin başlığı yatayda kırpılmamalı ("Meyha|ne Müdavimi" hatası).
+      const kirpilan = await page.locator('.amac-serit-baslik').evaluateAll((l) =>
+        l.filter((e) => e.scrollWidth > e.clientWidth + 2).map((e) => e.textContent),
+      );
+      expect(kirpilan, 'amaç çipi başlığı yatay kırpılıyor').toEqual([]);
+      // Deterministik karşılık (başlık adları rastgele): oran (0/3) başlığın ALTINDA durmalı, yanında değil.
+      const yanYana = await page.locator('.amac-serit-ust').evaluateAll(
+        (l) =>
+          l.filter((u) => {
+            const b = u.querySelector('.amac-serit-baslik');
+            const o = u.querySelector('.amac-serit-oran');
+            return !!b && !!o && o.getBoundingClientRect().top < b.getBoundingClientRect().bottom - 2;
+          }).length,
+      );
+      expect(yanYana, 'amaç oranı başlığın yanında').toBe(0);
+    }
   });
 
   test('klavye (PC): ilk Tab ilk şıka iner, rakam şık seçer, sonra Devam Et odakta', async ({ page }) => {
@@ -109,5 +126,23 @@ test.describe('oyun ekranı', () => {
 
     await page.locator('.ekran-kapat-buton, .strateji-kapat').first().click(); // mobil ✕ / PC panel ×
     await expect(page.locator('.ana-ekran')).toBeVisible();
+  });
+
+  test('Kariyer/Yatırım ekranları (Dükkân, Yatırım, Çalışan, Çevre): aç / ölç / kapat', async ({ page }) => {
+    await oyunaBasla(page); // Tüccar: dört ana düğme
+    await olayiCoz(page);
+    await anaEkranaGec(page);
+    const n = await page.locator('.ana-tus').count();
+    expect(n, 'ana düğme sayısı').toBe(4);
+    for (let i = 0; i < n; i++) {
+      await page.locator('.ana-tus').nth(i).click();
+      await expect(page.locator('.strateji-sayfa').first()).toBeVisible();
+      const o = await olc(page, MIN_HEDEF(), MIN_YAZI());
+      expect(o.yatayTasma, `ekran ${i} yatay taşma`).toBe(false);
+      expect(o.kucukHedef, `ekran ${i} dokunma hedefi`).toEqual([]);
+      expect(o.kucukYazi, `ekran ${i} yazı`).toEqual([]);
+      await page.locator('.ekran-kapat-buton, .strateji-kapat').first().click();
+      await expect(page.locator('.ana-ekran')).toBeVisible();
+    }
   });
 });
