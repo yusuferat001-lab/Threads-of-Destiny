@@ -162,3 +162,18 @@ button.ogreti-kart.savas-secenek:hover:not(:disabled) { background: linear-gradi
 /* Sonuç ekranları: açıklama notu ve "Devam" düğmesi alt alta. */
 .savas-sonuc > small { display: block; margin-top: 10px; color: #cdb98e; }
 .savas-sonuc .savas-onay { margin-top: 12px; }
+
+/* Sonuç ekranlarındaki bilgi kutuları (Güçler, Kayıpların, Ganimet…): kahveli latte yüzey, soldaki şerit ve koyu yazı. */
+.savas-sonuc .savas-kiyas {
+  position: relative; overflow: hidden; max-width: 640px; width: 100%; padding: 0.6rem 0.9rem 0.6rem 1.2rem; border-radius: 12px; gap: 0.25rem;
+  background: linear-gradient(180deg, var(--c-lk-1), var(--c-lk-2)); border: 1px solid var(--c-lk-kenar); color: var(--c-lk-yazi); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+.savas-sonuc .savas-kiyas::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; background: var(--c-kol-evrensel); }
+.savas-sonuc .savas-kiyas > strong { color: var(--c-lk-soluk); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.savas-sonuc .savas-kiyas strong, .savas-sonuc .savas-kiyas b { color: var(--c-lk-yazi); }
+.savas-sonuc .savas-kiyas > strong { color: var(--c-lk-soluk); }
+.savas-sonuc .savas-kiyas .s-arti, .savas-sonuc .savas-kiyas .s-gelir { color: var(--c-arti); }
+.savas-sonuc .savas-kiyas .s-eksi, .savas-sonuc .savas-kiyas .s-gider { color: var(--c-eksi); }
+.savas-sonuc .savas-kiyas .s-durum { color: var(--c-lacivert-1); }
+.savas-sonuc .savas-kiyas .s-esik { color: var(--c-esik); }
+.savas-sonuc .savas-kiyas small { color: var(--c-lk-soluk); }
