@@ -63,6 +63,7 @@ Git deposudur; geliştirme dalı ve push kuralları oturum talimatında verilir.
 | `npm run dev` | server/ | `tsx watch src/server.ts` — API sunucusu (varsayılan :3001) |
 | `npm run dev` | client/ | Vite dev server (varsayılan :5180, README'de belirtilen) |
 | `npm test` | server/ | `vitest run` — 77 test dosyası (bkz. §22) |
+| `npm test` | e2e/ | **Playwright duman testleri (mobil 390×844 + PC 1440×900)**: önce `cd client && npm run build` (server/public'e), sonra `cd e2e && npm install && npx playwright install chromium && npm test` — bellek-içi sunucuyu kendisi başlatır; CI'da ayrı "E2E" işi. Ayrıntı: docs/05 §22 |
 | `npm run build` / `start` | server/ | `tsc` derleme / `node dist/server.js` |
 | `npm run simulate` | server/ | `scripts/simulateEconomy.ts` — ekonomiyi bin ömür simüle eder |
 | `npm run analyze-olaylar` | server/ | `scripts/analyzeOlaylar.ts` — olay bankası istatistikleri (bölge/meslek/yaş dağılımı, gerçek `olaySec()` ile simülasyon) |

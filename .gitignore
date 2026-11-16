@@ -36,3 +36,8 @@ server/.localdb/
 # Python bayt kodu (UI UX Pro Max skill betikleri çalışınca oluşur)
 __pycache__/
 *.pyc
+
+# E2E (Playwright) çıktıları
+e2e/node_modules/
+e2e/test-results/
+e2e/playwright-report/
