@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { SavasKarariDurumu } from '../types';
 import { useDil } from '../DilContext';
-import { KararKatman, KararOnay, KararSatiri } from './KararKabuk';
+import { GucKarsilastirma, KararKatman, KararOnay, KararSatiri } from './KararKabuk';
 
 const M = {
   baslik: {
@@ -44,6 +44,9 @@ const DUSMAN_TUR: Record<string, { tr: string; en: string }> = {
   karma: { tr: 'karma', en: 'mixed' },
 };
 
+/** Senin değerin rakibin karşı aralığının üstündeyse yeşil, altındaysa kırmızı, içindeyse nötr. */
+const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen < a[0] ? 's-eksi' : 's-durum');
+
 /**
  * Kapatılamaz savaş kararı penceresi: bir savaşta en çok iki-üç pencere çıkar.
  * Savaş Planı (ilk yıl: seferberlik + emir + ikmal), Savaş Günü (3. yıl: arazi + rol + inisiyatif), Esir (ilk esirde).
@@ -58,7 +61,6 @@ export function SavasKararlari({ karar, yukleniyor, onSec }: { karar: SavasKarar
   }, [karar.grup, karar.adimlar.length]);
   const tamam = karar.adimlar.every((a) => !!secim[a.adim]);
   const k = karar.kiyas;
-  const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
   return (
     <KararKatman simge="⚔️" baslik={M.baslik[karar.grup][dil]} alt={M.alt[karar.grup][dil]} genis>
       {karar.bilgi.dusmanTur && karar.grup === 'gun' && (
@@ -68,27 +70,7 @@ export function SavasKararlari({ karar, yukleniyor, onSec }: { karar: SavasKarar
       )}
       {k && karar.grup === 'gun' && (
         <div className="kk-kiyas">
-          <table className="savas-kiyas-tablo">
-            <thead>
-              <tr>
-                <th />
-                <th>{M.sen[dil]}</th>
-                <th>{M.dusmanKisa[dil]}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th>⚔️ {M.saldiriK[dil]}</th>
-                <td><strong>{k.oyuncu.saldiri}</strong></td>
-                <td>{aralik(k.dusman.saldiri)}</td>
-              </tr>
-              <tr>
-                <th>🛡️ {M.savunmaK[dil]}</th>
-                <td><strong>{k.oyuncu.savunma}</strong></td>
-                <td>{aralik(k.dusman.savunma)}</td>
-              </tr>
-            </tbody>
-          </table>
+          <GucKarsilastirma ben={k.oyuncu} dusman={k.dusman} dusmanTur={karar.bilgi.dusmanTur} renk={renk} />
           <small>{M.kiyasNot[dil]}</small>
           {k.hazirlikli && <small className="s-eksi">{M.hazirlikli[dil]}</small>}
         </div>

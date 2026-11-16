@@ -120,3 +120,67 @@ export function KararOnay({ not, acimasiz, etiket, disabled, onClick }: { not: s
     </div>
   );
 }
+
+const DUSMAN_SIMGE: Record<string, string> = { okcu: '🏹', suvari: '🐎', mizrakli: '🔱', zirhli: '🤺', karma: '⚔️' };
+const G = {
+  ordun: { tr: 'Ordun', en: 'Your army' },
+  dusman: { tr: 'Rakip', en: 'Enemy' },
+  saldiri: { tr: 'Saldırı', en: 'Attack' },
+  savunma: { tr: 'Savunma', en: 'Defence' },
+};
+
+/**
+ * Savaş/çatışma karşılaştırması: solda "Ordun" (asker simgesi, altında saldırı ve savunma gücü),
+ * sağda rakip (aynı düzen, güç aralığı olarak). Senin değerin rakibin karşı aralığına göre renklenir.
+ */
+export function GucKarsilastirma({
+  ben,
+  dusman,
+  dusmanTur,
+  dusmanAd,
+  renk,
+}: {
+  ben: { saldiri: number; savunma: number };
+  dusman: { saldiri: [number, number]; savunma: [number, number] };
+  dusmanTur?: string | null;
+  dusmanAd?: string;
+  renk: (sen: number, aralik: [number, number]) => string;
+}) {
+  const { dil } = useDil();
+  const aralik = (a: [number, number]) => (a[0] === a[1] ? `${a[0]}` : `${a[0]}–${a[1]}`);
+  return (
+    <div className="kk-vs">
+      <div className="kk-taraf kk-taraf-ben">
+        <span className="kk-taraf-madalyon" aria-hidden="true">
+          🪖
+        </span>
+        <strong className="kk-taraf-ad">{G.ordun[dil]}</strong>
+        <div className="kk-guc">
+          <span>⚔️ {G.saldiri[dil]}</span>
+          <strong className={renk(ben.saldiri, dusman.savunma)}>{ben.saldiri}</strong>
+        </div>
+        <div className="kk-guc">
+          <span>🛡️ {G.savunma[dil]}</span>
+          <strong className={renk(ben.savunma, dusman.saldiri)}>{ben.savunma}</strong>
+        </div>
+      </div>
+      <span className="kk-vs-orta" aria-hidden="true">
+        VS
+      </span>
+      <div className="kk-taraf kk-taraf-dusman">
+        <span className="kk-taraf-madalyon" aria-hidden="true">
+          {DUSMAN_SIMGE[dusmanTur ?? 'karma'] ?? '⚔️'}
+        </span>
+        <strong className="kk-taraf-ad">{dusmanAd ?? G.dusman[dil]}</strong>
+        <div className="kk-guc">
+          <span>⚔️ {G.saldiri[dil]}</span>
+          <strong>{aralik(dusman.saldiri)}</strong>
+        </div>
+        <div className="kk-guc">
+          <span>🛡️ {G.savunma[dil]}</span>
+          <strong>{aralik(dusman.savunma)}</strong>
+        </div>
+      </div>
+    </div>
+  );
+}
