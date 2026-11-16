@@ -260,7 +260,7 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
   });
 });
 
-describe("dönem etkisi: sold, erzak ve ana ekran satırı (asker)", () => {
+describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", () => {
   function nötrAsker() {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     s.yas = 30;
@@ -294,7 +294,8 @@ describe("dönem etkisi: sold, erzak ve ana ekran satırı (asker)", () => {
     const s = nötrAsker(); donemKur(s, "kitlik", 0.9, 1.25);
     const metin = dunyaFinansEtkileri(s)[0].metin;
     expect(metin).not.toMatch(/maaş/);
-    expect(metin).toMatch(/sold −%10/);
+    expect(metin).toMatch(/Soldée −%10/); // Fransa (Orta Çağ) ödeme adı; "sold" kelimesi yazılmaz
+    expect(metin).not.toMatch(/(^|[\s:·])sold(\s|$)/i);
     expect(metin).toMatch(/erzak \+%25/);
     expect(metin).toMatch(/moral/);
   });

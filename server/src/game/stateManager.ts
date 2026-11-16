@@ -1,4 +1,4 @@
-import { MADALYA_ADLARI, SAVAS_ER_BASI_CARPANI, VEBA_GOREV_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../data/birlik";
+import { MADALYA_ADLARI, maasAdi, SAVAS_ER_BASI_CARPANI, VEBA_GOREV_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../data/birlik";
 import { randomUUID } from "crypto";
 import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, UlkeDurumu, DonemDurumu, DonemTuru, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi, EvcilHayvan, DunyaYaklasan } from "../types";
 import { T, K, ikiDilT } from "../i18n";
@@ -3899,12 +3899,14 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
 
   // Asker'in "maaşı" yok: devlet SOLD öder, erzak/görev geliri dönemden etkilenir (birlik.ts ile aynı çarpanlar).
   const asker = state.meslek === "Asker" && !!state.isletme?.birlik;
+  // Ödemenin adı çağ+ülkeye göre (Ulûfe, Löhnung, Roga…); bütçedeki ad ile aynı, savaşta da değişmez.
+  const odemeAdi = maasAdi(state.cag, state.bolge)[dil === "en" ? "en" : "tr"];
 
   const donem = state.ulke.donem;
   if (donem) {
     const parcalar = asker
       ? [
-          T(dil, "sold {0}", [isaretli(soldDonemCarpani(state))]),
+          `${odemeAdi} ${isaretli(soldDonemCarpani(state))}`,
           T(dil, "erzak {0}", [isaretli(erzakDonemCarpani(state))]),
         ]
       : [
@@ -3930,8 +3932,9 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     liste.push({
       ikon: "⚔️",
       metin: asker
-        ? T(dil, "Büyük savaş ({0}): savaş ödeneği ×{1} · erzak {2} · görev geliri yok · yemek {3} · savaş vergisi %{4}", [
+        ? T(dil, "Büyük savaş ({0}): {1} (er başı) ×{2} · erzak {3} · görev geliri yok · yemek {4} · savaş vergisi %{5}", [
             K(dil, state.buyuk_savas.dusman),
+            odemeAdi,
             SAVAS_ER_BASI_CARPANI,
             isaretli(erzakDonemCarpani(state)),
             isaretli(state.buyuk_savas.gidaCarpani),
@@ -3948,7 +3951,7 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     liste.push({
       ikon: "⚔️",
       metin: asker
-        ? T(dil, "Savaş: savaş ödeneği ×{0} · erzak {1} · görev geliri yok", [SAVAS_ER_BASI_CARPANI, isaretli(erzakDonemCarpani(state))])
+        ? T(dil, "Savaş: {0} (er başı) ×{1} · erzak {2} · görev geliri yok", [odemeAdi, SAVAS_ER_BASI_CARPANI, isaretli(erzakDonemCarpani(state))])
         : T(dil, "Savaş: maaş {0}", [isaretli(0.92)]),
     });
   }

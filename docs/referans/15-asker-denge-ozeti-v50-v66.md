@@ -50,8 +50,8 @@ Yalnız TÜM ORDU (büyük savaş) yenilgisinde, karar savaşından sonraki ilk 
 
 ## v69 — Dönemler Asker'i artık hissettiriyor (2026-11)
 Sorun: ana ekrandaki dünya satırı Asker için "maaş −%9 · yaşam gideri +%31" yazıyordu; Asker'in maaşı yok (devlet SOLD öder) ve dönem ordu giderini neredeyse hiç oynatmıyordu.
-- **Sold** (sabit sold + er başı ödeme) artık dönemin zarlanan `maas` etkisiyle çarpılır (`soldDonemCarpani`, bolluk +%6…10 · durgunluk −%10…−6 · kıtlık −%12…−8). Savaş ödeneği ×3 aynen kalır, üstüne dönem çarpanı biner.
+- **Sold** (sabit sold + er başı ödeme) artık dönemin zarlanan `maas` etkisiyle çarpılır (`soldDonemCarpani`, bolluk +%6…10 · durgunluk −%10…−6 · kıtlık −%12…−8). Savaşta er başı ödeme ×3 aynen kalır, üstüne dönem çarpanı biner.
 - **Erzak** barışta dönemin zarlanan `temelFiyat` etkisiyle değişir (`erzakDonemCarpani`: bolluk −%5…9 · durgunluk ±%2 · kıtlık +%15…30; eski sabit ±%10 bandı yerine). Savaşta ×1,07 ve vebada ×1,03 sabit tablo (`ERZAK_DONEM_CARPANI`) geçerli kalır.
 - **Görev geliri** ve **moral** dönem etkisi zaten vardı (`GOREV_DONEM_CARPANI`, `MORAL_KITLIK/BOLLUK_YILLIK`); artık ana ekranda görünür.
-- **Ana ekran satırı (Asker)**: "Kıtlık: sold −%10 · erzak +%25 · görev geliri −%30 · moral −1,5/yıl · yaşam gideri +%10"; savaşta "savaş ödeneği ×3 · erzak · görev geliri yok", vebada "görev geliri −%45 · erzak +%3". Kaynak: `stateManager.ts dunyaFinansEtkileri` (EN aynası `anlatim.en.ts`).
+- **Ana ekran satırı (Asker)**: "Kıtlık: Ulûfe −%10 · erzak +%25 · görev geliri −%30 · moral −1,5/yıl · yaşam gideri +%10" (ödeme adı çağ+ülkeye göre `MAAS_ADLARI`; arayüzde "sold" yazılmaz); savaşta aynı ad: "Ulûfe (er başı) ×3 · erzak · görev geliri yok". Bütçe dökümünde de savaşta ad değişmez ("Savaş ödeneği" etiketi kaldırıldı), vebada "görev geliri −%45 · erzak +%3". Kaynak: `stateManager.ts dunyaFinansEtkileri` (EN aynası `anlatim.en.ts`).
 - Testler: `birlikV65.test.ts` "dönem etkisi…"; sold/erzak sabit değer bekleyen testler nötr dönem kurar (`asker()` yardımcıları).
