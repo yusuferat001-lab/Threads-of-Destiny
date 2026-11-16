@@ -1,6 +1,8 @@
 import type { KrediConfig } from '../types';
 import { formatPara } from '../format';
 import { useDil } from '../DilContext';
+import { useState } from 'react';
+import { KararOnay, KararSatiri } from './KararKabuk';
 
 interface KrediKartiProps {
   paraBirimi: string;
@@ -14,6 +16,7 @@ interface KrediKartiProps {
 export function KrediKarti({ paraBirimi, krediConfig, yukleniyor, onKrediAl, onKrediPazarlik }: KrediKartiProps) {
   const { dil } = useDil();
   const en = dil === 'en';
+  const [secim, setSecim] = useState<string | null>(null);
   return (
     <section className="kredi-karti">
       <h4>🏦 {en ? 'Moneylender' : 'Tefeci'}</h4>
@@ -41,17 +44,32 @@ export function KrediKarti({ paraBirimi, krediConfig, yukleniyor, onKrediAl, onK
               ? 'Pick one of the two offers. You repay in equal yearly instalments, and he lends even when you are in the red.'
               : 'İki tekliften birini seç. Eşit yıllık taksitlerle ödersin; nakdin eksideyken bile tefeci borç verir.'}
           </p>
-          <div className="kariyer-bagis-kademeler">
+          <div className="kk-liste kk-secimler">
             {krediConfig.teklifler.map((t) => (
-              <button key={t.id} className="kariyer-bagis-cip" disabled={yukleniyor} title={en ? t.ad.en : t.ad.tr} onClick={() => onKrediAl(t.id)}>
-                <strong className="s-gelir">{formatPara(t.tutar)} {paraBirimi}</strong>
-                <br />
-                {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {en ? 'term' : 'vade'} {t.vade} {en ? 'yrs' : 'yıl'}
-                <br />
-                {en ? 'yearly instalment' : 'yıllık taksit'} <span className="s-gider">{formatPara(t.taksit)} {paraBirimi}</span>
-              </button>
+              <KararSatiri
+                key={t.id}
+                kol="sadik"
+                simge="💰"
+                dal={en ? `${t.vade}-year term` : `${t.vade} yıl vade`}
+                ad={`${formatPara(t.tutar)} ${paraBirimi}`}
+                cipler={
+                  <>
+                    <span className="kk-cip">{en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)}</span>
+                    <span className="kk-cip s-gider">{en ? 'instalment' : 'taksit'} {formatPara(t.taksit)} {paraBirimi}</span>
+                  </>
+                }
+                secili={secim === t.id}
+                disabled={yukleniyor}
+                onClick={() => setSecim(t.id)}
+              />
             ))}
           </div>
+          <KararOnay
+            not={secim ? (en ? 'The loan is repaid in equal yearly instalments.' : 'Kredi eşit yıllık taksitlerle ödenir.') : en ? 'Pick an offer.' : 'Bir teklif seç.'}
+            etiket={en ? 'Take the loan' : 'Krediyi al'}
+            disabled={yukleniyor || !secim}
+            onClick={() => secim && onKrediAl(secim)}
+          />
         </div>
       ) : (
         <p className="giris-aciklama">{en ? 'The moneylender turns you away for now.' : 'Tefeci şimdilik sana borç vermiyor.'}</p>

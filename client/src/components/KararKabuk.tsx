@@ -53,7 +53,7 @@ export function RutbeYolu({ adimlar, simdi, toplam = 5 }: { adimlar: { seviye: n
         </span>
         <span className="kk-dugum-ad">
           S{sv}
-          {durum === 'bitti' && a ? ` · ${a.ad}` : durum === 'simdi' ? ` · ${dil === 'en' ? 'Now' : 'Şimdi'}` : ''}
+          {durum === 'bitti' && a ? ` · ${a.ad}` : durum === 'simdi' ? ` · ${a ? a.ad : dil === 'en' ? 'Now' : 'Şimdi'}` : ''}
         </span>
       </div>
     );
@@ -92,7 +92,18 @@ export function KararSatiri({
         {dal && <span className="kk-dal">{dal}</span>}
         <span className="kk-ad">{ad}</span>
       </span>
-      {cipler ? <span className="kk-cipler">{cipler}</span> : detay ? <span className="kk-detay kk-tam">{detay}</span> : <span />}
+      {cipler && detay ? (
+        <span className="kk-ek">
+          <span className="kk-cipler">{cipler}</span>
+          <span className="kk-detay">{detay}</span>
+        </span>
+      ) : cipler ? (
+        <span className="kk-cipler">{cipler}</span>
+      ) : detay ? (
+        <span className="kk-detay kk-tam">{detay}</span>
+      ) : (
+        <span />
+      )}
       {onClick && (
         <span className="kk-tik" aria-hidden="true">
           ✓

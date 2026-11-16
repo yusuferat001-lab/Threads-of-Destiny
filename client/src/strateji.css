@@ -301,7 +301,7 @@
 }
 
 /* ---- Düğmeler ---- */
-.strateji-sayfa button:not(.strateji-kapat):not(.strateji-baglanti) {
+.strateji-sayfa button:not(.strateji-kapat):not(.strateji-baglanti):not(.kk-satir):not(.kk-onay-btn) {
   color: #f6e8d0 !important;
   background: linear-gradient(180deg, var(--s-bordo-1), var(--s-bordo-2)) !important;
   border: 1.5px solid var(--s-altin) !important;
@@ -602,7 +602,7 @@
   .strateji-sayfa h4 {
     font-size: 0.82rem;
   }
-  .strateji-sayfa button:not(.strateji-kapat):not(.strateji-baglanti) {
+  .strateji-sayfa button:not(.strateji-kapat):not(.strateji-baglanti):not(.kk-satir):not(.kk-onay-btn) {
     font-size: 0.9rem;
     padding: 0.35rem 0.8rem;
   }

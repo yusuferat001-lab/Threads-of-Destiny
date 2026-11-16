@@ -553,3 +553,11 @@ Zorunlu karar pencereleri "kahve üstüne kahve" idi (`#2a1d10` kutu + %4 beyaz 
 - **Sunucu:** `birlik.doktrin.secilen[]` artık `kaynak` (evrensel/sadik/kahraman/sert) taşır (rütbe yolu ve kol rengi için); istemci `types.ts` aynı.
 - **Tuzaklar:** genel `button:hover` (App.css) arka planı kahveye çevirir → `button.kk-satir:hover` kendi yüzeyini yeniden verir; `renk-paleti.css` içindeki `button … .s-arti` (açık yeşil) kuralını aşmak için çip renkleri `.kk-satir.kk-satir.kk-satir .s-arti` ile açık-yüzey değerlerine döner. Yeni karar penceresi yaparken `KararKatman` kullan, yeni hex uydurma.
 - **Güç karşılaştırması (`GucKarsilastirma`)**: savaş günü ve çatışma kararında eski "Sen / Düşman" tablosu yerine iki taraflı panel: solda 🪖 **Ordun** (altında ⚔️ saldırı, 🛡️ savunma gücü; değer rakibin karşı aralığına göre yeşil/kırmızı/lacivert), ortada VS, sağda rakip (tür simgesi, ad, aynı iki satır aralık olarak). Telefonda etiket değerin üstüne iner.
+
+### §53 Faz 11 (2026-11) — Karar şablonunun yayılması
+- **Kişilik penceresi** (`KisilikPaneli`): kişilik / aile mesleği / bölge / yatkınlık / sinerji satırları `KararSatiri` (latte, madalyon, kol şeridi; aile ve yatkınlık altın, kişilik ve bölge mavi). Açılış ekranındaki kişilik kartı da aynı bileşeni kullanır.
+- **Ölüm ekranı** (`.ekran-olum`, `karar-kabuk.css` sonu): sayfa zemini bordo kadife (`body:has(.ekran-olum)`); skor kırılımı, hayat amaçları ve hayat hikayesi kartları kahveli latte yüzey + sol şerit (amaç tamamsa yeşil, zorsa altın). Grafik ve kazanım rozetleri değişmedi. Olay sonuç kutusu zaten bordo/parşömen idi, dokunulmadı.
+- **Terfi penceresi** (`TerfiPenceresi`): rütbe seviyesi artınca (`App.tsx`, `rutbe_seviye` izlenir) rütbe yolu S1–S5 + yeni unvan + Devam. Asker ve Din Adamı'nda gösterilmez (onların terfisi Doktrin/Öğreti seçim ekranıdır). Unvanlar `rutbeIlerleme.ts rutbeUnvanlari`.
+- **Ordu sayfası savaş kartı**: eski Sen/Düşman tablosu `GucKarsilastirma` oldu (koyu kart, açık sayfada da okunur).
+- **Kredi ve mülk yatırımı**: tefeci teklifleri ve gayrimenkul kartları `KararSatiri` satırı; artık satıra tıklayınca satın alma YAPILMAZ, seçilir ve alttaki "Krediyi al" / "Satın al" düğmesiyle onaylanır.
+

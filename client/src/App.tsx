@@ -152,6 +152,7 @@ import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './otu
 import { ogretiBekliyor, vergiBekliyor, doktrinBekliyor, savasKarariOlasi, catismaBekliyor } from './ogreti';
 import { OgretiSecimi } from './components/OgretiSecimi';
 import { DoktrinSecimi } from './components/DoktrinSecimi';
+import { TerfiPenceresi } from './components/TerfiPenceresi';
 import { SavasKararlari } from './components/SavasKararlari';
 import { SavasSonucu } from './components/SavasSonucu';
 import { CatismaKarari, CatismaSonucu } from './components/CatismaKarari';
@@ -423,6 +424,20 @@ function App() {
   const [bolgeBilgiAcik, setBolgeBilgiAcik] = useState(false);
   // Kişilik & Miras artık sol panelde sabit değil — portreye/isme tıklayınca açılan pencere.
   const [kisilikModalAcik, setKisilikModalAcik] = useState(false);
+  // Terfi penceresi: rütbe seviyesi yükselince (Asker/Din Adamı hariç: onlar Doktrin/Öğreti seçim ekranını görür).
+  const oncekiRutbeRef = useRef<{ id: string; sv: number } | null>(null);
+  const [terfiPenceresi, setTerfiPenceresi] = useState<{ sv: number; unvan: string } | null>(null);
+  useEffect(() => {
+    if (!karakter) {
+      oncekiRutbeRef.current = null;
+      return;
+    }
+    const onceki = oncekiRutbeRef.current;
+    if (onceki && onceki.id === karakter.id && onceki.sv >= 1 && karakter.rutbe_seviye > onceki.sv && karakter.aktif && karakter.meslek && karakter.meslek !== 'Asker' && karakter.meslek !== 'Din Adamı') {
+      setTerfiPenceresi({ sv: karakter.rutbe_seviye, unvan: karakter.rutbe });
+    }
+    oncekiRutbeRef.current = { id: karakter.id, sv: karakter.rutbe_seviye };
+  }, [karakter]);
 
   const dilCtx = dilCtxYap(dil);
   const { m, kt, ktHukumdar } = dilCtx;
@@ -2309,6 +2324,10 @@ function App() {
           yukleniyor={yukleniyor}
           onSec={ogretiSecHandler}
         />
+      )}
+
+      {karakter && terfiPenceresi && karakter.aktif && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <TerfiPenceresi meslek={karakter.meslek ?? ''} cag={karakter.cag} seviye={terfiPenceresi.sv} unvan={terfiPenceresi.unvan} onKapat={() => setTerfiPenceresi(null)} />
       )}
 
       {karakter && doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (

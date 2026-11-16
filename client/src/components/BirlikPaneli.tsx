@@ -5,7 +5,7 @@ import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
-import { KararSatiri } from './KararKabuk';
+import { GucKarsilastirma, KararSatiri } from './KararKabuk';
 import { kolOlarak, useKolEtiketi } from './kararKol';
 import { isletmeUyariMetni } from './IsletmePaneli';
 import { formatPara, formatMusteri, isaretSinifi } from '../format';
@@ -542,30 +542,9 @@ export function BirlikPaneli({
                 {(() => {
                   const k = b.savas.kiyas;
                   const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen < a[0] ? 's-eksi' : 's-durum');
-                  const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
                   return (
                     <>
-                      <table className="savas-kiyas-tablo">
-                        <thead>
-                          <tr>
-                            <th />
-                            <th>{t('senK')}</th>
-                            <th>{t('dusmanK')}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th>⚔️ {t('saldiriK')}</th>
-                            <td><strong className={renk(k.oyuncu.saldiri, k.dusman.savunma)}>{k.oyuncu.saldiri}</strong></td>
-                            <td>{aralik(k.dusman.saldiri)}</td>
-                          </tr>
-                          <tr>
-                            <th>🛡️ {t('savunmaK')}</th>
-                            <td><strong className={renk(k.oyuncu.savunma, k.dusman.saldiri)}>{k.oyuncu.savunma}</strong></td>
-                            <td>{aralik(k.dusman.savunma)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <GucKarsilastirma ben={k.oyuncu} dusman={k.dusman} dusmanTur={b.savas.dusmanTur} renk={renk} />
                       <small>{t('kiyasNot')}</small>
                       {k.son && (
                         <span>

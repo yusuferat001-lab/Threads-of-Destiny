@@ -124,6 +124,12 @@ const ASKER_UNVANLARI: Record<string, [string, string, string, string, string]> 
   'Sanayi Devrimi|Rusya': ['Ryadovoy', 'Yefreytor', 'Feldfebel', 'Kapitan', 'Polkovnik'],
 };
 
+/** Meslek + çağ için 5 rütbe unvanı (TR kanonik; gösterimde `kt()` ile çevrilir); tanım yoksa null. */
+export function rutbeUnvanlari(meslek: string, cag: string, dinKultur?: string | null, bolge?: string | null): string[] | null {
+  const t = rutbeTanimiGetir(meslek, cag, dinKultur, bolge);
+  return t ? [...t.unvanlar] : null;
+}
+
 function rutbeTanimiGetir(meslek: string, cag: string, dinKultur?: string | null, bolge?: string | null): RutbeTanimi | undefined {
   if (meslek === 'Asker' && bolge) {
     const temel = RUTBELER.Asker?.[cag];

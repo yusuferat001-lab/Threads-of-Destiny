@@ -1,6 +1,7 @@
 import type { YatkinlikKaynagi, KisilikEksenleri } from '../types';
 import { kategoriAdi } from '../bolgeTema';
 import { RenkliEtki } from './Renkli';
+import { KararSatiri } from './KararKabuk';
 import { useDil } from '../DilContext';
 import { aileKokAdi } from '../aileAdi';
 import { formatYuzde, yatkinlikKitleMetni } from '../format';
@@ -63,49 +64,46 @@ export function KisilikPaneli({
   return (
     <div className="kisilik-paneli">
       <h3>{m.kpBaslikTam}</h3>
-      {meslekYatkinlikUnvani && meslekYatkinlikSeviyesi != null && meslekYatkinlikSeviyesi !== 2 && (
-        <div className="kisilik-rozet kisilik-rozet-meslek-yatkinlik">
-          <span className="kisilik-rozet-ad">🎯 {kt(meslekYatkinlikUnvani)}</span>
-          <span className="kisilik-rozet-etki">
-            {m.kpYatkinlikZar} {fmtYuzde(meslekZarBonusu ?? 0)} ·{' '}
-            {yatkinlikKitleMetni(meslek, dil === 'en' ? 'en' : 'tr', MUSTERI_BUYUMESI[meslekYatkinlikSeviyesi] ?? 0)} ·{' '}
-            {m.kpYatkinlikTecrube} {fmtYuzde(meslekTecrubeHizi ?? 0)}
-          </span>
-        </div>
-      )}
-      {[...kisilik, aileMeslegi, bolge].map((kaynakAdi) => {
-        const etkiler = grup.get(kaynakAdi) ?? [];
-        const aileMi = kaynakAdi === aileMeslegi;
-        const bolgeMi = kaynakAdi === bolge;
-        const ikon = bolgeMi ? '🌍 ' : aileMi ? '🏠 ' : '🎭 ';
-        const ek = aileMi ? m.kpAilesi : '';
-        return (
-          <div key={kaynakAdi} className="kisilik-rozet">
-            <span className="kisilik-rozet-ad">
-              {ikon}
-              {aileMi ? aileKokAdi(kt(kaynakAdi)) : kt(kaynakAdi)}
-              {ek}
-            </span>
-            {etkiler.length > 0 && (
-              <span className="kisilik-rozet-etki">
-                <RenkliEtki
-                  metin={etkiler.map((e) => `${kategoriAdi(e.kategori, dil)} ${e.deger > 0 ? '+' : ''}${e.deger}`).join(' · ')}
-                />
-              </span>
-            )}
-          </div>
-        );
-      })}
-      {sinerjiKaynak && (
-        <div className="kisilik-rozet kisilik-rozet-sinerji">
-          <span className="kisilik-rozet-ad">
-            ✨ {kt(bolge)} + {kt(aileMeslegi)} {m.kpSinerji}
-          </span>
-          <span className="kisilik-rozet-etki">
-            <RenkliEtki metin={`${kategoriAdi(sinerjiKaynak.kategori, dil)} ${sinerjiKaynak.deger > 0 ? '+' : ''}${sinerjiKaynak.deger}`} />
-          </span>
-        </div>
-      )}
+      <div className="kk-liste kk-kucuk kisilik-liste">
+        {meslekYatkinlikUnvani && meslekYatkinlikSeviyesi != null && meslekYatkinlikSeviyesi !== 2 && (
+          <KararSatiri
+            kol="sadik"
+            simge="🎯"
+            dal={dil === 'en' ? 'Aptitude' : 'Yatkınlık'}
+            ad={kt(meslekYatkinlikUnvani)}
+            detay={`${m.kpYatkinlikZar} ${fmtYuzde(meslekZarBonusu ?? 0)} · ${yatkinlikKitleMetni(meslek, dil === 'en' ? 'en' : 'tr', MUSTERI_BUYUMESI[meslekYatkinlikSeviyesi] ?? 0)} · ${m.kpYatkinlikTecrube} ${fmtYuzde(meslekTecrubeHizi ?? 0)}`}
+          />
+        )}
+        {[...kisilik, aileMeslegi, bolge].map((kaynakAdi) => {
+          const etkiler = grup.get(kaynakAdi) ?? [];
+          const aileMi = kaynakAdi === aileMeslegi;
+          const bolgeMi = kaynakAdi === bolge;
+          const ek = aileMi ? m.kpAilesi : '';
+          return (
+            <KararSatiri
+              key={kaynakAdi}
+              kol={aileMi ? 'sadik' : 'evrensel'}
+              simge={bolgeMi ? '🌍' : aileMi ? '🏠' : '🎭'}
+              dal={bolgeMi ? (dil === 'en' ? 'Region' : 'Bölge') : aileMi ? (dil === 'en' ? 'Family trade' : 'Aile mesleği') : dil === 'en' ? 'Personality' : 'Kişilik'}
+              ad={`${aileMi ? aileKokAdi(kt(kaynakAdi)) : kt(kaynakAdi)}${ek}`}
+              detay={
+                etkiler.length > 0 ? (
+                  <RenkliEtki metin={etkiler.map((e) => `${kategoriAdi(e.kategori, dil)} ${e.deger > 0 ? '+' : ''}${e.deger}`).join(' · ')} />
+                ) : undefined
+              }
+            />
+          );
+        })}
+        {sinerjiKaynak && (
+          <KararSatiri
+            kol="sadik"
+            simge="✨"
+            dal={dil === 'en' ? 'Synergy' : 'Sinerji'}
+            ad={`${kt(bolge)} + ${kt(aileMeslegi)} ${m.kpSinerji}`}
+            detay={<RenkliEtki metin={`${kategoriAdi(sinerjiKaynak.kategori, dil)} ${sinerjiKaynak.deger > 0 ? '+' : ''}${sinerjiKaynak.deger}`} />}
+          />
+        )}
+      </div>
     </div>
   );
 }

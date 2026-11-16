@@ -57,7 +57,8 @@ button.kk-satir { cursor: pointer; }
 /* Genel `button:hover` kuralı (App.css) arka planı kahveye çeviriyordu; satır kendi yüzeyini korur. */
 button.kk-satir:hover:not(:disabled), button.kk-satir:focus-visible { background: linear-gradient(180deg, var(--y1), var(--y2)); border-color: var(--kenar); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4); }
 button.kk-satir:focus-visible, .kk-onay-btn:focus-visible { outline: 3px solid #e6c17a; outline-offset: 2px; }
-button.kk-satir:disabled { opacity: 0.6; cursor: not-allowed; }
+/* Pasif satır (ör. parası yetmeyen mülk): soluk değil, hafif mat latte; genel `button:disabled` opaklığı kapatılır. */
+button.kk-satir:disabled { opacity: 1; filter: grayscale(0.2) brightness(0.95); cursor: not-allowed; }
 button.kk-satir.secili, button.kk-satir.secili:hover:not(:disabled) { box-shadow: 0 0 0 3px #e6c17a, 0 10px 22px rgba(0, 0, 0, 0.5); transform: none; }
 .kk-satir.secili { box-shadow: 0 0 0 3px #e6c17a, 0 10px 22px rgba(0, 0, 0, 0.5); transform: none; }
 .kk-madalyon { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.55)), #25170e; box-shadow: inset 0 0 0 2.5px var(--kol); }
@@ -66,6 +67,7 @@ button.kk-satir.secili, button.kk-satir.secili:hover:not(:disabled) { box-shadow
 .kk-ad { font-weight: 800; font-size: 1.02rem; line-height: 1.25; color: var(--c-lk-yazi); }
 .kk-detay { font-size: 0.86rem; color: var(--c-lk-soluk); line-height: 1.35; min-width: 0; }
 .kk-cipler { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+.kk-ek { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .kk-cip { font-size: 0.8rem; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--c-lk-cip); padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(110, 79, 53, 0.25); }
 .kk-tik { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--c-lk-kenar); display: grid; place-items: center; font-size: 0.8rem; color: transparent; }
 .kk-satir.secili .kk-tik { background: #82202a; border-color: #82202a; color: #fff2cf; }
@@ -85,7 +87,7 @@ button.kk-satir.secili, button.kk-satir.secili:hover:not(:disabled) { box-shadow
 
 /* ---- iki taraflı güç karşılaştırması: solda ordun, sağda rakip ---- */
 .kk-vs { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: stretch; margin: 16px auto 0; max-width: 640px; }
-.kk-taraf { --kol: var(--c-kol-evrensel); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 12px 12px; border-radius: 14px; position: relative; overflow: hidden; text-align: center; background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)); border: 1px solid rgba(230, 193, 122, 0.3); }
+.kk-taraf { --kol: var(--c-kol-evrensel); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 12px 12px; border-radius: 14px; position: relative; overflow: hidden; text-align: center; background: linear-gradient(180deg, #33241a, #1f150e); border: 1px solid rgba(230, 193, 122, 0.3); width: 100%; }
 .kk-taraf::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: var(--kol); }
 .kk-taraf-dusman { --kol: var(--c-kol-sert); }
 .kk-taraf-madalyon { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 1.9rem; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.14), rgba(0, 0, 0, 0.55)), #25170e; box-shadow: inset 0 0 0 2.5px var(--kol); }
@@ -93,6 +95,10 @@ button.kk-satir.secili, button.kk-satir.secili:hover:not(:disabled) { box-shadow
 .kk-guc { width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 4px; border-top: 1px solid rgba(230, 193, 122, 0.2); color: #cdb98e; font-size: 0.86rem; }
 .kk-guc strong { font-size: 1.25rem; color: #f4e0b0; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .kk-guc strong.s-arti, .kk-guc strong.s-eksi, .kk-guc strong.s-durum { font-weight: 800; }
+/* Karşılaştırma koyu kartlıdır; açık sayfa üstünde de açık-renk sayı değerleri kullanılır. */
+.kk-guc strong.s-arti { color: var(--c-arti-koyu); }
+.kk-guc strong.s-eksi { color: var(--c-eksi-koyu); }
+.kk-guc strong.s-durum { color: var(--c-lacivert-koyu); }
 .kk-vs-orta { align-self: center; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 0.78rem; font-weight: 900; letter-spacing: 0.04em; color: #fff2cf; background: #82202a; box-shadow: 0 0 0 2px #c9a24a, 0 0 0 5px rgba(201, 162, 74, 0.22); }
 @media (max-width: 480px) {
   .kk-vs { gap: 6px; }
@@ -116,7 +122,7 @@ button.kk-onay-btn:disabled { background: transparent; }
 @container (max-width: 560px) {
   .kk-satir { grid-template-columns: 48px minmax(0, 1fr) 26px; padding-left: 16px; }
   .kk-satir .kk-tik { grid-column: 3; grid-row: 1; }
-  .kk-satir .kk-cipler, .kk-satir .kk-detay.kk-tam { grid-column: 1 / -1; grid-row: 2; }
+  .kk-satir .kk-cipler, .kk-satir .kk-ek, .kk-satir .kk-detay.kk-tam { grid-column: 1 / -1; grid-row: 2; }
   .kk-satir .kk-madalyon { width: 46px; height: 46px; font-size: 1.4rem; }
   .kk-yol::before { top: 20px; }
   .kk-dugum-top { width: 40px; height: 40px; font-size: 1.1rem; }
@@ -126,7 +132,7 @@ button.kk-onay-btn:disabled { background: transparent; }
 /* Ordu / Cemaat sayfası içindeki kompakt liste */
 .kk-liste.kk-kucuk .kk-satir { grid-template-columns: 42px minmax(0, 1fr); padding: 8px 12px 8px 16px; cursor: default; }
 .kk-liste.kk-kucuk .kk-madalyon { width: 40px; height: 40px; font-size: 1.2rem; grid-row: 1 / span 2; }
-.kk-liste.kk-kucuk .kk-cipler, .kk-liste.kk-kucuk .kk-detay { grid-column: 2; }
+.kk-liste.kk-kucuk .kk-cipler, .kk-liste.kk-kucuk .kk-detay, .kk-liste.kk-kucuk .kk-ek { grid-column: 2; }
 .kk-liste.kk-kucuk .kk-ad { font-size: 0.95rem; }
 .kk-sv { color: var(--c-lk-soluk); font-weight: 800; }
 
@@ -177,3 +183,37 @@ button.ogreti-kart.savas-secenek:hover:not(:disabled) { background: linear-gradi
 .savas-sonuc .savas-kiyas .s-durum { color: var(--c-lacivert-1); }
 .savas-sonuc .savas-kiyas .s-esik { color: var(--c-esik); }
 .savas-sonuc .savas-kiyas small { color: var(--c-lk-soluk); }
+
+/* ================= ÖLÜM EKRANI: bordo sahne + kahveli latte kartlar =================
+   Skor kırılımı, hayat amaçları ve hayat hikayesi kartları koyu kahve zeminde kahve üstüne kahveydi. */
+body:has(.ekran-olum) { background: radial-gradient(110% 100% at 50% 0%, #82202a 0%, #591219 55%, #360a10 100%) fixed; }
+.ekran-olum .skor-kirilimi,
+.ekran-olum .amac-paneli-olum .amac-satir,
+.ekran-olum .hayat-hikayesi-liste li {
+  position: relative; overflow: hidden; color: var(--c-lk-yazi); border: 1px solid var(--c-lk-kenar); border-radius: 12px;
+  background: linear-gradient(180deg, var(--c-lk-1), var(--c-lk-2)); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+.ekran-olum .skor-kirilimi { padding: 0.7rem 0.9rem 0.7rem 1.2rem; }
+.ekran-olum .skor-kirilimi::before,
+.ekran-olum .amac-paneli-olum .amac-satir::before,
+.ekran-olum .hayat-hikayesi-liste li::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; background: var(--c-kol-evrensel); }
+.ekran-olum .amac-paneli-olum .amac-satir { padding-left: 1.1rem; border-left-width: 1px; }
+.ekran-olum .amac-paneli-olum .amac-satir.amac-zor::before { background: var(--c-kol-sadik); }
+.ekran-olum .amac-paneli-olum .amac-satir.amac-tamam { background: linear-gradient(180deg, var(--c-lk-1), var(--c-lk-2)); }
+.ekran-olum .amac-paneli-olum .amac-satir.amac-tamam::before { background: var(--c-arti); }
+.ekran-olum .amac-paneli-olum .amac-tamam .amac-ikon { color: var(--c-arti); }
+.ekran-olum .amac-paneli-olum .amac-satir * { color: inherit; }
+.ekran-olum .amac-paneli-olum .amac-tamam .amac-ikon { color: var(--c-arti); }
+.ekran-olum .hayat-hikayesi-liste li { padding: 0.4rem 0.7rem 0.4rem 1.1rem; }
+.ekran-olum .hayat-hikayesi-yil { opacity: 1; color: var(--c-lk-soluk); font-weight: 700; }
+.ekran-olum .skor-kirilimi-baslik { opacity: 1; color: var(--c-lk-yazi); }
+.ekran-olum .skor-kirilimi-liste li { opacity: 1; }
+.ekran-olum .skor-kirilimi-liste li.skor-kirilimi-tik { color: var(--c-kol-sadik-koyu); font-weight: 700; }
+.ekran-olum .skor-kirilimi-toplam, .ekran-olum .skor-kirilimi-carpan { opacity: 1; border-top-color: rgba(110, 79, 53, 0.4); }
+.ekran-olum .skor-kirilimi-sonuc { color: #82202a; border-top-color: var(--c-lk-kenar); }
+.ekran-olum .skor-kirilimi .s-arti, .ekran-olum .hayat-hikayesi-liste .s-arti { color: var(--c-arti); }
+.ekran-olum .skor-kirilimi .s-eksi, .ekran-olum .hayat-hikayesi-liste .s-eksi { color: var(--c-eksi); }
+.ekran-olum .skor-kirilimi .s-durum, .ekran-olum .hayat-hikayesi-liste .s-durum { color: var(--c-lacivert-1); }
+
+.kk-yeni-rutbe { margin: 18px 0 0; text-align: center; color: #cdb98e; }
+.kk-yeni-rutbe strong { display: block; font-size: 1.5rem; color: #e6c17a; letter-spacing: 0.02em; }
