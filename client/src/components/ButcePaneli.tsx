@@ -176,6 +176,15 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
               </span>
             </div>
 
+            {(finans.hazinePayi ?? 0) > 0 && (
+              <div className="finans-satiri">
+                <span>{dil === 'en' ? 'Treasury share (taken from earnings)' : 'Hazine payı (kazançtan)'}</span>
+                <span className="s-gider">
+                  -{formatPara(finans.hazinePayi ?? 0)} {paraBirimi}
+                </span>
+              </div>
+            )}
+
             <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
               <span>{isletmeAktif ? (dil === 'en' ? 'Left in your pocket (this year, expected)' : 'Cebine kalan (bu yıl, beklenen)') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
               <span className={gercekNet >= 0 ? 's-gelir' : 's-gider'}>

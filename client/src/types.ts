@@ -1605,6 +1605,8 @@ export interface FinansOzeti {
   isletmeCalisanMaasi: number;
   /** "Kazanç" tek kaynak: bu yılın beklenen, her şey dahil durumu (gelir, gider, net ve net'in aralığı). */
   kazanc: { gelir: number; gider: number; net: number; alt: number; ust: number };
+  /** Hazine payı (yalnız Asker): KAZANÇ üzerinden alınan vergi; `kazanc.net` vergi sonrasıdır. */
+  hazinePayi?: number;
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez. */
   enflasyonYuzdesi: number;
