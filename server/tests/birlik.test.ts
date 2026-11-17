@@ -9,7 +9,7 @@ import {
   buyukSavasBitisKontrolEt,
   rutbeGuncelle,
   yillikKariyerPuaniHesapla,
-  pazarYillikUygula,
+  askerKariyerPuaniUygula,
 } from "../src/game/stateManager";
 import {
   yeniOyun,
@@ -47,7 +47,13 @@ import {
   birlikHesapla,
   turPaylari,
   kaliteToplami,
+  talimUstLimit,
+  talimKazanci,
 } from "../src/game/birlik";
+import { yatirimEtkiMetni } from "../src/game/yatirimMetinleri";
+import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
+import { RUTBELER } from "../src/data/rutbeler";
+import { amacHavuzu, amacTanimiGetir, AMAC_ILERLEME } from "../src/data/hayatAmaclari";
 import {
   birlikSec,
   doktrinSec,
@@ -59,8 +65,9 @@ import {
   savasKarariVer,
   ganimetSaklamaEngeli,
 } from "../src/game/birlikIslem";
-import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir, barisCatismaCoz } from "../src/game/birlikYil";
-import { askerGucleri, pazarPayiHesapla } from "../src/data/pazar";
+import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir, barisCatismaCoz, zaferSerisiIsle } from "../src/game/birlikYil";
+import { birlikGorunumuHesapla } from "../src/game/birlikIslem";
+import { pazarPayiHesapla, pazarAdlariGetir } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
   BARIS_BEKLEME_ARALIK,
@@ -83,12 +90,20 @@ import {
   ER_BASI_GELIR,
   SAVAS_ER_BASI_CARPANI,
   TALIM_TANIMLARI,
+  TALIM_ALANI_TAVAN,
+  TALIM_ALANI_YILLIK,
+  SEFERBERLIK_TANIMLARI,
   doktrinSecenekleri,
   doktrinToplami,
   emirSeviyesi,
   maasAdi,
   moralGucEtkisi,
   odenmeyenCeza,
+  GANIMET_PAYI_TANIMLARI,
+  TALIM_YENI_ER_GIRIS,
+  MORAL_BOLLUK_YILLIK,
+  yuksekPasifDusus,
+  talimArtiEksi,
 } from "../src/data/birlik";
 import { rutbeTanimiGetir } from "../src/data/rutbeler";
 import { SAVAS_YILLIK_IHTIMAL, SAVAS_COOLDOWN_YIL, SAVAS_SURE } from "../src/data/dunyaDonemleri";
@@ -115,22 +130,20 @@ function asker(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ", bolge?: stri
 const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("kurulum", () => {
-  it("20 er, piyade, düşük kalite; pazar 185–205; iki aktif rakip; başlangıç payı %8–14", () => {
+  it("20 er, piyade, düşük kalite; Asker'de pazar payı ve pazar rakibi yok (v67 Madde 7)", () => {
     for (let i = 0; i < 20; i++) {
       const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(s, "Asker");
       expect(s.meslek_musteri).toBe(BASLANGIC_ER);
-      expect(s.pazar_musteri).toBeGreaterThanOrEqual(185);
-      expect(s.pazar_musteri).toBeLessThanOrEqual(205);
+      expect(s.pazar_musteri).toBe(0);
+      expect(s.rakipler).toHaveLength(0);
+      expect(pazarAdlariGetir("Asker")).toBeNull();
+      expect(pazarPayiHesapla(s)).toBe(0);
       const b = s.isletme!.birlik!;
       expect(b.kalite).toEqual({ dusuk: 20, orta: 0, yuksek: 0 });
       expect(b.birlik_seviye).toBe(0);
       expect(b.moral).toBe(50); // moral ve talim nötr noktada (50) başlar: güce etkisi 0
       expect(b.talim).toBe(50);
-      expect(s.rakipler.filter((r) => !r.yenildi)).toHaveLength(2);
-      const pay = pazarPayiHesapla(s);
-      expect(pay).toBeGreaterThan(0.06); // teçhizat 0,75 / 1 / 1,25 sonrası başlangıç gücü %25 düştü (görev eşikleri ve düşman en son yeniden ayarlanacak)
-      expect(pay).toBeLessThan(0.14);
     }
   });
 
@@ -189,10 +202,9 @@ describe("askerî güç ve pay", () => {
     expect(gucHesapla(s).piyadePayi).toBeCloseTo(0.2);
   });
 
-  it("birlik maliyeti: er maliyetine eklenen kesir okçu +%46, süvari +%55, mızraklı +%49, zırhlı +%88; gizli kuşatma pay almaz", () => {
-    for (const [tur, x] of [["okcu", 0.46], ["suvari", 0.55], ["mizrakli", 0.49], ["zirhli", 0.88]] as const) {
-      expect(TUR_TANIMLARI[tur].bakim).toBeCloseTo(x);
-      expect(TUR_TANIMLARI[tur].erzak).toBeCloseTo(1 + x);
+  it("özel birlik bakımı: birlik eri başına sabit tutar okçu 0,20, süvari 0,25, mızraklı 0,25, zırhlı 0,40; gizli kuşatma pay almaz", () => {
+    for (const [tur, x] of [["okcu", 0.2], ["suvari", 0.25], ["mizrakli", 0.25], ["zirhli", 0.4]] as const) {
+      expect(TUR_TANIMLARI[tur].bakimEriBasi).toBeCloseTo(x);
     }
     const s = asker();
     const b = birlikAl(s);
@@ -217,15 +229,15 @@ describe("askerî güç ve pay", () => {
     expect(d.guc / d.ham).toBeLessThanOrEqual(2.0 * 1.2 + 1e-6);
   });
 
-  it("moral güce etkisi: 50'de 0, 0'da −%25, 100'de +%25 (doğrusal)", () => {
-    expect(moralGucEtkisi(0)).toBeCloseTo(-0.25);
-    expect(moralGucEtkisi(25)).toBeCloseTo(-0.125);
+  it("moral güce etkisi: 50'de 0, 0'da −%15, 100'de +%20 (doğrusal, iki yönde farklı eğim)", () => {
+    expect(moralGucEtkisi(0)).toBeCloseTo(-0.15);
+    expect(moralGucEtkisi(25)).toBeCloseTo(-0.075);
     expect(moralGucEtkisi(50)).toBeCloseTo(0);
-    expect(moralGucEtkisi(75)).toBeCloseTo(0.125);
-    expect(moralGucEtkisi(100)).toBeCloseTo(0.25);
+    expect(moralGucEtkisi(75)).toBeCloseTo(0.1);
+    expect(moralGucEtkisi(100)).toBeCloseTo(0.2);
   });
 
-  it("talim güce etkisi: 50'de 0, 0'da −%25, 100'de +%25; moral nötrken", () => {
+  it("talim güce etkisi: 50'de 0, 0'da −%15, 100'de +%20; moral nötrken", () => {
     const s = asker();
     const b = birlikAl(s);
     b.moral = 50;
@@ -233,21 +245,12 @@ describe("askerî güç ve pay", () => {
     const g50 = gucHesapla(s).guc;
     b.talim = 0;
     const oran0 = gucHesapla(s).guc / g50; // ortak çarpana (erzak vb.) bağlı küçük sapma
-    expect(oran0).toBeGreaterThan(0.74);
-    expect(oran0).toBeLessThan(0.78);
+    expect(oran0).toBeGreaterThan(0.83);
+    expect(oran0).toBeLessThan(0.87);
     b.talim = 100;
     const oran100 = gucHesapla(s).guc / g50;
-    expect(oran100).toBeGreaterThan(1.22);
-    expect(oran100).toBeLessThan(1.26);
-  });
-
-  it("pay = güç / (güç + rakipler + diğer ordular); güç ikiye katlanınca pay artar", () => {
-    const s = asker();
-    const g = askerGucleri(s);
-    expect(pazarPayiHesapla(s)).toBeCloseTo(g.oyuncu / g.toplam, 6);
-    const once = pazarPayiHesapla(s);
-    birlikAl(s).guc *= 2;
-    expect(pazarPayiHesapla(s)).toBeGreaterThan(once);
+    expect(oran100).toBeGreaterThan(1.17);
+    expect(oran100).toBeLessThan(1.23);
   });
 
   it("toplam silahlı sayısı ve diğer ordular piyasa akışlarında oyuncunun erini değiştirmez (er yalnız birlik motorundan değişir)", async () => {
@@ -276,10 +279,12 @@ describe("limitler ve yeni er katılımı", () => {
     expect(komutaLimiti(s)).toBe(140); // seferberlik limiti büyütmez
   });
 
-  it("subay limiti: rütbe tabanı 1..5 + kışla bonusu", () => {
+  it("subay limiti: rütbe tabanı 1..5 + kışla bonusu, en çok 4", () => {
     expect(subayLimiti(1, 0)).toBe(1);
-    expect(subayLimiti(5, 4)).toBeGreaterThan(subayLimiti(5, 0));
     expect(subayLimiti(3, 0)).toBe(3);
+    expect(subayLimiti(3, 4)).toBe(4); // 3 + 2 = 5 → 4
+    expect(subayLimiti(5, 0)).toBe(4); // 5 → 4
+    expect(subayLimiti(5, 4)).toBe(4); // 7 → 4
   });
 
   it("yeniErEkle limiti aşmaz, hedef kalite ücretini nakitten çeker ve talimi seyreltir", () => {
@@ -292,8 +297,8 @@ describe("limitler ve yeni er katılımı", () => {
     expect(erSayisi(s)).toBe(komutaLimiti(s));
     expect(b.kalite.orta).toBe(r.eklenen);
     expect(r.maliyet).toBe(0); // teçhizat yükseltme/katılım ücretsiz (yalnız yıllık bakım)
-    // talim = (60 × 20 + giriş talimi 25 × eklenen) / (20 + eklenen)
-    expect(b.talim).toBeCloseTo((60 * 20 + 25 * r.eklenen) / (20 + r.eklenen), 4);
+    // talim = (60 × 20 + giriş talimi 15 × eklenen) / (20 + eklenen)
+    expect(b.talim).toBeCloseTo((60 * 20 + 15 * r.eklenen) / (20 + r.eklenen), 4);
   });
 
   it("yeni erler hedef kaliteyle gelir; teçhizat ücreti yok", () => {
@@ -317,8 +322,8 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 9 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
+  it("sabit maaş 8,5 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([8.5, 8.5, 8.5, 8.5, 8.5]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -347,7 +352,7 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%30/%45/%60); görev ganimeti ve yağma doğrudan hazineye", () => {
+  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%30/%50/%70); görev ganimeti ve yağma doğrudan hazineye", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -367,7 +372,7 @@ describe("gelir ve gider", () => {
     expect(y.erPayi).toBe(0); // yağma direkt hazineye
     expect(y.ganimetNet).toBeCloseTo(y.yagmaBrut, 6);
     // savaş zaferi ganimetinden politikaya göre pay düşer
-    const oranlar: Record<string, number> = { az: 0.3, dengeli: 0.45, comert: 0.6 };
+    const oranlar: Record<string, number> = { az: 0.3, dengeli: 0.5, comert: 0.7 };
     for (const id of ["az", "dengeli", "comert"] as const) {
       const z = asker();
       z.meslek_musteri = 200;
@@ -420,7 +425,7 @@ describe("gelir ve gider", () => {
     const sonuc = savasiBitir(s, b, bg(s), uyar);
     expect(sonuc.zafer).toBe(true);
     expect(sonuc.brut).toBeGreaterThan(0);
-    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.45), 1);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.5), 1);
     expect(sonuc.kale).toBe(true);
     expect(b.kale).toBe(1);
     expect(s.unvanlar).toContain("Zafer Madalyası");
@@ -717,24 +722,30 @@ describe("savaş", () => {
     expect(() => savasKarariVer(s, "olmayan", bg(s))).toThrow(/Geçersiz seçim/);
   });
 
-  it("seferberlik türleri (iki tür): Tüm Erkekler en çok er, Gazi Çağrısı orta kalite ve eğitimli; moral büyük çağrıda daha çok düşer", () => {
-    function dene(tur: "genel" | "secme") {
+  it("seferberlik türleri (iki tür): Tüm Erkekler en çok er; ikisi de ordunun mevcut teçhizatıyla gelir; moral büyük çağrıda daha çok düşer", () => {
+    function dene(tur: "genel" | "secme", hedef: "dusuk" | "orta" | "yuksek") {
       const s = asker();
       s.rutbe_seviye = 3;
       s.isletme!.yatirimlar.kisla = 3;
       const b = birlikAl(s);
       b.moral = 60;
+      b.hedef_kalite = hedef;
       savasYili(s);
       const once = erSayisi(s);
+      const kaliteOnce = b.kalite[hedef];
       seferberlikUygula(s, tur, bg(s));
-      return { s, b, eklenen: erSayisi(s) - once };
+      return { s, b, eklenen: erSayisi(s) - once, kaliteEk: b.kalite[hedef] - kaliteOnce };
     }
-    const g = dene("genel");
-    const sc = dene("secme");
-    expect(g.eklenen).toBeGreaterThan(sc.eklenen);
-    expect(sc.b.kalite.orta).toBeGreaterThan(0);
-    expect(g.b.kalite.orta).toBe(0);
-    expect(g.b.moral).toBeLessThan(sc.b.moral);
+    for (const hedef of ["dusuk", "orta", "yuksek"] as const) {
+      const g = dene("genel", hedef);
+      const sc = dene("secme", hedef);
+      expect(g.eklenen).toBeGreaterThan(sc.eklenen);
+      expect(sc.eklenen).toBeGreaterThan(0);
+      // seferberlerin hepsi ordunun hedef teçhizat kalitesinde katılır (sabit seçenek kalitesi yok)
+      expect(g.kaliteEk).toBe(g.eklenen);
+      expect(sc.kaliteEk).toBe(sc.eklenen);
+      expect(g.b.moral).toBeLessThan(sc.b.moral);
+    }
   });
 
   it("savaş yılı yıl işleme: ordu savaş öncesi sayısının ve çekirdek kadronun altına düşmez (terhis sınırı), NaN/negatif yok", () => {
@@ -784,19 +795,20 @@ describe("savaş", () => {
 });
 
 describe("talim, doktrin, birlik, terhis", () => {
-  it("talim politikaları: hafif 0, orta +5 (tavan 70), ağır +12; her yıl −2 unutma; moral 0/−1/−3", () => {
+  it("talim politikaları: ücretsiz; politika artışı 0/+4/+9 (üst sınırı politika değil Talim Alanı belirler), her yıl −2 unutma → net −2/+2/+7; moral +1/−1/−5", () => {
     expect(TALIM_TANIMLARI.hafif.delta).toBe(0);
-    expect(TALIM_TANIMLARI.orta.delta).toBe(5);
-    expect(TALIM_TANIMLARI.orta.tavan).toBe(70);
-    expect(TALIM_TANIMLARI.agir.delta).toBe(12);
-    expect([TALIM_TANIMLARI.hafif.moral, TALIM_TANIMLARI.orta.moral, TALIM_TANIMLARI.agir.moral]).toEqual([0, -1, -3]);
+    expect(TALIM_TANIMLARI.orta.delta).toBe(4);
+    expect("tavan" in TALIM_TANIMLARI.orta).toBe(false);
+    expect(TALIM_TANIMLARI.agir.delta).toBe(9);
+    expect([TALIM_TANIMLARI.hafif.masraf, TALIM_TANIMLARI.orta.masraf, TALIM_TANIMLARI.agir.masraf]).toEqual([0, 0, 0]);
+    expect([TALIM_TANIMLARI.hafif.moral, TALIM_TANIMLARI.orta.moral, TALIM_TANIMLARI.agir.moral]).toEqual([1, -1, -5]);
     const s = asker();
     const b = birlikAl(s);
     b.talim_politikasi = "agir";
     b.talim = 40;
     b.moral = 60;
     birlikYilIsle(s, bg(s));
-    expect(b.talim).toBeGreaterThan(44); // +12 × kalite çarpanı − 2
+    expect(b.talim).toBeGreaterThan(42); // +9 × kalite çarpanı − 2 (yeni erlerin giriş talimi 15 hafifçe seyreltir)
     b.talim_politikasi = "hafif";
     b.talim = 40;
     birlikYilIsle(s, bg(s));
@@ -845,9 +857,9 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(birlikAl(s).kalite.yuksek).toBe(erSayisi(s));
   });
 
-  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,15/0,27/0,40; güç başına gider yükseldikçe biraz azalır (yükseltme teşvik edilir, ama hiçbiri baskın değil)", () => {
+  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,13/0,24/0,36; güç başına gider yükseldikçe biraz azalır (yükseltme teşvik edilir, ama hiçbiri baskın değil)", () => {
     expect(KALITE_CARPANI).toEqual({ dusuk: 0.75, orta: 1, yuksek: 1.25 });
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.27, yuksek: 0.4 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
     const g = (q: "dusuk" | "orta" | "yuksek") => (ER_MASRAFI + ERZAK_BIRIMI + KALITE_BAKIM[q]) / KALITE_CARPANI[q];
     expect(g("yuksek")).toBeLessThan(g("orta"));
     expect(g("orta")).toBeLessThan(g("dusuk"));
@@ -875,7 +887,7 @@ describe("talim, doktrin, birlik, terhis", () => {
     birlikAl(s).guc = 10000;
     expect(yillikKariyerPuaniHesapla(s)).toBeCloseTo(ASKER_KARIYER_GUC_TAVANI * ASKER_KARIYER_PUANI_KATSAYISI, 5);
     const once = s.kariyer_puani;
-    pazarYillikUygula(s, 2);
+    askerKariyerPuaniUygula(s, 2); // pazardan bağımsız yıl adımı
     expect(s.kariyer_puani).toBeGreaterThan(once);
   });
 
@@ -964,7 +976,7 @@ describe("rütbe adları ve terfi", () => {
     }
   });
 
-  it("terfi pay + kariyer puanı + ün şartlarına bağlıdır; ordu gücü payı yetmiyorsa çıkmaz", () => {
+  it("terfi kariyer puanı + ün + askerî güç şartına bağlıdır; ordu gücü yetmiyorsa çıkmaz", () => {
     const s = asker();
     s.kariyer_puani = 999;
     s.un = 100;
@@ -1004,16 +1016,17 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(st.id, "Asker");
     await bekleyenleriCoz(st.id);
-    const r = await isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye"], ganimet_payi: "dengeli", talim: "agir", ton: "sert" });
+    const r = await isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye"], ganimet_payi: "dengeli", talim: "agir" });
     expect(r.durum.birlik!.talim.politika).toBe("agir");
-    expect(r.durum.birlik!.politikalar.ton.secili).toBe("sert");
+    expect((r.durum.birlik!.politikalar as Record<string, unknown>).ton).toBeUndefined(); // komuta tonu kalktı (v67 Madde 7)
     await expect(isletmeKararVer(st.id, [], undefined, { talim: "yok" })).rejects.toThrow(/talim/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye", "eskort"] })).rejects.toThrow(/[Aa]ynı anda/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["sefer"] })).rejects.toThrow(/Böyle bir görev yok/);
     const v = r.durum.birlik!;
     expect(v.er).toBe(20);
     expect(v.guc.toplam).toBeGreaterThan(0);
-    expect(v.rakipler.length).toBe(0); // Asker'de rakip komutan yok
+    expect((v as unknown as Record<string, unknown>).rakipler).toBeUndefined(); // Asker'de rakip komutan ve pazar payı yok
+    expect((v as unknown as Record<string, unknown>).pay).toBeUndefined();
     expect(v.hesap.barisGanimetTahmini).toBeGreaterThan(0);
   });
 
@@ -1108,5 +1121,672 @@ describe("kışla kademesi düşürme", () => {
     expect(r.state.para).toBeCloseTo(once + odenen * 0.4, 1);
     s.meslek_musteri = 100; // K0 sınırı 25'i aşar
     await expect(isletmeYatirimDusur(s.id, "kisla")).rejects.toThrow(/sığmıyor/);
+  });
+});
+
+describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
+  /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir: yalnız politika etkisi ölçülür. */
+  function sabitOrdu(politika: "hafif" | "orta" | "agir", talim: number, moral = 60) {
+    const s = asker();
+    s.para = 1_000_000;
+    s.meslek_musteri = komutaLimiti(s);
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: s.meslek_musteri, yuksek: 0 };
+    b.hedef_kalite = "orta";
+    b.baris_bekleme = 99;
+    b.gorevler = [];
+    b.talim_politikasi = politika;
+    b.talim = talim;
+    b.moral = moral;
+    s.ulke.donem = undefined as never; // dönem (bolluk/kıtlık) moral etkisi karışmasın
+    return { s, b };
+  }
+
+  it("yıllık talim değişimi (unutma dahil): hafif −2, orta +2, ağır +7", () => {
+    for (const [politika, beklenen] of [["hafif", -2], ["orta", 2], ["agir", 7]] as const) {
+      const { s, b } = sabitOrdu(politika, 40);
+      birlikYilIsle(s, bg(s));
+      expect(b.talim).toBeCloseTo(40 + beklenen, 6);
+    }
+  });
+
+  it("Talim Alanı yokken talim limiti 70: hangi politika olursa olsun 70'te durur, limit üstündeki eski kayıt limite iner", () => {
+    for (const politika of ["orta", "agir"] as const) {
+      const { s, b } = sabitOrdu(politika, 69);
+      birlikYilIsle(s, bg(s));
+      expect(b.talim).toBeCloseTo(70, 6); // 69 + kazanç − 2 ≥ 70 → limite kırpılır
+      const o = sabitOrdu(politika, 90);
+      birlikYilIsle(o.s, bg(o.s));
+      expect(o.b.talim).toBeCloseTo(70, 6); // eski kayıt: limitin üstü ilk yıl sonunda limite iner
+    }
+  });
+
+  it("talim ücretsiz: masraf kalemi 0", () => {
+    for (const politika of ["hafif", "orta", "agir"] as const) {
+      const { s } = sabitOrdu(politika, 50);
+      expect(birlikHesapla(s, bg(s)).talimMasrafi).toBe(0);
+    }
+  });
+
+  it("politika morali: hafif +1, orta −1, ağır −5 (doğal −0,5 ile birlikte +0,5 / −1,5 / −5,5)", () => {
+    for (const [politika, beklenen] of [["hafif", 0.5], ["orta", -1.5], ["agir", -5.5]] as const) {
+      const { s, b } = sabitOrdu(politika, 50, 60);
+      birlikYilIsle(s, bg(s));
+      expect(b.moral).toBeCloseTo(60 + beklenen, 6);
+    }
+  });
+
+  it("ganimet payı: askere %30/%50/%70, sana %70/%50/%30; yıllık moral −7/0/+4", () => {
+    expect(GANIMET_PAYI_TANIMLARI.az.oran).toBe(0.3);
+    expect(GANIMET_PAYI_TANIMLARI.dengeli.oran).toBe(0.5);
+    expect(GANIMET_PAYI_TANIMLARI.comert.oran).toBe(0.7);
+    expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
+  });
+
+  it("bolluk dönemi artık ordu morali vermez", () => {
+    expect(MORAL_BOLLUK_YILLIK).toBe(0);
+  });
+
+  it("yüksekte pasif düşüş (yalnız moral için): 70 üstü −(değer−70)×0,2 (80'de −2, 90'da −4, 100'de −6); talimin sınırını Talim Alanı belirler", () => {
+    expect(yuksekPasifDusus(70)).toBe(0);
+    expect(yuksekPasifDusus(50)).toBe(0);
+    expect(yuksekPasifDusus(80)).toBeCloseTo(2, 9);
+    expect(yuksekPasifDusus(90)).toBeCloseTo(4, 9);
+    expect(yuksekPasifDusus(100)).toBeCloseTo(6, 9);
+    // 4. kademe Talim Alanı (limit 90), hafif politika (kazanç +4 − 2): talim 90'da kalır, pasif düşüş talime işlemez
+    const t = sabitOrdu("hafif", 90);
+    t.s.isletme!.yatirimlar.talim = 4;
+    birlikYilIsle(t.s, bg(t.s));
+    expect(t.b.talim).toBeCloseTo(90, 6);
+    // moral 90 (hafif +1, doğal −0,5, pasif −4) → 86,5
+    const m = sabitOrdu("hafif", 50, 90);
+    birlikYilIsle(m.s, bg(m.s));
+    expect(m.b.moral).toBeCloseTo(86.5, 6);
+  });
+
+  it("yeni er giriş talimi 15: ortalamayı seyreltir", () => {
+    expect(TALIM_YENI_ER_GIRIS).toBe(15);
+  });
+
+  it("politika metni: net sayı tek satır, ücretsiz, hafif talimin morali artı", () => {
+    const hafif = talimArtiEksi("hafif");
+    expect(hafif.arti.some((m) => m.tr === "Ücretsiz")).toBe(true);
+    expect(hafif.arti.some((m) => m.tr.includes("morali +1"))).toBe(true);
+    const orta = talimArtiEksi("orta");
+    expect(orta.arti.some((m) => m.tr === "Talim yılda +2 değişir")).toBe(true);
+    expect(orta.eksi.some((m) => m.tr.includes("unutma"))).toBe(false);
+    const agir = talimArtiEksi("agir");
+    expect(agir.arti.some((m) => m.tr === "Talim yılda +7 değişir")).toBe(true);
+    expect(agir.eksi.some((m) => m.tr.includes("morali −5"))).toBe(true);
+  });
+});
+
+describe("v67 Madde 3 — ekonomi sabitleri", () => {
+  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,15, sold 8,5, savaş ödeneği ×2, yıllık sabit er yok", async () => {
+    const d = await import("../src/data/birlik");
+    expect(d.ER_MASRAFI).toBe(0.23);
+    expect(d.ERZAK_BIRIMI).toBe(0.13);
+    expect(d.ER_BASI_GELIR).toBe(0.15);
+    expect(d.SOLD).toEqual([8.5, 8.5, 8.5, 8.5, 8.5]);
+    expect(d.SAVAS_ER_BASI_CARPANI).toBe(2);
+    expect(d.BARIS_YILLIK_ER).toBe(0);
+    expect(d.KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
+    expect(d.KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
+  });
+
+  it("görev asgari güçleri 10/40/80/145/250; er başı katsayı 0,55…0,70 eşit adımlı", () => {
+    const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
+    expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
+    expect(sira.map((g) => g.erBasi)).toEqual([0.55, 0.5875, 0.625, 0.6625, 0.7]);
+  });
+
+  it("gider (tam ağır teçhizat, özel birlik yok): 40 er 36,8 · 80 er 79,6 · 150 er 168,0 (enflasyonsuz); talim ücretsiz", () => {
+    for (const [er, kisla, beklenen] of [[40, 1, 36.8], [80, 2, 79.6], [150, 3, 168.0]] as const) {
+      const s = asker();
+      s.ulke.donem = undefined as never; // dönem erzak çarpanı karışmasın
+      s.isletme!.yatirimlar.kisla = kisla;
+      s.meslek_musteri = er;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 0, yuksek: er };
+      b.birlik_turler = [];
+      b.yarali = 0;
+      const h = birlikHesapla(s, bg(s));
+      expect(h.talimMasrafi).toBe(0);
+      expect(h.toplamGider / bg(s).giderEnflasyon).toBeCloseTo(beklenen, 1);
+    }
+  });
+
+  it("görev geliri er bazlı: aynı er sayısında teçhizat/güç değişse de gelir sabit; er arttıkça artar", () => {
+    const gelir = (er: number, kalite: "dusuk" | "yuksek") => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 3;
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = er;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 0, yuksek: 0, [kalite]: er } as never;
+      b.gorevler = ["devriye"];
+      b.moral = 50;
+      return birlikHesapla(s, bg(s)).gorevGeliri;
+    };
+    expect(gelir(100, "yuksek") / gelir(100, "dusuk")).toBeCloseTo(1, 1);
+    expect(gelir(150, "dusuk")).toBeGreaterThan(gelir(100, "dusuk"));
+  });
+});
+
+describe("v67 Madde 4 — güç formülü", () => {
+  it("piyade 0,95/1,05; özel birlik değerleri okçu 1,75/1,35, süvari 2,6/0,6 (saldırı), mızraklı 1,0/2,2 (savunma), zırhlı 1,5/2,4", async () => {
+    const { PIYADE } = await import("../src/data/birlik");
+    expect(PIYADE).toEqual({ saldiri: 0.95, savunma: 1.05 });
+    const d = (t: "okcu" | "suvari" | "mizrakli" | "zirhli") => [TUR_TANIMLARI[t].saldiri, TUR_TANIMLARI[t].savunma];
+    expect(d("okcu")).toEqual([1.75, 1.35]);
+    expect(d("suvari")).toEqual([2.6, 0.6]);
+    expect(d("mizrakli")).toEqual([1.0, 2.2]);
+    expect(d("zirhli")).toEqual([1.5, 2.4]);
+  });
+
+  it("ağır teçhizat + 4 özel birlik güç artışı ≈ +%54 (eski +%77); dördü birden bile çarpan sınırı içinde", () => {
+    const s = asker();
+    s.ulke.donem = undefined as never;
+    s.isletme!.yatirimlar.kisla = 3;
+    s.rutbe_seviye = 5;
+    s.meslek_musteri = 100;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 100 };
+    b.moral = 50;
+    b.talim = 50;
+    b.birlik_turler = [];
+    const duz = gucHesapla(s).guc;
+    b.birlik_turler = ["okcu", "suvari", "mizrakli", "zirhli"];
+    const dort = gucHesapla(s).guc;
+    expect(dort / duz).toBeGreaterThan(1.5);
+    expect(dort / duz).toBeLessThan(1.58);
+  });
+
+  it("özel birlik bakımı ayrı kalem: birlikteki er × er başı tutar (okçu 0,20 · süvari 0,25 · mızraklı 0,25 · zırhlı 0,40); er masrafı/erzak etkilenmez", () => {
+    const kur = (turler: ("okcu" | "suvari" | "mizrakli" | "zirhli")[]) => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 5;
+      s.isletme!.yatirimlar.kisla = 3;
+      s.meslek_musteri = 100;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 100, yuksek: 0 };
+      b.birlik_turler = turler;
+      return { s, h: birlikHesapla(s, bg(s)) };
+    };
+    const yok = kur([]);
+    const dort = kur(["okcu", "suvari", "mizrakli", "zirhli"]);
+    expect(yok.h.birlikBakim).toBe(0);
+    // 100 er × %20 = 20 er her birlikte: 20 × (0,20 + 0,25 + 0,25 + 0,40) = 22
+    expect(dort.h.birlikBakim / bg(dort.s).giderEnflasyon).toBeCloseTo(22, 6);
+    expect(dort.h.erMasrafi).toBeCloseTo(yok.h.erMasrafi, 6);
+    expect(dort.h.erzak).toBeCloseTo(yok.h.erzak, 6);
+    expect(dort.h.toplamGider - yok.h.toplamGider).toBeCloseTo(dort.h.birlikBakim, 6);
+    // ordu büyüdükçe orantılı artar
+    const buyuk = kur(["okcu"]);
+    buyuk.s.meslek_musteri = 200;
+    birlikAl(buyuk.s).kalite = { dusuk: 0, orta: 200, yuksek: 0 };
+    const iki = birlikHesapla(buyuk.s, bg(buyuk.s)).birlikBakim;
+    expect(iki / buyuk.h.birlikBakim).toBeCloseTo(2, 6);
+  });
+
+  it("rütbe güç eşikleri 18/70/150/340", async () => {
+    const { RUTBE_GUC_ESIGI_ASKER } = await import("../src/data/rutbeler");
+    expect(RUTBE_GUC_ESIGI_ASKER).toEqual({ 2: 18, 3: 70, 4: 150, 5: 340 });
+  });
+
+  it("yağma oranları 0,51 / 0,35 / 0,19; subay en çok 4; subay bonusları ~%10 düşük", async () => {
+    const { IKMAL_TANIMLARI, SUBAY_MAKS } = await import("../src/data/birlik");
+    expect(IKMAL_TANIMLARI.yagma_sert.yagma.gucOrani).toBe(0.51);
+    expect(IKMAL_TANIMLARI.yagma_orta.yagma.gucOrani).toBe(0.35);
+    expect(IKMAL_TANIMLARI.yagma_yumusak.yagma.gucOrani).toBe(0.19);
+    expect(SUBAY_MAKS).toBe(4);
+    const { SUBAY_DEGERLERI } = await import("../src/game/subay");
+    expect(SUBAY_DEGERLERI.taarruz.saldiri).toEqual([0.081, 0.135, 0.18]);
+  });
+});
+
+describe("v67 Madde 5 — düşman gücü", () => {
+  it("formül: (yaşa bağlı taban + oyuncu gücünün %30'u) × tür çarpanı; taban 20 yaşta başlar (7 / 8,5 / 10,5), oran %6,1 / %6,3 / %7,1", async () => {
+    const d = await import("../src/data/birlik");
+    expect(d.DUSMAN_OYUNCU_PAYI).toBe(0.3);
+    expect(d.DUSMAN_TUR_CARPANI).toEqual({ haydut: 0.9, sinir: 1.1, savas: 1.3 });
+    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 7, oran: 0.061 }, sinir: { taban20: 8.5, oran: 0.063 }, savas: { taban20: 10.5, oran: 0.071 } });
+    for (const t of ["haydut", "sinir", "savas"] as const) {
+      expect(d.dusmanGucuYas(20, t)).toBeCloseTo(d.DUSMAN_PARAMETRELERI[t].taban20, 9);
+      expect(d.dusmanGucuYas(21, t) / d.dusmanGucuYas(20, t)).toBeCloseTo(1 + d.DUSMAN_PARAMETRELERI[t].oran, 9);
+      for (const guc of [0, 50, 200]) {
+        expect(d.dusmanGucuHesapla(35, t, guc)).toBeCloseTo((d.dusmanGucuYas(35, t) + 0.3 * guc) * d.DUSMAN_TUR_CARPANI[t], 9);
+      }
+      // oyuncu gücü arttıkça düşman da artar; 100 güç → tam 30 × çarpan
+      expect(d.dusmanGucuHesapla(35, t, 100) - d.dusmanGucuHesapla(35, t, 0)).toBeCloseTo(30 * d.DUSMAN_TUR_CARPANI[t], 9);
+    }
+  });
+
+  it("barış çatışması düşmanı oyuncu gücüyle büyür; baskın ihtimali ve düşman birliği türe göre", async () => {
+    const d = await import("../src/data/birlik");
+    const { barisCatismaKur } = await import("../src/game/birlikYil");
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const kur = (er: number) => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 3;
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = er;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: er, orta: 0, yuksek: 0 };
+      b.zafer_serisi = { haydut: 0, sinir: 0, savas: 0 };
+      return barisCatismaKur(s, b);
+    };
+    const zayif = kur(40);
+    const guclu = kur(120);
+    expect(zayif.tur).toBe(guclu.tur);
+    expect(guclu.dusmanGuc).toBeGreaterThan(zayif.dusmanGuc);
+    vi.restoreAllMocks();
+    // tür dağılımı ~%60 haydut / %40 sınır; baskın ihtimali haydutta yüksek, sınırda düşük; birlik karışımı türe özgü
+    const sayim = { haydut: 0, sinir: 0, baskinHaydut: 0, baskinSinir: 0 };
+    for (let i = 0; i < 1200; i++) {
+      const k = kur(60);
+      sayim[k.tur]++;
+      if (k.baskin) sayim[k.tur === "haydut" ? "baskinHaydut" : "baskinSinir"]++;
+      if (k.tur === "haydut") expect(["suvari", "okcu", "karma"]).toContain(k.dusmanTur);
+      else expect(["mizrakli", "zirhli", "okcu", "suvari"]).toContain(k.dusmanTur);
+      expect(k.senaryoId).toBeTruthy(); // v67 5c: her çatışma bir senaryo taşır
+      expect(k.arazi).toBeTruthy();
+    }
+    expect(sayim.haydut / 1200).toBeGreaterThan(0.54);
+    expect(sayim.haydut / 1200).toBeLessThan(0.66);
+    expect(sayim.baskinHaydut / sayim.haydut).toBeGreaterThan(0.58);
+    expect(sayim.baskinHaydut / sayim.haydut).toBeLessThan(0.72);
+    expect(sayim.baskinSinir / sayim.sinir).toBeGreaterThan(0.32);
+    expect(sayim.baskinSinir / sayim.sinir).toBeLessThan(0.48);
+  });
+
+  it("barış ganimet aralığı türe göre: haydut 2,2–2,8, sınır 3,2–4,0; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
+    const d = await import("../src/data/birlik");
+    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [2.2, 2.8], sinir: [3.2, 4] });
+    expect(d.BARIS_GANIMET_UST).toBe(4);
+    expect(d.ZAFER_SERISI_ESIGI).toBe(2);
+    expect(d.ZAFER_SERISI_DUSMAN_ARTISI).toBe(0.2);
+    expect(d.ZAFER_SERISI_ESIGI_2).toBe(4);
+    expect(d.ZAFER_SERISI_DUSMAN_ARTISI_2).toBe(0.5);
+  });
+
+  it("görünüm gerçek düşman oranını sızdırmaz", async () => {
+    const { birlikGorunumuHesapla } = await import("../src/game/birlikIslem");
+    const s = asker();
+    const b = birlikAl(s);
+    b.savas = {
+      baslangic_yili: s.yil, seferberlik: null, seferberlik_er: 0, yil_sayac: 0, sonuc: null, olu_toplam: 0, firar_toplam: 0,
+      arazi: "ova", inisiyatif: "savunma", dusman_orani: 1.03, dusman_tur: "karma", kanat_zafer: 0, kanat_yenilgi: 0, genel_zafer: 0, genel_yenilgi: 0,
+    } as never;
+    const json = JSON.stringify(birlikGorunumuHesapla(s, bg(s)));
+    expect(json).not.toContain("dusmanOrani");
+    expect(json).not.toContain("1.03");
+  });
+});
+
+describe("v67 Madde 5c — çatışma senaryoları ve arazi", () => {
+  it("katalog: tür × yön başına 4 senaryo (16), kimlikler eşsiz, TR/EN metinler dolu ve kısa, düşman birlikleri türe uygun", async () => {
+    const { CATISMA_SENARYOLARI, ARAZI_SIRASI } = await import("../src/data/birlik");
+    expect(CATISMA_SENARYOLARI).toHaveLength(16);
+    expect(new Set(CATISMA_SENARYOLARI.map((x) => x.id)).size).toBe(16);
+    for (const tur of ["haydut", "sinir"] as const) {
+      for (const baskin of [false, true]) expect(CATISMA_SENARYOLARI.filter((x) => x.tur === tur && x.baskin === baskin)).toHaveLength(4);
+    }
+    for (const x of CATISMA_SENARYOLARI) {
+      expect(ARAZI_SIRASI).toContain(x.arazi);
+      expect(x.ad.tr.length).toBeGreaterThan(2);
+      expect(x.ad.en.length).toBeGreaterThan(2);
+      expect(x.metin.tr.length).toBeGreaterThan(10);
+      expect(x.metin.tr.length).toBeLessThanOrEqual(110);
+      expect(x.metin.en.length).toBeLessThanOrEqual(125);
+      expect(x.ganimet).toBeGreaterThanOrEqual(0.9);
+      expect(x.ganimet).toBeLessThanOrEqual(1.2);
+      expect(x.kayip).toBeGreaterThanOrEqual(0.9);
+      expect(x.kayip).toBeLessThanOrEqual(1.2);
+      const anahtarlar = Object.keys(x.dusman);
+      if (x.tur === "haydut") for (const k of anahtarlar) expect(["suvari", "okcu", "karma"]).toContain(k);
+      else for (const k of anahtarlar) expect(["mizrakli", "zirhli", "okcu", "suvari"]).toContain(k);
+    }
+    // her türün katalogda üç arazinin de karşılığı var
+    for (const tur of ["haydut", "sinir"] as const) {
+      expect(new Set(CATISMA_SENARYOLARI.filter((x) => x.tur === tur).map((x) => x.arazi)).size).toBe(3);
+    }
+  });
+
+  it("senaryo seçimi eşit olasılıklı ve tür/yöne uygun; her çatışma kendi senaryosunun arazisini taşır", async () => {
+    const { catismaSenaryosuSec, catismaSenaryosuGetir } = await import("../src/data/birlik");
+    const { barisCatismaKur } = await import("../src/game/birlikYil");
+    const sayim: Record<string, number> = {};
+    for (let i = 0; i < 4000; i++) {
+      const x = catismaSenaryosuSec("sinir", true);
+      expect(x.tur).toBe("sinir");
+      expect(x.baskin).toBe(true);
+      sayim[x.id] = (sayim[x.id] ?? 0) + 1;
+    }
+    const degerler = Object.values(sayim);
+    expect(degerler).toHaveLength(4);
+    for (const v of degerler) {
+      expect(v / 4000).toBeGreaterThan(0.2);
+      expect(v / 4000).toBeLessThan(0.3);
+    }
+    for (let i = 0; i < 80; i++) {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      const b = birlikAl(s);
+      const k = barisCatismaKur(s, b);
+      const sen = catismaSenaryosuGetir(k.senaryoId)!;
+      expect(sen.tur).toBe(k.tur);
+      expect(sen.baskin).toBe(k.baskin);
+      expect(k.arazi).toBe(sen.arazi);
+    }
+  });
+
+  it("barışta arazi güce işler: süvari ordusu ovada saldırıda güçlü, dağda zayıf; düşmanın tarafı da yöne göre çarpılır", async () => {
+    const { catismaKarariDurumu } = await import("../src/game/birlikIslem");
+    const kur = (arazi: "ova" | "dag") => {
+      const s = asker();
+      s.ulke.donem = undefined as never;
+      s.rutbe_seviye = 3;
+      s.isletme!.yatirimlar.kisla = 4;
+      s.meslek_musteri = 100;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 100, orta: 0, yuksek: 0 };
+      b.birlik_turler = ["suvari"];
+      b.catisma_bekleyen = { yil: s.yil, tur: "haydut", baskin: false, senaryoId: "h_nehir", arazi, dusmanTur: "karma", dusmanGuc: 60 };
+      return catismaKarariDurumu(s, bg(s))!;
+    };
+    const ova = kur("ova");
+    const dag = kur("dag");
+    expect(ova.oyuncu.saldiri).toBeGreaterThan(dag.oyuncu.saldiri * 1.25); // süvari ordunun %20 payı: ova 1,7 saldırı çarpanı, dağ 0,8
+    expect(ova.senaryo?.arazi).toBe("ova");
+    expect(ova.birlikArazi?.saldiriGuclu.length).toBe(1); // süvari ovada saldırıda güçlü
+    expect(dag.birlikArazi?.saldiriZayif.length).toBe(1);
+    expect(dag.birlikArazi?.savunmaZayif.length).toBe(1);
+  });
+
+  it("barışta düşmanın arazi çarpanı katalog ortalamasına normalleştirilir (düşman elverişli birliğini elverişli arazide çıkarsa da ortalama 1)", async () => {
+    const { CATISMA_SENARYOLARI, barisDusmanAraziCarpani } = await import("../src/data/birlik");
+    for (const yon of ["saldiri", "savunma"] as const) {
+      let toplam = 0;
+      for (const sen of CATISMA_SENARYOLARI) {
+        for (const [tur, w] of Object.entries(sen.dusman) as ["okcu" | "suvari" | "mizrakli" | "zirhli" | "karma", number][]) toplam += w * barisDusmanAraziCarpani(sen.arazi, tur, yon);
+      }
+      expect(toplam / CATISMA_SENARYOLARI.length).toBeCloseTo(1, 6);
+    }
+  });
+
+  it("eski kayıt (senaryo ve arazi yok) arazisiz çözülür; eski senaryo bonusu artık yok", async () => {
+    const { catismaKarariDurumu } = await import("../src/game/birlikIslem");
+    const s = asker();
+    s.ulke.donem = undefined as never;
+    const b = birlikAl(s);
+    b.birlik_turler = ["suvari"];
+    b.catisma_bekleyen = { yil: s.yil, tur: "haydut", baskin: false, dusmanTur: "karma", dusmanGuc: 30 };
+    const durum = catismaKarariDurumu(s, bg(s))!;
+    expect(durum.senaryo).toBeNull();
+    expect(durum.birlikArazi).toBeNull();
+    const sonuc = barisCatismaCoz(s, b, bg(s), "saldiri");
+    expect(sonuc.tur).toBe("haydut");
+    expect(gucHesapla(s).bonuslar.some((x) => x.kod === "senaryo")).toBe(false);
+  });
+});
+
+describe("v67 Madde 6 — seferberlik ve Talim Alanı", () => {
+  function savasOrdusu(tur: "secme" | "genel", moral = 50, talim = 50) {
+    const s = asker();
+    s.rutbe_seviye = 3;
+    s.isletme!.yatirimlar.kisla = 4;
+    s.meslek_musteri = 100;
+    s.para = 100000;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: 100, yuksek: 0 };
+    b.hedef_kalite = "orta";
+    b.moral = moral;
+    b.talim = talim;
+    s.ulke.savasta = true;
+    b.savas = null;
+    const g0 = gucHesapla(s, { enflasyon: 1 }).guc;
+    seferberlikUygula(s, tur, bg(s));
+    const g1 = gucHesapla(s, { enflasyon: 1 }).guc;
+    return { s, b, artis: g1 / g0 - 1 };
+  }
+
+  it("güç artışı: Gazi (%8 er, giriş talimi 55) en çok ≈ +%7'yi geçmez, Tüm Erkekler (%20 er, talim 10) belirgin daha çok verir", () => {
+    const gazi = savasOrdusu("secme");
+    const tum = savasOrdusu("genel");
+    expect(gazi.artis).toBeGreaterThan(0.03);
+    expect(gazi.artis).toBeLessThanOrEqual(0.07);
+    expect(tum.artis).toBeGreaterThan(0.09);
+    expect(tum.artis).toBeLessThan(0.15);
+    expect(tum.artis).toBeGreaterThan(gazi.artis * 1.5);
+    // eğitimsiz ordu daha çok kazanır, eğitimli ordu daha az
+    expect(savasOrdusu("secme", 50, 20).artis).toBeGreaterThan(savasOrdusu("secme", 50, 80).artis);
+    expect(savasOrdusu("genel", 50, 20).artis).toBeGreaterThan(savasOrdusu("genel", 50, 80).artis);
+  });
+
+  it("Tüm Erkekler ordu talimini ve morali Gazi'den fazla düşürür; moral −7 / −15", () => {
+    const gazi = savasOrdusu("secme", 60);
+    const tum = savasOrdusu("genel", 60);
+    expect(gazi.b.moral).toBe(53);
+    expect(tum.b.moral).toBe(45);
+    expect(etkinTalimOf(tum.s)).toBeLessThan(etkinTalimOf(gazi.s));
+  });
+  function etkinTalimOf(s: CharacterState) {
+    const b = birlikAl(s);
+    const er = erSayisi(s);
+    const sef = b.savas!.seferberlik_er;
+    return (b.talim * (er - sef) + b.savas!.seferberlik_talim! * sef) / er;
+  }
+
+  it("Talim Alanı: 4 kademe, fiyat 18/32/50/75; yıllık +1/+2/+3/+4; limit 70/75/80/85/90", () => {
+    expect(TALIM_ALANI_YILLIK).toEqual([0, 1, 2, 3, 4]);
+    expect(TALIM_ALANI_TAVAN).toEqual([70, 75, 80, 85, 90]);
+    const y = isletmeProfiliGetir("Asker", "Orta Çağ")!.yatirimlar.find((x) => x.id === "talim")!;
+    expect(y.etki).toBe("talim");
+    expect(y.fiyatlar).toEqual([18, 32, 50, 75]);
+    const s = asker();
+    for (let k = 0; k <= 4; k++) {
+      s.isletme!.yatirimlar.talim = k;
+      expect(talimUstLimit(s)).toBe(TALIM_ALANI_TAVAN[k]);
+    }
+    // eski kayıt: yatırım kaydı hiç yok → bina yok sayılır
+    delete s.isletme!.yatirimlar.talim;
+    expect(talimUstLimit(s)).toBe(70);
+    expect(yatirimEtkiMetni("talim", 0, 1).tr).toContain("70");
+    expect(yatirimEtkiMetni("talim", 3, 1).tr).toContain("+3");
+    expect(yatirimEtkiMetni("talim", 3, 1).tr).toContain("85");
+    expect(yatirimEtkiMetni("talim", 4, 1).en).toContain("90");
+  });
+
+  /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir: yalnız politika + bina etkisi ölçülür. */
+  function sabitOrdu(politika: "hafif" | "orta" | "agir", kademe: number, talim: number, moral = 60) {
+    const s = asker();
+    s.para = 1_000_000;
+    s.meslek_musteri = komutaLimiti(s);
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: s.meslek_musteri, yuksek: 0 };
+    b.hedef_kalite = "orta";
+    b.baris_bekleme = 99;
+    b.gorevler = [];
+    b.talim_politikasi = politika;
+    b.talim = talim;
+    b.moral = moral;
+    s.isletme!.yatirimlar.talim = kademe;
+    s.ulke.donem = undefined as never;
+    return { s, b };
+  }
+
+  it("yıllık net talim = politika artışı + bina artışı − 2 unutma (hafif 0 / orta 4 / ağır 9; bina +0…+4)", () => {
+    const politikaArtisi = { hafif: 0, orta: 4, agir: 9 } as const;
+    for (const politika of ["hafif", "orta", "agir"] as const) {
+      for (let k = 0; k <= 4; k++) {
+        const { s, b } = sabitOrdu(politika, k, 40);
+        birlikYilIsle(s, bg(s));
+        const kazanc = politikaArtisi[politika] + k;
+        expect(b.talim).toBeCloseTo(40 + (kazanc > 0 ? kazanc : 0) - 2, 6);
+      }
+    }
+  });
+
+  it("talim limitte durur: bina yokken 70, kademe kademe 75/80/85/90; her politika için aynı limit", () => {
+    for (const politika of ["orta", "agir"] as const) {
+      for (let k = 0; k <= 4; k++) {
+        const { s, b } = sabitOrdu(politika, k, TALIM_ALANI_TAVAN[k] - 1);
+        birlikYilIsle(s, bg(s));
+        expect(b.talim).toBeCloseTo(TALIM_ALANI_TAVAN[k], 6);
+        birlikYilIsle(s, bg(s));
+        expect(b.talim).toBeCloseTo(TALIM_ALANI_TAVAN[k], 6); // limitte kalır
+      }
+    }
+    // hafif politika: bina 1 → net −1, bina 2 → 0 (limite ulaşmadan tutar), limit üstündeki eski kayıt limite iner
+    const h1 = sabitOrdu("hafif", 1, 60);
+    birlikYilIsle(h1.s, bg(h1.s));
+    expect(h1.b.talim).toBeCloseTo(59, 6);
+    const h2 = sabitOrdu("hafif", 2, 60);
+    birlikYilIsle(h2.s, bg(h2.s));
+    expect(h2.b.talim).toBeCloseTo(60, 6);
+    const eski = sabitOrdu("agir", 1, 95);
+    birlikYilIsle(eski.s, bg(eski.s));
+    expect(eski.b.talim).toBeCloseTo(75, 6);
+  });
+
+  it("savaş / çatışma / sefer dönüşü talim kazancı limiti aşmaz", () => {
+    const s = asker();
+    s.isletme!.yatirimlar.talim = 0;
+    expect(talimKazanci(s, 50, 6)).toBe(6);
+    expect(talimKazanci(s, 67, 6)).toBe(3); // 70'e kadar
+    expect(talimKazanci(s, 70, 6)).toBe(0);
+    expect(talimKazanci(s, 85, 6)).toBe(0); // limit üstünde artış yok (negatif de dönmez)
+    s.isletme!.yatirimlar.talim = 4;
+    expect(talimKazanci(s, 85, 6)).toBe(5); // 90'a kadar
+    // barış çatışması zaferi: talim limite kadar artar
+    const b = birlikAl(s);
+    b.talim = 69;
+    s.isletme!.yatirimlar.talim = 0;
+    b.catisma_bekleyen = { yil: s.yil, tur: "haydut", baskin: false, dusmanTur: "karma", dusmanGuc: 1 };
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const sonuc = barisCatismaCoz(s, b, bg(s), "saldiri");
+    rnd.mockRestore();
+    expect(b.talim).toBeLessThanOrEqual(70);
+    expect(sonuc.talim).toBeLessThanOrEqual(1);
+  });
+
+  it("moral için yüksekte pasif düşüş sürer: moral 90 hafif talimde 86,5 (Talim Alanı etkilemez)", () => {
+    const { s, b } = sabitOrdu("hafif", 4, 50, 90);
+    birlikYilIsle(s, bg(s));
+    expect(b.moral).toBeCloseTo(86.5, 6);
+  });
+});
+
+describe("v67 Madde 7 — Ordu sayfası: gelecek yıl değişimi, rütbe verisi, Asker'de pazar yok, Fatih", () => {
+  /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir, çatışma yok: yıl işleme kesin sonuç verir. */
+  function sabitOrdu(politika: "hafif" | "orta" | "agir", ganimet: "az" | "dengeli" | "comert" = "dengeli", talim = 40, moral = 55) {
+    const s = asker();
+    s.para = 1_000_000;
+    s.meslek_musteri = komutaLimiti(s);
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: s.meslek_musteri, yuksek: 0 };
+    b.hedef_kalite = "orta";
+    b.baris_bekleme = 99;
+    b.gorevler = [];
+    b.talim_politikasi = politika;
+    b.ganimet_payi = ganimet;
+    b.talim = talim;
+    b.moral = moral;
+    s.ulke.donem = undefined as never;
+    return { s, b };
+  }
+
+  it("moral.gelecek ve talim.gelecek yıl işlemenin gerçek değişimiyle aynıdır", () => {
+    for (const [politika, ganimet] of [["hafif", "az"], ["orta", "dengeli"], ["agir", "comert"]] as const) {
+      const { s, b } = sabitOrdu(politika, ganimet);
+      const v = birlikGorunumuHesapla(s, bg(s));
+      const moral0 = b.moral;
+      const talim0 = b.talim;
+      birlikYilIsle(s, bg(s));
+      expect(v.moral.gelecek).toBeCloseTo(b.moral - moral0, 1);
+      expect(v.talim.gelecek).toBeCloseTo(b.talim - talim0, 1);
+    }
+  });
+
+  it("moralı/talimi etkileyen karar değişince 'gelecek' hemen değişir (ganimet payı, talim politikası)", () => {
+    const { s, b } = sabitOrdu("orta", "dengeli");
+    const g = (id: "az" | "dengeli" | "comert") => { b.ganimet_payi = id; return birlikGorunumuHesapla(s, bg(s)).moral.gelecek; };
+    const az = g("az");
+    const dengeli = g("dengeli");
+    const comert = g("comert");
+    expect(comert - dengeli).toBeCloseTo(4, 1);
+    expect(dengeli - az).toBeCloseTo(7, 1);
+    const t = (p: "hafif" | "orta" | "agir") => { b.talim_politikasi = p; return birlikGorunumuHesapla(s, bg(s)).talim.gelecek; };
+    expect(t("agir")).toBeGreaterThan(t("orta"));
+    expect(t("orta")).toBeGreaterThan(t("hafif"));
+    const m = (p: "hafif" | "orta" | "agir") => { b.talim_politikasi = p; return birlikGorunumuHesapla(s, bg(s)).moral.gelecek; };
+    expect(m("hafif")).toBeGreaterThan(m("agir")); // politikanın yıllık morali +1 / −1 / −5
+  });
+
+  it("görünüm: rütbe güç şartı ve yıllık kariyer puanı BirlikGorunumu'nda; pay/rakipler/ton yok", () => {
+    const s = asker();
+    const v = birlikGorunumuHesapla(s, bg(s));
+    expect(v.rutbe.gucSarti).toEqual({ seviye: 2, gerekli: 18, mevcut: Math.round(v.guc.toplam), karsilaniyor: v.guc.toplam >= 18 });
+    expect(v.rutbe.yillikKariyerPuani).toBeGreaterThan(0);
+    const o = v as unknown as Record<string, unknown>;
+    expect(o.pay).toBeUndefined();
+    expect(o.rakipler).toBeUndefined();
+    expect((o.politikalar as Record<string, unknown>).ton).toBeUndefined();
+    s.rutbe_seviye = 5;
+    expect(birlikGorunumuHesapla(s, bg(s)).rutbe.gucSarti).toBeNull();
+  });
+
+  it("görev rozetleri yön olarak gelir (sayı yok): Tahsilat'ta şöhret ▼ ve sertlik ▲, Komutanlık'ta ganimet", () => {
+    const v = birlikGorunumuHesapla(asker(), bg(asker()));
+    const kat = (id: string) => v.gorevler.katalog.find((g) => g.id === id)!.bonuslar;
+    expect(kat("devriye")).toEqual([{ kod: "moral", yon: 1 }]);
+    expect(kat("tahsilat")).toEqual(expect.arrayContaining([{ kod: "sohret", yon: -1 }, { kod: "sertlik", yon: 1 }, { kod: "otorite", yon: 1 }]));
+    expect(kat("komuta").some((x) => x.kod === "ganimet")).toBe(true);
+  });
+
+  it("Asker kariyer puanı eşikleri 55 / 115 / 210 / 340 (iki çağ); şöhret eşikleri aynı", () => {
+    for (const cag of ["Orta Çağ", "Sanayi Devrimi"] as const) {
+      const e = RUTBELER.Asker[cag].esikler;
+      expect(e.map((x) => x.kariyer_puani)).toEqual([55, 115, 210, 340]);
+      expect(e.map((x) => x.un)).toEqual([18, 32, 43, 70]);
+    }
+  });
+
+  it("Fatih amacı: Baş Belası yerine; toplam 6 zafer (seri sıfırlansa da kalır) + teçhizat 70; rakip amaçları Asker havuzunda yok", () => {
+    expect(amacTanimiGetir("bas_belasi")).toBeUndefined();
+    const havuz = amacHavuzu("Orta Çağ", "Asker").map((a) => a.id);
+    expect(havuz).toContain("fatih");
+    expect(havuz).not.toContain("rakip_ustunlugu");
+    const s = asker();
+    const b = birlikAl(s);
+    s.ordu_techizat_seviyesi = 80;
+    const fatih = amacTanimiGetir("fatih")!;
+    expect(fatih.kosul(s, 0)).toBe(false);
+    for (let i = 0; i < 5; i++) zaferSerisiIsle(b, "haydut", true);
+    zaferSerisiIsle(b, "haydut", false); // seri sıfırlanır, toplam kalır
+    expect(b.zafer_serisi!.haydut).toBe(0);
+    expect(AMAC_ILERLEME.fatih.metrik(s, 0)).toBe(5);
+    expect(fatih.kosul(s, 0)).toBe(false);
+    zaferSerisiIsle(b, "sinir", true);
+    expect(AMAC_ILERLEME.fatih.metrik(s, 0)).toBe(6);
+    expect(fatih.kosul(s, 0)).toBe(true);
+    s.ordu_techizat_seviyesi = 50;
+    expect(fatih.kosul(s, 0)).toBe(false);
+    // eski kayıt: sayaç yok
+    delete b.zafer_toplam;
+    expect(AMAC_ILERLEME.fatih.metrik(s, 0)).toBe(0);
+  });
+
+  it("Asker'de 'Rakibe darbe' şehir isteği yok", async () => {
+    const { yonetimDurumGetir } = await import("../src/game/gameEngine");
+    const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(st.id, "Asker");
+    const d = await yonetimDurumGetir(st.id);
+    const ids = JSON.stringify(d);
+    expect(ids).not.toContain("rakibe_darbe");
   });
 });

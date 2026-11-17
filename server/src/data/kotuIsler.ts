@@ -201,7 +201,6 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     meslekler: ["Asker"],
     calisanIsi: true,
     cooldownYil: 6,
-    rakipYenilt: true,
     basarili: { un: 6, musteri: 18, ahlak: -16, suc_sinifi: "orta", kariyer_puani: 4 },
     basarisiz: { saglik: -25, un: -4, suc_sinifi: "buyuk", olum_sansi: 14 },
   },
@@ -250,7 +249,7 @@ export const KOTU_IS_ADLARI: Record<string, string> = {
   hammadde_topla: "Hammaddeyi Kapat",
   lonca_manipule: "Lonca Kararını Çarpıt",
   kaos_cikar: "Kaos Çıkar, Koruma Sat",
-  kaza_duello: "Kaza Süsü Verilmiş Düello",
+  kaza_duello: "Düşman Komutanıyla Düello",
   kervan_baskini: "Kervan Baskını",
   ganimeti_sakla: "Ganimeti Sakla",
 };

@@ -1,6 +1,5 @@
 import { secimUygula } from "../src/game/gameEngine";
 import type { CharacterState, TepkiSonucu } from "../src/types";
-import { askerGucleri } from "../src/data/pazar";
 
 type SecimSonucu = Exclude<Awaited<ReturnType<typeof secimUygula>>, TepkiSonucu>;
 
@@ -22,14 +21,13 @@ export async function secimUygulaVeCoz(id: string, secenekIndex: number): Promis
 }
 
 /**
- * Testlerde oyuncunun pazar payını doğrudan kurar. Tüccar/Zanaatkâr/Din Adamı'nda pay `meslek_musteri / pazar_musteri`;
- * Asker'de askerî güce bağlıdır (güç / (güç + rakipler + diğer ordular)), bu yüzden önbellekteki `birlik.guc` ayarlanır.
+ * Testlerde oyuncunun pazar payını doğrudan kurar. Tüccar/Zanaatkâr/Din Adamı'nda pay `meslek_musteri / pazar_musteri`.
+ * Asker'de pazar payı yoktur (v67 Madde 7): rütbe askerî güce bağlıdır; bu yüzden `pay >= 0,1` tüm rütbe güç şartlarını karşılayan
+ * bir güç (1000), daha azı şartı karşılamayan çok düşük bir güç (1) yazar.
  */
 export function payiAyarla(state: CharacterState, pay: number): void {
   if (state.meslek === "Asker" && state.isletme?.birlik) {
-    const g = askerGucleri(state);
-    const digerleri = g.rakip + g.diger;
-    state.isletme.birlik.guc = pay >= 1 ? digerleri * 1000 : (pay * digerleri) / (1 - pay);
+    state.isletme.birlik.guc = pay >= 0.1 ? 1000 : 1;
     return;
   }
   state.meslek_musteri = state.pazar_musteri * pay;

@@ -10,7 +10,7 @@ import {
   TEZGAH_URETIM_KADEME,
   TEZGAH_FIYAT_PRIMI,
 } from "./isletme";
-import { DEVSIRME_BUROSU_ER, KISLA_BAKIM, KISLA_ER_LIMITI, REVIR_KAYIP_KADEME } from "../data/birlik";
+import { DEVSIRME_BUROSU_ER, KISLA_BAKIM, KISLA_ER_LIMITI, REVIR_KAYIP_KADEME, TALIM_ALANI_TAVAN, TALIM_ALANI_YILLIK } from "../data/birlik";
 import { ASEVI_AHLAK_YILLIK, ASEVI_INANAN_YILLIK, ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
 
 /** 12.5 → "12,5" (tr) / "12.5" (en); tam sayılar ondalıksız. */
@@ -76,6 +76,14 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
     case "devsirme": {
       const i = Math.min(k, DEVSIRME_BUROSU_ER.length - 1);
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : d === "tr" ? `Yıllık +${DEVSIRME_BUROSU_ER[i]} er` : `+${DEVSIRME_BUROSU_ER[i]} soldiers/yr`));
+    }
+    case "talim": {
+      const i = Math.min(k, TALIM_ALANI_TAVAN.length - 1);
+      return dili((d) =>
+        i === 0
+          ? d === "tr" ? `Talim sınırı ${TALIM_ALANI_TAVAN[0]}` : `Drill ceiling ${TALIM_ALANI_TAVAN[0]}`
+          : d === "tr" ? `Yıllık talim +${TALIM_ALANI_YILLIK[i]} · talim sınırı ${TALIM_ALANI_TAVAN[i]}` : `Drill +${TALIM_ALANI_YILLIK[i]}/yr · drill ceiling ${TALIM_ALANI_TAVAN[i]}`
+      );
     }
     case "yardim":
       return dili((d) => {

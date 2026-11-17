@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { createCharacter, mesleğiSec, yonetimYillikUygula } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, yonetimYillikUygula, yonetimTalebiUret, enflasyonCarpani } from "../src/game/stateManager";
 import {
   yeniOyun,
   mesleğiAta,
@@ -408,27 +408,60 @@ describe("yonetimYillikUygula", () => {
     expect(state.patron_iliski).toBeLessThan(60);
   });
 
-  it("süresi dolan talep ilişki + mutluluk cezası verir ve temizlenir", () => {
+  it("bekleyen talep zorunlu pencere: süresi geçse de silinmez, görmezden gelme cezası yoktur", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yil = 1200;
     state.yonetim_iliski = 50;
     state.mutluluk = 60;
     state.yonetim_talep_sonraki_yil = 1300; // aynı çağrıda yeni talep üretilmesin
-    state.yonetim_talep = {
+    const talep = {
       id: "t3",
-      kimden: "yonetici",
+      kimden: "yonetici" as const,
       kimAdi: "Vali",
-      tur: "sadakat",
+      tur: "sadakat" as const,
       tutar: 0,
       kalem: "bağlılık yemini",
       sonYil: 1198,
     };
+    state.yonetim_talep = { ...talep };
     const not = yonetimYillikUygula(state, 1);
-    expect(state.yonetim_talep).toBeNull();
-    expect(state.yonetim_iliski).toBeLessThan(50);
-    expect(state.mutluluk).toBeLessThan(60);
-    expect(not).toBeTruthy();
+    expect(state.yonetim_talep).toEqual(talep);
+    expect(state.mutluluk).toBe(60);
+    // yalnızca pasif soğuma işler (talep cezası yok)
+    expect(state.yonetim_iliski).toBeGreaterThan(48);
+    expect(not).toBeNull();
+  });
+
+  it("Asker talebi yalnızca 4 askere uygun metinden gelir (2 bağış + 2 sadakat)", () => {
+    const izinli = [
+      "şehir surlarının onarımı için katkı",
+      "gazi ve şehit ailelerine yardım sandığına bağış",
+      "şehre sadakat yemini",
+      "yöneticinin emrinde sefere çıkma sözü",
+    ];
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Asker");
+    const gorulen = new Set<string>();
+    for (let i = 0; i < 200; i++) {
+      const t = yonetimTalebiUret(state);
+      expect(["bagis", "sadakat"]).toContain(t.tur);
+      expect(izinli).toContain(t.kalem);
+      gorulen.add(t.kalem);
+    }
+    expect(gorulen.size).toBe(4);
+  });
+
+  it("Asker bağış tutarı 14 + servet payı (en çok +30) aralığındadır", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Asker");
+    const enf = enflasyonCarpani(state);
+    for (let i = 0; i < 200; i++) {
+      const t = yonetimTalebiUret(state);
+      if (t.tur !== "bagis") continue;
+      expect(t.tutar).toBeGreaterThanOrEqual(Math.floor(14 * enf) - 1);
+      expect(t.tutar).toBeLessThanOrEqual(Math.ceil((45 + 30) * enf) + 1);
+    }
   });
 
   it("uygun koşulda yeni talep üretebilir", () => {

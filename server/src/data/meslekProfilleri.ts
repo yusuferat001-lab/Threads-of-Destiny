@@ -35,7 +35,7 @@ export interface HatTanimi {
 }
 
 /** Yatırımın motor etkisi: id'ye değil bu türe bakılır. */
-export type YatirimEtkisi = "depo" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim" | "kisla" | "revir" | "devsirme";
+export type YatirimEtkisi = "depo" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim" | "kisla" | "revir" | "devsirme" | "talim";
 
 export interface YatirimTanimi {
   id: string;
@@ -148,8 +148,9 @@ const FIYAT_KAPASITE = [20, 45, 90, 160]; // depo ve ibadethane
 const FIYAT_KISLA = [30, 90, 220, 500]; // kışla (tek ordu limiti)
 const FIYAT_OKUL = [20, 30, 45, 65];
 const FIYAT_ASEVI = [8, 15, 24, 36];
-const FIYAT_REVIR = [13, 22, 34, 50]; // Asker revir (≈1 yıllık net'ten başlar)
-const FIYAT_DEVSIRME = [20, 35, 52, 75];
+const FIYAT_REVIR = [16, 26, 41, 60]; // v67: ×1,2 // Asker revir (≈1 yıllık net'ten başlar)
+const FIYAT_DEVSIRME = [24, 42, 62, 90]; // v67: ×1,2
+const FIYAT_TALIM = [18, 32, 50, 75]; // v67 Madde 6: Talim Alanı
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
   simge: "🏚️",
@@ -313,6 +314,17 @@ const ASKER_YATIRIMLAR: YatirimTanimi[] = [
     },
     etki: "devsirme",
     fiyatlar: FIYAT_DEVSIRME,
+  },
+  {
+    id: "talim",
+    simge: "🎯",
+    ad: { tr: "Talim Alanı", en: "Drill Ground" },
+    aciklama: {
+      tr: "Her kademe yıllık talimi artırır ve ordunun ulaşabileceği talim sınırını yükseltir.",
+      en: "Each tier speeds up yearly drill and raises the ceiling of how well drilled the army can become.",
+    },
+    etki: "talim",
+    fiyatlar: FIYAT_TALIM,
   },
 ];
 
