@@ -261,3 +261,10 @@ Her kademe **hem** `kariyer_puani` **hem** mesleğe özgü statı ister (`esikKa
 Zanaatkâr'ın giriş-zorlama olayı (`sehir_yonetim_zanaatkar_baslangic`, `genel.ts`) 2026-09 sonunda eklendi — `gameEngine.ts`'teki `if` zincirine bir `"Zanaatkâr"` kolu bağlandı, artık diğer 3 meslekle tam simetrik (§11 kural 4).
 
 **Maaş etkisi:** Şehir yönetimine **bir kez girmek** maaşa kalıcı, **SABİT +%3** katar (`sehirYonetimMaasCarpani = seviye>=1 ? 1.03 : 1`). Eskiden `1 + seviye*0.08` (tavansız, seviyeyle büyüyen), sonra sabit +%8 idi; artık +%3 ve seviye/unvan **yalnız prestij içindir**, maaşa ek katkısı yoktur.
+
+
+## v67 notları (Asker formülleri; ayrıntı: 15)
+- **Rütbe/kariyer (Asker):** kariyer puanı eşikleri **55/115/210/340** (Orta Çağ ve Sanayi), şöhret 18/32/43/70, askerî güç 18/70/150/340 (`RUTBE_GUC_ESIGI_ASKER`); terfi üçü birden. Yıllık Asker kariyer puanı `askerKariyerPuaniUygula` (pazardan bağımsız): `min(2,5, güç ÷ düşman referans gücü(yaş)) × 1,1`; kıdem +3/yıl ve kategori başarısı +3 diğer mesleklerle aynı.
+- **Yıl sonu talim/moral:** `birlikYil.ts` `talimYilSonu` ((politika + Talim Alanı artışı) × teçhizat katsayısı − 2, limite kırpılı) ve `moralYilSonu` (ganimet payı, talim politikası, doktrin, görev, teçhizat, revir, dönem, savaş emri/yağma, pasif düşüş yalnız moral için); önizleme `gelecekYilDegisimi` aynı fonksiyonları kullanır.
+- **Görev gelir verimi:** `gorevErOrani(er)` = 1 (er ≤ 100), 500 erde 0,75, arası doğrusal.
+- **Düşman gücü, zafer serisi, güç formülü, seferberlik, ganimet payı:** `15` §54 "v67 — Madde 2–6".

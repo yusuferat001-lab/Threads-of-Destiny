@@ -1,8 +1,18 @@
 > **KAZANÇ = ELE KALAN (DEĞİŞMEZ KURAL):** "Kazanç" her zaman oyuncunun ELİNE KALAN yıllık tutardır = meslek neti (ordu/cemaat/atölye/dükkân neti, çalışan/SUBAY maaşları düşülmüş) − YAŞAM − KİRA − evcil hayvan − kredi taksidi + mülk geliri. Kazançtan vergi/yüzde/eşik/tavan denince bu SON tutar kastedilir; meslek netinden (yaşam ve subay düşülmeden) ASLA hesaplanmaz.
 
-# §54 — Asker denge turu özeti (v50–v66): ne var, ne yok (2026-11)
+# §54 — Asker denge turu özeti (v50–v69, **v67 Madde 1–7 turu dahil**): ne var, ne yok (2026-11)
 
 Bu dosya, Asker üzerinde yapılan tüm ayar konuşmalarının **tek yerde toplanmış durumudur**. Ayrıntılı sürüm notları `13-garanti-sink-tema.md` §45 v50–v66'dadır; sayı çelişirse **kodu** (`server/src/data/birlik.ts`) ve daha yüksek sürümü esas al.
+
+> **GÜNCEL DURUM ÖZETİ (v67 Madde 1–7, `main`'de; çelişirse bu kutu + dosyanın EN ALTINDAKİ "v67 — Madde N" bölümleri geçerlidir):**
+> - **Ekonomi:** er masrafı 0,23 · erzak 0,13 · devlet er başı ödeme 0,15 · sold 8,5 · savaşta er başı ödeme **×2** · kıtlık ordu morali −1,5 · bolluk ordu morali 0 · kışla bakımı 3/8/22/60/150 · yıllık sabit +1 er YOK · Devşirme Bürosu/Revir fiyatı ×1,2 (v69'un "×1 / −1 / +1,5" değerleri geçersiz; mekanikleri — sold/erzak dönem çarpanı, görev dönem kısıntısı ≤%12, yerel ödeme adı — geçerli).
+> - **Görev:** asgari güç 10/40/80/145/250; er başı 0,55–0,70 (×1,05); gelir er bazlı, verim ilk 100 er 1,0 → 500 erde 0,75 (doğrusal).
+> - **Moral/talim:** güce etki +%20 (100) / −%15 (0), nötr 50; talim ücretsiz, üst limit **Talim Alanı** (yok 70 · 75/80/85/90), yıllık +1…+4; yeni er giriş talimi 15; komuta tonu YOK; moral/talimde "gelecek yıl" değişimi `gelecekYilDegisimi`.
+> - **Seferberlik:** Gazi Çağrısı %8 er · talim 55 · moral −7 · firar %5; Tüm Erkekler %20 · talim 10 · moral −15 · firar %8; ordunun mevcut teçhizatıyla gelir; kalıcı gazi kadrosu YOK.
+> - **Düşman:** `(taban(yaş,tür) + 0,30 × oyuncu gücü) × tür çarpanı (0,9/1,1/1,3) × U(0,95–1,05) × zafer serisi (×1,2 @2, ×1,5 @4+)`; 16 çatışma senaryosu (arazi, düşman birliği).
+> - **Pazar:** Asker'de pazar payı, pazar rakipleri, `pazar_musteri` (=0) ve `rakipler` YOK; rütbe = kariyer puanı **55/115/210/340** + şöhret 18/32/43/70 + askerî güç 18/70/150/340.
+> - **Arayüz:** Ordu sayfası = "Erin: x / limit", Moral·Talim·Güç kartları, "!" bilgi notları (`BilgiNotu`), görev rozetleri ve tıklanınca asgari güç hesabı.
+> - **Sıradaki (yapılmadı):** Madde 8 bütçe iki sütun/Kazanç etiketi/ganimet brüt-pay-net · Madde 9 mobil Mülkler sekmesi · Madde 10 ekstra vergi tutarsızlığı.
 
 ## Oyunda olanlar (güncel)
 | Alan | Durum |

@@ -45,8 +45,8 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 | POST `/:id/kotu-is` | `{tur, hedefRakipAd?, ajanId?}` | Bir karanlık iş çevirir — zarlı, turu tüketmez, iş başına bekleme süresi; başarısızlıkta hapis/ölüm riski (§13, §43). `hedefRakipAd` = hedef rakip (§34.2); `ajanId` = işi tutulan bir ajana ver, sonuç bir sonraki turda çözülür (§43 Faz 2) |
 | GET `/:id/ajanlar` | – | Tutulabilir ajan rolleri (ücret, maaş aralığı) + mevcut ajanlar ve görevleri (§43 Faz 2) |
 | POST `/:id/ajan/tut` | `{rol}` | Hırsız/Kabadayı/Casus/Suikastçı tutar — peşin ücret, sonra yıllık maaş ekip giderinden; rol başına bir ajan (§43 Faz 2). Turu tüketmez |
-| GET `/:id/pazar` | – | Meslek pazarı özeti (§43): `{aktif, pazarAdi, gucAdi, simge, oyuncuGucu, pazarPayi, rakipler[{ad,guc,pay,husumet}], digerPay, maasEtkisi, yillikKariyerPuani, rutbeSarti, yeniRakipKalanYil}`. Turu tüketmez |
-| GET `/:id/rakipler` | – | İsimli rakiplerin listesi (`{ad,meslek,guc,husumet,yenildi}`) — Görevin ekranı + karanlık iş hedef seçimi (§34.2) |
+| GET `/:id/pazar` | – | Meslek pazarı özeti (§43): `{aktif, pazarAdi, gucAdi, simge, oyuncuGucu, pazarPayi, rakipler[{ad,guc,pay,husumet}], digerPay, maasEtkisi, yillikKariyerPuani, rutbeSarti, yeniRakipKalanYil}`. Turu tüketmez | **(v67 Madde 7: Asker'de `aktif:false`; Asker'in rütbe güç şartı ve yıllık kariyer puanı `GET /:id/isletme` → `birlik.rutbe` içinde döner.)**
+| GET `/:id/rakipler` | – | İsimli rakiplerin listesi (`{ad,meslek,guc,husumet,yenildi}`) — Görevin ekranı + karanlık iş hedef seçimi (§34.2) | **(v67 Madde 7: Asker'de boş liste — pazar rakibi yok.)**
 | GET `/:id/amaclar` | – | 3 kişisel hayat amacının durumu: `{amaclar: AmacKarti[], carpan}` — sağ panel canlı ilerleme kartı + ölüm ekranı (§18). Turu tüketmez |
 | GET/POST `/:id/salgin-korunma` | POST: `{kademe:1\|2}` | Kalıcı salgından korunma yatırımı: veba gelmeden önce bir sonraki dalganın taban korunmasını yükselt (§34.4). Turu tüketmez |
 | GET `/:id/kredi` | – | Tefeci: aktif kredi + `maksTutar`/`minTutar` + havuzdan seçilmiş 2 `teklifler` (§34.5, v8.3) |
@@ -97,3 +97,10 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 | GET `/api/istatistik/panel?key=…` | – | Aynı anahtar; özeti tek-dosya bağımlılıksız HTML panosu olarak render eder (sunucuda; inline script yok) |
 
 Tüm endpoint'ler `{hata: string}` + uygun HTTP status ile hata döner. `POST /:id/kotu-is`, `/mulk`, `/konut`, `/yasam`, `/ekip/.../cikar`, `/zar`, `/uc-kagitci`, `/bilek-guresi`, `/sosyallesme`, `/magaza/satin-al`, `/envanter/:esyaId/kullan` **bir tur harcamaz** — oyuncu istediği an tetikleyebilir; sadece `POST /:id/choice` zamanı ilerletir (sosyalleşmede: mekâna "gitmek" turu tüketmez, ama o mekânda kuyruğa alınan olayı bir sonraki `/scenario`+`/choice` ile çözmek normal turu tüketir).
+
+
+## v67 notları (Asker API değişiklikleri)
+- `POST /:id/isletme/karar` Asker gövdesi `{gorevler?, ganimet_payi?, talim?}`; **`ton` (komuta tonu) kaldırıldı**, gönderilirse yok sayılır.
+- `GET /:id/isletme` → `birlik` (BirlikGorunumu) yeni alanları: `rutbe {gucSarti, yillikKariyerPuani}`, `moral.gelecek`, `talim.gelecek/limit/alanKademe`, `gorevler.katalog[].bonuslar[{kod,yon}]`; **kalkanlar:** `pay`, `rakipler`, `politikalar.ton`, politika `tavan`.
+- Yeni Asker yatırımı `talim` (Talim Alanı) `POST /:id/isletme/yatirim` ile alınır (diğer yatırımlarla aynı uç).
+- Ayrıntı: `15-asker-denge-ozeti-v50-v66.md` "v67 — Madde 6/7".

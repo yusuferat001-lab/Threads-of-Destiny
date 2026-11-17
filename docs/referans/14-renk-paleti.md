@@ -38,3 +38,7 @@ Yüzey ve kol renkleri `renk-paleti.css`'te token (`§53 Faz 10`, `13-garanti-si
 - Kahveli latte seçenek yüzeyi: `--c-lk-1 #dcc7a4` → `--c-lk-2 #cdb38b`, yazı `--c-lk-yazi #2c1f15`, soluk `--c-lk-soluk #5e4733`, kenar `--c-lk-kenar #6e4f35`, çip zemini `--c-lk-cip #f4ead6` (yeşil/kırmızı sayılar bu açık pill üstünde okunur).
 - Kol renkleri (madalyon halkası + sol şerit; yazıda `-koyu` değer): Evrensel `--c-kol-evrensel #5f86c9` / `#1f4a8f`, Sadık ve Kahraman `--c-kol-sadik #d1a843` / `#7a5a12`, ⚡ Acımasız/Fanatik `--c-kol-sert #d8483a` / `#8a2a22`. Bunlar sayı rengi DEĞİL, yalnız kol kimliği; sayılar yine yeşil artı / kırmızı eksi / eflatun şart.
 
+
+
+## v67 Madde 7 (Ordu sayfası)
+Moral/Talim/Güç kartlarında sayı **lacivert** (durum), "Gelecek yıl" değişimi ve "güçte %x" **yeşil/kırmızı** (artı/eksi), er/limit satırında limit **eflatun**; moral çubuğu <30 kırmızı, ≥70 yeşil, aksi lacivert (50 nötr çizgisi). Görev kartı: "en az N askerî güç" eflatun; rozetler artı yeşil / eksi kırmızı (sertlik artışı ve şöhret düşüşü kırmızı); açılır hesapta gereken eflatun, şimdiki güç lacivert, ✓ yeşil, "Eksik" kırmızı.
