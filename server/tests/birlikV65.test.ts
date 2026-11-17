@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createCharacter, mesleğiSec, isletmeBaglami } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, isletmeBaglami, dunyaFinansEtkileri } from "../src/game/stateManager";
 import { birlikAl, birlikHesapla } from "../src/game/birlik";
 import { gucHesapla } from "../src/game/birlik";
 import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
 import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
 import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
-import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU } from "../src/data/birlik";
+import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
 
@@ -249,5 +249,61 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     b.birlik_turler = ["suvari"];
     const e1 = birlikHesapla(s, bg(s)).gorevGeliri;
     expect(e1 / e0).toBeCloseTo(1, 3); // eskortta bonus yok
+  });
+});
+
+describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", () => {
+  function nötrAsker() {
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    s.yas = 30;
+    mesleğiSec(s, "Asker");
+    s.ulke.savasta = false;
+    s.veba = undefined as never;
+    ogretileriTamamla(s);
+    s.isletme!.yatirimlar.kisla = 3;
+    s.meslek_musteri = 200;
+    birlikAl(s).kalite = { dusuk: 200, orta: 0, yuksek: 0 };
+    return s;
+  }
+  const donemKur = (s: ReturnType<typeof nötrAsker>, tur: "bolluk" | "durgunluk" | "kitlik", maas: number, temelFiyat: number) => {
+    s.ulke.donem = { ...s.ulke.donem!, tur, etki: { ...s.ulke.donem!.etki, maas, temelFiyat } };
+  };
+
+  it("ödeme dönemin maaş etkisiyle değişir; erzak sabit 0,9–1,1 bandında kalır", () => {
+    const a = nötrAsker(); donemKur(a, "durgunluk", 1, 1);
+    const b = nötrAsker(); donemKur(b, "kitlik", 0.9, 1.25);
+    const c = nötrAsker(); donemKur(c, "bolluk", 1.08, 0.93);
+    const ha = birlikHesapla(a, isletmeBaglami(a));
+    const hb = birlikHesapla(b, isletmeBaglami(b));
+    const hc = birlikHesapla(c, isletmeBaglami(c));
+    expect(hb.sold / ha.sold).toBeCloseTo(0.9, 2);
+    expect(hc.sold / ha.sold).toBeCloseTo(1.08, 2);
+    expect(hb.erzak / ha.erzak).toBeCloseTo(1.1, 2); // zarlanan gıda fiyatı değil, sabit tablo (en çok +%10)
+    expect(hc.erzak / ha.erzak).toBeCloseTo(0.9, 2);
+  });
+
+  it("hiçbir görev, hiçbir dönemde %12'den fazla kısılmaz; üç dönem ortalaması 1", () => {
+    for (const t of Object.values(GOREV_DONEM_CARPANI)) {
+      const v = [t!.bolluk ?? 1, t!.durgunluk ?? 1, t!.kitlik ?? 1];
+      for (const x of v) expect(x).toBeGreaterThanOrEqual(0.88);
+      expect((v[0] + v[1] + v[2]) / 3).toBeCloseTo(1, 2);
+    }
+  });
+
+  it("savaşta er başı ödeme ×2 (v67 Madde 3); kıtlık morali yılda −1,5; bolluk morali 0", () => {
+    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
+    expect(MORAL_KITLIK_YILLIK).toBe(-1.5);
+    expect(MORAL_BOLLUK_YILLIK).toBe(0);
+  });
+
+  it("ana ekran dünya satırı Asker için maaş yerine sold/erzak/görev geliri yazar", () => {
+    const s = nötrAsker(); donemKur(s, "kitlik", 0.9, 1.25);
+    const metin = dunyaFinansEtkileri(s)[0].metin;
+    expect(metin).not.toMatch(/maaş/);
+    expect(metin).toMatch(/Soldée −%10/); // Fransa (Orta Çağ) ödeme adı; "sold" kelimesi yazılmaz
+    expect(metin).not.toMatch(/(^|[\s:·])sold(\s|$)/i);
+    expect(metin).toMatch(/erzak \+%10/);
+    expect(metin).toMatch(/moral −1,5\/yıl/);
+    expect(metin).toMatch(/moral/);
   });
 });

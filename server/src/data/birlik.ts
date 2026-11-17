@@ -740,10 +740,10 @@ export const GOREV_SLOTLARI = [1, 1, 1, 1, 1];
 /** Görev × dönem gelir çarpanı (anahtar yoksa 1). */
 type DonemAnahtari = "bolluk" | "durgunluk" | "kitlik" | "veba";
 export const GOREV_DONEM_CARPANI: Partial<Record<GorevTuru, Partial<Record<DonemAnahtari, number>>>> = {
-  // Her görevin üç dönem ortalaması 1,00'dır; görevin `erBasi`'si doğrudan 3 dönem ortalamasıdır.
+  // Her görevin üç dönem ortalaması 1,00'dır; hiçbir dönemde görev geliri %12'den fazla kısılmaz (alt sınır 0,88, v69); görevin `erBasi`'si doğrudan 3 dönem ortalamasıdır.
   devriye: { bolluk: 1.1, durgunluk: 0.9, kitlik: 1 },
-  eskort: { bolluk: 1.364, durgunluk: 0.636, kitlik: 1 },
-  tahsilat: { bolluk: 1.3, durgunluk: 1, kitlik: 0.7 },
+  eskort: { bolluk: 1.12, durgunluk: 0.88, kitlik: 1 },
+  tahsilat: { bolluk: 1.12, durgunluk: 1, kitlik: 0.88 },
   garnizon: { bolluk: 0.9, durgunluk: 1.1, kitlik: 1 },
   komuta: { bolluk: 1.1, durgunluk: 0.95, kitlik: 0.95 },
 };
@@ -1123,7 +1123,7 @@ export const DEVSIRME_BUROSU_ER = [0, 1, 2, 3, 4];
 export const KARAKOL_KORUMA = [0, 0.15, 0.3, 0.45, 0.6];
 
 // ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
-/** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım ×SAVAS_ER_BASI_CARPANI. */
+/** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım barıştakiyle aynı (v69: savaş zammı kalktı). */
 /** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,7 / ölçülü 0,5 / yumuşak 0,3); yalnız savaşın karar savaşından önceki YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %75/55/35 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
 export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.0053;

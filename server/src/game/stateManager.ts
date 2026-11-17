@@ -1,4 +1,4 @@
-import { MADALYA_ADLARI } from "../data/birlik";
+import { MADALYA_ADLARI, maasAdi, VEBA_GOREV_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../data/birlik";
 import { randomUUID } from "crypto";
 import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, UlkeDurumu, DonemDurumu, DonemTuru, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi, EvcilHayvan, DunyaYaklasan } from "../types";
 import { T, K, ikiDilT } from "../i18n";
@@ -52,7 +52,7 @@ import {
   otomatikDepoDoldur,
   STOK_EKSI_NAKIT_LIMITI,
 } from "./isletme";
-import { hazinePayiKazanctan } from "./birlik";
+import { hazinePayiKazanctan, soldDonemCarpani, erzakDonemCarpani, aktifGorevDonemCarpani } from "./birlik";
 import { kesifSavasHaberi, savasZariDusmani } from "./birlikYil";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 import { BASLANGIC_ER, ASKER_KARIYER_PUANI_KATSAYISI, ASKER_KARIYER_GUC_TAVANI, dusmanReferansGucuYas } from "../data/birlik";
@@ -3901,12 +3901,29 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     return dil === "en" ? `${isaret}${Math.abs(y)}%` : `${isaret}%${Math.abs(y)}`;
   };
 
+  // Asker'in "maaşı" yok: devlet SOLD öder, erzak/görev geliri dönemden etkilenir (birlik.ts ile aynı çarpanlar).
+  const asker = state.meslek === "Asker" && !!state.isletme?.birlik;
+  // Ödemenin adı çağ+ülkeye göre (Ulûfe, Löhnung, Roga…); bütçedeki ad ile aynı, savaşta da değişmez.
+  const odemeAdi = maasAdi(state.cag, state.bolge)[dil === "en" ? "en" : "tr"];
+
   const donem = state.ulke.donem;
   if (donem) {
-    const parcalar = [
-      T(dil, "maaş {0}", [isaretli(donem.etki.maas)]),
-      T(dil, "yaşam gideri {0}", [isaretli(donem.etki.yasamGideri)]),
-    ];
+    const parcalar = asker
+      ? [
+          `${odemeAdi} ${isaretli(soldDonemCarpani(state))}`,
+          T(dil, "erzak {0}", [isaretli(erzakDonemCarpani(state))]),
+        ]
+      : [
+          T(dil, "maaş {0}", [isaretli(donem.etki.maas)]),
+          T(dil, "yaşam gideri {0}", [isaretli(donem.etki.yasamGideri)]),
+        ];
+    if (asker) {
+      const gc = aktifGorevDonemCarpani(state);
+      if (gc !== null) parcalar.push(T(dil, "görev geliri {0}", [isaretli(gc)]));
+      if (donem.tur === "kitlik") parcalar.push(T(dil, "moral {0}/yıl", [String(MORAL_KITLIK_YILLIK).replace("-", "−").replace(".", dil === "en" ? "." : ",")]));
+      else if (donem.tur === "bolluk") parcalar.push(T(dil, "moral +{0}/yıl", [String(MORAL_BOLLUK_YILLIK).replace(".", dil === "en" ? "." : ",")]));
+      parcalar.push(T(dil, "yaşam gideri {0}", [isaretli(donem.etki.yasamGideri)]));
+    }
     liste.push({
       ikon: DONEM_ADLARI[donem.tur].simge,
       metin: T(dil, "{0}: {1}", [T(dil, DONEM_ADLARI[donem.tur].ad), parcalar.join(" · ")]),
@@ -3918,21 +3935,35 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     const vergi = Math.round(state.buyuk_savas.vergiOrani * 100);
     liste.push({
       ikon: "⚔️",
-      metin: T(dil, "Büyük savaş ({0}): maaş {1} · yemek {2} · savaş vergisi %{3}", [
-        K(dil, state.buyuk_savas.dusman),
-        isaretli(etki?.maas ?? 0.92),
-        isaretli(state.buyuk_savas.gidaCarpani),
-        vergi,
-      ]),
+      metin: asker
+        ? T(dil, "Büyük savaş ({0}): erzak {1} · görev geliri yok · yemek {2} · savaş vergisi %{3}", [
+            K(dil, state.buyuk_savas.dusman),
+            isaretli(erzakDonemCarpani(state)),
+            isaretli(state.buyuk_savas.gidaCarpani),
+            vergi,
+          ])
+        : T(dil, "Büyük savaş ({0}): maaş {1} · yemek {2} · savaş vergisi %{3}", [
+            K(dil, state.buyuk_savas.dusman),
+            isaretli(etki?.maas ?? 0.92),
+            isaretli(state.buyuk_savas.gidaCarpani),
+            vergi,
+          ]),
     });
   } else if (state.ulke.savasta) {
-    liste.push({ ikon: "⚔️", metin: T(dil, "Savaş: maaş {0}", [isaretli(0.92)]) });
+    liste.push({
+      ikon: "⚔️",
+      metin: asker
+        ? T(dil, "Savaş: erzak {0} · görev geliri yok", [isaretli(erzakDonemCarpani(state))])
+        : T(dil, "Savaş: maaş {0}", [isaretli(0.92)]),
+    });
   }
 
   if (state.veba?.aktif) {
     liste.push({
       ikon: "☠️",
-      metin: T(dil, "Salgın: her yıl hastalık riski · işçi kıtlığı maaş {0}", [isaretli(state.veba.etki?.maas ?? state.veba.gelirCarpani)]),
+      metin: asker
+        ? T(dil, "Salgın: her yıl hastalık riski · görev geliri {0} · erzak {1}", [isaretli(VEBA_GOREV_CARPANI), isaretli(erzakDonemCarpani(state))])
+        : T(dil, "Salgın: her yıl hastalık riski · işçi kıtlığı maaş {0}", [isaretli(state.veba.etki?.maas ?? state.veba.gelirCarpani)]),
     });
   }
 

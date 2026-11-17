@@ -5,6 +5,8 @@ import { RenkliEtki } from './Renkli';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
 import { BilgiNotu } from './BilgiNotu';
+import { GucKarsilastirma, KararSatiri } from './KararKabuk';
+import { kolOlarak, useKolEtiketi } from './kararKol';
 import { isletmeUyariMetni } from './IsletmePaneli';
 import { formatPara, isaretSinifi } from '../format';
 
@@ -117,7 +119,6 @@ const M = {
   ikmalDegistir: { tr: 'İkmali değiştir (ücretsiz)', en: 'Change supply (free)' },
   yenilgi: { tr: 'yenilgi', en: 'defeat' },
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
-  sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
   erBasi: { tr: 'Er başı gelir', en: 'Income per man' },
   gorevGeliri: { tr: 'Görev kazancı', en: 'Duty earnings' },
   ganimetNet: { tr: 'Ganimet (net)', en: 'Loot (net)' },
@@ -211,34 +212,35 @@ const ETKI_ETIKET: Record<string, D> = {
   moral: { tr: 'Ordu morali', en: 'Army morale' },
   sertlik: { tr: 'Sertlik', en: 'Harshness' },
   ahlak: { tr: 'Ahlak', en: 'Morality' },
-  sold: { tr: 'Sold', en: 'Pay' },
+  sold: { tr: 'Ödeme', en: 'Pay' }, // yedek: asıl ad çağ+ülkeye göre (odemeAdi) verilir
   otorite: { tr: 'Otorite', en: 'Authority' },
   devsirme: { tr: 'Devşirme', en: 'Recruits' },
   firar: { tr: 'Firar', en: 'Desertion' },
 };
 /** Doktrin etkilerini kısa çiplere çevirir (kesirler yüzde, moral/sertlik/ahlak/otorite/devşirme düz sayı). */
-export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en'): string[] {
+export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en', odemeAdi?: string): string[] {
   const duz = new Set(['moral', 'sertlik', 'ahlak', 'otorite', 'devsirme']);
   return Object.entries(etki)
     .filter(([, v]) => v)
     .map(([k, v]) => {
-      const ad = (ETKI_ETIKET[k] ?? { tr: k, en: k })[dil];
-      const sayi = duz.has(k) ? `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 10) / 10)}` : `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 100))}%`;
+      const ad = k === 'sold' && odemeAdi ? odemeAdi : (ETKI_ETIKET[k] ?? { tr: k, en: k })[dil];
+      const sayi = duz.has(k) ? `${v > 0 ? '+' : '−'}${String(Math.abs(Math.round(v * 10) / 10)).replace('.', dil === 'tr' ? ',' : '.')}` : `${v > 0 ? '+' : '−'}${Math.abs(Math.round(v * 100))}%`;
       return `${ad} ${sayi}`;
     });
 }
 
 
 /** Doktrin etkilerini yeşil/kırmızı rozetlere çevirir (kayıp, masraf, firar, sertlik artarsa kötüdür). */
-export function DoktrinEtkiSatiri({ etki, dil }: { etki: Record<string, number>; dil: 'tr' | 'en' }) {
+/** `odemeAdi`: oyuncunun ülkesindeki ödeme adı (Ulûfe, Löhnung…); verilmezse genel 'Ödeme'. */
+export function DoktrinEtkiSatiri({ etki, dil, odemeAdi, cip }: { etki: Record<string, number>; dil: 'tr' | 'en'; odemeAdi?: string; cip?: boolean }) {
   const tersi = new Set(['kayip', 'masraf', 'firar', 'sertlik']);
-  const metinler = doktrinEtkiMetni(etki, dil);
+  const metinler = doktrinEtkiMetni(etki, dil, odemeAdi);
   const anahtarlar = Object.entries(etki).filter(([, v]) => v).map(([k, v]) => ({ k, iyi: tersi.has(k) ? v < 0 : v > 0 }));
   return (
     <>
       {metinler.map((m, i) => (
-        <span key={i} className={anahtarlar[i]?.iyi ? 's-arti' : 's-eksi'}>
-          {i > 0 ? ' · ' : ''}
+        <span key={i} className={`${anahtarlar[i]?.iyi ? 's-arti' : 's-eksi'}${cip ? ' kk-cip' : ''}`}>
+          {!cip && i > 0 ? ' · ' : ''}
           {m}
         </span>
       ))}
@@ -268,6 +270,7 @@ export function BirlikPaneli({
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
+  const kolEtiketi = useKolEtiketi();
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
   const erBirim = dil === 'en' ? '/man' : '/er';
@@ -502,16 +505,20 @@ export function BirlikPaneli({
             {b.doktrin.secilen.length === 0 ? (
               <p className="isletme-bos">{t('doktrinYok')}</p>
             ) : (
-              <div className="isletme-yatirimlar">
-                {b.doktrin.secilen.map((o) => (
-                  <div key={o.id} className="isletme-yatirim">
-                    <strong>
-                      {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
-                    </strong>
-                    <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-                    <small><DoktrinEtkiSatiri etki={o.etki} dil={dil} /></small>
-                  </div>
-                ))}
+              <div className="kk-liste kk-kucuk">
+                {b.doktrin.secilen.map((o) => {
+                  const kol = kolOlarak(o.kaynak);
+                  return (
+                    <KararSatiri
+                      key={o.id}
+                      kol={kol}
+                      simge={o.simge}
+                      dal={`${kolEtiketi(kol)} · ${dil === 'en' ? `Lv.${o.seviye}` : `Sv.${o.seviye}`}`}
+                      ad={d(o.ad)}
+                      cipler={<DoktrinEtkiSatiri etki={o.etki} dil={dil} odemeAdi={d(b.hesap.soldAdi)} cip />}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>
@@ -597,30 +604,10 @@ export function BirlikPaneli({
                 {(() => {
                   const k = b.savas.kiyas;
                   const renk = (sen: number, a: [number, number]) => (sen > a[1] ? 's-arti' : sen < a[0] ? 's-eksi' : 's-durum');
-                  const aralik = (a: [number, number]) => `${a[0]}–${a[1]}`;
                   return (
                     <>
-                      <table className="savas-kiyas-tablo">
-                        <thead>
-                          <tr>
-                            <th><BilgiNotu etiket={t('bilgi')} metin={t('kiyasNot')} /></th>
-                            <th>{t('senK')}</th>
-                            <th>{t('dusmanK')}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th>⚔️ {t('saldiriK')}</th>
-                            <td><strong className={renk(k.oyuncu.saldiri, k.dusman.savunma)}>{k.oyuncu.saldiri}</strong></td>
-                            <td>{aralik(k.dusman.saldiri)}</td>
-                          </tr>
-                          <tr>
-                            <th>🛡️ {t('savunmaK')}</th>
-                            <td><strong className={renk(k.oyuncu.savunma, k.dusman.saldiri)}>{k.oyuncu.savunma}</strong></td>
-                            <td>{aralik(k.dusman.savunma)}</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <GucKarsilastirma ben={k.oyuncu} dusman={k.dusman} dusmanTur={b.savas.dusmanTur} renk={renk} />
+                      <BilgiNotu etiket={t('bilgi')} metin={t('kiyasNot')} />
                       {k.son && (
                         <span>
                           📜 {t('sonSavas')} ({k.son.yil}): {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} <strong>{k.son.oyuncuGuc}</strong> ↔ <strong>{k.son.dusmanGuc}</strong> →{' '}

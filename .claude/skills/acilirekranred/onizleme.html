@@ -1,0 +1,298 @@
+<title>Doktrin Ekranı Son Hali</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Düzen: sayfa kabuğu temaya duyarlı; doktrin ekranı oyunun kendi paletiyle (bordo kadife + espresso panel + kahveli latte) tek görünümde çizilir. */
+:root {
+  --bg: #f4efe6;
+  --fg: #2a2018;
+  --soluk: #6b5a48;
+  --kart: #fffaf0;
+  --cizgi: #ddd0ba;
+  --vurgu: #82202a;
+  --font-baslik: "Fraunces", Georgia, serif;
+  --font-metin: "Inter", system-ui, sans-serif;
+
+  /* oyun paleti */
+  --espresso-1: #33231a;
+  --espresso-2: #1f150e;
+  --bordo-1: #82202a;
+  --bordo-2: #591219;
+  --bordo-3: #360a10;
+  --altin: #c9a24a;
+  --altin-acik: #e6c17a;
+  --yazi: #f4e0b0;
+  --yazi-soluk: #cdb98e;
+  --arti: #12893a;
+  --eksi: #cc2a1e;
+  --arti-koyu: #7fd08a;
+  --eksi-koyu: #ff8a75;
+  --lacivert: #14305c;
+  --esik: #6a3f9f;
+
+  /* YENİ: kahveleştirilmiş latte (eski latte #e9dcc3 / #d8c5a6 yerine) */
+  --lk-1: #dcc7a4;
+  --lk-2: #cdb38b;
+  --lk-3: #b99b6f;
+  --lk-yazi: #2c1f15;
+  --lk-soluk: #5e4733;
+  --lk-kenar: #6e4f35;
+  --lk-cip: #f4ead6;
+
+  /* YENİ: kol renkleri */
+  --kol-evrensel: #5f86c9;
+  --kol-evrensel-koyu: #1f4a8f;
+  --kol-sadik: #d1a843;
+  --kol-sadik-koyu: #7a5a12;
+  --kol-sert: #d8483a;
+  --kol-sert-koyu: #8a2a22;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #17110c; --fg: #f1e6d2; --soluk: #b8a68c; --kart: #221a13; --cizgi: #3a2d21; --vurgu: #e6c17a; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #17110c; --fg: #f1e6d2; --soluk: #b8a68c; --kart: #221a13; --cizgi: #3a2d21; --vurgu: #e6c17a; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-metin); line-height: 1.5; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 56px; }
+.kabuk { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
+h1, h2, h3 { font-family: var(--font-baslik); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.7rem, 4.4vw, 2.4rem); line-height: 1.15; }
+h2 { font-size: 1.3rem; }
+p { margin: 0; }
+.giris { display: flex; flex-direction: column; gap: 10px; max-width: 68ch; }
+.giris p { color: var(--soluk); }
+.etiket { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--vurgu); font-weight: 700; }
+.bolum { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.bolum > p { color: var(--soluk); font-size: 0.95rem; max-width: 72ch; }
+
+.araclar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 0.85rem; color: var(--soluk); }
+.araclar button { font: inherit; font-weight: 700; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--cizgi); background: var(--kart); color: var(--fg); cursor: pointer; }
+.araclar button[aria-pressed="true"] { background: var(--bordo-1); border-color: var(--bordo-1); color: #fff2cf; }
+.araclar button:focus-visible { outline: 3px solid var(--altin); outline-offset: 2px; }
+
+.sahne { border-radius: 14px; padding: clamp(14px, 3vw, 30px); display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 24px; align-items: start; background: radial-gradient(110% 100% at 50% 0%, var(--bordo-1) 0%, var(--bordo-2) 55%, var(--bordo-3) 100%); }
+@media (max-width: 960px) { .sahne { grid-template-columns: minmax(0, 1fr); } .telefon-kap { justify-self: center; } }
+.telefon-kap { width: min(390px, 100%); display: flex; flex-direction: column; gap: 6px; }
+.telefon-kap > small { color: #f0cfa5; font-size: 0.78rem; }
+.cerceve { container-type: inline-size; min-width: 0; }
+
+/* ================= DOKTRİN EKRANI (uygulanacak görünüm) ================= */
+.dk { background: linear-gradient(180deg, #2a1b13, #150d08); border-radius: 16px; padding: 20px 18px 18px; color: var(--yazi); text-align: left; box-shadow: 0 0 0 1.5px var(--altin), 0 0 0 5px rgba(0,0,0,0.5), 0 0 0 6.5px rgba(201,162,74,0.5), 0 22px 50px rgba(0,0,0,0.6); }
+.dk-ust { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.dk h4 { margin: 0; font-family: var(--font-baslik); font-size: 1.3rem; color: var(--altin-acik); letter-spacing: 0.02em; }
+.dk-alt { color: var(--yazi-soluk); font-size: 0.85rem; margin-top: 2px; }
+.dk-seviye { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--altin-acik); border: 1px solid rgba(230,193,122,0.5); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+
+/* rütbe yolu */
+.yol { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); position: relative; margin: 18px 0 4px; }
+.yol::before { content: ""; position: absolute; left: 10%; right: 10%; top: 23px; height: 3px; background: repeating-linear-gradient(90deg, rgba(230,193,122,0.5) 0 7px, transparent 7px 13px); }
+.dugum { display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; font-size: 0.72rem; color: var(--yazi-soluk); font-weight: 700; text-align: center; line-height: 1.2; }
+.dugum .top { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 1.3rem; background: #1b120c; box-shadow: inset 0 0 0 2px rgba(205,185,142,0.35); color: var(--yazi-soluk); }
+.dugum.bitti .top { background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.45)); box-shadow: inset 0 0 0 2px var(--kol); }
+.dugum.bitti .adim { color: var(--yazi); }
+.dugum.simdi .top { background: var(--bordo-1); box-shadow: 0 0 0 3px var(--altin), 0 0 0 8px rgba(201,162,74,0.22); color: #fff2cf; font-weight: 800; }
+.dugum.simdi { color: var(--altin-acik); }
+.dugum .adim { max-width: 11ch; }
+
+/* seçenek satırları: kahveleştirilmiş latte yüzey */
+.dk-secimler { margin-top: 16px; display: grid; gap: 10px; }
+.satir { --kol: var(--kol-evrensel); --kol-koyu: var(--kol-evrensel-koyu); display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1.5fr) 28px; align-items: center; gap: 12px; padding: 11px 14px 11px 18px; border-radius: 12px; position: relative; overflow: hidden; background: linear-gradient(180deg, var(--lk-1), var(--lk-2)); border: 1px solid var(--lk-kenar); color: var(--lk-yazi); font: inherit; text-align: left; width: 100%; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.satir::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; background: var(--kol); }
+.satir.sadik { --kol: var(--kol-sadik); --kol-koyu: var(--kol-sadik-koyu); }
+.satir.sert { --kol: var(--kol-sert); --kol-koyu: var(--kol-sert-koyu); background: linear-gradient(180deg, #dcbfa6, #cba487); border-color: #7a2a22; }
+.satir:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.4); }
+.satir:focus-visible { outline: 3px solid var(--altin-acik); outline-offset: 2px; }
+.satir.secili { box-shadow: 0 0 0 3px var(--altin-acik), 0 10px 22px rgba(0,0,0,0.5); transform: none; }
+.madalyon { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.14), rgba(0,0,0,0.55)), #25170e; box-shadow: inset 0 0 0 2.5px var(--kol); }
+.metin { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.dal { font-size: 0.68rem; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 800; color: var(--kol-koyu); }
+.ad { font-weight: 800; font-size: 1.02rem; line-height: 1.25; }
+.cipler { display: flex; flex-wrap: wrap; gap: 5px; }
+.cip { font-size: 0.8rem; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--lk-cip); padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(110,79,53,0.25); }
+.cip.i { color: var(--arti); }
+.cip.k { color: var(--eksi); }
+.tik { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--lk-kenar); display: grid; place-items: center; font-size: 0.8rem; color: transparent; }
+.satir.secili .tik { background: var(--bordo-1); border-color: var(--bordo-1); color: #fff2cf; }
+@container (max-width: 560px) {
+  .satir { grid-template-columns: 48px minmax(0, 1fr) 26px; padding-left: 16px; }
+  .satir .tik { grid-column: 3; grid-row: 1; }
+  .satir .cipler { grid-column: 1 / -1; grid-row: 2; }
+  .satir .madalyon { width: 46px; height: 46px; font-size: 1.4rem; }
+  .yol::before { top: 20px; }
+  .dugum .top { width: 40px; height: 40px; font-size: 1.1rem; }
+  .dugum { font-size: 0.64rem; }
+  .dk h4 { font-size: 1.15rem; }
+}
+
+.dk-onay { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dk-onay small { color: var(--yazi-soluk); flex: 1 1 200px; font-size: 0.8rem; }
+.dk-onay small.acimasiz { color: var(--eksi-koyu); }
+.onay-btn { font: inherit; font-weight: 800; padding: 10px 20px; border-radius: 9px; background: transparent; color: var(--altin-acik); border: 1px solid var(--altin); cursor: pointer; min-height: 44px; }
+.onay-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.onay-btn:not(:disabled) { background: linear-gradient(180deg, var(--altin-acik), var(--altin)); color: #2a1a08; border-color: #8a6a1c; }
+.onay-btn:focus-visible { outline: 3px solid var(--altin-acik); outline-offset: 2px; }
+
+/* ================= ORDU SAYFASI: doktrin listesi ================= */
+.ordu-blok { background: linear-gradient(180deg, #33231a, #1f150e); border-radius: 12px; border: 1px solid rgba(230,193,122,0.42); overflow: hidden; max-width: 520px; box-shadow: 0 10px 28px rgba(0,0,0,0.45); }
+.ordu-blok .bant { background: linear-gradient(90deg, var(--bordo-1), var(--bordo-2)); border-bottom: 2px solid var(--altin); padding: 9px 14px; color: #fff2cf; font-family: var(--font-baslik); font-weight: 700; display: flex; justify-content: space-between; }
+.ordu-blok .bant small { font-family: var(--font-metin); font-weight: 600; color: #f0cfa5; }
+.ordu-liste { padding: 12px; display: grid; gap: 8px; }
+.ordu-liste .satir { grid-template-columns: 42px minmax(0, 1fr); cursor: default; padding: 8px 12px 8px 16px; }
+.ordu-liste .satir:hover { transform: none; box-shadow: none; }
+.ordu-liste .madalyon { width: 40px; height: 40px; font-size: 1.2rem; }
+.ordu-liste .cipler { grid-column: 2; margin-top: 3px; }
+.ordu-liste .madalyon { grid-row: 1 / span 2; }
+.ordu-liste .ad { font-size: 0.95rem; }
+.sv { font-size: 0.68rem; color: var(--lk-soluk); font-weight: 800; margin-left: 4px; }
+
+/* ================= belirteçler ================= */
+.renkler { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.renk { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 10px; overflow: hidden; font-size: 0.8rem; }
+.renk i { display: block; height: 44px; }
+.renk span { display: block; padding: 6px 9px 8px; color: var(--soluk); }
+.renk b { display: block; color: var(--fg); font-size: 0.82rem; }
+.liste { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 12px; padding: 16px 20px; }
+.liste ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 6px; font-size: 0.93rem; }
+.liste code { font-size: 0.82rem; background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;600;800&display=swap">
+
+<div class="kabuk">
+  <header class="giris">
+    <span class="etiket">Kader Çarkı · Asker</span>
+    <h1>Doktrin ekranı, son hali</h1>
+    <p>B'nin bordo kadife sahnesi ve renkli madalyonları ile C'nin rütbe yolu ve satır seçimi birleşti. Seçenek satırları eski krem yerine biraz kahveye çekilmiş latte üzerinde. Soldaki masaüstü, sağdaki telefon görünümü. Satırlara tıklayıp seçebilir, yolu değiştirebilirsin.</p>
+  </header>
+
+  <section class="bolum">
+    <div class="araclar" role="group" aria-label="Yol seçimi">
+      <span>Karakterin yolu:</span>
+      <button type="button" id="yol-sadik" aria-pressed="true">Sadık</button>
+      <button type="button" id="yol-sert" aria-pressed="false">Sert (⚡ acımasız)</button>
+    </div>
+    <div class="sahne">
+      <div class="cerceve" id="masaustu"></div>
+      <div class="telefon-kap"><small>Telefon (390px)</small><div class="cerceve" id="telefon"></div></div>
+    </div>
+  </section>
+
+  <section class="bolum">
+    <h2>Ordu sayfasında aynı dil</h2>
+    <p>Seçilen doktrinler Ordu sayfasında da aynı madalyon, kol rengi ve çiplerle listelenir. Soldaki renkli çizgi kolu gösterir.</p>
+    <div class="ordu-blok">
+      <div class="bant"><span>Doktrin</span><small>3 / 5 seçildi</small></div>
+      <div class="ordu-liste" id="ordu-liste"></div>
+    </div>
+  </section>
+
+  <section class="bolum">
+    <h2>Eklenecek renkler</h2>
+    <p>Yalnız bu ekranda kullanılır; yeşil/kırmızı sayı renkleri ve eflatun eşik kuralı aynen kalır.</p>
+    <div class="renkler">
+      <div class="renk"><i style="background:#dcc7a4"></i><span><b>Kahveli latte 1</b>#dcc7a4 · satır üstü</span></div>
+      <div class="renk"><i style="background:#cdb38b"></i><span><b>Kahveli latte 2</b>#cdb38b · satır altı</span></div>
+      <div class="renk"><i style="background:#f4ead6"></i><span><b>Çip zemini</b>#f4ead6 · sayı okunurluğu</span></div>
+      <div class="renk"><i style="background:#5f86c9"></i><span><b>Evrensel kol</b>#5f86c9 · yazıda #1f4a8f</span></div>
+      <div class="renk"><i style="background:#d1a843"></i><span><b>Sadık kol</b>#d1a843 · yazıda #7a5a12</span></div>
+      <div class="renk"><i style="background:#d8483a"></i><span><b>Sert kol</b>#d8483a · yazıda #8a2a22</span></div>
+    </div>
+  </section>
+
+  <section class="bolum">
+    <h2>Uygulama planı</h2>
+    <div class="liste"><ul>
+      <li><code>client/src/renk-paleti.css</code>: kahveli latte ve kol renkleri token olarak eklenir; <code>docs/referans/14-renk-paleti.md</code> güncellenir.</li>
+      <li><code>client/src/components/DoktrinSecimi.tsx</code>: rütbe yolu (seçilen doktrinler seviyeye göre), satır seçimi, onay düğmesi. Sunucudan yalnız <code>doktrinler</code> listesi ve mevcut kol bilgisi yeter; yeni API gerekmez.</li>
+      <li><code>client/src/components/BirlikPaneli.tsx</code>: Ordu sayfasındaki doktrin bloğu aynı satır bileşenini kullanır.</li>
+      <li>Yeni <code>doktrin-*</code> sınıfları; Öğreti ve Savaş Kararları ekranlarındaki <code>.ogreti-*</code> kuralları değişmez.</li>
+      <li>Telefonda satır, madalyon, çip ve yol küçülür; onay düğmesi en az 44px.</li>
+      <li>Sonra <code>tsc -b</code>, <code>oxlint</code>, Playwright ile masaüstü ve telefon ekran görüntüsü.</li>
+    </ul></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var KOLLAR = { evrensel: 'Evrensel', sadik: 'Sadık yol', sert: '⚡ Acımasız' };
+  var GECMIS = [
+    { sv: 1, simge: '🛡️', ad: 'Safı Koru', kol: 'evrensel', cipler: [['Savunma +7%', 'i'], ['Kayıp −17%', 'i']] },
+    { sv: 2, simge: '🐎', ad: 'Hızlı Baskın', kol: 'evrensel', cipler: [['Saldırı +8%', 'i'], ['Gelir +7%', 'i']] }
+  ];
+  var SECENEKLER = {
+    sadik: [
+      { id: 'suv', simge: '🐎', ad: 'Süvari Çekirdeği', kol: 'evrensel', cipler: [['Saldırı +11%', 'i'], ['Masraf +5%', 'k']] },
+      { id: 'talim', simge: '🎯', ad: 'Talim Kültürü', kol: 'evrensel', cipler: [['Güç +6%', 'i'], ['Kayıp −11%', 'i'], ['Masraf +4%', 'k']] },
+      { id: 'ruh', simge: '🤝', ad: 'Birlik Ruhu', kol: 'sadik', cipler: [['Moral +2,1', 'i'], ['Firar −1%', 'i']] }
+    ],
+    sert: [
+      { id: 'suv', simge: '🐎', ad: 'Süvari Çekirdeği', kol: 'evrensel', cipler: [['Saldırı +11%', 'i'], ['Masraf +5%', 'k']] },
+      { id: 'talim', simge: '🎯', ad: 'Talim Kültürü', kol: 'evrensel', cipler: [['Güç +6%', 'i'], ['Kayıp −11%', 'i'], ['Masraf +4%', 'k']] },
+      { id: 'esir', simge: '⚡', ad: 'Esir Pazarı', kol: 'sert', cipler: [['Ganimet +42%', 'i'], ['Sertlik +1,5', 'k'], ['Ahlak −0,7', 'k']] }
+    ]
+  };
+  var KOL_RENK = { evrensel: '#5f86c9', sadik: '#d1a843', sert: '#d8483a' };
+  var yol = 'sadik';
+  var secili = {};
+
+  function cipHtml(c) { return '<span class="cip ' + c[1] + '">' + c[0] + '</span>'; }
+  function satirHtml(o, ekstra) {
+    return '<button type="button" class="satir ' + (o.kol === 'sadik' ? 'sadik' : o.kol === 'sert' ? 'sert' : '') + (ekstra || '') + '" data-id="' + o.id + '" aria-pressed="false">' +
+      '<span class="madalyon">' + o.simge + '</span>' +
+      '<span class="metin"><span class="dal">' + KOLLAR[o.kol] + '</span><span class="ad">' + o.ad + '</span></span>' +
+      '<span class="cipler">' + o.cipler.map(cipHtml).join('') + '</span>' +
+      '<span class="tik" aria-hidden="true">✓</span></button>';
+  }
+  function yolHtml() {
+    var h = GECMIS.map(function (g) {
+      return '<div class="dugum bitti" style="--kol:' + KOL_RENK[g.kol] + '"><span class="top">' + g.simge + '</span><span class="adim">S' + g.sv + ' · ' + g.ad + '</span></div>';
+    }).join('');
+    h += '<div class="dugum simdi"><span class="top">3</span><span class="adim">S3 · Şimdi</span></div>';
+    h += '<div class="dugum"><span class="top">·</span><span class="adim">S4</span></div>';
+    h += '<div class="dugum"><span class="top">·</span><span class="adim">S5</span></div>';
+    return '<div class="yol">' + h + '</div>';
+  }
+  function modalHtml(anahtar) {
+    return '<div class="dk" data-k="' + anahtar + '">' +
+      '<div class="dk-ust"><div><h4>🎖️ Doktrinini Seç</h4><div class="dk-alt">Rütben yükseldi. Seçim kalıcıdır; seçmeden oyun devam etmez.</div></div><span class="dk-seviye">Seviye 3 / 5</span></div>' +
+      yolHtml() +
+      '<div class="dk-secimler">' + SECENEKLER[yol].map(function (o) { return satirHtml(o); }).join('') + '</div>' +
+      '<div class="dk-onay"><small class="not">Bir doktrin seç.</small><button type="button" class="onay-btn" disabled>Bu doktrini onayla</button></div></div>';
+  }
+  function bagla(kok, anahtar) {
+    var satirlar = kok.querySelectorAll('.satir');
+    var btn = kok.querySelector('.onay-btn');
+    var not = kok.querySelector('.not');
+    satirlar.forEach(function (s) {
+      s.addEventListener('click', function () {
+        satirlar.forEach(function (x) { x.classList.remove('secili'); x.setAttribute('aria-pressed', 'false'); });
+        s.classList.add('secili'); s.setAttribute('aria-pressed', 'true');
+        secili[anahtar] = s.getAttribute('data-id');
+        btn.disabled = false;
+        var sert = s.classList.contains('sert');
+        not.className = 'not' + (sert ? ' acimasiz' : '');
+        not.textContent = sert ? 'Acımasız kol: sertlik ve firar riski artar.' : 'Seçimin S3 basamağına işlenir.';
+      });
+    });
+  }
+  function ciz() {
+    ['masaustu', 'telefon'].forEach(function (k) {
+      var kok = document.getElementById(k);
+      kok.innerHTML = modalHtml(k);
+      bagla(kok, k);
+    });
+    var liste = GECMIS.concat([{ sv: 3, simge: yol === 'sert' ? '⚡' : '🤝', ad: yol === 'sert' ? 'Esir Pazarı' : 'Birlik Ruhu', kol: yol === 'sert' ? 'sert' : 'sadik', cipler: yol === 'sert' ? [['Ganimet +42%', 'i'], ['Sertlik +1,5', 'k']] : [['Moral +2,1', 'i'], ['Firar −1%', 'i']] }]);
+    document.getElementById('ordu-liste').innerHTML = liste.map(function (g) {
+      return '<div class="satir ' + (g.kol === 'sadik' ? 'sadik' : g.kol === 'sert' ? 'sert' : '') + '"><span class="madalyon">' + g.simge + '</span><span class="metin"><span class="dal">' + KOLLAR[g.kol] + ' <span class="sv">· Sv.' + g.sv + '</span></span><span class="ad">' + g.ad + '</span></span><span class="cipler">' + g.cipler.map(cipHtml).join('') + '</span></div>';
+    }).join('');
+  }
+  function yolSec(y) {
+    yol = y; secili = {};
+    document.getElementById('yol-sadik').setAttribute('aria-pressed', String(y === 'sadik'));
+    document.getElementById('yol-sert').setAttribute('aria-pressed', String(y === 'sert'));
+    ciz();
+  }
+  document.getElementById('yol-sadik').addEventListener('click', function () { yolSec('sadik'); });
+  document.getElementById('yol-sert').addEventListener('click', function () { yolSec('sert'); });
+  ciz();
+})();
+</script>

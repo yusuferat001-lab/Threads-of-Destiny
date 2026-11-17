@@ -3,7 +3,7 @@ import { bekleyenleriCoz } from "./_ogreti";
 import { createCharacter, mesleğiSec, checkDeath, durumlariUygula, ilerletYas } from "../src/game/stateManager";
 import { skorKaydet } from "../src/db/scoreRepository";
 import { ikiDilT } from "../src/i18n";
-import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, senaryoUret, secimUygula, stateGetir } from "../src/game/gameEngine";
 
 // Ölüm nedeni iki dilde saklanır: liderlik tablosu hangi dilde açılırsa o dilde
 // göstersin (eskiden oyuncunun o anki dilinde tek metin yazılıyor, tablo karışık görünüyordu).
@@ -54,23 +54,27 @@ describe("iki dilli ölüm nedeni", () => {
   });
 
   it("olay seçimiyle gelen ölümde öbür dil ham olaydan üretilir", async () => {
-    // Ölene kadar oyna; ilk olay kaynaklı ölümde çeviri çifti tutarlı olmalı.
+    // Ölene kadar oyna; ölümde çeviri çifti tutarlı olmalı. Ölüm herhangi bir adımda gelebilir
+    // (bekleyen karar, şık, ara tepki): her adımdan sonra güncel state okunur, ölüyse doğrulanıp çıkılır.
     for (let deneme = 0; deneme < 30; deneme++) {
       const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba", undefined, "en");
       await mesleğiAta(state.id, "Asker");
+      const oldu = async () => {
+        const st: any = await stateGetir(state.id);
+        if (st.aktif !== false) return false;
+        expect(st.olum_nedeni_ceviri).toBeTruthy();
+        expect(st.olum_nedeni).toBe(st.olum_nedeni_ceviri.en);
+        expect(st.olum_nedeni_ceviri.tr.length).toBeGreaterThan(0);
+        return true;
+      };
       for (let tur = 0; tur < 80; tur++) {
         await bekleyenleriCoz(state.id);
+        if (await oldu()) return;
         const senaryo = await senaryoUret(state.id);
         const idx = senaryo.secenekler.findIndex((x) => !x.kilitli);
         const sonuc: any = await secimUygula(state.id, Math.max(0, idx));
         if (sonuc.ara_tepki) await secimUygula(state.id, 1);
-        const st = sonuc.state ?? state;
-        if (st.aktif === false) {
-          expect(st.olum_nedeni_ceviri).toBeTruthy();
-          expect(st.olum_nedeni).toBe(st.olum_nedeni_ceviri.en);
-          expect(st.olum_nedeni_ceviri.tr.length).toBeGreaterThan(0);
-          return;
-        }
+        if (await oldu()) return;
       }
     }
     throw new Error("Hiçbir denemede ölüm gerçekleşmedi");

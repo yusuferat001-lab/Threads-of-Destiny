@@ -1174,7 +1174,7 @@ export interface BirlikGorunumu {
     katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number; bonuslar: { kod: 'moral' | 'sohret' | 'otorite' | 'ahlak' | 'sertlik' | 'ganimet'; yon: 1 | -1 }[] }[];
   };
   doktrin: {
-    secilen: { id: string; simge: string; ad: DilMetni; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
+    secilen: { id: string; simge: string; ad: DilMetni; seviye: number; kaynak: string; acimasiz: boolean; etki: Record<string, number> }[];
     bekleyen: { seviye: number; yol: string | null; secenekler: { id: string; simge: string; ad: DilMetni; kaynak: string; acimasiz: boolean; etki: Record<string, number> }[] } | null;
   };
   savas: {

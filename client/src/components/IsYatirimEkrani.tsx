@@ -3,6 +3,7 @@ import type { MulkKartBilgisi, MulkTuru } from '../types';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
+import { KararOnay, KararSatiri } from './KararKabuk';
 
 interface IsYatirimEkraniProps {
   paraBirimi: string;
@@ -31,6 +32,8 @@ export function IsYatirimEkrani({
 }: IsYatirimEkraniProps) {
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
+  const [secim, setSecim] = useState<MulkTuru | null>(null);
+  const secimliMulk = mulkler.find((x) => x.tur === secim) ?? null;
 
   // İşlem sonucu / hata → ekrana açılır pencere (kullanıcı isteği: suç/işlem sonucu
   // sayfa başında sabit metin değil, kapatılabilir bir pencerede gelsin).
@@ -56,45 +59,49 @@ export function IsYatirimEkrani({
         <div className="tam-sutun">
           <h3 className="tam-baslik">{m.iyYatirimlikGayrimenkuller}</h3>
 
-          <div className="yatirim-kartlari yatirim-mulk-kartlari">
+          <div className="kk-liste kk-secimler">
             {mulkler.map((mulk) => {
               const sinyal = PIYASA_SINYAL_ETIKET[mulk.piyasaSinyali];
+              const zararda = mulk.tahminiYillikGetiriYuzdesi < 0;
               return (
-                <button
+                <KararSatiri
                   key={mulk.tur}
-                  className={`yatirim-kart mulk-kart${mulk.sahipMi ? ' mulk-kart-sahip' : ''}${mulk.tahminiYillikGetiriYuzdesi < 0 ? ' mulk-kart-zararda' : ''}`}
+                  kol={zararda ? 'sert' : mulk.sahipMi ? 'sadik' : 'evrensel'}
+                  simge={mulk.simge}
+                  dal={mulk.sahipMi ? (en ? 'Owned' : 'Sahipsin') : sinyal ? (en ? sinyal.en : sinyal.tr).replace(/^\S+\s/, '') : undefined}
+                  ad={kt(mulk.ad)}
+                  cipler={
+                    <>
+                      <span className={`kk-cip ${zararda ? 's-eksi' : 's-arti'}`}>
+                        {bic(
+                          m.iyNetKisa,
+                          mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : '',
+                          formatPara(mulk.tahminiYillikGetiriMiktari),
+                          paraBirimi,
+                          (mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : '') + mulk.tahminiYillikGetiriYuzdesi
+                        )}
+                      </span>
+                      {!mulk.sahipMi && <span className="kk-cip s-gider">{bic(m.iyFiyatKisa, formatPara(mulk.maliyet), paraBirimi)}</span>}
+                    </>
+                  }
+                  detay={`▲ ${kt(mulk.avantajliDurum)} · ▼ ${kt(mulk.dezavantajliDurum)}`}
+                  secili={secim === mulk.tur}
                   disabled={yukleniyor || mulk.sahipMi || para < mulk.maliyet}
-                  onClick={() => onMulkSatinAl(mulk.tur)}
-                  title={`${kt(mulk.aciklama)}\n${mulk.piyasaIpucu}`}
-                >
-                  <span className="meslek-simge">{mulk.simge}</span>
-                  <strong>
-                    {kt(mulk.ad)} {mulk.sahipMi && m.iySahipsin}
-                  </strong>
-                  <span className="meslek-aciklama">
-                    ▲ {kt(mulk.avantajliDurum)} · ▼ {kt(mulk.dezavantajliDurum)}
-                  </span>
-                  <span className={`mulk-getiri ${mulk.tahminiYillikGetiriYuzdesi < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
-                    {bic(
-                      m.iyNetKisa,
-                      mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : '',
-                      formatPara(mulk.tahminiYillikGetiriMiktari),
-                      paraBirimi,
-                      (mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : '') + mulk.tahminiYillikGetiriYuzdesi
-                    )}
-                  </span>
-                  {!mulk.sahipMi && sinyal && (
-                    <span className={`mulk-piyasa-sinyal ${sinyal.sinif}`}>{en ? sinyal.en : sinyal.tr}</span>
-                  )}
-                  {!mulk.sahipMi && (
-                    <span className="meslek-aciklama s-gider">
-                      {bic(m.iyFiyatKisa, formatPara(mulk.maliyet), paraBirimi)}
-                    </span>
-                  )}
-                </button>
+                  onClick={() => setSecim(mulk.tur)}
+                />
               );
             })}
           </div>
+          <KararOnay
+            not={secimliMulk ? `${kt(secimliMulk.aciklama)}` : en ? 'Pick a property.' : 'Bir mülk seç.'}
+            etiket={en ? 'Buy' : 'Satın al'}
+            disabled={yukleniyor || !secimliMulk}
+            onClick={() => {
+              if (!secimliMulk) return;
+              onMulkSatinAl(secimliMulk.tur);
+              setSecim(null);
+            }}
+          />
         </div>
       </div>
 

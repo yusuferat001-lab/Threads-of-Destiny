@@ -32,3 +32,9 @@ Bordo düğme içi tutarlar (açık tonlar: `button:not(.ikincil) .s-gider/.s-ge
 
 ## Bilinen eksikler
 Olay hikâye metinlerinin içindeki sayılar ve olay şıkları düz metin (bilerek: hikâye anlatımı); sıfır tutarlar nötr; PC sonuç çipleri bu turda tarayıcıda doğrulanmadı (mobil sonuç çipi doğrulandı).
+
+## Karar pencereleri (doktrin, öğreti, savaş kararı) — 2026-11
+Yüzey ve kol renkleri `renk-paleti.css`'te token (`§53 Faz 10`, `13-garanti-sink-tema.md`):
+- Kahveli latte seçenek yüzeyi: `--c-lk-1 #dcc7a4` → `--c-lk-2 #cdb38b`, yazı `--c-lk-yazi #2c1f15`, soluk `--c-lk-soluk #5e4733`, kenar `--c-lk-kenar #6e4f35`, çip zemini `--c-lk-cip #f4ead6` (yeşil/kırmızı sayılar bu açık pill üstünde okunur).
+- Kol renkleri (madalyon halkası + sol şerit; yazıda `-koyu` değer): Evrensel `--c-kol-evrensel #5f86c9` / `#1f4a8f`, Sadık ve Kahraman `--c-kol-sadik #d1a843` / `#7a5a12`, ⚡ Acımasız/Fanatik `--c-kol-sert #d8483a` / `#8a2a22`. Bunlar sayı rengi DEĞİL, yalnız kol kimliği; sayılar yine yeşil artı / kırmızı eksi / eflatun şart.
+

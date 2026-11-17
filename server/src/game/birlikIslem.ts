@@ -827,7 +827,7 @@ export interface BirlikGorunumu {
     katalog: { id: string; simge: string; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number; bonuslar: { kod: "moral" | "sohret" | "otorite" | "ahlak" | "sertlik" | "ganimet"; yon: 1 | -1 }[] }[];
   };
   doktrin: {
-    secilen: { id: string; simge: string; ad: { tr: string; en: string }; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
+    secilen: { id: string; simge: string; ad: { tr: string; en: string }; seviye: number; kaynak: string; acimasiz: boolean; etki: Record<string, number> }[];
     bekleyen: { seviye: number; yol: string | null; secenekler: { id: string; simge: string; ad: { tr: string; en: string }; kaynak: string; acimasiz: boolean; etki: Record<string, number> }[] } | null;
   };
   savas: {
@@ -855,7 +855,7 @@ export interface BirlikGorunumu {
   emir: { ad: { tr: string; en: string }; simge: string; aciklama: { tr: string; en: string } } | null;
   kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean; seviyeler: ReturnType<typeof kiralikOnizleme>[] };
   hesap: {
-    /** Maaşın çağ+ülkeye göre adı; savaşta "savaş ödeneği" olarak ödenir. */
+    /** Maaşın çağ+ülkeye göre adı; savaşta da aynı ad kullanılır. */
     soldAdi: { tr: string; en: string };
     savasOdenegiMi: boolean;
     kaleGeliri: number;
@@ -957,7 +957,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
   const secilenDoktrin = b.doktrinler
     .map((id) => doktrinGetir(id))
     .filter((x): x is NonNullable<typeof x> => !!x)
-    .map((x) => ({ id: x.id, simge: x.simge, ad: x.ad, seviye: x.seviye, acimasiz: x.acimasiz, etki: x.etki as Record<string, number> }));
+    .map((x) => ({ id: x.id, simge: x.simge, ad: x.ad, seviye: x.seviye, kaynak: x.kaynak, acimasiz: x.acimasiz, etki: x.etki as Record<string, number> }));
   const k = state.ulke.savasta ? savasKarariHazirla(state) : null;
   const gelecek = gelecekYilDegisimi(state, bg);
   return {
@@ -1103,7 +1103,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       seviyeler: state.ulke.savasta && (b.savas?.kiralik_er ?? 0) === 0 ? KIRALIK_SIRASI.map((sv) => kiralikOnizleme(state, bg, sv)) : [],
     },
     hesap: {
-      soldAdi: state.ulke.savasta ? { tr: "Savaş ödeneği", en: "War allowance" } : maasAdi(state.cag, state.bolge),
+      soldAdi: maasAdi(state.cag, state.bolge),
       savasOdenegiMi: !!state.ulke.savasta,
       kaleGeliri: r2(h.kaleGeliri),
       kiralikMasrafi: r2(h.kiralikMasrafi),

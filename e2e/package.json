@@ -1,0 +1,13 @@
+{
+  "name": "e2e",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Duman (smoke) testleri: Playwright ile gerçek tarayıcıda mobil + PC. Önce client'ı derle (npm run build -> server/public).",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

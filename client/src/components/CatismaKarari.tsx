@@ -1,6 +1,7 @@
 import type { CatismaKarariDurumu, CatismaSonucuGorunum } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara } from '../format';
+import { GucKarsilastirma } from './KararKabuk';
 
 const DUSMAN_TUR: Record<string, { tr: string; en: string }> = {
   okcu: { tr: 'okçu ağırlıklı', en: 'mostly archers' },
@@ -74,31 +75,7 @@ export function CatismaKarari({ karar, yukleniyor, onSec }: { karar: CatismaKara
             {(['saldiriZayif', 'savunmaZayif'] as const).map((k) => karar.birlikArazi![k].length > 0 && <small key={k} className="s-eksi">▼ {M[k][dil]}: {karar.birlikArazi![k].map((x) => x[dil]).join(', ')}</small>)}
           </div>
         )}
-        <table className="savas-kiyas-tablo">
-          <thead>
-            <tr>
-              <th />
-              <th>{t('sen')}</th>
-              <th>{t('dusman')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th>⚔️ {t('saldiri')}</th>
-              <td>
-                <strong className={renk(karar.oyuncu.saldiri, karar.dusman.savunma)}>{karar.oyuncu.saldiri}</strong>
-              </td>
-              <td>{aralik(karar.dusman.saldiri)}</td>
-            </tr>
-            <tr>
-              <th>🛡️ {t('savunma')}</th>
-              <td>
-                <strong className={renk(karar.oyuncu.savunma, karar.dusman.saldiri)}>{karar.oyuncu.savunma}</strong>
-              </td>
-              <td>{aralik(karar.dusman.savunma)}</td>
-            </tr>
-          </tbody>
-        </table>
+        <GucKarsilastirma ben={karar.oyuncu} dusman={karar.dusman} dusmanTur={karar.dusmanTur} dusmanAd={karar.ad[dil]} renk={renk} />
         <div className="ogreti-kartlar">
           {!karar.baskin && (
             <button type="button" className="ogreti-kart savas-secenek" disabled={yukleniyor} onClick={() => onSec('saldiri')}>

@@ -556,6 +556,31 @@ export function gorevDonemCarpani(state: CharacterState, g: GorevTanimi): number
   return c;
 }
 
+/**
+ * SOLD dönem çarpanı: hazine bollukta daha cömert, durgunlukta/kıtlıkta kıs kıs öder. Dönemin zarlanan "maaş" etkisi
+ * (bolluk +%6…10 · durgunluk −%10…−6 · kıtlık −%12…−8) sabit sold + asker başı ödemeye uygulanır; ana ekranda "sold ±%x" olarak görünür.
+ */
+export function soldDonemCarpani(state: CharacterState): number {
+  const m = state.ulke.donem?.etki?.maas;
+  return typeof m === "number" && m > 0 ? m : 1;
+}
+
+/** ERZAK dönem çarpanı: sabit tablo (ERZAK_DONEM_CARPANI, 0,9–1,1 bandı); savaş ve veba dönemi geçersiz kılar. */
+export function erzakDonemCarpani(state: CharacterState): number {
+  if (state.ulke.savasta) return ERZAK_DONEM_CARPANI.savas;
+  if (state.veba?.aktif) return ERZAK_DONEM_CARPANI.veba;
+  return ERZAK_DONEM_CARPANI[state.ulke.donem?.tur ?? "durgunluk"];
+}
+
+/** Seçili görevin bu dönemdeki gelir çarpanı (savaş/veba hariç saf dönem etkisi); görev yoksa null. */
+export function aktifGorevDonemCarpani(state: CharacterState): number | null {
+  const b = birlikDurumu(state);
+  const g = b ? gorevGetir(b.gorevler[0] ?? "") : undefined;
+  const donem = state.ulke.donem?.tur;
+  if (!g || !donem) return null;
+  return GOREV_DONEM_CARPANI[g.tur]?.[donem as "bolluk" | "durgunluk" | "kitlik"] ?? 1;
+}
+
 // ── Kayıp / maliyet çarpanları ──────────────────────────────────────────────
 /** Savaş ve görev kaybının çarpanı: talim, revir, tabip, doktrin. */
 export function kayipCarpani(state: CharacterState): number {
@@ -650,7 +675,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   // Asker başı ödeme yalnız ana kadroya: savaşta çağrılan seferber erler ödeme almaz (kiralık erler zaten ordu sayısında yok).
   const odemeEri = Math.max(0, er - (savasta ? Math.round(b.savas?.seferberlik_er ?? 0) : 0));
   const erBasiOdeme = odemeEri * ER_BASI_GELIR * bg.enflasyon * (savasta ? SAVAS_ER_BASI_CARPANI : 1);
-  const sold = r2(soldTam + erBasiOdeme);
+  const sold = r2((soldTam + erBasiOdeme) * soldDonemCarpani(state));
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
   const kazancC = GOREV_GELIR_CARPANI;
@@ -683,9 +708,8 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const asim = limitAsimEri(state);
   const giderEri = er + asim * (LIMIT_ASIM_GIDER_CARPANI - 1);
   const erMasrafi = giderEri * ER_MASRAFI * bg.giderEnflasyon * mC;
-  const donem = state.ulke.savasta ? "savas" : state.veba?.aktif ? "veba" : state.ulke.donem?.tur ?? "durgunluk";
   const seferEk = b.savas?.seferberlik ? SEFERBERLIK_TANIMLARI[b.savas.seferberlik]?.erzak ?? 0 : 0;
-  const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + seferEk) * mC * ikmal.maliyet * (savasta ? 1 - ikmal.yagma.erzakIndirimi : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
+  const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * erzakDonemCarpani(state) * (1 + seferEk) * mC * ikmal.maliyet * (savasta ? 1 - ikmal.yagma.erzakIndirimi : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
   const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon * (savasta ? 1 - SAVAS_KISLA_INDIRIMI : 1);
   const techizatBakim = (b.kalite.dusuk * KALITE_BAKIM.dusuk + b.kalite.orta * KALITE_BAKIM.orta + b.kalite.yuksek * KALITE_BAKIM.yuksek) * bg.giderEnflasyon;
   const yaraliGideri = yaraliSayisi(state) * YARALI_TEDAVI_GIDERI * bg.giderEnflasyon;
