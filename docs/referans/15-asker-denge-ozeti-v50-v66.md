@@ -5,7 +5,7 @@
 Bu dosya, Asker üzerinde yapılan tüm ayar konuşmalarının **tek yerde toplanmış durumudur**. Ayrıntılı sürüm notları `13-garanti-sink-tema.md` §45 v50–v66'dadır; sayı çelişirse **kodu** (`server/src/data/birlik.ts`) ve daha yüksek sürümü esas al.
 
 > **GÜNCEL DURUM ÖZETİ (v67 Madde 1–7, `main`'de; çelişirse bu kutu + dosyanın EN ALTINDAKİ "v67 — Madde N" bölümleri geçerlidir):**
-> - **Ekonomi:** er masrafı 0,23 · erzak 0,13 · devlet er başı ödeme 0,15 · sold 8,5 · savaşta er başı ödeme **×2** · kıtlık ordu morali −1,5 · bolluk ordu morali 0 · kışla bakımı 3/8/22/60/150 · yıllık sabit +1 er YOK · Devşirme Bürosu/Revir fiyatı ×1,2 (v69'un "×1 / −1 / +1,5" değerleri geçersiz; mekanikleri — sold/erzak dönem çarpanı, görev dönem kısıntısı ≤%12, yerel ödeme adı — geçerli).
+> - **Ekonomi:** er masrafı 0,23 · erzak 0,13 · devlet er başı ödeme 0,15 · sold 9,25 · savaşta er başı ödeme **×2** · kıtlık ordu morali −1,5 · bolluk ordu morali 0 · kışla bakımı 3/8/22/60/150 · yıllık sabit +1 er YOK · Devşirme Bürosu/Revir fiyatı ×1,2 (v69'un "×1 / −1 / +1,5" değerleri geçersiz; mekanikleri — sold/erzak dönem çarpanı, görev dönem kısıntısı ≤%12, yerel ödeme adı — geçerli).
 > - **Görev:** asgari güç 10/40/80/145/250; er başı 0,55–0,70 (×1,05); gelir er bazlı, verim ilk 100 er 1,0 → 500 erde 0,75 (doğrusal).
 > - **Moral/talim:** güce etki +%20 (100) / −%15 (0), nötr 50; talim ücretsiz, üst limit **Talim Alanı** (yok 70 · 75/80/85/90), yıllık +1…+4; yeni er giriş talimi 15; komuta tonu YOK; moral/talimde "gelecek yıl" değişimi `gelecekYilDegisimi`.
 > - **Seferberlik:** Gazi Çağrısı %8 er · talim 55 · moral −7 · firar %5; Tüm Erkekler %20 · talim 10 · moral −15 · firar %8; ordunun mevcut teçhizatıyla gelir; kalıcı gazi kadrosu YOK.
@@ -92,7 +92,7 @@ Testler: `birlik.test.ts` "v67 Madde 2" bloğu (net talim, politika morali, ücr
 | Er masrafı (oyuncu öder) | 0,19 → **0,23** | `ER_MASRAFI` |
 | Erzak (er başı) | 0,14 → **0,13** | `ERZAK_BIRIMI` |
 | Devlet er başı ödemesi | 0,15 (değişmedi) | `ER_BASI_GELIR` |
-| Sold (rütbeden bağımsız) | 9 → **8,5** | `SOLD` |
+| Sold (rütbeden bağımsız) | 9 → 8,5 → **9,25** | `SOLD` |
 | Teçhizat bakımı hafif/standart/ağır | 0,15/0,27/0,40 → **0,13/0,24/0,36** | `KALITE_BAKIM` |
 | Kışla bakımı K0…K4 | 2/6/18/50/120 → **3/8/22/60/150** | `KISLA_BAKIM` |
 | Görev asgari güç | 8/25/55/110/200 → **10/40/80/145/250** | `GOREVLER[].minGuc` |
@@ -210,3 +210,5 @@ Bütçe önizlemeleri `BARIS_GANIMET_UST` (4,0) ve `BARIS_GANIMET_ORTA` (tür a�
 
 ## main ile birleştirme notu (v67 Madde 1–7 ↔ v69, 2026-11)
 Kullanıcı kararı: **çakışan tüm Asker denge değerleri v67 dalından** (v69'un aynı sabitlerdeki değerleri geçersiz): savaşta er başı ödeme çarpanı **×2** (v69: ×1), kıtlık ordu morali **−1,5** (v69: −1), bolluk ordu morali **0** (eski +1,5), sold 8,5 · er masrafı 0,23 · erzak 0,13. v69'un **mekanikleri korundu**: `soldDonemCarpani` (sold dönem çarpanı), `erzakDonemCarpani` (sabit tablo 0,9–1,1), görev dönem çarpanı kısıntısı ≤ %12, ülkeye özgü ödeme adı (Ulûfe…), ana ekran dünya satırı, karar penceresi şablonu (`GucKarsilastirma`). Yukarıdaki v69 metnindeki "savaşta ×3 / kıtlık −1,5 → −1" ifadeleri bu nota göre okunur. Özel birlik bakımı v67 Madde 4 gereği er başı sabittir (`turBakim`/`turErzak` yok).
+
+- **Sabit maaş 9,25 (v67 sonrası ayar):** `SOLD` 8,5 → **9,25** (rütbeden bağımsız). Görev geliri çarpanı `GOREV_GELIR_CARPANI` = 1,05 aynı. Testler (`birlik`, `birlikSavas`, `birlikV39`) güncellendi.

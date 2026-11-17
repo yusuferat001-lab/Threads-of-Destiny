@@ -323,7 +323,7 @@ describe("limitler ve yeni er katılımı", () => {
 
 describe("gelir ve gider", () => {
   it("sabit maaş 8,5 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([8.5, 8.5, 8.5, 8.5, 8.5]);
+    expect(SOLD).toEqual([9.25, 9.25, 9.25, 9.25, 9.25]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -1227,7 +1227,7 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
     expect(d.ER_MASRAFI).toBe(0.23);
     expect(d.ERZAK_BIRIMI).toBe(0.13);
     expect(d.ER_BASI_GELIR).toBe(0.15);
-    expect(d.SOLD).toEqual([8.5, 8.5, 8.5, 8.5, 8.5]);
+    expect(d.SOLD).toEqual([9.25, 9.25, 9.25, 9.25, 9.25]);
     expect(d.SAVAS_ER_BASI_CARPANI).toBe(2);
     expect(d.BARIS_YILLIK_ER).toBe(0);
     expect(d.KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
