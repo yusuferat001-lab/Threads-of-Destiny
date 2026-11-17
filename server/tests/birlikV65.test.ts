@@ -290,8 +290,8 @@ describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", ()
     }
   });
 
-  it("savaşta er başı ödeme ×2 (v67 Madde 3); kıtlık morali yılda −1,5; bolluk morali 0", () => {
-    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
+  it("savaşta er başı ödeme zammı yok (×1; v67 sonrası ayar); kıtlık morali yılda −1,5; bolluk morali 0", () => {
+    expect(SAVAS_ER_BASI_CARPANI).toBe(1);
     expect(MORAL_KITLIK_YILLIK).toBe(-1.5);
     expect(MORAL_BOLLUK_YILLIK).toBe(0);
   });

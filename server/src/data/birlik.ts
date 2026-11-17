@@ -262,7 +262,7 @@ export const GOREV_SAGLIK: Record<string, Aralik> = { tahsilat: [0, 1], garnizon
 export const SAGLIK_REVIR_AZALTMA = 0.025;
 /** Çatışma kararı: saldırıda ganimet ve kayıp artar, (seçilmiş) savunmada ikisi de azalır. Baskında savunma zorunludur, bu çarpan uygulanmaz. */
 export const CATISMA_SALDIRI = { ganimet: 1.3, kayip: 1.3 } as const;
-export const CATISMA_SAVUNMA = { ganimet: 0.8, kayip: 0.8 } as const;
+export const CATISMA_SAVUNMA = { ganimet: 0.9, kayip: 0.8 } as const;
 /** Düşmanın tahmini kaybı (gücünün kesri): bizim zaferimizde / yenilgimizde. */
 export const BARIS_DUSMAN_KAYBI = { zafer: [0.12, 0.2], yenilgi: [0.03, 0.06] } as const;
 /** Baskın: oyuncunun savunması pusu cezasıyla düşer (Keşif subayı, Karakol azaltır); yenilgide yıllık gelirin bu kesri nakit hasarı. */
@@ -365,8 +365,8 @@ export function talimKayipEtkisi(talim: number): number {
 }
 /** Yıllık moral etkenleri. */
 export const GANIMET_PAYI_TANIMLARI: Record<BirlikGanimetPayi, { oran: number; moral: number; ad: DilliMetin }> = {
-  az: { oran: 0.3, moral: -7, ad: { tr: "Az pay", en: "Small share" } },
-  dengeli: { oran: 0.5, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
+  az: { oran: 0.4, moral: -7, ad: { tr: "Az pay", en: "Small share" } },
+  dengeli: { oran: 0.55, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
   comert: { oran: 0.7, moral: 4, ad: { tr: "Cömert pay", en: "Generous share" } },
 };
 export const GANIMET_SIRASI: BirlikGanimetPayi[] = ["az", "dengeli", "comert"];
@@ -449,7 +449,7 @@ export const BARIS_YILLIK_ER = 0; // v67: yıllık sabit gönüllü er kalktı (
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
-export const SAVAS_ER_BASI_CARPANI = 2;
+export const SAVAS_ER_BASI_CARPANI = 1;
 export const ER_MASRAFI = 0.23;
 export const ERZAK_BIRIMI = 0.13;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
@@ -469,8 +469,6 @@ export const GANIMET_TABAN_GUC = 40;
  */
 export const GANIMET_BANTLARI: [number, number, number][] = [[0, 40, 1], [40, 100, 0.8], [100, 200, 0.55], [200, 350, 0.35], [350, 500, 0.22], [500, Infinity, 0.12]];
 export const GANIMET_ETKIN_GUC_TAVANI = 240;
-/** Yağma (savaşın ilk yılları) daha yumuşak bantlarla sayılır; tavanı yok. */
-export const YAGMA_BANTLARI: [number, number, number][] = [[0, 40, 1], [40, 100, 1], [100, 200, 0.8], [200, 350, 0.65], [350, 500, 0.5], [500, Infinity, 0.4]];
 function bantToplami(guc: number, bantlar: [number, number, number][]): number {
   let t = 0;
   for (const [lo, hi, f] of bantlar) t += Math.max(0, Math.min(guc, hi) - lo) * f;
@@ -478,9 +476,6 @@ function bantToplami(guc: number, bantlar: [number, number, number][]): number {
 }
 export function ganimetEtkinGuc(guc: number): number {
   return Math.min(GANIMET_ETKIN_GUC_TAVANI, bantToplami(Math.max(0, guc), GANIMET_BANTLARI));
-}
-export function yagmaEtkinGuc(guc: number): number {
-  return bantToplami(Math.max(0, guc), YAGMA_BANTLARI);
 }
 export function ganimetBrutTemel(guc: number, aralikDegeri: number): number {
   return ganimetEtkinGuc(Math.max(GANIMET_TABAN_GUC, guc)) * aralikDegeri;
@@ -873,9 +868,9 @@ export const KARSI_TUR: Partial<Record<BirlikTur, BirlikTur>> = { suvari: "mizra
 
 export const ROL_TANIMLARI: Record<BirlikRol, { ganimet: number; kayip: number; zar: number; moral: number; ad: DilliMetin; aciklama: DilliMetin }> = {
   onc: {
-    ganimet: 1.3, kayip: 1.4, zar: 0.05, moral: 0,
+    ganimet: 1.2, kayip: 1.5, zar: 0.05, moral: 0,
     ad: { tr: "Öncü", en: "Vanguard" },
-    aciklama: { tr: "Ganimet ×1,3, kayıp ×1,4, çarpışmada küçük avantaj.", en: "Loot ×1.3, losses ×1.4, a slight edge in the clash." },
+    aciklama: { tr: "Ganimet ×1,2, kayıp ×1,5, çarpışmada küçük avantaj.", en: "Loot ×1.2, losses ×1.5, a slight edge in the clash." },
   },
   ana: {
     ganimet: 1, kayip: 1, zar: 0, moral: 0,
@@ -910,19 +905,19 @@ export const IKMAL_TANIMLARI: Record<
 > = {
   yagma_sert: {
     erzakOran: 0, maliyet: 1, sertlik: 2.5, ganimet: 1,
-    yagma: { gucOrani: 0.28, erzakIndirimi: 0.5, ahlak: -3, mutluluk: -3, moral: 4, kayip: 1.15, talim: -8 },
+    yagma: { gucOrani: 0.27, erzakIndirimi: 0.5, ahlak: -3, mutluluk: -3, moral: 4, kayip: 1.15, talim: -8 },
     ad: { tr: "Sert yağma", en: "Harsh plunder" },
     aciklama: { tr: "Köyleri soyarsın: en çok para; ordu coşar ama disiplin bozulur, halk direnir, kayıplar artar, vicdanın ve keyfin kaçar.", en: "You strip the villages bare: the most coin; the men are exalted, but discipline slips, the people fight back, losses rise, and your conscience and spirits sink." },
   },
   yagma_orta: {
     erzakOran: 0, maliyet: 1, sertlik: 1.5, ganimet: 1,
-    yagma: { gucOrani: 0.22, erzakIndirimi: 0.4, ahlak: 0, mutluluk: 0, moral: 0, kayip: 1, talim: 1 },
+    yagma: { gucOrani: 0.21, erzakIndirimi: 0.4, ahlak: 0, mutluluk: 0, moral: 0, kayip: 1, talim: 1 },
     ad: { tr: "Orta yağma", en: "Moderate plunder" },
     aciklama: { tr: "Köylerden ölçülü ganimet; ne ordunun ne senin moralin değişir.", en: "Measured loot from the villages; neither the army's morale nor yours shifts." },
   },
   yagma_yumusak: {
     erzakOran: 0, maliyet: 1, sertlik: 0.5, ganimet: 1,
-    yagma: { gucOrani: 0.17, erzakIndirimi: 0.3, ahlak: 3, mutluluk: 3, moral: -4, kayip: 0.85, talim: 5 },
+    yagma: { gucOrani: 0.16, erzakIndirimi: 0.3, ahlak: 3, mutluluk: 3, moral: -4, kayip: 0.85, talim: 5 },
     ad: { tr: "Yumuşak yağma", en: "Gentle plunder" },
     aciklama: { tr: "Az para toplarsın; halka kıymazsın, kayıplar azalır, disiplin pekişir, vicdanın ve keyfin yerinde olur ama ordu söylenir.", en: "You gather little; you spare the people, losses ease, discipline tightens, and your conscience and spirits stay light, but the men grumble." },
   },

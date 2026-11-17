@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik, barisCatismaCoz } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, yagmaEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -388,7 +388,7 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     return { s, b, sv };
   }
 
-  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,28 / 0,22 / 0,17'si", () => {
+  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,27 / 0,21 / 0,16'sı", () => {
     expect(IKMAL_SIRASI).toEqual(["yagma_sert", "yagma_orta", "yagma_yumusak"]);
     const { s, b, sv } = savasAskeri();
     const brut: Record<string, number> = {};
@@ -398,8 +398,8 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
       const oran = IKMAL_TANIMLARI[id].yagma.gucOrani;
       expect(brut[id] / (b.guc * bg(s).enflasyon)).toBeGreaterThanOrEqual(oran);
     }
-    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.28 / 0.22, 6);
-    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.17 / 0.22, 6);
+    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.27 / 0.21, 6);
+    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.16 / 0.21, 6);
   });
 
   it("sert yağma ahlak ve oyuncu morali düşürür, ordu morali artırır; yumuşak tam tersi", () => {
@@ -419,6 +419,18 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     expect(sonuc.yagma_sert.ahlak).toBeLessThan(sonuc.yagma_yumusak.ahlak);
     expect(sonuc.yagma_sert.mutluluk).toBeLessThan(sonuc.yagma_yumusak.mutluluk);
     expect(sonuc.yagma_sert.moral).toBeGreaterThan(sonuc.yagma_yumusak.moral);
+  });
+
+  it("yağma geliri bantsızdır: askerî güçle doğrusal artar (güç ×4 → yağma ×4)", () => {
+    const { s, b, sv } = savasAskeri();
+    sv.ikmal = "yagma_orta";
+    const yagma = (guc: number) => {
+      b.guc = guc;
+      return birlikHesapla(s, bg(s)).yagmaBrut;
+    };
+    expect(yagma(100)).toBeGreaterThan(0);
+    expect(yagma(400) / yagma(100)).toBeCloseTo(4, 6);
+    expect(yagma(1000) / yagma(500)).toBeCloseTo(2, 6);
   });
 
   it("yağma talimi yalnız savaşın ilk yılında, bir kez uygulanır (sert −8 / orta +1 / yumuşak +5); ikinci yılda fark kalmaz", () => {
@@ -520,10 +532,6 @@ describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", (
     };
     // aynı rastgelelik ve bonuslar: oran etkin güç oranına eşit
     expect(hesap(500) / hesap(100)).toBeCloseTo(ganimetEtkinGuc(500) / ganimetEtkinGuc(100), 1);
-    expect(yagmaEtkinGuc(100)).toBeCloseTo(100, 8);
-    expect(yagmaEtkinGuc(200)).toBeCloseTo(180, 8);
-    expect(yagmaEtkinGuc(1000)).toBeGreaterThan(ganimetEtkinGuc(1000));
-    expect(yagmaEtkinGuc(1000)).toBeGreaterThan(yagmaEtkinGuc(500));
   });
 
   it("görev geliri güçle azalan verimle ödenir: ≤150 güçte ×1, 300 → 0,95, 600 → 0,8125, 1000 → 0,6675; toplam gelir güçle hep artar", () => {
@@ -738,15 +746,15 @@ describe("v51 çatışma kayıpları: B paketi, seçim etkisi, kayıp tabanı", 
     rnd.mockRestore();
     return r;
   }
-  it("seçilmiş saldırıda ganimet ≈ ×1,3/0,8 = 1,625 kat; baskında seçim yok (çarpan uygulanmaz)", () => {
+  it("seçilmiş saldırıda ganimet ≈ ×1,3/0,9 = 1,44 kat; baskında seçim yok (çarpan uygulanmaz)", () => {
     const sal = coz("saldiri", false);
     const sav = coz("savunma", false);
     expect(sal.zafer && sav.zafer).toBe(true);
-    expect(sal.ganimet / sav.ganimet).toBeGreaterThan(1.5);
-    expect(sal.ganimet / sav.ganimet).toBeLessThan(1.75);
+    expect(sal.ganimet / sav.ganimet).toBeGreaterThan(1.35);
+    expect(sal.ganimet / sav.ganimet).toBeLessThan(1.55);
     const baskin = coz("saldiri", true);
     expect(baskin.inisiyatif).toBe("savunma");
-    expect(baskin.ganimet / sav.ganimet).toBeGreaterThan(1.15); // 1 / 0,8 = 1,25 (baskında ×1)
+    expect(baskin.ganimet / sav.ganimet).toBeGreaterThan(1.05); // 1 / 0,9 = 1,11 (baskında ×1)
   });
   it("kayıp çarpanı tam yatırımla bile 0,5 altına inmez", async () => {
     const { kayipCarpani } = await import("../src/game/birlik");
@@ -840,7 +848,7 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     seferberlikUygula(s, "genel", bg(s));
     const sef = birlikHesapla(s, bg(s));
     expect(sef.sold).toBeCloseTo(yalin.sold, 6);
-    expect(yalin.sold).toBeCloseTo(9.25 * e + 100 * 0.3 * e, 3);
+    expect(yalin.sold).toBeCloseTo(9.25 * e + 100 * 0.15 * e, 3);
   });
   it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
     const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");

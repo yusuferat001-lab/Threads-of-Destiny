@@ -352,7 +352,7 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%30/%50/%70); görev ganimeti ve yağma doğrudan hazineye", () => {
+  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%40/%55/%70); görev ganimeti ve yağma doğrudan hazineye", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -372,7 +372,7 @@ describe("gelir ve gider", () => {
     expect(y.erPayi).toBe(0); // yağma direkt hazineye
     expect(y.ganimetNet).toBeCloseTo(y.yagmaBrut, 6);
     // savaş zaferi ganimetinden politikaya göre pay düşer
-    const oranlar: Record<string, number> = { az: 0.3, dengeli: 0.5, comert: 0.7 };
+    const oranlar: Record<string, number> = { az: 0.4, dengeli: 0.55, comert: 0.7 };
     for (const id of ["az", "dengeli", "comert"] as const) {
       const z = asker();
       z.meslek_musteri = 200;
@@ -425,7 +425,7 @@ describe("gelir ve gider", () => {
     const sonuc = savasiBitir(s, b, bg(s), uyar);
     expect(sonuc.zafer).toBe(true);
     expect(sonuc.brut).toBeGreaterThan(0);
-    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.5), 1);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.55), 1);
     expect(sonuc.kale).toBe(true);
     expect(b.kale).toBe(1);
     expect(s.unvanlar).toContain("Zafer Madalyası");
@@ -1176,9 +1176,9 @@ describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
     }
   });
 
-  it("ganimet payı: askere %30/%50/%70, sana %70/%50/%30; yıllık moral −7/0/+4", () => {
-    expect(GANIMET_PAYI_TANIMLARI.az.oran).toBe(0.3);
-    expect(GANIMET_PAYI_TANIMLARI.dengeli.oran).toBe(0.5);
+  it("ganimet payı: askere %40/%55/%70, sana %60/%45/%30; yıllık moral −7/0/+4", () => {
+    expect(GANIMET_PAYI_TANIMLARI.az.oran).toBe(0.4);
+    expect(GANIMET_PAYI_TANIMLARI.dengeli.oran).toBe(0.55);
     expect(GANIMET_PAYI_TANIMLARI.comert.oran).toBe(0.7);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
   });
@@ -1222,13 +1222,13 @@ describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
 });
 
 describe("v67 Madde 3 — ekonomi sabitleri", () => {
-  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,15, sold 8,5, savaş ödeneği ×2, yıllık sabit er yok", async () => {
+  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,15, sold 8,5, savaşta er başı ödeme zammı yok (×1), yıllık sabit er yok", async () => {
     const d = await import("../src/data/birlik");
     expect(d.ER_MASRAFI).toBe(0.23);
     expect(d.ERZAK_BIRIMI).toBe(0.13);
     expect(d.ER_BASI_GELIR).toBe(0.15);
     expect(d.SOLD).toEqual([9.25, 9.25, 9.25, 9.25, 9.25]);
-    expect(d.SAVAS_ER_BASI_CARPANI).toBe(2);
+    expect(d.SAVAS_ER_BASI_CARPANI).toBe(1);
     expect(d.BARIS_YILLIK_ER).toBe(0);
     expect(d.KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
     expect(d.KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
@@ -1336,11 +1336,11 @@ describe("v67 Madde 4 — güç formülü", () => {
     expect(RUTBE_GUC_ESIGI_ASKER).toEqual({ 2: 18, 3: 70, 4: 150, 5: 340 });
   });
 
-  it("yağma oranları 0,28 / 0,22 / 0,17; talim −8 / +1 / +5 (tek seferlik); subay en çok 4; subay bonusları ~%10 düşük", async () => {
+  it("yağma oranları 0,27 / 0,21 / 0,16; talim −8 / +1 / +5 (tek seferlik); subay en çok 4; subay bonusları ~%10 düşük", async () => {
     const { IKMAL_TANIMLARI, SUBAY_MAKS } = await import("../src/data/birlik");
-    expect(IKMAL_TANIMLARI.yagma_sert.yagma.gucOrani).toBe(0.28);
-    expect(IKMAL_TANIMLARI.yagma_orta.yagma.gucOrani).toBe(0.22);
-    expect(IKMAL_TANIMLARI.yagma_yumusak.yagma.gucOrani).toBe(0.17);
+    expect(IKMAL_TANIMLARI.yagma_sert.yagma.gucOrani).toBe(0.27);
+    expect(IKMAL_TANIMLARI.yagma_orta.yagma.gucOrani).toBe(0.21);
+    expect(IKMAL_TANIMLARI.yagma_yumusak.yagma.gucOrani).toBe(0.16);
     expect([IKMAL_TANIMLARI.yagma_sert.yagma.talim, IKMAL_TANIMLARI.yagma_orta.yagma.talim, IKMAL_TANIMLARI.yagma_yumusak.yagma.talim]).toEqual([-8, 1, 5]);
     expect(SUBAY_MAKS).toBe(4);
     const { SUBAY_DEGERLERI } = await import("../src/game/subay");

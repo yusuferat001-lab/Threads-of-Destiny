@@ -73,7 +73,6 @@ import {
   gorevErOrani,
   SUVARI_GOREV_GELIRI,
   SUVARI_BONUS_GOREVLERI,
-  yagmaEtkinGuc,
   hazinePayi,
   BARIS_CATISMA_ILK_YIL,
   KALE_GELIR,
@@ -696,7 +695,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   // Yağma türü (sert / orta / yumuşak × güç; oranlar IKMAL_TANIMLARI'nda) ikmal kararından gelir; yalnız savaşın ilk YAGMA_YIL yılında.
   const yagmaTuru = ikmal.yagma;
   const yagma = savasta && b.savas?.sonuc !== "yenilgi" && (sec.savasYili ?? (b.savas?.yil_sayac ?? 0) + 1) <= YAGMA_YIL;
-  const yagmaBrut = yagma ? yagmaEtkinGuc(b.guc) * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
+  const yagmaBrut = yagma ? Math.max(0, b.guc) * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
   const toplamBrut = ganimetBrut + yagmaBrut;
   const devletPayi = 0; // askerde devlet payı/vergi yok
   // Er payı YALNIZ haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (olay anında, birlikYil). Görev ganimeti ve yağma doğrudan hazineye girer.
