@@ -388,7 +388,7 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     return { s, b, sv };
   }
 
-  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,51 / 0,35 / 0,19'u", () => {
+  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,28 / 0,22 / 0,17'si", () => {
     expect(IKMAL_SIRASI).toEqual(["yagma_sert", "yagma_orta", "yagma_yumusak"]);
     const { s, b, sv } = savasAskeri();
     const brut: Record<string, number> = {};
@@ -398,8 +398,8 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
       const oran = IKMAL_TANIMLARI[id].yagma.gucOrani;
       expect(brut[id] / (b.guc * bg(s).enflasyon)).toBeGreaterThanOrEqual(oran);
     }
-    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.51 / 0.35, 6);
-    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.19 / 0.35, 6);
+    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.28 / 0.22, 6);
+    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.17 / 0.22, 6);
   });
 
   it("sert yağma ahlak ve oyuncu morali düşürür, ordu morali artırır; yumuşak tam tersi", () => {
@@ -421,9 +421,34 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     expect(sonuc.yagma_sert.moral).toBeGreaterThan(sonuc.yagma_yumusak.moral);
   });
 
-  it("yağma türlerinin sertliği farklıdır; erzak gideri yalnız savaşta, türe göre %75/55/35 düşer", () => {
+  it("yağma talimi yalnız savaşın ilk yılında, bir kez uygulanır (sert −8 / orta +1 / yumuşak +5); ikinci yılda fark kalmaz", () => {
+    const fark = (yilSayac: number) => {
+      const talim: Record<string, number> = {};
+      for (const id of IKMAL_SIRASI) {
+        const { s, b, sv } = savasAskeri();
+        sv.ikmal = id;
+        sv.yil_sayac = yilSayac;
+        b.moral = 60;
+        b.talim = 50;
+        vi.spyOn(Math, "random").mockReturnValue(0.5);
+        birlikYilIsle(s, bg(s));
+        talim[id] = b.talim;
+        vi.restoreAllMocks();
+      }
+      return talim;
+    };
+    // Kayıp çarpanı (sert ×1,15 / yumuşak ×0,85) acemi er oranını da kıpırdatır; bu fark her iki yılda aynıdır, yağma talimi yalnız ilk yılda eklenir.
+    const ilk = fark(0);
+    const ikinci = fark(1);
+    const yalnizYagma = (id: "yagma_sert" | "yagma_yumusak") => ilk[id] - ilk.yagma_orta - (ikinci[id] - ikinci.yagma_orta);
+    // Kalan <0,5 puanlık sapma, kayıp çarpanının yıldan yıla farklı acemi seyreltmesinden gelir.
+    expect(yalnizYagma("yagma_sert")).toBeCloseTo(-8 - 1, 0);
+    expect(yalnizYagma("yagma_yumusak")).toBeCloseTo(5 - 1, 0);
+  });
+
+  it("yağma türlerinin sertliği farklıdır; erzak gideri yalnız savaşta, türe göre %50/40/30 düşer", () => {
     expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].sertlik)).toEqual([2.5, 1.5, 0.5]);
-    expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].yagma.erzakIndirimi)).toEqual([0.75, 0.55, 0.35]);
+    expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].yagma.erzakIndirimi)).toEqual([0.5, 0.4, 0.3]);
     const { s, sv } = savasAskeri();
     const savasErzak: Record<string, number> = {};
     for (const id of IKMAL_SIRASI) {
@@ -433,8 +458,8 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     }
     expect(savasErzak.yagma_sert).toBeLessThan(savasErzak.yagma_orta);
     expect(savasErzak.yagma_orta).toBeLessThan(savasErzak.yagma_yumusak);
-    expect(savasErzak.yagma_sert / savasErzak.yagma_orta).toBeCloseTo(0.25 / 0.45, 6);
-    expect(savasErzak.yagma_yumusak / savasErzak.yagma_orta).toBeCloseTo(0.65 / 0.45, 6);
+    expect(savasErzak.yagma_sert / savasErzak.yagma_orta).toBeCloseTo(0.5 / 0.6, 6);
+    expect(savasErzak.yagma_yumusak / savasErzak.yagma_orta).toBeCloseTo(0.7 / 0.6, 6);
     // barışta indirim yok: seçilen yağma türü erzak giderini değiştirmez
     s.ulke.savasta = false;
     birlikAl(s).savas = null;

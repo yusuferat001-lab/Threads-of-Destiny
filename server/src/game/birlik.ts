@@ -693,7 +693,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const gorevGeliri = gorevler.reduce((t, x) => t + x.gelir, 0);
   const ganimetBrut = gorevler.reduce((t, x) => t + x.ganimet, 0);
   // Yağma (yalnız savaşta, ikmal kararı): güçle orantılı yıllık ganimet; esir ve yeni er de getirir.
-  // Yağma türü (sert 0,7 / orta 0,5 / yumuşak 0,3 × güç) ikmal kararından gelir; yalnız savaşın ilk YAGMA_YIL yılında.
+  // Yağma türü (sert / orta / yumuşak × güç; oranlar IKMAL_TANIMLARI'nda) ikmal kararından gelir; yalnız savaşın ilk YAGMA_YIL yılında.
   const yagmaTuru = ikmal.yagma;
   const yagma = savasta && b.savas?.sonuc !== "yenilgi" && (sec.savasYili ?? (b.savas?.yil_sayac ?? 0) + 1) <= YAGMA_YIL;
   const yagmaBrut = yagma ? yagmaEtkinGuc(b.guc) * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;

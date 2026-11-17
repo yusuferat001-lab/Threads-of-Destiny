@@ -1166,10 +1166,14 @@ function talimSeyrelt(talim: number, er: number, yeni: number): number {
  * Yıl sonu talim: (politika + Talim Alanı artışı) × teçhizat katsayısı (moral dipteyken yarıya iner) − doğal unutma; Talim Alanı limitine kırpılır
  * (limiti aşan eski kayıt ilk yıl sonunda limite iner). Savaş/çatışma kazançları ayrıca eklenir.
  */
-function talimYilSonu(state: CharacterState, b: BirlikDurumu, talim: number, bakimSorunu: boolean): number {
+function talimYilSonu(state: CharacterState, b: BirlikDurumu, talim: number, bakimSorunu: boolean, yagmaTalimi = 0): number {
   const taban = TALIM_TANIMLARI[b.talim_politikasi].delta + TALIM_ALANI_YILLIK[talimKademesi(state)];
   const kazanc = taban > 0 ? taban * kaliteKatsayisi(b, KALITE_TALIM_CARPANI, bakimSorunu) * (b.moral < MORAL_DIP_ESIGI ? 0.5 : 1) : 0;
-  return clamp(talim + kazanc - TALIM_DOGAL_DUSUS, 0, talimUstLimit(state));
+  return clamp(talim + kazanc - TALIM_DOGAL_DUSUS + yagmaTalimi, 0, talimUstLimit(state));
+}
+/** Yağma ikmalinin talime etkisi: YALNIZ savaşın ilk yılında, bir kez (yıllık değil); yağma yoksa 0. Yıl işleme ve "gelecek yıl" önizlemesi aynı fonksiyonu kullanır. */
+function yagmaTalimiBuYil(h: BirlikHesabi, ikmalId: BirlikIkmal, savasta: boolean, savasYili: number | undefined): number {
+  return savasta && h.yagmaBrut > 0 && savasYili === 1 ? IKMAL_TANIMLARI[ikmalId].yagma.talim : 0;
 }
 
 interface MoralGirdisi {
@@ -1223,7 +1227,7 @@ export function gelecekYilDegisimi(state: CharacterState, bg: IsletmeBaglami): {
   const yol = yolEtkisi(state);
   const er = erSayisi(state);
   const yeniEr = Math.min(yillikErBuyumesi(state, doktrin), Math.max(0, komutaLimiti(state) - er));
-  const talimSonra = talimYilSonu(state, b, talimSeyrelt(b.talim, er, yeniEr), bakimSorunu);
+  const talimSonra = talimYilSonu(state, b, talimSeyrelt(b.talim, er, yeniEr), bakimSorunu, yagmaTalimiBuYil(h, ikmalId, savasta, (b.savas?.yil_sayac ?? 0) + 1));
   const moralSonra = moralYilSonu(state, b, { h, savasta, ikmalId, doktrin, yol, bakimSorunu, borc: odenmeyenCeza(state.para + h.net, bg.enflasyon, savasta), olay: 0 });
   const yuvarla = (x: number) => Math.round(x * 10) / 10;
   return { moral: yuvarla(moralSonra - b.moral), talim: yuvarla(talimSonra - b.talim) };
@@ -1419,7 +1423,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   // 8. Talim / tecrübe (talimYilSonu: politika + Talim Alanı, teçhizat katsayısı, unutma, limit).
   const bakimSorunu = !!odenmeyenCeza(state.para + h.net, bg.enflasyon);
-  b.talim = talimYilSonu(state, b, b.talim, bakimSorunu);
+  b.talim = talimYilSonu(state, b, b.talim, bakimSorunu, yagmaTalimiBuYil(h, ikmalId, savasta, b.savas?.yil_sayac ?? 1));
   if (catisma) b.talim += talimKazanci(state, b.talim, catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI);
 
   // 9. Moral: yıllık etkenler + yıl olayları (moralYilSonu); nötr 50'den başlar, bakım yapılmazsa zamanla düşer.

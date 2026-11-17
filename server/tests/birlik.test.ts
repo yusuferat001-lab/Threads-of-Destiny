@@ -1336,11 +1336,12 @@ describe("v67 Madde 4 — güç formülü", () => {
     expect(RUTBE_GUC_ESIGI_ASKER).toEqual({ 2: 18, 3: 70, 4: 150, 5: 340 });
   });
 
-  it("yağma oranları 0,51 / 0,35 / 0,19; subay en çok 4; subay bonusları ~%10 düşük", async () => {
+  it("yağma oranları 0,28 / 0,22 / 0,17; talim −8 / +1 / +5 (tek seferlik); subay en çok 4; subay bonusları ~%10 düşük", async () => {
     const { IKMAL_TANIMLARI, SUBAY_MAKS } = await import("../src/data/birlik");
-    expect(IKMAL_TANIMLARI.yagma_sert.yagma.gucOrani).toBe(0.51);
-    expect(IKMAL_TANIMLARI.yagma_orta.yagma.gucOrani).toBe(0.35);
-    expect(IKMAL_TANIMLARI.yagma_yumusak.yagma.gucOrani).toBe(0.19);
+    expect(IKMAL_TANIMLARI.yagma_sert.yagma.gucOrani).toBe(0.28);
+    expect(IKMAL_TANIMLARI.yagma_orta.yagma.gucOrani).toBe(0.22);
+    expect(IKMAL_TANIMLARI.yagma_yumusak.yagma.gucOrani).toBe(0.17);
+    expect([IKMAL_TANIMLARI.yagma_sert.yagma.talim, IKMAL_TANIMLARI.yagma_orta.yagma.talim, IKMAL_TANIMLARI.yagma_yumusak.yagma.talim]).toEqual([-8, 1, 5]);
     expect(SUBAY_MAKS).toBe(4);
     const { SUBAY_DEGERLERI } = await import("../src/game/subay");
     expect(SUBAY_DEGERLERI.taarruz.saldiri).toEqual([0.081, 0.135, 0.18]);
