@@ -322,8 +322,8 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sabit maaş 8,5 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
-    expect(SOLD).toEqual([9.25, 9.25, 9.25, 9.25, 9.25]);
+  it("sabit maaş 10 ve rütbeyle artmaz; aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([10, 10, 10, 10, 10]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
@@ -352,7 +352,7 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("er payı yalnız haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (%40/%55/%70); görev ganimeti ve yağma doğrudan hazineye", () => {
+  it("er payı yalnız büyük savaş zaferi ganimetinden düşer (%40/%55/%70); haydut/sınır, görev ganimeti ve yağma doğrudan hazineye", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -499,7 +499,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     return b;
   }
 
-  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta çatışmalar arası 3 yıl, savaş sonrası en az 1 yıl", () => {
+  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta çatışmalar arası 2 ya da 3 yıl, savaş sonrası en az 1 yıl", () => {
     const s = asker();
     const b = birlikAl(s);
     b.baris_bekleme = 2;
@@ -510,7 +510,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     // savaş bitti: bekleme bitmiş sayaçla ilk barış yılında (zar tuttu) çatışma çıkar
     b.baris_bekleme = 0;
     b.savas = null;
-    expect(BARIS_BEKLEME_ARALIK).toEqual([2, 2]); // bekleme + 1 = çatışmalar arası tam 3 yıl
+    expect(BARIS_BEKLEME_ARALIK).toEqual([1, 2]); // bekleme + 1 = çatışmalar arası 2 ya da 3 yıl (ortalama 2,5)
     expect(BARIS_YILLIK_IHTIMAL).toBe(1);
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     const sonuc = birlikYilIsle(s, bg(s));
@@ -1222,12 +1222,12 @@ describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
 });
 
 describe("v67 Madde 3 — ekonomi sabitleri", () => {
-  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,15, sold 8,5, savaşta er başı ödeme zammı yok (×1), yıllık sabit er yok", async () => {
+  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,15, sold 10, savaşta er başı ödeme zammı yok (×1), yıllık sabit er yok", async () => {
     const d = await import("../src/data/birlik");
     expect(d.ER_MASRAFI).toBe(0.23);
     expect(d.ERZAK_BIRIMI).toBe(0.13);
     expect(d.ER_BASI_GELIR).toBe(0.15);
-    expect(d.SOLD).toEqual([9.25, 9.25, 9.25, 9.25, 9.25]);
+    expect(d.SOLD).toEqual([10, 10, 10, 10, 10]);
     expect(d.SAVAS_ER_BASI_CARPANI).toBe(1);
     expect(d.BARIS_YILLIK_ER).toBe(0);
     expect(d.KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
@@ -1404,10 +1404,10 @@ describe("v67 Madde 5 — düşman gücü", () => {
     expect(sayim.baskinSinir / sayim.sinir).toBeLessThan(0.48);
   });
 
-  it("barış ganimet aralığı türe göre: haydut 1,9–2,3, sınır 2,5–3,0; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
+  it("barış ganimet aralığı türe göre: haydut 2,0–2,3, sınır 2,2–2,5; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
     const d = await import("../src/data/birlik");
-    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [1.9, 2.3], sinir: [2.5, 3] });
-    expect(d.BARIS_GANIMET_UST).toBe(3);
+    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [2, 2.3], sinir: [2.2, 2.5] });
+    expect(d.BARIS_GANIMET_UST).toBe(2.5);
     expect(d.ZAFER_SERISI_ESIGI).toBe(2);
     expect(d.ZAFER_SERISI_DUSMAN_ARTISI).toBe(0.2);
     expect(d.ZAFER_SERISI_ESIGI_2).toBe(4);

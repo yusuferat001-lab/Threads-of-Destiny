@@ -378,9 +378,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'madalya':
         return `🎖️ ${dil === 'en' ? 'Honour earned' : 'Unvan kazandın'}: ${kt(dil, u.isim ?? '')}`;
       case 'yagma':
-        return en
-          ? `🔥 Plunder this year: +${formatPara(u.tutar ?? 0)} ${pb}.`
-          : `🔥 Bu yıl yağmadan: +${formatPara(u.tutar ?? 0)} ${pb}.`;
+        return ''; // yağma getirisi her yıl ekrana yazılmaz (bütçe dökümünde toplam gelire dahil)
       case 'imtiyaz_bitti':
         return `📜 ${u.hat && IMTIYAZ_ADLARI[u.hat] ? d(IMTIYAZ_ADLARI[u.hat]) : ''}: ${en ? 'expired' : 'sona erdi'}`;
       default:

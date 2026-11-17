@@ -438,7 +438,7 @@ export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [9.25, 9.25, 9.25, 9.25, 9.25];
+export const SOLD = [10, 10, 10, 10, 10];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir); yalnız ana kadro içindir, seferber ve kiralık erler ödeme almaz. */
 export const ER_BASI_GELIR = 0.15;
 /** Görev geliri ek çarpanı (1 = yok). Teçhizat çarpanı 0,75/1/1,25'e inince güç ≈×0,75 oldu; güçle orantılı gelirler (görev, yağma, ganimet) ×1,33 ile yeniden dengelendi (1,11 × 1,333). */
@@ -454,26 +454,25 @@ export const ER_MASRAFI = 0.23;
 export const ERZAK_BIRIMI = 0.13;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
 export const GANIMET_PAYI_KILIT_YIL = 5;
-/** Barış çatışması (haydut / sınır) zafer ganimeti BRÜTÜ (asker payı düşülmeden) = ganimetEtkinGuc(max(40; askerî güç)) × U(a; b); yenilgide ganimet yok. */
-export const BARIS_GANIMET_ARALIK: Record<"haydut" | "sinir", Aralik> = { haydut: [1.9, 2.3], sinir: [2.5, 3.0] };
+/** Barış çatışması (haydut / sınır) zafer ganimeti BRÜTÜ (asker payı düşülmeden) = ganimetEtkinGuc(max(30; askerî güç)) × U(a; b); yenilgide ganimet yok. Haydut/sınır ganimetinden ASKER PAYI DÜŞÜLMEZ (yalnız büyük savaş zaferinden düşer). */
+export const BARIS_GANIMET_ARALIK: Record<"haydut" | "sinir", Aralik> = { haydut: [2.0, 2.3], sinir: [2.2, 2.5] };
 /** Bütçe önizlemeleri için: tüm türlerdeki en yüksek çarpan ve tür ağırlıklı ortalama orta nokta. */
 export const BARIS_GANIMET_UST = Math.max(BARIS_GANIMET_ARALIK.haydut[1], BARIS_GANIMET_ARALIK.sinir[1]);
 export const BARIS_GANIMET_ORTA =
   BARIS_TUR_AGIRLIGI.haydut * ((BARIS_GANIMET_ARALIK.haydut[0] + BARIS_GANIMET_ARALIK.haydut[1]) / 2) +
   BARIS_TUR_AGIRLIGI.sinir * ((BARIS_GANIMET_ARALIK.sinir[0] + BARIS_GANIMET_ARALIK.sinir[1]) / 2);
-/** Ganimet tabanı (haydut ve sınır çatışması): askerî gücü bunun altındaki ordu da zaferde 40 güçlük bir ordunun ganimetini alır. */
-export const GANIMET_TABAN_GUC = 40;
-/** Büyük savaş zaferinde ganimet tabanı: 25 güçlük ordu bile en az 25 güç üzerinden ganimet alır. */
-export const SAVAS_GANIMET_TABAN_GUC = 25;
+/** Ganimet tabanı (haydut, sınır ve büyük savaş): askerî gücü bunun altındaki ordu da zaferde 30 güçlük bir ordunun ganimetini alır. */
+export const GANIMET_TABAN_GUC = 30;
 /**
- * Ganimet ve yağma güç bandı (v67 sonrası): güç `GANIMET_BANTSIZ_GUC`'a kadar BANTSIZ (×1); bu eşikten sonraki her güç dilimi
- * `GANIMET_BANT_KATSAYI` ile sayılır (300–1000 ve sonrası; tavan yok). "Etkin güç" = katsayıyla sayılmış güç (ganimet ve yağma bu sayı üzerinden hesaplanır).
+ * Ganimet ve yağma güç bandı (KADEMELİ, vergi dilimi gibi; bileşik DEĞİL): güç dilimlere bölünür ve her dilim kendi katsayısıyla sayılır,
+ * toplam "etkin güç" olur. 0–400 ×1, 400–600 ×0,8, 600+ ×0,6. Tavan yok. Önceki dilimler sonraki katsayıdan etkilenmez.
  */
-export const GANIMET_BANTSIZ_GUC = 300;
-export const GANIMET_BANT_KATSAYI = 0.7;
+export const GANIMET_BANTLARI: [number, number, number][] = [[0, 400, 1], [400, 600, 0.8], [600, Infinity, 0.6]];
 export function ganimetEtkinGuc(guc: number): number {
   const g = Math.max(0, guc);
-  return g <= GANIMET_BANTSIZ_GUC ? g : GANIMET_BANTSIZ_GUC + GANIMET_BANT_KATSAYI * (g - GANIMET_BANTSIZ_GUC);
+  let toplam = 0;
+  for (const [alt, ust, katsayi] of GANIMET_BANTLARI) toplam += Math.max(0, Math.min(g, ust) - alt) * katsayi;
+  return toplam;
 }
 export function ganimetBrutTemel(guc: number, aralikDegeri: number, taban: number = GANIMET_TABAN_GUC): number {
   return ganimetEtkinGuc(Math.max(taban, guc)) * aralikDegeri;
@@ -483,8 +482,8 @@ export const SAVAS_KISLA_INDIRIMI = 0.25;
 /** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
 export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
 export const ASKER_KARIYER_GUC_TAVANI = 2.5;
-/** Çatışma sonrası bekleme (yıl, bu aralıktan tam sayı çekilir; savaşta sayaç durur, savaştan sonra en az 1 yıl): bekleme + 1 = çatışmalar arası 3 yıl. */
-export const BARIS_BEKLEME_ARALIK: [number, number] = [2, 2];
+/** Çatışma sonrası bekleme (yıl, bu aralıktan tam sayı çekilir; savaşta sayaç durur, savaştan sonra en az 1 yıl): bekleme + 1 = çatışmalar arası 2 ya da 3 yıl (yarı yarıya; ortalama 2,5). */
+export const BARIS_BEKLEME_ARALIK: [number, number] = [1, 2];
 /** Bekleme bittikten sonra her yıl çatışma çıkma şansı (1 = bekleme biter bitmez çıkar). */
 export const BARIS_YILLIK_IHTIMAL = 1;
 export const BARIS_CATISMA_ILK_YIL = 2;
@@ -784,6 +783,22 @@ export function dusmanSaldiriSavunma(tur: BirlikTur | "karma"): { saldiri: numbe
   const t = TUR_TANIMLARI[tur];
   const top = t.saldiri + t.savunma;
   return { saldiri: (2 * t.saldiri) / top, savunma: (2 * t.savunma) / top };
+}
+/** Büyük savaşta düşmanın zayıf tarafı (saldırı ya da savunma) güçlü tarafının en az bu kadarı olur (100'e 60); ikisinin ortalaması korunur. */
+export const DUSMAN_TARAF_MIN_ORAN = 0.6;
+/** Savaşta düşmanın saldırı ve savunma tarafı (E ile çarpılan katsayılar) = baskın birlik dağılımı × arazi çarpanı, zayıf taraf yukarı çekilmiş. */
+export function dusmanSavasTaraflari(tur: BirlikTur | "karma", arazi: BirlikArazi | null): { saldiri: number; savunma: number } {
+  const d = dusmanSaldiriSavunma(tur);
+  let s = d.saldiri * (arazi ? dusmanAraziCarpani(arazi, tur, "saldiri") : 1);
+  let v = d.savunma * (arazi ? dusmanAraziCarpani(arazi, tur, "savunma") : 1);
+  const yuksek = Math.max(s, v);
+  if (yuksek > 0 && Math.min(s, v) / yuksek < DUSMAN_TARAF_MIN_ORAN) {
+    const ort = (s + v) / 2;
+    const buyuk = (2 * ort) / (1 + DUSMAN_TARAF_MIN_ORAN);
+    const kucuk = buyuk * DUSMAN_TARAF_MIN_ORAN;
+    if (s >= v) { s = buyuk; v = kucuk; } else { v = buyuk; s = kucuk; }
+  }
+  return { saldiri: s, savunma: v };
 }
 /**
  * Barış çatışmasında düşmanın arazi çarpanı katalog ortalamasına bölünür: senaryolar düşmanın elverişli birliğini elverişli arazisiyle eşleştirdiği için
@@ -1122,8 +1137,8 @@ export const KARAKOL_KORUMA = [0, 0.15, 0.3, 0.45, 0.6];
 /** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,27 / orta 0,21 / yumuşak 0,16; güç ganimetEtkinGuc bandıyla); yalnız savaşın ilk YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %50/40/30 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
 export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.0053;
-/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet BRÜTÜ (asker payı düşülmeden) = ganimetEtkinGuc(max(25; askerî güç)) × U(5; 7); esir = güç × bu × yıl. Yenilgide ganimet yok. */
-export const SAVAS_ZAFER_GANIMET: Aralik = [5, 7];
+/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet BRÜTÜ (asker payı düşülmeden) = ganimetEtkinGuc(max(30; askerî güç)) × U(6; 8); esir = güç × bu × yıl. Yenilgide ganimet yok. */
+export const SAVAS_ZAFER_GANIMET: Aralik = [6, 8];
 export const SAVAS_ZAFER_ESIR = 0.02;
 /** Kiralık ordu (paralı asker): savaş başına bir kez, iki seviye; savaş süresince tutulur, eğitimli ve pahalıdır. Peşin ve yıllık ücret er başınadır (× gider enflasyonu); yıllık ücret erzak ve masrafı da kapsar (ayrı erzak/er masrafı yok). */
 export type KiralikSeviye = "kucuk" | "buyuk";

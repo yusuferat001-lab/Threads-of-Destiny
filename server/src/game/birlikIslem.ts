@@ -33,6 +33,7 @@ import {
   dusmanGucuHesapla,
   dusmanAraziCarpani,
   dusmanSaldiriSavunma,
+  dusmanSavasTaraflari,
   SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
   BARIS_GANIMET_ORTA,
@@ -903,10 +904,8 @@ export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): S
   const ref = dusmanGucuHesapla(state.yas, "savas", gucHesapla(state, { enflasyon: bg.enflasyon }).guc);
   const tur = sv?.dusman_tur ?? "karma";
   const arazi = sv?.arazi ?? null;
-  const dagilim = dusmanSaldiriSavunma(tur);
-  const araziCS = arazi ? dusmanAraziCarpani(arazi, tur, "saldiri") : 1; // düşmanın saldırı tarafı
-  const araziCV = arazi ? dusmanAraziCarpani(arazi, tur, "savunma") : 1; // düşmanın savunma tarafı
-  const araziC = (araziCS + araziCV) / 2;
+  const taraf = dusmanSavasTaraflari(tur, arazi); // dağılım × arazi; zayıf taraf güçlü tarafın en az %60'ı
+  const araziC = ((arazi ? dusmanAraziCarpani(arazi, tur, "saldiri") : 1) + (arazi ? dusmanAraziCarpani(arazi, tur, "savunma") : 1)) / 2;
   // Keşif subayı tahmin aralığını daraltır (±%6,5 → ±%5,5…%2,5) ve aralığı gerçek değere ortalar; yoksa referans (× zafer serisi hazırlığı) ± %6,5.
   const kesifAralik = subayToplami(state).tahminAralik;
   const daralt = kesifAralik < TAHMIN_ARALIGI_TABAN && !!sv;
@@ -916,7 +915,7 @@ export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): S
     daralt ? [Math.round(taban * oran * (1 - kesifAralik)), Math.round(taban * oran * (1 + kesifAralik))] : [Math.round(taban * hazir * (1 - TAHMIN_ARALIGI_TABAN)), Math.round(taban * hazir * (1 + TAHMIN_ARALIGI_TABAN))];
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, ...(sv && arazi ? { savas: { arazi, dusmanTur: tur, inisiyatif: "savunma" as const } } : {}) });
   return {
-    dusman: { guc: aralik(ref * araziC), saldiri: aralik(ref * dagilim.saldiri * araziCS), savunma: aralik(ref * dagilim.savunma * araziCV) },
+    dusman: { guc: aralik(ref * araziC), saldiri: aralik(ref * taraf.saldiri), savunma: aralik(ref * taraf.savunma) },
     oyuncu: { saldiri: Math.round(d.saldiri), savunma: Math.round(d.savunma) },
     son: sv?.son_catisma ?? null,
     hazirlikli: hazir > 1,
@@ -1111,7 +1110,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim), birlikBakim: r2(h.birlikBakim),
       techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
-      barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, BARIS_GANIMET_ORTA) * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
+      barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, BARIS_GANIMET_ORTA) * bg.enflasyon), // haydut/sınırda asker payı yok
     },
     yol,
   };

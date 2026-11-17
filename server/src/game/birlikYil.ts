@@ -80,7 +80,6 @@ import {
   MADALYA_SOHRET,
   SAVAS_ZAFER_ESIR,
   SAVAS_ZAFER_GANIMET,
-  SAVAS_GANIMET_TABAN_GUC,
   SEFER_DONUS_MORAL,
   SEFER_DONUS_TALIM,
   emirGetir,
@@ -144,6 +143,7 @@ import {
   SAVAS_ZAR_BOLEN,
   dusmanAraziCarpani,
   dusmanSaldiriSavunma,
+  dusmanSavasTaraflari,
   doktrinToplami,
   gorevGetir,
   gorevAdi,
@@ -703,10 +703,9 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   const oyuncuG = inisiyatif === "saldiri" ? d.saldiri : d.savunma;
   // Düşmanın gücü MUTLAKTIR (yaşa göre referans × savaş başında çekilen ±%5 × zafer serisi hazırlığı): bizim gücümüz sonucu doğrudan belirler.
   const E = dusmanGucuHesapla(state.yas, "savas", gucHesapla(state, { enflasyon: bg.enflasyon }).guc) * sv.dusman_orani * (sv.hazirlik ?? 1);
-  const dagilim = dusmanSaldiriSavunma(sv.dusman_tur);
-  // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo).
+  // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo); zayıf taraf güçlü tarafın en az DUSMAN_TARAF_MIN_ORAN'ı kadardır.
   const dusmanYon = inisiyatif === "saldiri" ? "savunma" : "saldiri"; // sen saldırırken düşman savunur, sen savunurken o saldırır
-  const dusmanG = E * dagilim[dusmanYon] * dusmanAraziCarpani(arazi, sv.dusman_tur, dusmanYon);
+  const dusmanG = E * dusmanSavasTaraflari(sv.dusman_tur, arazi)[dusmanYon];
   const rol = ROL_TANIMLARI[karar?.rol ?? "ana"];
   const zarYuzde = () => (d20() - 10.5) / SAVAS_ZAR_BOLEN; // ±%4 (SAVAS_ZAR_YUZDE)
   let sonBizimZar = 0;
@@ -778,7 +777,7 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
   const emir = emirGetir(sv.emir);
   const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
   const ortGanimet = (SAVAS_ZAFER_GANIMET[0] + SAVAS_ZAFER_GANIMET[1]) / 2;
-  const brut = zafer ? ganimetBrutTemel(gucOnce, ortGanimet, SAVAS_GANIMET_TABAN_GUC) * bg.enflasyon * carpan : 0;
+  const brut = zafer ? ganimetBrutTemel(gucOnce, ortGanimet) * bg.enflasyon * carpan : 0;
   const net = brut * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
   const yilSayisi = Math.max(1, (sv.yil_sayac ?? 0) + 1);
   const sonuc: SavasGunuSonucu = {
@@ -951,7 +950,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     const emir = emirGetir(sv.emir);
     const carpan = (1 + subayToplami(state).ganimet + doktrin.ganimet + (yol.ganimet ?? 0) + (emir?.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
     const guc = b.guc;
-    sonuc.brut = r2(ganimetBrutTemel(guc, aralikCek(SAVAS_ZAFER_GANIMET), SAVAS_GANIMET_TABAN_GUC) * bg.enflasyon * carpan);
+    sonuc.brut = r2(ganimetBrutTemel(guc, aralikCek(SAVAS_ZAFER_GANIMET)) * bg.enflasyon * carpan);
     sonuc.erPayi = r2(sonuc.brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
     sonuc.net = r2(sonuc.brut - sonuc.erPayi);
     sonuc.esir = olasilikliYuvarla(guc * SAVAS_ZAFER_ESIR * Math.max(1, sv.yil_sayac ?? state.yil - sv.baslangic_yili));
@@ -1079,7 +1078,7 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   catismaIzleyici.fn?.({ tur, zafer, yas: state.yas, oyuncuGuc: guc, dusmanGuc: E, oyuncuEtkin: oyuncuTaraf, dusmanEtkin: dusmanTaraf, tablo: barisDusmanGucuYas(state.yas, tur) });
   const carpan = (1 + sub.ganimet + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
   const brut = zafer ? ganimetBrutTemel(guc, aralikCek(BARIS_GANIMET_ARALIK[tur])) * bg.enflasyon * carpan * sm.ganimet * (sen?.ganimet ?? 1) : 0;
-  const erPayi = brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
+  const erPayi = 0; // haydut/sınır ganimetinden asker payı düşülmez (yalnız büyük savaş zaferinden)
   const net = brut - erPayi;
   const esirSayisi = zafer ? olasilikliYuvarla(guc * t.esir) : 0;
   const kayipAralik = BARIS_KAYBI[tur][zafer ? "zafer" : "yenilgi"];
@@ -1313,7 +1312,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   // Bozgundan sağ çıkan kanat (genel savaşı kazanırken kanat yenilgisi): yaralı gazi.
   if (catisma && !catisma.kanatZafer && catisma.genelZafer) madalyaVer(state, b, "yarali", uyarilar);
 
-  // 2b. Barış çatışması (savaş dışında 3 yılda bir): vadesi gelince karar bekleyen çatışma kurulur; oyuncu verene dek zaman ilerlemez.
+  // 2b. Barış çatışması (savaş dışında 2 ya da 3 yılda bir, ortalama 2,5): vadesi gelince karar bekleyen çatışma kurulur; oyuncu verene dek zaman ilerlemez.
   if (barisCatismaVadesi(b, savasta) && !b.catisma_bekleyen) barisCatismaKur(state, b);
 
   // 3. Gelir / gider.

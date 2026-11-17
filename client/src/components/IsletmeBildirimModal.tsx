@@ -5,10 +5,10 @@ import { gecenYilBaslik } from '../isletmeAdi';
 import { isletmeUyariMetni } from './IsletmePaneli';
 
 /** Geçen yıl işletmede olan önemli olaylar: hırsızlık, rakip saldırısı, sızdırma, ayrılan çalışan, biten imtiyaz. (Stok yetmemesi ayrı pencerede: stokUyari.ts) */
-const ONEMLI_KODLAR: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'baris_catisma', 'savas_sonu', 'seferberlik_terhis', 'savas_ganimet', 'kale', 'madalya', 'yagma', 'savas_kayip', 'savas_catisma', 'kazanc_ozet', 'kesif_savas'];
+const ONEMLI_KODLAR: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti', 'baris_catisma', 'savas_sonu', 'seferberlik_terhis', 'savas_ganimet', 'kale', 'madalya', 'savas_kayip', 'savas_catisma', 'kazanc_ozet', 'kesif_savas'];
 
 /** Asker: yalnız savaş/ödül haberleri bildirim penceresi açar. Haydut/sınır çatışması kendi karar ekranında; görev yaralıları, kayıplar ve "beklenen/gerçekleşen" özeti ordu ekranının dökümünde kalır. */
-const ASKER_KODLARI: IsletmeUyari['kod'][] = ['savas_sonu', 'savas_ganimet', 'kale', 'madalya', 'yagma', 'savas_catisma', 'seferberlik_terhis', 'kiralik_cekildi', 'limit_asimi_seferber', 'savas_saglik', 'kesif_savas', 'imtiyaz_bitti'];
+const ASKER_KODLARI: IsletmeUyari['kod'][] = ['savas_sonu', 'savas_ganimet', 'kale', 'madalya', 'savas_catisma', 'seferberlik_terhis', 'kiralik_cekildi', 'limit_asimi_seferber', 'savas_saglik', 'kesif_savas', 'imtiyaz_bitti'];
 
 const ANAHTAR = 'kader-carki-isletme-bildirim-yili';
 
