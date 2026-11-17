@@ -690,7 +690,6 @@ export interface PazarDurumu {
   yillikKariyerPuani: number;
   rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
   /** Yalnız Asker: rütbe için gereken askerî güç (pazar payı yerine). */
-  gucSarti: { seviye: number; gerekli: number; mevcut: number; karsilaniyor: boolean } | null;
   yeniRakipKalanYil: number | null;
   /** Müşteri dağılımı ve son yıl değişimleri; piyasa haberleri (en yeni önce). */
   dagilim: { oyuncu: number; rakip: number; kucuk: number; oyuncuDegisim: number; rakipDegisim: number; kucukDegisim: number };
@@ -1104,7 +1103,6 @@ export type BirlikKalite = 'dusuk' | 'orta' | 'yuksek';
 export type BirlikTur = 'okcu' | 'suvari' | 'mizrakli' | 'zirhli' | 'kusatma';
 export type BirlikGanimetPayi = 'az' | 'dengeli' | 'comert';
 export type BirlikTalim = 'hafif' | 'orta' | 'agir';
-export type BirlikTon = 'merhametli' | 'dengeli' | 'sert';
 export type BirlikArazi = 'ova' | 'dag' | 'orman';
 export type BirlikSeferberlik = 'genel' | 'secme';
 interface DilMetni { tr: string; en: string }
@@ -1113,7 +1111,6 @@ export interface BirlikKararGirdisi {
   gorevler?: string[];
   ganimet_payi?: string;
   talim?: string;
-  ton?: string;
 }
 
 export interface BirlikGorunumu {
@@ -1132,8 +1129,8 @@ export interface BirlikGorunumu {
     savunma: number;
     toplam: number;
   };
-  rakipler: { ad: string; guc: number; husumet: number }[];
-  pay: number;
+  /** Asker rütbesi: sıradaki kademe için askerî güç şartı ve yıllık kariyer puanı (pazar yok). */
+  rutbe: { gucSarti: { seviye: number; gerekli: number; mevcut: number; karsilaniyor: boolean } | null; yillikKariyerPuani: number };
   kalite: {
     sayilar: { dusuk: number; orta: number; yuksek: number };
     hedef: BirlikKalite;
@@ -1160,6 +1157,8 @@ export interface BirlikGorunumu {
     politika: BirlikTalim;
     gucYuzde: number;
     kayipYuzde: number;
+    /** Yıl sonunda talimin kesin değişimi (rastgele olaylar hariç). */
+    gelecek: number;
     /** Talim Alanı'nın belirlediği talim üst limiti ve binanın kademesi (0 = bina yok). */
     limit: number;
     alanKademe: number;
@@ -1167,13 +1166,12 @@ export interface BirlikGorunumu {
   };
   politikalar: {
     ganimetPayi: { secili: BirlikGanimetPayi; kilitKalanYil: number; secenekler: { id: BirlikGanimetPayi; ad: DilMetni; oran: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };
-    ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: DilMetni; aciklama: DilMetni; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };
   };
-  moral: { deger: number; gucYuzde: number; sertlik: number };
+  moral: { deger: number; gucYuzde: number; sertlik: number; gelecek: number };
   gorevler: {
     slot: { kullanilan: number; toplam: number };
     secili: string[];
-    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
+    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number; bonuslar: { kod: 'moral' | 'sohret' | 'otorite' | 'ahlak' | 'sertlik' | 'ganimet'; yon: 1 | -1 }[] }[];
   };
   doktrin: {
     secilen: { id: string; simge: string; ad: DilMetni; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];

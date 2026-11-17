@@ -1144,7 +1144,6 @@ export type BirlikKalite = "dusuk" | "orta" | "yuksek";
 export type BirlikTur = "okcu" | "suvari" | "mizrakli" | "zirhli" | "kusatma";
 export type BirlikGanimetPayi = "az" | "dengeli" | "comert";
 export type BirlikTalim = "hafif" | "orta" | "agir";
-export type BirlikTon = "merhametli" | "dengeli" | "sert";
 export type BirlikArazi = "ova" | "dag" | "orman";
 export type BirlikRol = "onc" | "ana" | "yedek";
 /** Savaş planındaki ikmal kararı: yalnız üç yağma türü. */
@@ -1355,7 +1354,6 @@ export interface BirlikDurumu {
   ganimet_payi: BirlikGanimetPayi;
   /** Ganimet payı en erken bu oyun yılında yeniden değiştirilebilir (5 yılda bir); yoksa/null = serbest. */
   ganimet_kilit_bitis?: number | null;
-  ton: BirlikTon;
   moral: number;
   sertlik: number;
   /** Açık görev id'leri (slot sayısı rütbeyle). */
@@ -1383,6 +1381,8 @@ export interface BirlikDurumu {
   baris_bekleme?: number;
   /** Her tür için (haydut, sınır, büyük savaş) arka arkaya zafer sayısı; yenilgide sıfırlanır; ≥3 iken düşman +%10–15 güçlenir. */
   zafer_serisi?: { haydut: number; sinir: number; savas: number };
+  /** Ömür boyu toplam zafer sayıları (seri sıfırlansa da kalır; 'Fatih' hayat amacı için, v67 Madde 7). */
+  zafer_toplam?: { haydut: number; sinir: number; savas: number };
   /** Çıkmış ama oyuncunun henüz karar vermediği barış çatışması (karar verilene dek zaman ilerlemez). */
   catisma_bekleyen?: BirlikCatismaBekleyen | null;
   /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */

@@ -1,5 +1,6 @@
 import { subayToplami, SUBAY_TAVANLARI, TAHMIN_ARALIGI_TABAN } from "./subay";
-import { isletmeBaglami } from "./stateManager";
+import { isletmeBaglami, yillikKariyerPuaniHesapla } from "./stateManager";
+import { rutbeGucEsigi } from "../data/rutbeler";
 import type {
   CatismaKarariDurumu,
   CatismaSonucuGorunum,
@@ -15,7 +16,6 @@ import type {
   BirlikSavasKarari,
   BirlikSeferberlik,
   BirlikTalim,
-  BirlikTon,
   BirlikTur,
   CharacterState,
   SonucEtkisi,
@@ -47,7 +47,6 @@ import {
   GANIMET_SIRASI,
   ganimetArtiEksi,
   talimArtiEksi,
-  tonArtiEksi,
   GOREVLER,
   IADE_ORANI,
   IKMAL_SIRASI,
@@ -72,8 +71,6 @@ import {
   talimKayipEtkisi,
   TALIM_SIRASI,
   TALIM_TANIMLARI,
-  TON_SIRASI,
-  TON_TANIMLARI,
   TUR_SIRASI,
   TUR_TANIMLARI,
   turGucluZayif,
@@ -98,7 +95,6 @@ import {
   techizatAdi,
   turAdi,
 } from "../data/birlik";
-import { askerGucleri, aktifRakipler, askerRakipGucCarpani, pazarPayiHesapla } from "../data/pazar";
 import type { IsletmeBaglami } from "./isletme";
 import {
   birlikAl,
@@ -129,7 +125,7 @@ import {
   talimUstLimit,
 } from "./birlik";
 import { SAVAS_SURE } from "../data/dunyaDonemleri";
-import { barisCatismaCoz, barisCatismaOtomatik, catismaBekliyorMu, esirleriIsle, savasBaslat, savasGunuCoz, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
+import { barisCatismaCoz, barisCatismaOtomatik, catismaBekliyorMu, esirleriIsle, gelecekYilDegisimi, savasBaslat, savasGunuCoz, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
 import { olasilikliYuvarla } from "./isletme";
 
 // ── Yardımcılar ─────────────────────────────────────────────────────────────
@@ -147,7 +143,6 @@ export interface BirlikKararGirdisi {
   gorevler?: string[];
   ganimet_payi?: string;
   talim?: string;
-  ton?: string;
 }
 
 /** Görev seçimi + üç politika. Önce doğrular, sonra uygular. Turu tüketmez. */
@@ -170,14 +165,12 @@ export function birlikKararUygula(state: CharacterState, k: BirlikKararGirdisi):
   if (ganimetDegisiyor && rutbeIndeksi(state) < 1) throw new Error("Ganimet payını ancak ikinci rütbeden itibaren belirleyebilirsin.");
   if (ganimetDegisiyor && kilitKalan(state, b.ganimet_kilit_bitis ?? null) > 0) throw new Error("Ganimet payı 5 yılda bir değiştirilebilir.");
   if (k.talim !== undefined && !TALIM_SIRASI.includes(k.talim as BirlikTalim)) throw new Error("Geçersiz talim politikası.");
-  if (k.ton !== undefined && !TON_SIRASI.includes(k.ton as BirlikTon)) throw new Error("Geçersiz komuta tonu.");
   if (k.gorevler !== undefined) b.gorevler = [...k.gorevler];
   if (ganimetDegisiyor) {
     b.ganimet_payi = k.ganimet_payi as BirlikGanimetPayi;
     b.ganimet_kilit_bitis = state.yil + GANIMET_PAYI_KILIT_YIL;
   }
   if (k.talim !== undefined) b.talim_politikasi = k.talim as BirlikTalim;
-  if (k.ton !== undefined) b.ton = k.ton as BirlikTon;
 }
 
 // ── Doktrin ─────────────────────────────────────────────────────────────────
@@ -773,8 +766,8 @@ export interface BirlikGorunumu {
     savunma: number;
     toplam: number;
   };
-  rakipler: { ad: string; guc: number; husumet: number }[];
-  pay: number;
+  /** Asker rütbesi (v67 Madde 7): sıradaki kademe için askerî güç şartı ve yıllık kariyer puanı (pazar yok). */
+  rutbe: { gucSarti: { seviye: number; gerekli: number; mevcut: number; karsilaniyor: boolean } | null; yillikKariyerPuani: number };
   kalite: {
     sayilar: { dusuk: number; orta: number; yuksek: number };
     hedef: BirlikKalite;
@@ -816,6 +809,8 @@ export interface BirlikGorunumu {
     politika: BirlikTalim;
     gucYuzde: number;
     kayipYuzde: number;
+    /** Yıl sonunda talimin kesin değişimi (yeni erlerin seyreltmesi dahil; rastgele olaylar hariç). */
+    gelecek: number;
     /** Talim Alanı'nın belirlediği talim üst limiti ve binanın kademesi (0 = bina yok). */
     limit: number;
     alanKademe: number;
@@ -823,13 +818,13 @@ export interface BirlikGorunumu {
   };
   politikalar: {
     ganimetPayi: { secili: BirlikGanimetPayi; kilitKalanYil: number; secenekler: { id: BirlikGanimetPayi; ad: { tr: string; en: string }; oran: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
-    ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
   };
-  moral: { deger: number; gucYuzde: number; sertlik: number };
+  /** `gelecek`: yıl sonunda moralin kesin değişimi (rastgele olaylar hariç; kararlarla anında değişir). */
+  moral: { deger: number; gucYuzde: number; sertlik: number; gelecek: number };
   gorevler: {
     slot: { kullanilan: number; toplam: number };
     secili: string[];
-    katalog: { id: string; simge: string; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
+    katalog: { id: string; simge: string; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; minGuc: number; erBasi: number; risk: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number; bonuslar: { kod: "moral" | "sohret" | "otorite" | "ahlak" | "sertlik" | "ganimet"; yon: 1 | -1 }[] }[];
   };
   doktrin: {
     secilen: { id: string; simge: string; ad: { tr: string; en: string }; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
@@ -928,6 +923,21 @@ export function savasKiyasiHesapla(state: CharacterState, bg: IsletmeBaglami): S
   };
 }
 
+/** Görev kartı rozetleri: yönler (sayı yok). Sertlik artışı kötü sayılır (istemci kırmızı çizer). */
+function gorevBonuslari(g: { moral?: number; sohret?: number; otorite?: number; ahlak?: number; sertlik: number; ganimet: number }): BirlikGorunumu["gorevler"]["katalog"][number]["bonuslar"] {
+  const r: BirlikGorunumu["gorevler"]["katalog"][number]["bonuslar"] = [];
+  const ekle = (kod: "moral" | "sohret" | "otorite" | "ahlak" | "sertlik" | "ganimet", v: number | undefined) => {
+    if (v) r.push({ kod, yon: v > 0 ? 1 : -1 });
+  };
+  ekle("moral", g.moral);
+  ekle("sohret", g.sohret);
+  ekle("otorite", g.otorite);
+  ekle("ahlak", g.ahlak);
+  ekle("sertlik", g.sertlik);
+  ekle("ganimet", g.ganimet);
+  return r;
+}
+
 export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami): BirlikGorunumu {
   const b = birlikAl(state);
   const cag = state.cag;
@@ -936,8 +946,6 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
   const er = erSayisi(state);
   const paylar = turPaylari(b);
   const gp = gorevPaylari(state);
-  const gucParcasi = askerGucleri(state);
-  const kk = askerRakipGucCarpani(state);
   const bonuslar = d.bonuslar.map((x) => ({
     kod: x.kod,
     ad: GUC_ETIKETLERI[x.kod] ?? { tr: x.kod, en: x.kod },
@@ -951,6 +959,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
     .filter((x): x is NonNullable<typeof x> => !!x)
     .map((x) => ({ id: x.id, simge: x.simge, ad: x.ad, seviye: x.seviye, acimasiz: x.acimasiz, etki: x.etki as Record<string, number> }));
   const k = state.ulke.savasta ? savasKarariHazirla(state) : null;
+  const gelecek = gelecekYilDegisimi(state, bg);
   return {
     er,
     limit: { komuta: komutaLimiti(state), kisla: kislaLimiti(state), kislaKademe: kislaKademesi(state), seferberlik: !!b.savas?.seferberlik, tavan: ER_TAVANI, asim: limitAsimEri(state) },
@@ -967,8 +976,16 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       savunma: Math.round(d.savunma),
       toplam: Math.round(d.guc),
     },
-    rakipler: [], // Asker'de rakip komutan yok: tehdit yalnız düşman çatışması ve savaştır
-    pay: Math.round(pazarPayiHesapla(state) * 1000) / 10,
+    rutbe: {
+      gucSarti: (() => {
+        const sonraki = (state.rutbe_seviye ?? 1) + 1;
+        const gerekli = rutbeGucEsigi(state.meslek, sonraki);
+        if (gerekli === undefined || sonraki > 5) return null;
+        const mevcut = Math.round(d.guc);
+        return { seviye: sonraki, gerekli, mevcut, karsilaniyor: mevcut >= gerekli };
+      })(),
+      yillikKariyerPuani: Math.round(yillikKariyerPuaniHesapla(state) * 10) / 10,
+    },
     kalite: {
       sayilar: { ...b.kalite },
       hedef: b.hedef_kalite,
@@ -1013,6 +1030,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       politika: b.talim_politikasi,
       gucYuzde: Math.round(talimGucEtkisi(etkinTalim(state)) * 1000) / 10,
       kayipYuzde: Math.round(talimKayipEtkisi(etkinTalim(state)) * 1000) / 10,
+      gelecek: gelecek.talim,
       limit: talimUstLimit(state),
       alanKademe: talimKademesi(state),
       politikalar: TALIM_SIRASI.map((id) => ({
@@ -1025,9 +1043,8 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         kilitKalanYil: kilitKalan(state, b.ganimet_kilit_bitis ?? null),
         secenekler: GANIMET_SIRASI.map((id) => ({ id, ad: GANIMET_PAYI_TANIMLARI[id].ad, oran: GANIMET_PAYI_TANIMLARI[id].oran, moral: GANIMET_PAYI_TANIMLARI[id].moral, ...ganimetArtiEksi(id) })),
       },
-      ton: { secili: b.ton, secenekler: TON_SIRASI.map((id) => ({ id, ad: TON_TANIMLARI[id].ad, aciklama: TON_TANIMLARI[id].aciklama, moral: TON_TANIMLARI[id].moral, ...tonArtiEksi(id) })) },
     },
-    moral: { deger: Math.round(b.moral), gucYuzde: Math.round(moralGucEtkisi(b.moral) * 100), sertlik: Math.round(b.sertlik) },
+    moral: { deger: Math.round(b.moral), gucYuzde: Math.round(moralGucEtkisi(b.moral) * 100), sertlik: Math.round(b.sertlik), gelecek: gelecek.moral },
     gorevler: {
       slot: { kullanilan: gp.length, toplam: gorevSlotSayisi(state) },
       secili: [...b.gorevler],
@@ -1037,7 +1054,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         return {
           id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * gorevErOrani(pay?.er ?? erSayisi(state)) * bg.enflasyon),
           risk: gorevRiski(g), yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
-          erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0),
+          erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0), bonuslar: gorevBonuslari(g),
         };
       }),
     },

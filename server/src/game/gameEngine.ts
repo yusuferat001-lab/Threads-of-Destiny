@@ -24,7 +24,7 @@ import {
   type SavasKarariDurumu,
 } from "./birlikIslem";
 import { birlikSenkron, doktrinBekliyorMu, erSayisi, hazinePayiKazanctan } from "./birlik";
-import { KISLA_ER_LIMITI } from "../data/birlik";
+import { ASKER_OLAY_OLCEGI, KISLA_ER_LIMITI } from "../data/birlik";
 import { subayEtkiSatirlari, type SubayEtkiSatiri } from "./subay";
 import { yeniErEkle } from "./birlikYil";
 import { randomUUID } from "crypto";
@@ -138,6 +138,7 @@ import {
   rakiplerGuncelle,
   musteriEkle,
   pazarYillikUygula,
+  askerKariyerPuaniUygula,
   yillikKariyerPuaniHesapla,
   krediAl,
   krediPazarlik,
@@ -2188,6 +2189,7 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
           // yüksek bir rakip düşük ihtimalle misilleme yapar (§13).
           rakiplerGuncelle(state, yasArtisi);
           // Meslek pazarı: pasif güç, pazar payına bağlı kariyer puanı, yeni rakip girişi.
+          askerKariyerPuaniUygula(state, yasArtisi);
           const pazarMesaji = pazarYillikUygula(state, yasArtisi);
           if (pazarMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${pazarMesaji}` : pazarMesaji;
@@ -3717,7 +3719,7 @@ const SEHIR_ISTEKLERI: YonetimIstekTanimi[] = [
   },
   {
     id: "rakibe_darbe", hat: "yonetici", minIliski: 80, iliskiBedeli: 28, cooldownYil: 8, tabanSans: 56,
-    meslekler: ISLETMELI_MESLEKLER, sehirSansi: true, rusvetBonus: 20,
+    meslekler: ISLETMELI_MESLEKLER.filter((m) => m !== "Asker"), sehirSansi: true, rusvetBonus: 20, // Asker'de pazar rakibi yok (v67 Madde 7)
     kullanilabilir: (state) => state.rakipler.some((r) => !r.yenildi),
     uygula: (state, enflasyon) => enGucluRakibeDarbe(state, enflasyon),
   },
@@ -4404,7 +4406,7 @@ export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
     maliyet: tanim.maliyet ? Math.max(1, paraYuvarla(tanim.maliyet * giderEnflasyonCarpani(state))) : 0,
     rakibeYonelik: !!(tanim.rakipKirmaYuzde || tanim.rakipYenilt),
     rakipKirmaYuzde: tanim.rakipYenilt ? 100 : Math.round((tanim.rakipKirmaYuzde ?? 0) * 100),
-    musteriKazanci: Math.round(((tanim.basarili.musteri ?? 0) * (state.pazar_musteri ?? 416)) / PAZAR_REF_MUSTERI),
+    musteriKazanci: Math.round(((tanim.basarili.musteri ?? 0) * karanlikIsOlcegi(state, 416)) / PAZAR_REF_MUSTERI),
     meslegeOzel: !!tanim.meslekler,
     kalanYil: kotuIsKalanYil(state, tanim.id),
     calisanIsi: !!tanim.calisanIsi && isletmeAktif(state),
@@ -4466,8 +4468,6 @@ export interface PazarDurumu {
   yillikKariyerPuani: number;
   /** Sıradaki rütbe bir pazar payı istiyorsa: hedef kademe + gereken yüzde; yoksa null. */
   rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
-  /** Yalnız Asker: rütbe için gereken askerî güç (pazar payı yerine). */
-  gucSarti: { seviye: number; gerekli: number; mevcut: number; karsilaniyor: boolean } | null;
   /** Yenilen rakibin yerine yenisinin geleceği yıla kalan süre (yoksa null). */
   yeniRakipKalanYil: number | null;
   /** Müşteri dağılımı (yuvarlanmış) ve son yıldaki değişimleri; Asker/Din Adamı istemcisi yalnız payı gösterir. */
@@ -4494,13 +4494,18 @@ function dagilimOzeti(state: CharacterState): PazarDurumu["dagilim"] {
   };
 }
 
+/** Karanlık iş "müşteri" kazancının ölçeği: Asker'de sabit (pazar yok), diğerlerinde pazar büyüklüğü. */
+function karanlikIsOlcegi(state: CharacterState, varsayilan: number): number {
+  return state.meslek === "Asker" ? ASKER_OLAY_OLCEGI : state.pazar_musteri ?? varsayilan;
+}
+
 export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
   const adlar = pazarAdlariGetir(state.meslek);
   const dil = state.dil;
   if (!adlar) {
     return {
       aktif: false, pazarAdi: "", simge: "", pazarPayi: 0, musteri: 0, pazarMusteri: 0, rakipler: [],
-      digerPay: 0, maasEtkisi: 0, yillikKariyerPuani: 0, rutbeSarti: null, gucSarti: null, yeniRakipKalanYil: null,
+      digerPay: 0, maasEtkisi: 0, yillikKariyerPuani: 0, rutbeSarti: null, yeniRakipKalanYil: null,
       dagilim: { oyuncu: 0, rakip: 0, kucuk: 0, oyuncuDegisim: 0, rakipDegisim: 0, kucukDegisim: 0 }, haberler: [],
     };
   }
@@ -4529,12 +4534,6 @@ export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
       gerekli !== undefined && sonraki <= 5
         ? { seviye: sonraki, gerekliPay: Math.round(gerekli * 100), karsilaniyor: pay >= gerekli }
         : null,
-    gucSarti: (() => {
-      const g = rutbeGucEsigi(state.meslek, sonraki);
-      if (g === undefined || sonraki > 5) return null;
-      const mevcut = Math.round(state.isletme?.birlik?.guc ?? 0);
-      return { seviye: sonraki, gerekli: g, mevcut, karsilaniyor: mevcut >= g };
-    })(),
     yeniRakipKalanYil: state.rakip_yeni_yil != null ? Math.max(0, state.rakip_yeni_yil - state.yil) : null,
     dagilim: dagilimOzeti(state),
     haberler: state.piyasa_gunlugu ?? [],
@@ -4626,7 +4625,7 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
   }
   if (etki.kariyer_puani) state.kariyer_puani += etki.kariyer_puani;
   if (etki.musteri) {
-    const olcekli = (etki.musteri * (state.pazar_musteri ?? PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI;
+    const olcekli = (etki.musteri * karanlikIsOlcegi(state, PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI;
     if (state.meslek === "Asker" && state.isletme?.birlik) {
       // Asker: karanlık işin "müşteri" kazancı er devşirmesidir (komuta limitine kadar); piyasa akışı er sayısını değiştirmez.
       const bg = isletmeBaglami(state);

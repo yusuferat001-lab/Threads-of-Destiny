@@ -55,7 +55,7 @@ import {
 import { hazinePayiKazanctan } from "./birlik";
 import { kesifSavasHaberi, savasZariDusmani } from "./birlikYil";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
-import { ASKER_PAZAR_BASLANGIC, BASLANGIC_ER, ASKER_KARIYER_PUANI_KATSAYISI, ASKER_KARIYER_GUC_TAVANI, dusmanReferansGucuYas } from "../data/birlik";
+import { BASLANGIC_ER, ASKER_KARIYER_PUANI_KATSAYISI, ASKER_KARIYER_GUC_TAVANI, dusmanReferansGucuYas } from "../data/birlik";
 import {
   DONEM_SURE,
   DONEM_ADLARI,
@@ -1305,6 +1305,11 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.rakip_yeni_yil === undefined) state.rakip_yeni_yil = null;
   // İşletme v2 (§45): toplam pazar, rakip saldırı eşikleri, vergi çarpanı.
   if (typeof state.pazar_musteri !== "number") state.pazar_musteri = 400;
+  // v67 Madde 7: Asker'de pazar payı ve pazar rakipleri yok; eski kayıttaki pazar verisi sıfırlanır.
+  if (state.meslek === "Asker") {
+    state.pazar_musteri = 0;
+    state.rakipler = [];
+  }
   if (state.rakip_sonraki_saldiri_yili === undefined) state.rakip_sonraki_saldiri_yili = null;
   if (state.ekstra_vergi_sonraki_yil === undefined) state.ekstra_vergi_sonraki_yil = null;
   delete (state as unknown as Record<string, unknown>).rakip_esikler;
@@ -1490,10 +1495,11 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
     }
   }
 
-  // Asker (birlik modu): 20 er ile başlar; toplam pazar (şehirdeki silahlı kuvvetler) ~185–205 askerî güç ölçeğindedir.
+  // Asker (birlik modu): 20 er ile başlar. Asker'de pazar payı ve pazar rakibi yoktur (v67 Madde 7): pazar_musteri 0, rakipler boş.
   if (meslek === "Asker") {
     state.meslek_musteri = BASLANGIC_ER;
-    state.pazar_musteri = Math.round(ASKER_PAZAR_BASLANGIC[0] + Math.random() * (ASKER_PAZAR_BASLANGIC[1] - ASKER_PAZAR_BASLANGIC[0]));
+    state.pazar_musteri = 0;
+    state.rakipler = [];
   }
 
   // Meslek pazarı (data/pazar.ts): P × (%8–9 + yatkınlık kademesi + aile mirası) müşteriyle başla.
@@ -1501,7 +1507,7 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
     state.meslek_musteri = baslangicMusteri(state.pazar_musteri, state.meslek_yatkinlik_seviyesi);
   }
   // İki rakip (v8.1): büyük %44–51, ikinci %28–34 (P'nin kesri); rakipler[0] = büyük, rakip_adi onunla aynı kişi.
-  if (state.rakipler.length === 0) {
+  if (meslek !== "Asker" && state.rakipler.length === 0) {
     const [buyukM, ikinciM] = baslangicRakipMusterileri(state.pazar_musteri, state.meslek_musteri);
     const ikinciAd = rastgeleBirIsimSec(state.cag, state.bolge, [state.isim ?? "", state.dost_adi, state.es_adi ?? "", state.rakip_adi]);
     state.rakipler = [
@@ -3293,6 +3299,12 @@ export function pazarYillikUygula(state: CharacterState, yasArtisi: number): str
   const mesaj = piyasaYillikUygula(state, yasArtisi);
   state.kariyer_puani += yillikKariyerPuaniHesapla(state) * yasArtisi;
   return mesaj;
+}
+
+/** Asker'in yıllık kariyer puanı (askerî güçten; pazar yok — v67 Madde 7). Yıl hattında pazarYillikUygula'dan bağımsız çağrılır. */
+export function askerKariyerPuaniUygula(state: CharacterState, yasArtisi: number): void {
+  if (yasArtisi <= 0 || state.meslek !== "Asker") return;
+  state.kariyer_puani += yillikKariyerPuaniHesapla(state) * yasArtisi;
 }
 
 /** Yıllık: rakiplerin husumeti yavaşça soğur (müşteri hareketi piyasaYillikUygula'da). */

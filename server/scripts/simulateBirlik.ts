@@ -20,7 +20,7 @@ import {
   vebaBaslat,
   vebaBitisKontrolEt,
   vebaBaslamaliMi,
-  pazarYillikUygula,
+  askerKariyerPuaniUygula,
   yonetimYillikUygula,
   rutbeGuncelle,
   isletmeBaglami,
@@ -32,7 +32,6 @@ import {
 } from "../src/game/stateManager";
 import { isletmeProfiliGetir, yatirimTanimiGetir } from "../src/data/meslekProfilleri";
 import { calisanLimiti, adaylariGerekirseYenile } from "../src/game/isletme";
-import { pazarPayiHesapla } from "../src/data/pazar";
 import { doktrinBekleyenSeviye, erSayisi, komutaLimiti, gorevSlotSayisi, birlikAl, gucHesapla } from "../src/game/birlik";
 import { birlikKararUygula, birlikSec, doktrinSec, techizatSec, savasKarariBekliyorMu, savasKarariDurumu, savasKarariVer } from "../src/game/birlikIslem";
 import { barisCatismaOtomatik } from "../src/game/birlikYil";
@@ -177,7 +176,6 @@ interface Omur {
   kalem: Record<string, number>;
   enf: number[];
   er: number[];
-  pay: number[];
   guc: number[];
   ganimetOrani: number[];
   rutbeYas: (number | null)[];
@@ -198,7 +196,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, "Asker");
-  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, borcYili: 0, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], puan: [], un: [], sonEr: 0, olduYil: YIL };
+  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, borcYili: 0, savasKaybi: [], zafer: { haydut: [0, 0], sinir: [0, 0], savas: [0, 0] }, gucRutbe: [[], [], [], [], []], puan: [], un: [], sonEr: 0, olduYil: YIL };
   let savasOncesi = 0;
   let savasta = false;
   for (let y = 0; y < YIL; y++) {
@@ -220,7 +218,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
     s.yil += 1;
     s.yas += 1;
     pasifEkonomiUygula(s, 1);
-    pazarYillikUygula(s, 1);
+    askerKariyerPuaniUygula(s, 1);
     krediYillikUygula(s, 1);
     yonetimYillikUygula(s, 1);
     if (s.yonetim_talep) {
@@ -262,7 +260,6 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
     }
     o.enf.push(enflasyonCarpani(s));
     o.er.push(erSayisi(s));
-    o.pay.push(pazarPayiHesapla(s) * 100);
     o.guc.push(birlikAl(s).guc);
     o.puan.push(s.kariyer_puani);
     o.un.push(s.un);
@@ -277,7 +274,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
       if (process.env.SIM_BATMA) console.log(`  BATTI y${y + 1} ${tarz} R${s.rutbe_seviye} er=${erSayisi(s)} para=${s.para.toFixed(0)} net=${d?.net} savas=${s.ulke.savasta} kredi=${s.kredi?.kalanBorc ?? 0} ekip=${s.ekip.length} kalite=${JSON.stringify(birlikAl(s).kalite)} birlik=${birlikAl(s).birlik_turler.length}`);
     }
     if (TRACE && cs) console.log(`    y${y + 1} çatışma ${cs.tur} ${cs.zafer ? "zafer" : "yenilgi"} ganimet=${cs.ganimet} guc=${Math.round(birlikAl(s).guc)}`);
-    if (TRACE && (y % 5 === 4 || y < 8)) console.log(`  y${y + 1} R${s.rutbe_seviye} er=${erSayisi(s)} guc=${Math.round(birlikAl(s).guc)} pay=${(pazarPayiHesapla(s) * 100).toFixed(1)}% net=${d?.net} para=${s.para.toFixed(0)} moral=${Math.round(birlikAl(s).moral)} talim=${Math.round(birlikAl(s).talim)} kalite=${JSON.stringify(birlikAl(s).kalite)} savas=${!!s.ulke.savasta}`);
+    if (TRACE && (y % 5 === 4 || y < 8)) console.log(`  y${y + 1} R${s.rutbe_seviye} er=${erSayisi(s)} guc=${Math.round(birlikAl(s).guc)} net=${d?.net} para=${s.para.toFixed(0)} moral=${Math.round(birlikAl(s).moral)} talim=${Math.round(birlikAl(s).talim)} kalite=${JSON.stringify(birlikAl(s).kalite)} savas=${!!s.ulke.savasta}`);
     if (s.yas >= 90) {
       o.olduYil = y;
       break;
@@ -336,7 +333,7 @@ for (const cag of CAGLAR) {
       }
     }
     console.log(
-      `[${tarz.padEnd(8)}] net@30/40/50 = ${f(yasNet(30))}/${f(yasNet(40))}/${f(yasNet(50))} | er@60 ort ${f(ort(er60), 0)} med ${f(med(er60), 0)} | pay@60 ${f(ort(omurler.map((o) => o.pay[Math.min(o.pay.length - 1, 44)] ?? 0)))}% | ganimet/gelir ${f(ganimet * 100, 0)}% | savaş sonrası kalan ${savasKalan.length ? f(med(savasKalan) * 100, 0) + "%" : "-"} (n=${savasKalan.length}) | batan ${f((omurler.filter((o) => o.batti).length / N) * 100, 0)}% | ${rutbeOrt.join(" ")}`
+      `[${tarz.padEnd(8)}] net@30/40/50 = ${f(yasNet(30))}/${f(yasNet(40))}/${f(yasNet(50))} | er@60 ort ${f(ort(er60), 0)} med ${f(med(er60), 0)} | ganimet/gelir ${f(ganimet * 100, 0)}% | savaş sonrası kalan ${savasKalan.length ? f(med(savasKalan) * 100, 0) + "%" : "-"} (n=${savasKalan.length}) | batan ${f((omurler.filter((o) => o.batti).length / N) * 100, 0)}% | ${rutbeOrt.join(" ")}`
     );
   }
 }

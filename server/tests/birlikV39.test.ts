@@ -590,9 +590,8 @@ describe("ganimet payı 5 yılda bir değişir", () => {
     const s = asker();
     s.rutbe_seviye = 2;
     birlikKararUygula(s, { ganimet_payi: "az" });
-    birlikKararUygula(s, { talim: "agir", ton: "sert" });
+    birlikKararUygula(s, { talim: "agir" });
     expect(birlikAl(s).talim_politikasi).toBe("agir");
-    expect(birlikAl(s).ton).toBe("sert");
   });
 });
 

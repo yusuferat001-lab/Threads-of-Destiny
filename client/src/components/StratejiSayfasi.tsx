@@ -253,18 +253,11 @@ function iliskiKademe(v: number, en: boolean): string {
   return en ? 'cold' : 'soğuk';
 }
 
-/**
- * Meslek pazarı kartı: oyuncunun gücü, rakiplerin gücü ve pazar payları tek bir
- * yığılmış çubukta; altında maaşa etkisi, yıllık kariyer puanı katkısı ve
- * (varsa) sıradaki rütbenin pazar şartı.
- */
-function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; meslek: string; birlik?: IsletmeGorunumu['birlik'] }) {
+/** Asker: pazar payı yok (v67 Madde 7) — askerî güç ve yıllık kariyer puanı kartı. */
+function AskerGucKarti({ birlik }: { birlik: NonNullable<IsletmeGorunumu['birlik']> }) {
   const { dil } = useDil();
   const en = dil === 'en';
-  const kitle = kitleSozlugu(meslek, en ? 'en' : 'tr');
-  // Asker: pazar payı yok — yerine askerî güç ve rakip komutanların gücü gösterilir.
-  if (birlik) {
-    return (
+  return (
       <div className="aile-koken-karti pazar-karti">
         <h3>⚔️ {en ? 'Military Strength' : 'Askerî Güç'}</h3>
         <ul className="pazar-satirlari">
@@ -273,7 +266,7 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
           </li>
         </ul>
         <p className="pazar-etki">
-          🎖️ {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
+          🎖️ {en ? 'Career XP' : 'Kariyer puanı'} +{birlik.rutbe.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
         </p>
         <p className="pazar-ipucu">
           {en
@@ -281,8 +274,18 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
             : 'Gücün rütbeyi, kariyer puanını ve görev ile yağmadan kazandığını belirler.'}
         </p>
       </div>
-    );
-  }
+  );
+}
+
+/**
+ * Meslek pazarı kartı: oyuncunun gücü, rakiplerin gücü ve pazar payları tek bir
+ * yığılmış çubukta; altında maaşa etkisi, yıllık kariyer puanı katkısı ve
+ * (varsa) sıradaki rütbenin pazar şartı.
+ */
+function PazarKarti({ pazar, meslek }: { pazar: PazarDurumu; meslek: string }) {
+  const { dil } = useDil();
+  const en = dil === 'en';
+  const kitle = kitleSozlugu(meslek, en ? 'en' : 'tr');
   const yuzde = (v: number) => formatYuzde(dil, v);
   const isaretli = (v: number) => (v > 0 ? '+' : v < 0 ? '−' : '') + formatYuzde(dil, Math.abs(v));
   return (
@@ -334,11 +337,7 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
       )}
       <PiyasaHaberleri pazar={pazar} sayilarGoster={pazar.pazarMusteri > 0 && pazar.musteri > 0} adet={3} meslek={meslek} />
       <p className="pazar-ipucu">
-        {meslek === 'Asker'
-          ? en
-            ? 'Your standing grows with victories, a strong army and good officers; every blow to a rival commander lifts you above them.'
-            : 'Payın zaferlerle, güçlü bir orduyla ve iyi subaylarla büyür; rakip komutana indirdiğin her darbe seni onun önüne geçirir.'
-          : meslek === 'Din Adamı'
+        {meslek === 'Din Adamı'
             ? en
               ? 'Your share grows with your good works, generous donations and good clergy; every blow to a rival hands you their believers.'
               : 'Payın hayırlarla, cömert bağışlarla ve iyi hizmetlilerle büyür; rakibe indirdiğin her darbe onun inananını sana geçirir.'
@@ -703,18 +702,18 @@ export function StratejiSayfasi({
                   </span>
                 </div>
               )}
-              {pazarDurum?.gucSarti && pazarDurum.gucSarti.seviye === rutbeSeviye + 1 && (
+              {isletme?.birlik?.rutbe.gucSarti && isletme.birlik.rutbe.gucSarti.seviye === rutbeSeviye + 1 && (
                 <div className="kariyer-ilerleme-cubuk-satiri">
                   <span className="kariyer-ilerleme-etiket">{en ? 'Military strength' : 'Askerî Güç'}</span>
                   <div className="kariyer-ilerleme-cubuk">
                     <div
                       className="kariyer-ilerleme-cubuk-dolu"
-                      style={{ width: `${Math.min(100, Math.round((pazarDurum.gucSarti.mevcut / pazarDurum.gucSarti.gerekli) * 100))}%` }}
+                      style={{ width: `${Math.min(100, Math.round((isletme.birlik.rutbe.gucSarti.mevcut / isletme.birlik.rutbe.gucSarti.gerekli) * 100))}%` }}
                     />
                   </div>
                   <span className="kariyer-ilerleme-deger">
-                    {pazarDurum.gucSarti.mevcut}/{pazarDurum.gucSarti.gerekli}
-                    {pazarDurum.gucSarti.karsilaniyor && ' ✓'}
+                    {isletme.birlik.rutbe.gucSarti.mevcut}/{isletme.birlik.rutbe.gucSarti.gerekli}
+                    {isletme.birlik.rutbe.gucSarti.karsilaniyor && ' ✓'}
                   </span>
                 </div>
               )}
@@ -928,7 +927,8 @@ export function StratejiSayfasi({
         </div>
 
         <aside className="kariyer-yan-sutun">
-          {gor('cevre') && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} meslek={meslek} birlik={isletme?.birlik ?? null} />}
+          {gor('cevre') && isletme?.birlik && <AskerGucKarti birlik={isletme.birlik} />}
+          {gor('cevre') && !isletme?.birlik && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} meslek={meslek} />}
           {gor('isletme') && meslekGucSatirlari.length > 0 && (
             <div className="aile-koken-karti">
               <h3>{m.geMeslekGucu}</h3>

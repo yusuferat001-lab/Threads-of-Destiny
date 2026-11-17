@@ -2,11 +2,11 @@ import { useState, type ReactNode } from 'react';
 import type { BirlikGorunumu, BirlikKararGirdisi, BirlikTur, IsletmeGorunumu, IsletmeUyari, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { RenkliEtki } from './Renkli';
-import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
+import { BilgiNotu } from './BilgiNotu';
 import { isletmeUyariMetni } from './IsletmePaneli';
-import { formatPara, formatMusteri, isaretSinifi } from '../format';
+import { formatPara, isaretSinifi } from '../format';
 
 interface Props {
   durum: IsletmeGorunumu;
@@ -37,7 +37,6 @@ type D = { tr: string; en: string };
 const M = {
   baslik: { tr: '🛡️ Ordun', en: '🛡️ Your Army' },
   er: { tr: 'Erin', en: 'Men' },
-  pay: { tr: 'Askerî payın', en: 'Military share' },
   guc: { tr: 'Askerî gücün', en: 'Military strength' },
   moral: { tr: 'Ordu morali', en: 'Army morale' },
   talim: { tr: 'Talim / Tecrübe', en: 'Drill / Experience' },
@@ -45,18 +44,14 @@ const M = {
   limitNot: { tr: 'kışlanın barındırabildiği er sayısı', en: 'how many men the barracks can house' },
   otorite: { tr: 'Şehir yöneticin', en: 'Your city governor' },
   iliski: { tr: 'ilişki', en: 'relation' },
-  rakipBaslik: { tr: 'Rakip komutanlar', en: 'Rival commanders' },
   rakipGuc: { tr: 'askerî güç', en: 'strength' },
   gucBaslik: { tr: 'Askerî güç dökümü', en: 'Strength breakdown' },
   ham: { tr: 'Ham güç (kalite × er)', en: 'Raw strength (quality × men)' },
   birlikCarpani: { tr: 'Özel birlik çarpanı (saldırı / savunma)', en: 'Special-unit multiplier (attack / defence)' },
   toplamGuc: { tr: 'Toplam güç', en: 'Total strength' },
-  gucNot: { tr: 'Güç = (saldırı + savunma) / 2 ve yalnız SAĞLAM erlerin gücüdür; yaralılar tedavi süresince katılmaz. Rütben, kariyer puanın ve görev şartların buna bağlıdır; düşman gücü yaşınla artar.', en: 'Strength = (attack + defence) / 2 and counts only HEALTHY men; the wounded do not count while they recover. Your rank, career points and duty requirements depend on it; enemy strength grows with your age.' },
+  gucNot: { tr: 'Güç, yalnız sağlam erlerin saldırı ve savunma ortalamasıdır; yaralılar tedavi sürerken katılmaz.', en: 'Strength is the average of attack and defence of HEALTHY men only; the wounded do not count while they recover.' },
   gorevBaslik: { tr: 'Görevler', en: 'Duties' },
-  gorevNot: {
-    tr: 'Aynı anda tek görev yürütülür; ordunun tamamı o göreve çıkar. Kazandıran görev daha çok yaralı ve kayıp verdirir.',
-    en: 'Only one duty runs at a time and your whole army takes it. The better a duty pays, the more wounded and losses it costs.',
-  },
+  gorevNot: { tr: 'Aynı anda tek görev yürütülür; ordunun tamamı o göreve çıkar. Kazandıran görev daha çok kayıp verdirir.', en: 'Only one duty runs at a time and your whole army takes it. The better a duty pays, the more it costs.' },
   slot: { tr: 'açık görev', en: 'open duties' },
   minEr: { tr: 'en az', en: 'min' },
   yalnizSavas: { tr: 'yalnız savaşta', en: 'wartime only' },
@@ -69,21 +64,12 @@ const M = {
   politikaBaslik: { tr: 'Politikalar', en: 'Policies' },
   ganimetPayi: { tr: 'Ganimet payı (erlere; yalnız haydut, sınır ve savaş ganimeti)', en: 'Loot share (to the men; only bandit, border and war loot)' },
   talimPol: { tr: 'Talim', en: 'Drill' },
-  tonPol: { tr: 'Komuta tonu', en: 'Command tone' },
   donatimBaslik: { tr: 'Teçhizat', en: 'Equipment' },
-  donatimNot: {
-    tr: 'Teçhizat kalitesi 5 yılda bir değiştirilebilir. Yeni erler hedef kaliteyle gelir (parası yoksa düşük kaliteyle).',
-    en: 'Equipment quality can be changed once every 5 years. New men arrive at the target quality (low quality if you cannot pay).',
-  },
   hedefKalite: { tr: 'Yeni erler için hedef', en: 'Target for new men' },
   yukselt: { tr: 'Yükselt', en: 'Upgrade' },
   kilit: { tr: 'Kilit: ~', en: 'Locked: ~' },
   yilKisa: { tr: 'yıl', en: 'yr' },
   birlikBaslik: { tr: 'Özel birlikler', en: 'Special units' },
-  birlikNot: {
-    tr: 'Açtığın her birlik ordunun %20\'si olur; yeni erler oransal katılır ve geçiş ücretini kendiliğinden öder. Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini eklemek serbest.',
-    en: 'Each unit you open takes 20% of the army; new men join proportionally and pay the transfer fee automatically. Units can be swapped once every 5 years; adding a new one is free.',
-  },
   maliyetArti: { tr: 'yıllık maliyet', en: 'upkeep' },
   gucEsik: { tr: 'askeri güç', en: 'military strength' },
   toplamPay: { tr: 'toplam pay', en: 'total share' },
@@ -91,9 +77,8 @@ const M = {
   kusatma: { tr: 'Kuşatma', en: 'Siege' },
   guclu: { tr: 'Güçlü', en: 'Strong' },
   zayif: { tr: 'Zayıf', en: 'Weak' },
-  kusatmaNot: { tr: 'Kuşatma kolu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında etkisi yoktur); zaferden sonra kale alınıp alınamayacağını belirler.', en: 'A siege train adds an attack bonus only when besieging a FORT (no effect on the open battlefield); it decides whether a fort can be taken after a victory.' },
   terhisBaslik: { tr: 'Terhis', en: 'Discharge' },
-  terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler de sıradan er olarak orduda kalır; kışla limitini aşan erleri sen terhis edersin.', en: 'You cannot discharge during a war. When it ends, wartime recruits stay as ordinary men; you discharge anyone over the barracks limit yourself.' },
+  terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler sıradan er olarak kalır; kışla limitini aşanları sen terhis edersin.', en: 'You cannot discharge during a war. When it ends, wartime recruits stay as ordinary men; you discharge anyone over the barracks limit yourself.' },
   yarali: { tr: 'Yaralı', en: 'Wounded' },
   gYarali: { tr: 'Yaralı tedavisi', en: 'Wounded care' },
   gAsim: { tr: 'Limit üstü erlerin ek gideri', en: 'Extra cost of men over the limit' },
@@ -118,7 +103,7 @@ const M = {
   dusmanTahmin: { tr: 'Düşmanın tahmini gücü', en: 'Estimated enemy strength' },
   kiyasSaldiri: { tr: 'Saldırıdaysan', en: 'If you attack' },
   kiyasSavunma: { tr: 'Savunmadaysan', en: 'If you defend' },
-  kiyasNot: { tr: 'Saldırırsan senin saldırın düşmanın savunmasıyla, savunursan senin savunman düşmanın saldırısıyla yarışır.', en: 'If you attack, your attack meets their defence; if you defend, your defence meets their attack.' },
+  kiyasNot: { tr: 'Saldırırsan saldırın düşmanın savunmasıyla, savunursan savunman düşmanın saldırısıyla yarışır.', en: 'If you attack, your attack meets their defence; if you defend, your defence meets their attack.' },
   senK: { tr: 'Sen', en: 'You' },
   dusmanK: { tr: 'Düşman', en: 'Enemy' },
   saldiriK: { tr: 'Saldırı', en: 'Attack' },
@@ -183,12 +168,35 @@ const M = {
   limitDolu: { tr: 'Rütben en fazla', en: 'Your rank allows only' },
   limitDoluSon: { tr: 'özel birliğe izin veriyor', en: 'special units' },
   kilitTerhis: { tr: '5 yıl kilidi sürüyor', en: '5-year lock is active' },
-  birlikNotYeni: { tr: 'Açtığın her birlik ordunun %20\'si olur; geçiş ücretini yeni erler kendiliğinden öder. Yeni birlik açmak serbest, kapatmak 5 yılda bir.', en: 'Each unit you open takes 20% of the army; the transfer fee is paid as men join. Opening a unit is free any time; disbanding is once every 5 years.' },
+  birlikNotYeni: { tr: 'Açtığın her birlik ordunun bir bölümünü alır; geçiş ücretini yeni erler kendiliğinden öder. Yeni birlik açmak serbesttir, kapatmak ancak belirli aralıklarla yapılabilir.', en: 'Each unit you open takes a share of the army; the transfer fee is paid as men join. Opening a unit is free any time; disbanding is allowed only at set intervals.' },
   kur: { tr: 'Kur', en: 'Build' },
   yukseltKusatma: { tr: 'Yükselt', en: 'Upgrade' },
   sok: { tr: 'Sök', en: 'Dismantle' },
-  kusatmaOzel: { tr: 'Özel durum: yalnız kale kuşatmasında saldırı bonusu verir; savaş ve çatışma gücüne girmez; ordudan pay almaz.', en: 'Special case: adds an attack bonus only when besieging a fort; it does not count in battles or clashes and takes no share of the army.' },
+  kusatmaOzel: { tr: 'Yalnız kale kuşatmasında saldırı bonusu verir; savaş ve çatışma gücüne girmez.', en: 'Adds an attack bonus only when besieging a fort; it does not count in battles or clashes.' },
   seviye: { tr: 'seviye', en: 'level' },
+  gelecekYil: { tr: 'Gelecek yıl', en: 'Next year' },
+  gucteEtki: { tr: 'güçte', en: 'on strength' },
+  moralNot: { tr: 'Moral yıl boyu ganimet payı, talim, görev ve doktrinle değişir; yüksek moral güce katkı verir, düşük moral ceza getirir.', en: 'Morale shifts yearly with loot share, drill, duties and doctrine; high morale adds to strength, low morale costs it.' },
+  talimNot: { tr: 'Talim ordunun savaşa hazırlığıdır. Üst sınırını Talim Alanı yatırımı belirler; şu an:', en: 'Drill is how battle-ready the army is. The Drill Ground investment sets its ceiling; right now:' },
+  erBasiKisa: { tr: 'er başı', en: 'per man' },
+  gGereken: { tr: 'Gereken güç', en: 'Required strength' },
+  gMevcut: { tr: 'Şimdiki gücün', en: 'Your strength' },
+  gKarsilar: { tr: 'karşılıyor', en: 'met' },
+  gEksik: { tr: 'Eksik', en: 'Short by' },
+  gGucNot: { tr: 'Güç yalnız görevi açmak içindir; görev geliri er sayısına bağlıdır.', en: 'Strength only unlocks the duty; duty income depends on the number of men.' },
+  gHam: { tr: 'Ham', en: 'Raw' },
+  gBirlik: { tr: 'birlik', en: 'units' },
+  gToplam: { tr: 'toplam', en: 'total' },
+  bilgi: { tr: 'Bilgi', en: 'Info' },
+};
+
+const BONUS_ETIKET: Record<string, { simge: string; ad: D }> = {
+  moral: { simge: '🙂', ad: { tr: 'moral', en: 'morale' } },
+  sohret: { simge: '🌟', ad: { tr: 'şöhret', en: 'renown' } },
+  otorite: { simge: '🏛️', ad: { tr: 'otorite', en: 'authority' } },
+  ahlak: { simge: '⚖️', ad: { tr: 'ahlak', en: 'morality' } },
+  sertlik: { simge: '😠', ad: { tr: 'sertlik', en: 'harshness' } },
+  ganimet: { simge: '🎁', ad: { tr: 'ganimet', en: 'loot' } },
 };
 
 const KALITE_SIMGE: Record<string, string> = { dusuk: '🪓', orta: '⚔️', yuksek: '🗡️' };
@@ -263,8 +271,11 @@ export function BirlikPaneli({
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
   const erBirim = dil === 'en' ? '/man' : '/er';
-  const gucBirim = dil === 'en' ? '/man' : '/er';
   const [terhis, setTerhis] = useState(1);
+  // Görev kartında asgari güç hesabı açık olan görev (tek kart).
+  const [gucAcik, setGucAcik] = useState<string | null>(null);
+  // Moral / Talim kartındaki "!" notu: kutu kartların altında tam genişlikte açılır.
+  const [kartNot, setKartNot] = useState<'moral' | 'talim' | null>(null);
   // Politika ayrıntısı: üzerine gelinen (ya da seçili) seçeneğin artı/eksileri gösterilir.
   const [onizle, setOnizle] = useState<Record<string, string | null>>({});
 
@@ -277,6 +288,10 @@ export function BirlikPaneli({
   };
   const sayi = (x: number) => (dil === 'en' ? String(x) : String(x).replace('.', ','));
   const isaretliSayi = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${sayi(Math.abs(x))}`;
+  /** Gelecek yıl değişimi: işaretli, 1 ondalık (+2,0 / −1,5); sıfır "0,0". */
+  const degisimMetni = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${Math.abs(x).toFixed(1).replace('.', dil === 'en' ? '.' : ',')}`;
+  const degisimSinifi = (x: number) => (x > 0 ? 's-arti' : x < 0 ? 's-eksi' : 's-durum');
+  const moralCubuk = b.moral.deger < 30 ? 'dusuk' : b.moral.deger >= 70 ? 'yuksek' : '';
 
   /** Üç seçenekli politika: seçici düğmeler + seçili/üzerine gelinen seçeneğin ✓ artı / ✗ eksi listesi. */
   const politika = <T extends string>(
@@ -338,6 +353,7 @@ export function BirlikPaneli({
     <div className="sayfa-blok blok-gorev-liste">
       <h4>
         {t('gorevBaslik')}
+        <BilgiNotu etiket={t('bilgi')} metin={t('gorevNot')} />
       </h4>
       <div className="gorev-liste">
         {b.gorevler.katalog.map((g) => {
@@ -361,9 +377,43 @@ export function BirlikPaneli({
                 )}
               </div>
               <small>
-                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span title={t('riskIpucu')}>{t('risk')} {'●'.repeat(g.risk)}{'○'.repeat(Math.max(0, 5 - g.risk))}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{gucBirim}</span>
+                <button type="button" className="gorev-esik" aria-expanded={gucAcik === g.id} onClick={() => setGucAcik(gucAcik === g.id ? null : g.id)}>
+                  {t('minEr')} {g.minGuc} {t('gucEsik')}
+                </button>{' '}
+                · <span title={t('riskIpucu')}>{t('risk')} {'●'.repeat(g.risk)}{'○'.repeat(Math.max(0, 5 - g.risk))}</span> · {t('erBasiKisa')} <span className="s-gelir">{formatPara(g.erBasi)}</span>
                 {g.aktif ? <span className="s-gelir"> · {formatPara(g.gelir)} {pb}{g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}</span> : null}
               </small>
+              {g.bonuslar.length > 0 && (
+                <div className="gorev-rozetler">
+                  {g.bonuslar.map((x) => {
+                    const iyi = x.kod === 'sertlik' ? x.yon < 0 : x.yon > 0;
+                    return (
+                      <span key={x.kod} className={iyi ? 's-arti' : 's-eksi'}>
+                        {BONUS_ETIKET[x.kod].simge} {BONUS_ETIKET[x.kod].ad[dil]} {x.yon > 0 ? '▲' : '▼'}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              {gucAcik === g.id && (
+                <div className="gorev-guc-hesap">
+                  <div>
+                    {t('gGereken')}: <strong className="s-esik">{g.minGuc}</strong> · {t('gMevcut')}: <strong className="s-durum">{b.guc.toplam}</strong>{' '}
+                    {b.guc.toplam >= g.minGuc ? (
+                      <strong className="s-arti">✓ {t('gKarsilar')}</strong>
+                    ) : (
+                      <strong className="s-eksi">
+                        {t('gEksik')} {g.minGuc - b.guc.toplam} ≈ {Math.ceil((g.minGuc - b.guc.toplam) / Math.max(0.1, b.guc.toplam / Math.max(1, b.er)))} {t('erK')}
+                      </strong>
+                    )}
+                  </div>
+                  <div>
+                    {t('gHam')} <strong>{b.guc.ham}</strong> → {t('gBirlik')} ×{b.guc.saldiriCarpani} / ×{b.guc.savunmaCarpani}
+                    {b.guc.bonuslar.length > 0 ? ` → ${b.guc.bonuslar.map((x) => `${d(x.ad)} ${yuzdeMetni(x.yuzde)}`).join(' · ')}` : ''} → {t('gToplam')} <strong>{b.guc.toplam}</strong>
+                  </div>
+                  <small>{t('gGucNot')}</small>
+                </div>
+              )}
             </div>
           );
         })}
@@ -378,42 +428,54 @@ export function BirlikPaneli({
         <div className="sayfa-blok blok-durum">
           {ustBlok}
           <h4>{t('durumBaslik')}</h4>
-          <div className="isletme-ozet">
-            <span>
-              ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, b.pay)}%` : `%${formatMusteri(dil, b.pay)}`}</strong>
-            </span>
-            <span>
-              🪖 {t('er')}: <strong>{b.er}</strong>
-              {dokum && dokum.musteriDegisim !== 0 ? <em className={isaretSinifi(dokum.musteriDegisim)}> ({dokum.musteriDegisim > 0 ? '+' : ''}{dokum.musteriDegisim})</em> : null}
-            </span>
+          <div className="ordu-satirlar isletme-ozet">
             <span title={t('limitNot')}>
-              📏 {t('limit')}: <strong>{b.limit.komuta}</strong>
+              🪖 {t('er')}: <strong>{b.er}</strong> / <strong className="s-esik">{b.limit.komuta}</strong>
+              {dokum && dokum.musteriDegisim !== 0 ? <em className={isaretSinifi(dokum.musteriDegisim)}> ({dokum.musteriDegisim > 0 ? '+' : ''}{dokum.musteriDegisim})</em> : null}
               {b.limit.asim > 0 ? <em className="negatif"> (+{b.limit.asim} {t('fazla')})</em> : null}
-            </span>
-            <span>
-              💪 {t('guc')}: <strong>{b.guc.toplam}</strong>
-            </span>
-            <span>
-              🙂 {t('moral')}: <strong>{b.moral.deger}</strong> ({yuzdeMetni(b.moral.gucYuzde)})
-            </span>
-            <span>
-              🎖️ {t('talim')}: <strong>{b.talim.seviye}</strong> / {b.talim.limit} ({yuzdeMetni(b.talim.gucYuzde)})
             </span>
             {b.yarali.sayi > 0 && (
               <span>
                 🩹 {t('yarali')}: <strong>{b.yarali.sayi}</strong>
               </span>
             )}
-            {durum.otorite && (
-              <span>
-                🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
-              </span>
-            )}
           </div>
+          <div className="ordu-kartlar">
+            <div className="ordu-kart">
+              <span className="ordu-kart-etiket">🙂 {t('moral')}<BilgiNotu etiket={t('bilgi')} acik={kartNot === 'moral'} onDegis={(a) => setKartNot(a ? 'moral' : null)} /></span>
+              <b className="ordu-kart-deger s-durum">{b.moral.deger}</b>
+              <span className="ordu-kart-cubuk" aria-hidden="true"><i className={moralCubuk} style={{ width: `${Math.max(0, Math.min(100, b.moral.deger))}%` }} /></span>
+              <span className="ordu-kart-alt">
+                {t('gelecekYil')} <strong className={degisimSinifi(b.moral.gelecek)}>{degisimMetni(b.moral.gelecek)}</strong>
+                <br />
+                {t('gucteEtki')} <strong className={b.moral.gucYuzde >= 0 ? 's-arti' : 's-eksi'}>{yuzdeMetni(b.moral.gucYuzde)}</strong>
+              </span>
+            </div>
+            <div className="ordu-kart">
+              <span className="ordu-kart-etiket">🎖️ {dil === 'en' ? 'Drill' : 'Talim'}<BilgiNotu etiket={t('bilgi')} acik={kartNot === 'talim'} onDegis={(a) => setKartNot(a ? 'talim' : null)} /></span>
+              <b className="ordu-kart-deger s-durum">{Math.round(b.talim.seviye)}</b>
+              <span className="ordu-kart-cubuk" aria-hidden="true"><i style={{ width: `${Math.max(0, Math.min(100, b.talim.seviye))}%` }} /></span>
+              <span className="ordu-kart-alt">
+                {t('gelecekYil')} <strong className={degisimSinifi(b.talim.gelecek)}>{degisimMetni(b.talim.gelecek)}</strong>
+                <br />
+                {t('gucteEtki')} <strong className={b.talim.gucYuzde >= 0 ? 's-arti' : 's-eksi'}>{yuzdeMetni(b.talim.gucYuzde)}</strong>
+              </span>
+            </div>
+            <div className="ordu-kart">
+              <span className="ordu-kart-etiket">💪 {t('guc')}</span>
+              <b className="ordu-kart-deger s-durum">{b.guc.toplam}</b>
+              <span className="ordu-kart-alt">⚔️ {b.guc.saldiri} · 🛡️ {b.guc.savunma}</span>
+            </div>
+          </div>
+          {kartNot && (
+            <span role="note" className="bilgi-notu-metin">
+              {kartNot === 'moral' ? t('moralNot') : <>{t('talimNot')} <strong className="s-esik">{b.talim.limit}</strong></>}
+            </span>
+          )}
         </div>
         <div className="sayfa-sutun blok-yan1">
           <div className="sayfa-blok blok-guc">
-            <h4>{t('gucBaslik')}</h4>
+            <h4>{t('gucBaslik')}<BilgiNotu etiket={t('bilgi')} metin={t('gucNot')} /></h4>
             <div className="isletme-dokum">
               <div>
                 {t('ham')}: <strong>{b.guc.ham}</strong>
@@ -433,7 +495,6 @@ export function BirlikPaneli({
               <div className="isletme-dokum-net">
                 {t('toplamGuc')}: <strong>{b.guc.toplam}</strong> <small>(⚔️ {b.guc.saldiri} · 🛡️ {b.guc.savunma})</small>
               </div>
-              <small>{t('gucNot')}</small>
             </div>
           </div>
           <div className="sayfa-blok blok-doktrin">
@@ -471,7 +532,6 @@ export function BirlikPaneli({
             { kalanYil: b.politikalar.ganimetPayi.kilitKalanYil, uyari: t('ganimetUyari'), kilitli: t('techKilitli') }
           )}
           {politika('talim', t('talimPol'), b.talim.politika, b.talim.politikalar, (id) => onBirlikKarar({ talim: id }))}
-          {politika('ton', t('tonPol'), b.politikalar.ton.secili, b.politikalar.ton.secenekler, (id) => onBirlikKarar({ ton: id }))}
         </div>
         <div className="sayfa-blok blok-butce">
           <h4>{t('dokumBaslik')}</h4>
@@ -543,7 +603,7 @@ export function BirlikPaneli({
                       <table className="savas-kiyas-tablo">
                         <thead>
                           <tr>
-                            <th />
+                            <th><BilgiNotu etiket={t('bilgi')} metin={t('kiyasNot')} /></th>
                             <th>{t('senK')}</th>
                             <th>{t('dusmanK')}</th>
                           </tr>
@@ -561,7 +621,6 @@ export function BirlikPaneli({
                           </tr>
                         </tbody>
                       </table>
-                      <small>{t('kiyasNot')}</small>
                       {k.son && (
                         <span>
                           📜 {t('sonSavas')} ({k.son.yil}): {k.son.inisiyatif === 'saldiri' ? '⚔️' : '🛡️'} <strong>{k.son.oyuncuGuc}</strong> ↔ <strong>{k.son.dusmanGuc}</strong> →{' '}
@@ -674,7 +733,7 @@ export function BirlikPaneli({
           );
         })}
       </div>
-      <div className="isletme-fiyat-not">{t('techNot')}</div>
+      <div className="isletme-fiyat-not">{t('donatimBaslik')}<BilgiNotu etiket={t('bilgi')} metin={t('techNot')} /></div>
     </div>
   );
 
@@ -746,18 +805,18 @@ export function BirlikPaneli({
             {t('seviye')} {kusatma.seviye}/2 · +%{Math.round((kusatma.bonuslar[kusatma.seviye] ?? 0) * 100)}
             {kusatma.seviye < 2 ? <> → +%{Math.round((kusatma.bonuslar[kusatma.seviye + 1] ?? 0) * 100)} (<span className="s-gider">{formatPara(kusatma.fiyatlar[kusatma.seviye + 1] ?? 0)} {pb}</span>)</> : ''}
           </div>
-          <small>{t('kusatmaOzel')}</small>
+          <small>{t('kusatma')}<BilgiNotu etiket={t('bilgi')} metin={t('kusatmaOzel')} /></small>
         </div>
         )}
       </div>
-      <div className="isletme-fiyat-not">{t('birlikNotYeni')}</div>
+      <div className="isletme-fiyat-not">{t('birlikBaslik')}<BilgiNotu etiket={t('bilgi')} metin={t('birlikNotYeni')} /></div>
     </div>
   );
 
   const terhisBlok = (
     <div className="sayfa-blok blok-terhis">
       <h4>{t('terhisBaslik')}</h4>
-      <div className="isletme-fiyat-not terhis-not" title={t('terhisNot')}>{t('terhisNot')}</div>
+      <div className="isletme-fiyat-not terhis-not">{t('terhisBaslik')}<BilgiNotu etiket={t('bilgi')} metin={t('terhisNot')} /></div>
       <div className="isletme-fiyat-satir">
         <input type="number" min={1} max={Math.max(1, b.er - 6)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} className="isletme-sayi-giris" />{' '}
         <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 6 < 1} onClick={() => onTerhis(terhis)}>

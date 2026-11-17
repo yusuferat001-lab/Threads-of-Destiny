@@ -116,7 +116,6 @@ export function birlikVarsayilan(er: number): BirlikDurumu {
     talim_politikasi: "orta",
     ganimet_payi: "dengeli",
     ganimet_kilit_bitis: null,
-    ton: "dengeli",
     moral: MORAL_BASLANGIC,
     sertlik: 0,
     gorevler: ["devriye"],
@@ -172,8 +171,9 @@ function eskiOrduyuTasi(state: CharacterState, is: NonNullable<CharacterState["i
   while (kisla < KISLA_ER_LIMITI.length - 1 && KISLA_ER_LIMITI[kisla] < er) kisla++;
   is.yatirimlar.kisla = kisla;
   is.birlik = b;
-  // Pazar, ordunun en az ~3 katı olsun (rakipler ve diğer ordular için yer).
-  state.pazar_musteri = Math.max(state.pazar_musteri ?? 0, er * 3 + 20);
+  // (v67 Madde 7: Asker'de pazar yok; eski kayıttaki pazar/rakip verisi yok sayılır.)
+  state.pazar_musteri = 0;
+  state.rakipler = [];
   // Eski ajanlar ekipten çıkar (subay rolü olmayanlar), ajan görevleri silinir.
   state.ekip = state.ekip.filter((e) => !!e.rol_turu);
   state.ajan_gorevleri = [];

@@ -48,8 +48,8 @@ export const KARANLIK_ISLER: Record<string, { tr: { ad: string; aciklama: string
     en: { ad: '🌪️ Stir Chaos, Sell Protection', aciklama: 'Stir up the streets, then bring the order yourself; leave the governor needing you.' },
   },
   kaza_duello: {
-    tr: { ad: '🤺 Kaza Süsü Verilmiş Düello', aciklama: 'Rakip komutanı düelloya çağır, "kaza" olsun. Kazanırsan rakibin biter; kaybedersen ölebilirsin.' },
-    en: { ad: '🤺 A Duel Dressed Up as an Accident', aciklama: 'Call the rival commander out and let it be an "accident". Win and your rival is finished; lose and you may die.' },
+    tr: { ad: '🤺 Düşman Komutanıyla Düello', aciklama: 'Düşman komutanını düelloya çağır. Kazanırsan adamların ve şöhretin artar; kaybedersen ölebilirsin.' },
+    en: { ad: '🤺 A Duel with the Enemy Commander', aciklama: 'Challenge the enemy commander to a duel. Win and your men and renown grow; lose and you may die.' },
   },
   kervan_baskini: {
     tr: { ad: '🏴 Kervan Baskını', aciklama: 'Adamlarınla yol kes; ganimet ve silah senin.' },

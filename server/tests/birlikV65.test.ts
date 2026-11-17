@@ -139,11 +139,13 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(catismaKarariDurumu(s, bg(s))!.hazirlikli).toBe(false);
   });
 
-  it("görev gelirinde er sayısına bağlı azalan verim: ≤200 er ×1, 350 → ~0,93, 500 → ~0,86; gelir ere göre hep artar", () => {
+  it("görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7): ilk 100 er ×1, sonra doğrusal; 300 → 0,875, 500 → 0,75; gelir ere göre hep artar", () => {
+    expect(gorevErOrani(40)).toBe(1);
     expect(gorevErOrani(100)).toBe(1);
-    expect(gorevErOrani(200)).toBe(1);
-    expect(gorevErOrani(350)).toBeCloseTo((200 + 150 * 0.85) / 350, 8);
-    expect(gorevErOrani(500)).toBeCloseTo((200 + 127.5 + 150 * 0.7) / 500, 8);
+    expect(gorevErOrani(200)).toBeCloseTo(0.9375, 8);
+    expect(gorevErOrani(300)).toBeCloseTo(0.875, 8);
+    expect(gorevErOrani(500)).toBeCloseTo(0.75, 8);
+    expect(gorevErOrani(800)).toBeCloseTo(0.75, 8); // kapasite üstü sabit
     let onceki = 0;
     for (let e = 10; e <= 500; e += 10) {
       expect(e * gorevErOrani(e)).toBeGreaterThan(onceki);

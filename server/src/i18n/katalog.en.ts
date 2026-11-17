@@ -781,7 +781,6 @@ export const KATALOG_EN: Record<string, string> = {
   "Ruhani Güç": "Spiritual Power",
   "Üretim Payı": "Production Share",
   "Zanaat Gücü": "Craft Power",
-  "Bölge Hâkimiyeti": "District Control",
   "Askeri Güç": "Military Power",
   // Mesleğe özel karanlık işler (2026-10)
   "Rakibin Kervanını Yağmalat": "Have Your Rival's Caravan Raided",
@@ -794,7 +793,7 @@ export const KATALOG_EN: Record<string, string> = {
   "Hammaddeyi Kapat": "Corner the Raw Materials",
   "Lonca Kararını Çarpıt": "Rig the Guild Vote",
   "Kaos Çıkar, Koruma Sat": "Stir Chaos, Sell Protection",
-  "Kaza Süsü Verilmiş Düello": "A Duel Dressed Up as an Accident",
+  "Düşman Komutanıyla Düello": "A Duel with the Enemy Commander",
   "Kervan Baskını": "Caravan Raid",
   // Ajan rolleri (2026-10)
   "Hırsız": "Thief",

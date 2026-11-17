@@ -9,7 +9,7 @@ import {
   buyukSavasBitisKontrolEt,
   rutbeGuncelle,
   yillikKariyerPuaniHesapla,
-  pazarYillikUygula,
+  askerKariyerPuaniUygula,
 } from "../src/game/stateManager";
 import {
   yeniOyun,
@@ -52,6 +52,8 @@ import {
 } from "../src/game/birlik";
 import { yatirimEtkiMetni } from "../src/game/yatirimMetinleri";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
+import { RUTBELER } from "../src/data/rutbeler";
+import { amacHavuzu, amacTanimiGetir, AMAC_ILERLEME } from "../src/data/hayatAmaclari";
 import {
   birlikSec,
   doktrinSec,
@@ -63,8 +65,9 @@ import {
   savasKarariVer,
   ganimetSaklamaEngeli,
 } from "../src/game/birlikIslem";
-import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir, barisCatismaCoz } from "../src/game/birlikYil";
-import { askerGucleri, pazarPayiHesapla } from "../src/data/pazar";
+import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir, barisCatismaCoz, zaferSerisiIsle } from "../src/game/birlikYil";
+import { birlikGorunumuHesapla } from "../src/game/birlikIslem";
+import { pazarPayiHesapla, pazarAdlariGetir } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
   BARIS_BEKLEME_ARALIK,
@@ -125,22 +128,20 @@ function asker(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ", bolge?: stri
 const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("kurulum", () => {
-  it("20 er, piyade, düşük kalite; pazar 185–205; iki aktif rakip; başlangıç payı %8–14", () => {
+  it("20 er, piyade, düşük kalite; Asker'de pazar payı ve pazar rakibi yok (v67 Madde 7)", () => {
     for (let i = 0; i < 20; i++) {
       const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(s, "Asker");
       expect(s.meslek_musteri).toBe(BASLANGIC_ER);
-      expect(s.pazar_musteri).toBeGreaterThanOrEqual(185);
-      expect(s.pazar_musteri).toBeLessThanOrEqual(205);
+      expect(s.pazar_musteri).toBe(0);
+      expect(s.rakipler).toHaveLength(0);
+      expect(pazarAdlariGetir("Asker")).toBeNull();
+      expect(pazarPayiHesapla(s)).toBe(0);
       const b = s.isletme!.birlik!;
       expect(b.kalite).toEqual({ dusuk: 20, orta: 0, yuksek: 0 });
       expect(b.birlik_seviye).toBe(0);
       expect(b.moral).toBe(50); // moral ve talim nötr noktada (50) başlar: güce etkisi 0
       expect(b.talim).toBe(50);
-      expect(s.rakipler.filter((r) => !r.yenildi)).toHaveLength(2);
-      const pay = pazarPayiHesapla(s);
-      expect(pay).toBeGreaterThan(0.06); // teçhizat 0,75 / 1 / 1,25 sonrası başlangıç gücü %25 düştü (görev eşikleri ve düşman en son yeniden ayarlanacak)
-      expect(pay).toBeLessThan(0.14);
     }
   });
 
@@ -248,15 +249,6 @@ describe("askerî güç ve pay", () => {
     const oran100 = gucHesapla(s).guc / g50;
     expect(oran100).toBeGreaterThan(1.17);
     expect(oran100).toBeLessThan(1.23);
-  });
-
-  it("pay = güç / (güç + rakipler + diğer ordular); güç ikiye katlanınca pay artar", () => {
-    const s = asker();
-    const g = askerGucleri(s);
-    expect(pazarPayiHesapla(s)).toBeCloseTo(g.oyuncu / g.toplam, 6);
-    const once = pazarPayiHesapla(s);
-    birlikAl(s).guc *= 2;
-    expect(pazarPayiHesapla(s)).toBeGreaterThan(once);
   });
 
   it("toplam silahlı sayısı ve diğer ordular piyasa akışlarında oyuncunun erini değiştirmez (er yalnız birlik motorundan değişir)", async () => {
@@ -893,7 +885,7 @@ describe("talim, doktrin, birlik, terhis", () => {
     birlikAl(s).guc = 10000;
     expect(yillikKariyerPuaniHesapla(s)).toBeCloseTo(ASKER_KARIYER_GUC_TAVANI * ASKER_KARIYER_PUANI_KATSAYISI, 5);
     const once = s.kariyer_puani;
-    pazarYillikUygula(s, 2);
+    askerKariyerPuaniUygula(s, 2); // pazardan bağımsız yıl adımı
     expect(s.kariyer_puani).toBeGreaterThan(once);
   });
 
@@ -982,7 +974,7 @@ describe("rütbe adları ve terfi", () => {
     }
   });
 
-  it("terfi pay + kariyer puanı + ün şartlarına bağlıdır; ordu gücü payı yetmiyorsa çıkmaz", () => {
+  it("terfi kariyer puanı + ün + askerî güç şartına bağlıdır; ordu gücü yetmiyorsa çıkmaz", () => {
     const s = asker();
     s.kariyer_puani = 999;
     s.un = 100;
@@ -1022,16 +1014,17 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(st.id, "Asker");
     await bekleyenleriCoz(st.id);
-    const r = await isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye"], ganimet_payi: "dengeli", talim: "agir", ton: "sert" });
+    const r = await isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye"], ganimet_payi: "dengeli", talim: "agir" });
     expect(r.durum.birlik!.talim.politika).toBe("agir");
-    expect(r.durum.birlik!.politikalar.ton.secili).toBe("sert");
+    expect((r.durum.birlik!.politikalar as Record<string, unknown>).ton).toBeUndefined(); // komuta tonu kalktı (v67 Madde 7)
     await expect(isletmeKararVer(st.id, [], undefined, { talim: "yok" })).rejects.toThrow(/talim/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye", "eskort"] })).rejects.toThrow(/[Aa]ynı anda/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["sefer"] })).rejects.toThrow(/Böyle bir görev yok/);
     const v = r.durum.birlik!;
     expect(v.er).toBe(20);
     expect(v.guc.toplam).toBeGreaterThan(0);
-    expect(v.rakipler.length).toBe(0); // Asker'de rakip komutan yok
+    expect((v as unknown as Record<string, unknown>).rakipler).toBeUndefined(); // Asker'de rakip komutan ve pazar payı yok
+    expect((v as unknown as Record<string, unknown>).pay).toBeUndefined();
     expect(v.hesap.barisGanimetTahmini).toBeGreaterThan(0);
   });
 
@@ -1683,5 +1676,115 @@ describe("v67 Madde 6 — seferberlik ve Talim Alanı", () => {
     const { s, b } = sabitOrdu("hafif", 4, 50, 90);
     birlikYilIsle(s, bg(s));
     expect(b.moral).toBeCloseTo(86.5, 6);
+  });
+});
+
+describe("v67 Madde 7 — Ordu sayfası: gelecek yıl değişimi, rütbe verisi, Asker'de pazar yok, Fatih", () => {
+  /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir, çatışma yok: yıl işleme kesin sonuç verir. */
+  function sabitOrdu(politika: "hafif" | "orta" | "agir", ganimet: "az" | "dengeli" | "comert" = "dengeli", talim = 40, moral = 55) {
+    const s = asker();
+    s.para = 1_000_000;
+    s.meslek_musteri = komutaLimiti(s);
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: s.meslek_musteri, yuksek: 0 };
+    b.hedef_kalite = "orta";
+    b.baris_bekleme = 99;
+    b.gorevler = [];
+    b.talim_politikasi = politika;
+    b.ganimet_payi = ganimet;
+    b.talim = talim;
+    b.moral = moral;
+    s.ulke.donem = undefined as never;
+    return { s, b };
+  }
+
+  it("moral.gelecek ve talim.gelecek yıl işlemenin gerçek değişimiyle aynıdır", () => {
+    for (const [politika, ganimet] of [["hafif", "az"], ["orta", "dengeli"], ["agir", "comert"]] as const) {
+      const { s, b } = sabitOrdu(politika, ganimet);
+      const v = birlikGorunumuHesapla(s, bg(s));
+      const moral0 = b.moral;
+      const talim0 = b.talim;
+      birlikYilIsle(s, bg(s));
+      expect(v.moral.gelecek).toBeCloseTo(b.moral - moral0, 1);
+      expect(v.talim.gelecek).toBeCloseTo(b.talim - talim0, 1);
+    }
+  });
+
+  it("moralı/talimi etkileyen karar değişince 'gelecek' hemen değişir (ganimet payı, talim politikası)", () => {
+    const { s, b } = sabitOrdu("orta", "dengeli");
+    const g = (id: "az" | "dengeli" | "comert") => { b.ganimet_payi = id; return birlikGorunumuHesapla(s, bg(s)).moral.gelecek; };
+    const az = g("az");
+    const dengeli = g("dengeli");
+    const comert = g("comert");
+    expect(comert - dengeli).toBeCloseTo(4, 1);
+    expect(dengeli - az).toBeCloseTo(7, 1);
+    const t = (p: "hafif" | "orta" | "agir") => { b.talim_politikasi = p; return birlikGorunumuHesapla(s, bg(s)).talim.gelecek; };
+    expect(t("agir")).toBeGreaterThan(t("orta"));
+    expect(t("orta")).toBeGreaterThan(t("hafif"));
+    const m = (p: "hafif" | "orta" | "agir") => { b.talim_politikasi = p; return birlikGorunumuHesapla(s, bg(s)).moral.gelecek; };
+    expect(m("hafif")).toBeGreaterThan(m("agir")); // politikanın yıllık morali +1 / −1 / −5
+  });
+
+  it("görünüm: rütbe güç şartı ve yıllık kariyer puanı BirlikGorunumu'nda; pay/rakipler/ton yok", () => {
+    const s = asker();
+    const v = birlikGorunumuHesapla(s, bg(s));
+    expect(v.rutbe.gucSarti).toEqual({ seviye: 2, gerekli: 18, mevcut: Math.round(v.guc.toplam), karsilaniyor: v.guc.toplam >= 18 });
+    expect(v.rutbe.yillikKariyerPuani).toBeGreaterThan(0);
+    const o = v as unknown as Record<string, unknown>;
+    expect(o.pay).toBeUndefined();
+    expect(o.rakipler).toBeUndefined();
+    expect((o.politikalar as Record<string, unknown>).ton).toBeUndefined();
+    s.rutbe_seviye = 5;
+    expect(birlikGorunumuHesapla(s, bg(s)).rutbe.gucSarti).toBeNull();
+  });
+
+  it("görev rozetleri yön olarak gelir (sayı yok): Tahsilat'ta şöhret ▼ ve sertlik ▲, Komutanlık'ta ganimet", () => {
+    const v = birlikGorunumuHesapla(asker(), bg(asker()));
+    const kat = (id: string) => v.gorevler.katalog.find((g) => g.id === id)!.bonuslar;
+    expect(kat("devriye")).toEqual([{ kod: "moral", yon: 1 }]);
+    expect(kat("tahsilat")).toEqual(expect.arrayContaining([{ kod: "sohret", yon: -1 }, { kod: "sertlik", yon: 1 }, { kod: "otorite", yon: 1 }]));
+    expect(kat("komuta").some((x) => x.kod === "ganimet")).toBe(true);
+  });
+
+  it("Asker kariyer puanı eşikleri 55 / 115 / 210 / 340 (iki çağ); şöhret eşikleri aynı", () => {
+    for (const cag of ["Orta Çağ", "Sanayi Devrimi"] as const) {
+      const e = RUTBELER.Asker[cag].esikler;
+      expect(e.map((x) => x.kariyer_puani)).toEqual([55, 115, 210, 340]);
+      expect(e.map((x) => x.un)).toEqual([18, 32, 43, 70]);
+    }
+  });
+
+  it("Fatih amacı: Baş Belası yerine; toplam 6 zafer (seri sıfırlansa da kalır) + teçhizat 70; rakip amaçları Asker havuzunda yok", () => {
+    expect(amacTanimiGetir("bas_belasi")).toBeUndefined();
+    const havuz = amacHavuzu("Orta Çağ", "Asker").map((a) => a.id);
+    expect(havuz).toContain("fatih");
+    expect(havuz).not.toContain("rakip_ustunlugu");
+    const s = asker();
+    const b = birlikAl(s);
+    s.ordu_techizat_seviyesi = 80;
+    const fatih = amacTanimiGetir("fatih")!;
+    expect(fatih.kosul(s, 0)).toBe(false);
+    for (let i = 0; i < 5; i++) zaferSerisiIsle(b, "haydut", true);
+    zaferSerisiIsle(b, "haydut", false); // seri sıfırlanır, toplam kalır
+    expect(b.zafer_serisi!.haydut).toBe(0);
+    expect(AMAC_ILERLEME.fatih.metrik(s, 0)).toBe(5);
+    expect(fatih.kosul(s, 0)).toBe(false);
+    zaferSerisiIsle(b, "sinir", true);
+    expect(AMAC_ILERLEME.fatih.metrik(s, 0)).toBe(6);
+    expect(fatih.kosul(s, 0)).toBe(true);
+    s.ordu_techizat_seviyesi = 50;
+    expect(fatih.kosul(s, 0)).toBe(false);
+    // eski kayıt: sayaç yok
+    delete b.zafer_toplam;
+    expect(AMAC_ILERLEME.fatih.metrik(s, 0)).toBe(0);
+  });
+
+  it("Asker'de 'Rakibe darbe' şehir isteği yok", async () => {
+    const { yonetimDurumGetir } = await import("../src/game/gameEngine");
+    const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(st.id, "Asker");
+    const d = await yonetimDurumGetir(st.id);
+    const ids = JSON.stringify(d);
+    expect(ids).not.toContain("rakibe_darbe");
   });
 });
