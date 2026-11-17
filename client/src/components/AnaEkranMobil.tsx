@@ -101,11 +101,15 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
-  // "Kazanç": sunucudaki tek kaynak (finans.kazanc) — her şey dahil (maaş, kredi, yaşam, kira…). Henüz yüklenmediyse eski tahmine düşer.
+  // "Kazanç": sunucudaki tek kaynak. İşletmeli mesleklerde (dördü de) her eylemden sonra yenilenen taze `isletme.butce`'tan okunur
+  // (finans.kazanc ile AYNI kaynak, ama subay/çalışan alma, görev, yatırım gibi eylemlerden sonra hemen güncellenir); finans yalnız yedek.
   const kz = finans?.kazanc ?? null;
-  const tumGelir = kz ? kz.gelir : isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
-  const eldeKalan = kz ? kz.net : isletme ? isletme.butce.kazanc : (finans?.netYillik ?? 0);
-  const tumGider = kz ? kz.gider : Math.max(0, tumGelir - eldeKalan);
+  const taze = isletme?.butce ?? null;
+  const tumGelir = taze
+    ? taze.kalemler.gelir.reduce((t, x) => t + x.tutar, 0)
+    : kz ? kz.gelir : karakter.maas_yillik;
+  const eldeKalan = taze ? taze.kazanc : kz ? kz.net : (finans?.netYillik ?? 0);
+  const tumGider = taze ? taze.kalemler.gider.reduce((t, x) => t + x.tutar, 0) : kz ? kz.gider : Math.max(0, tumGelir - eldeKalan);
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
   const donem = donemAnahtar ? DONEM_ADLARI[donemAnahtar] : null;

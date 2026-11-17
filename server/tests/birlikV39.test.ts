@@ -516,14 +516,11 @@ describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", (
     }
   });
 
-  it("hazine payı kademeleri: 0–100 %10 · 100–250 %15 · 250–500 %25 · 500–900 %35 · 900+ %40; zararda yok; ordu hesabına (hesap.net) girmez, KAZANÇ üzerinden alınır", () => {
+  it("hazine payı kademeleri (v67 Madde 8): 0–35 %5 · 35–75 %10 · 75–150 %15 · 150–450 %20 · 450+ %25; zararda yok; ordu hesabına (hesap.net) girmez, KAZANÇ üzerinden alınır", () => {
     expect(hazinePayi(-50)).toBe(0);
-    expect(hazinePayi(100)).toBeCloseTo(10, 8);
-    expect(hazinePayi(250)).toBeCloseTo(32.5, 8);
-    expect(hazinePayi(500)).toBeCloseTo(95, 8);
-    expect(hazinePayi(900)).toBeCloseTo(235, 8);
-    expect(hazinePayi(1900)).toBeCloseTo(635, 8);
-    expect(hazinePayi(100000) / 100000).toBeLessThan(0.4);
+    const beklenen: [number, number][] = [[20, 1], [35, 1.75], [50, 3.25], [75, 5.75], [80, 6.5], [130, 14], [150, 17], [200, 27], [300, 47], [450, 77], [500, 89.5], [700, 139.5], [1900, 439.5]];
+    for (const [kazanc, vergi] of beklenen) expect(hazinePayi(kazanc)).toBeCloseTo(vergi, 8);
+    expect(hazinePayi(100000) / 100000).toBeLessThan(0.25);
     const s = asker();
     const h = birlikHesapla(s, bg(s));
     expect(h).not.toHaveProperty("hazinePayi");

@@ -615,7 +615,8 @@ function App() {
     return () => {
       iptal = true;
     };
-  }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek]);
+  // v67 Madde 8: işletme eylemleri (subay/çalışan alma, görev, yatırım, ganimet payı…) yalnız `isletme` görünümünü yeniliyordu; finans eski kalıyordu → isletme değişince de tazele.
+  }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek, isletme]);
 
   // "🎯 Amaçların" kartı (sağ panel + Görevin + ölüm ekranı) — her tur tazelenir.
   // Ekran değişiminde de tazelenir ama yalnız ekran GRUBU değişince (oyun↔sonuç

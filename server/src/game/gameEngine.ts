@@ -23,8 +23,8 @@ import {
   type BirlikKararGirdisi,
   type SavasKarariDurumu,
 } from "./birlikIslem";
-import { birlikSenkron, doktrinBekliyorMu, erSayisi, hazinePayiKazanctan } from "./birlik";
-import { ASKER_OLAY_OLCEGI, KISLA_ER_LIMITI } from "../data/birlik";
+import { birlikHesapla, birlikSenkron, doktrinBekliyorMu, erSayisi, hazinePayiKazanctan } from "./birlik";
+import { ASKER_OLAY_OLCEGI, KISLA_ER_LIMITI, maasAdi } from "../data/birlik";
 import { subayEtkiSatirlari, type SubayEtkiSatiri } from "./subay";
 import { yeniErEkle } from "./birlikYil";
 import { randomUUID } from "crypto";
@@ -233,7 +233,7 @@ import {
 } from "../data/cemaat";
 import { ogretiGetir, ogretiSecenekleri, ogretiToplami } from "../data/ogretiler";
 import { YAP_ACIKLAMA, YAP_DIGER_OTORITE, YAPMA_ACIKLAMA, YAPMA_DIGER_OTORITE } from "../data/cemaat";
-import type { CemaatBagis, CemaatKitle, CemaatTon, CemaatYardim } from "../types";
+import type { CemaatBagis, CemaatKitle, CemaatTon, CemaatYardim, ButceKalemi, ButceKalemleri } from "../types";
 import {
   isletmeProfiliGetir,
   hatTanimiGetir,
@@ -2748,6 +2748,8 @@ export interface FinansOzeti {
    * gider = gelir − net; alt/ust = net'in yıllık rastgelelik aralığı (talep gürültüsü, bağış, görev).
    */
   kazanc: { gelir: number; gider: number; net: number; alt: number; ust: number };
+  /** İki sütunlu bütçe kalemleri (işletmeli mesleklerde; `IsletmeGorunumu.butce.kalemler` ile aynı kaynak, v67 Madde 8); işletme yoksa null. */
+  kalemler: ButceKalemleri | null;
   /** Hazine payı (yalnız Asker): KAZANÇ üzerinden alınan vergi; `kazanc.net` vergi sonrasıdır (yoksa 0). */
   hazinePayi: number;
   netYillik: number;
@@ -2852,9 +2854,9 @@ function kazancHesapla(state: CharacterState, maasYillik: number, toplamGider: n
   const enf = isletmeBaglami(state).enflasyon;
   const vergiSonrasi = (x: number) => paraYuvarla(x - hazinePayiKazanctan(state, enf, x));
   const net = paraYuvarla(butce.kazanc);
-  const gelir = paraYuvarla(butce.gelir + Math.max(0, gay));
-  const alt = Math.min(net, vergiSonrasi(butce.cebineKalan - (butce.net - butce.netAlt) + gay));
-  const ust = Math.max(net, vergiSonrasi(butce.cebineKalan + (butce.netUst - butce.net) + gay));
+  const gelir = paraYuvarla(butce.gelir + Math.max(0, gay) + butce.ganimetBirikimi);
+  const alt = Math.min(net, vergiSonrasi(butce.cebineKalan - (butce.net - butce.netAlt) + gay + butce.ganimetBirikimi));
+  const ust = Math.max(net, vergiSonrasi(butce.cebineKalan + (butce.netUst - butce.net) + gay + butce.ganimetBirikimi));
   return { gelir, gider: paraYuvarla(gelir - net), net, alt, ust };
 }
 
@@ -2879,6 +2881,7 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     isletmeli: isletmeAktif(state),
     isletmeCalisanMaasi: isletmeAktif(state) ? paraYuvarla(state.ekip.reduce((t, u) => t + u.maas, 0)) : 0,
     kazanc: kazancHesapla(state, maasYillik, toplamGider, krediTaksit),
+    kalemler: isletmeAktif(state) ? butceVeCebineKalan(state, isletmeBaglami(state)).kalemler : null,
     hazinePayi: isletmeAktif(state) ? butceVeCebineKalan(state, isletmeBaglami(state)).hazinePayi : 0,
     netYillik: paraYuvarla(maasYillik - toplamGider - krediTaksit),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
@@ -5078,7 +5081,7 @@ export interface IsletmeGorunumu {
   sonDokum: IsletmeDokum | null;
   beklenenBrutKar: number;
   /** v11: bu yılın dürüst tahmini bütçesi + cebine kalan (yaşam, kira, hayvan, kredi taksidi düşülmüş). */
-  butce: IsletmeButcesi & { yasamKira: number; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; cebineKalan: number; mulkGeliri: number; hazinePayi: number; kazanc: number };
+  butce: IsletmeButcesi & { kalemler: ButceKalemleri; ganimetBirikimi: number; yasamKira: number; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; cebineKalan: number; mulkGeliri: number; hazinePayi: number; kazanc: number };
   /** Vergi: bu yıl uygulanan oran (0-1) ve indirimin kalan yılı (yoksa 0). */
   vergi: { oran: number; indirimKalanYil: number };
   /** Koruma (0-1) ve ortalama dış hırsızlık aralığı (yıl). */
@@ -5199,7 +5202,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
-      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, mulkGeliri: 0, hazinePayi: 0, kazanc: 0, gelir: 0, netAlt: 0, netUst: 0 },
+      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, mulkGeliri: 0, hazinePayi: 0, kazanc: 0, gelir: 0, netAlt: 0, netUst: 0, kalemler: { gelir: [], gider: [] }, ganimetBirikimi: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
       otorite: null, otoriteIliski: state.yonetim_iliski ?? 0, imtiyazlar: [],
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
@@ -5368,6 +5371,72 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   };
 }
 
+/**
+ * İki sütunlu bütçe kalemleri (v67 Madde 8): sol gelir, sağ gider. Dört mesleğin hepsi aynı yoldan; formül KOPYALANMAZ, mevcut hesaplardan okunur.
+ * Değişmez: Σgelir − Σgider = KAZANÇ (ele kalan, vergi sonrası; `butceVeCebineKalan` ile aynı). Negatif mülk geliri giderde yazılır.
+ */
+function butceKalemleriHesapla(state: CharacterState, b: IsletmeBaglami, o: { butce: IsletmeButcesi; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; mulkGeliri: number; hazinePayi: number; ganimetBirikimi: number }): ButceKalemleri {
+  const gelir: ButceKalemi[] = [];
+  const gider: ButceKalemi[] = [];
+  const ekle = (liste: ButceKalemi[], kod: string, tr: string, en: string, tutar: number, not?: { tr: string; en: string }) => {
+    const x = paraYuvarla(tutar);
+    if (Math.abs(x) >= 0.005) liste.push({ kod, ad: { tr, en }, tutar: x, ...(not ? { not } : {}) });
+  };
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  const butce = o.butce;
+  if (profil?.mod === "birlik") {
+    const h = birlikHesapla(state, b);
+    const sold = maasAdi(state.cag, state.bolge);
+    gelir.push({ kod: "sold", ad: { tr: sold.tr, en: sold.en }, tutar: paraYuvarla(h.sold) });
+    ekle(gelir, "gorev", "Görev kazancı", "Duty earnings", h.gorevGeliri);
+    ekle(gelir, "ganimet_gorev", "Ganimet (görev)", "Loot (duties)", h.ganimetNet - h.yagmaBrut, { tr: "Görev ganimetinden askerlere pay kesilmez; pay yalnız çatışma ve savaş ganimetinden alınır.", en: "No share goes to the men from duty loot; the share applies only to clash and war loot." });
+    ekle(gelir, "yagma", "Yağma", "Plunder", h.yagmaBrut);
+    ekle(gelir, "kale", "Kale geliri", "Castle income", h.kaleGeliri);
+    ekle(gelir, "catisma_ganimeti", "Çatışma ganimeti (size kalan)", "Clash loot (your share)", o.ganimetBirikimi, { tr: "Askerlere pay düşüldü; bu yılın Kazanç'ına eklendi, hazine payı Kazanç'tan kesilir.", en: "The men's share is already deducted; added to this year's earnings, the treasury share is taken from earnings." });
+    ekle(gider, "er_masrafi", "Er masrafı", "Upkeep of men", h.erMasrafi);
+    ekle(gider, "erzak", "Erzak", "Provisions", h.erzak);
+    ekle(gider, "kiralik", "Kiralık ordu", "Hired troops", h.kiralikMasrafi);
+    ekle(gider, "kisla", "Kışla bakımı", "Barracks upkeep", h.kislaBakim);
+    ekle(gider, "techizat", "Teçhizat bakımı", "Equipment upkeep", h.techizatBakim);
+    ekle(gider, "ozel_birlik", "Özel birlik bakımı", "Special unit upkeep", h.birlikBakim);
+    ekle(gider, "yarali", "Yaralı tedavisi", "Wounded care", h.yaraliGideri);
+    ekle(gider, "limit_asimi", "Limit üstü erlerin ek gideri", "Extra cost of men over the limit", h.limitAsimGideri);
+    ekle(gider, "kusatma", "Kuşatma bakımı", "Siege upkeep", h.kusatmaBakim);
+    ekle(gider, "talim", "Talim masrafı", "Drill costs", h.talimMasrafi);
+    ekle(gider, "maas", "Subay maaşları", "Officers' wages", butce.maas);
+  } else if (profil?.mod === "cemaat") {
+    const [gmn, gmx] = gelmeAraligi(state);
+    const c = cemaatHesapla(state, b, (gmn + gmx) / 2);
+    ekle(gelir, "bagis", "Bağış", "Donations", c.bagis);
+    ekle(gelir, "faaliyet_gelir", "Faaliyet geliri", "Activity income", c.faaliyetGelir);
+    ekle(gider, "faaliyet", "Faaliyet masrafı", "Activity costs", c.faaliyetMasraf);
+    ekle(gider, "ayin", "Ayin masrafı", "Rite costs", c.ayinMasrafi);
+    ekle(gider, "bina", "Cemaat giderleri (bina + yatırımlar)", "Congregation expenses (building + investments)", c.binaBakim);
+    ekle(gider, "yardim", "Yardım harcaması", "Aid spending", c.yardim);
+    ekle(gider, "aidat", "Teşkilat aidatı", "Church dues", c.aidat);
+    ekle(gider, "vergi", "Vergi", "Tax", c.vergi);
+    ekle(gider, "maas", "Çalışan maaşları", "Staff wages", butce.maas);
+  } else {
+    const uretim = profil?.mod === "uretim";
+    ekle(gelir, "satis", "Satış", "Sales", butce.satis);
+    ekle(gider, "alim", uretim ? "Hammadde" : "Mal alımı", uretim ? "Materials" : "Purchases", butce.alim);
+    ekle(gider, "depo", "Dükkân giderleri", "Shop expenses", butce.depo);
+    ekle(gider, "aidat", "Lonca aidatı", "Guild dues", butce.aidat);
+    ekle(gider, "vergi", "Vergi", "Tax", butce.vergi);
+    ekle(gider, "borc", "Borç ödemesi", "Debt repaid", butce.borcOdeme);
+    ekle(gider, "maas", "Çalışan maaşları", "Staff wages", butce.maas);
+  }
+  // Mülk geliri: pozitifse gelirde, negatifse (bakım zararı) giderde.
+  if (o.mulkGeliri >= 0) ekle(gelir, "mulk", "Mülk geliri", "Property income", o.mulkGeliri);
+  else ekle(gider, "mulk", "Mülk gideri", "Property costs", -o.mulkGeliri);
+  ekle(gider, "yasam", "Yaşam", "Living", o.yasam);
+  ekle(gider, "kira", "Kira", "Rent", o.kira);
+  ekle(gider, "hayvan", "Evcil hayvan", "Pets", o.evcilHayvan);
+  ekle(gider, "kredi", "Kredi taksidi", "Loan instalment", o.krediTaksit);
+  ekle(gider, "hazine", "Hazine payı (kazançtan)", "Treasury share (from earnings)", o.hazinePayi);
+  return { gelir, gider };
+}
+
 /** Bu yılın tahmini işletme bütçesi + oyuncunun cebine kalan (yaşam, kira, hayvan, kredi taksidi, çalışan maaşı düşülmüş). */
 function butceVeCebineKalan(state: CharacterState, b: IsletmeBaglami) {
   const butce = isletmeButcesi(state, b);
@@ -5376,11 +5445,17 @@ function butceVeCebineKalan(state: CharacterState, b: IsletmeBaglami) {
   const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
   const cebineKalan = paraYuvarla(butce.net - yasamKira - krediTaksit);
   const mulkGeliri = gayrimenkulYillikGelirHesapla(state);
-  // HAZİNE PAYI KAZANÇ üzerinden: kazanç = ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; vergi bunun üstünden, ele kalan vergi sonrasıdır.
-  const vergisizKazanc = paraYuvarla(cebineKalan + mulkGeliri);
+  // v67 Madde 8: bu yıl çözülen çatışmaların ganimeti (asker payı düşülmüş net + esir parası) yıl sonunda Kazanç'a eklenir ve vergilenir.
+  const ganimetBirikimi = state.meslek === "Asker" ? paraYuvarla(state.isletme?.birlik?.ganimet_birikimi ?? 0) : 0;
+  // HAZİNE PAYI KAZANÇ üzerinden: kazanç = ordu neti − subay − yaşam − kira − hayvan − kredi + mülk + çatışma ganimeti; vergi bunun üstünden, ele kalan vergi sonrasıdır.
+  const vergisizKazanc = paraYuvarla(cebineKalan + mulkGeliri + ganimetBirikimi);
   const hazinePayi = hazinePayiKazanctan(state, b.enflasyon, vergisizKazanc);
-  // `kazanc` = ana ekrandaki "Kazanç" (finans.kazanc.net) ile BİREBİR aynı: dükkân/ordu/cemaat neti − yaşam − kira − hayvan − kredi + mülk geliri.
-  return { ...butce, yasamKira, yasam: paraYuvarla(g.yasam), kira: paraYuvarla(g.konut), evcilHayvan: paraYuvarla(g.evcilHayvan), krediTaksit, cebineKalan, mulkGeliri, hazinePayi, kazanc: paraYuvarla(vergisizKazanc - hazinePayi) };
+  const yasam = paraYuvarla(g.yasam);
+  const kira = paraYuvarla(g.konut);
+  const evcilHayvan = paraYuvarla(g.evcilHayvan);
+  const kalemler = butceKalemleriHesapla(state, b, { butce, yasam, kira, evcilHayvan, krediTaksit, mulkGeliri, hazinePayi, ganimetBirikimi });
+  // `kazanc` = ana ekrandaki "Kazanç" (finans.kazanc.net) ile BİREBİR aynı: dükkân/ordu/cemaat neti − yaşam − kira − hayvan − kredi + mülk geliri (+ çatışma ganimeti), hazine payı sonrası.
+  return { ...butce, kalemler, ganimetBirikimi, yasamKira, yasam, kira, evcilHayvan, krediTaksit, cebineKalan, mulkGeliri, hazinePayi, kazanc: paraYuvarla(vergisizKazanc - hazinePayi) };
 }
 
 export async function isletmeDurumGetir(id: string): Promise<IsletmeGorunumu> {

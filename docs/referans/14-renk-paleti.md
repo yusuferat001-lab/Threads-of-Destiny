@@ -42,3 +42,6 @@ Yüzey ve kol renkleri `renk-paleti.css`'te token (`§53 Faz 10`, `13-garanti-si
 
 ## v67 Madde 7 (Ordu sayfası)
 Moral/Talim/Güç kartlarında sayı **lacivert** (durum), "Gelecek yıl" değişimi ve "güçte %x" **yeşil/kırmızı** (artı/eksi), er/limit satırında limit **eflatun**; moral çubuğu <30 kırmızı, ≥70 yeşil, aksi lacivert (50 nötr çizgisi). Görev kartı: "en az N askerî güç" eflatun; rozetler artı yeşil / eksi kırmızı (sertlik artışı ve şöhret düşüşü kırmızı); açılır hesapta gereken eflatun, şimdiki güç lacivert, ✓ yeşil, "Eksik" kırmızı.
+
+## v67 Madde 8 (bütçe iki sütun, ganimet dökümü)
+Bütçe: **sol sütun Gelir — başlık ve tutarlar yeşil** (`s-gelir`), **sağ sütun Gider — kırmızı** (`s-gider`), "Toplam gelir/gider" kalın aynı renk, "Kazanç" şeridi (`--c-para-sirit`) işaretine göre yeşil/kırmızı. Ganimet dökümü: "Ganimet (toplam)" yeşil artı, "Askerlere %x" kırmızı eksi, **"Size kalan ganimet" yeşil ve kalın**. Yeni renk yok.

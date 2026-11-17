@@ -12,7 +12,8 @@ Bu dosya, Asker üzerinde yapılan tüm ayar konuşmalarının **tek yerde topla
 > - **Düşman:** `(taban(yaş,tür) + 0,30 × oyuncu gücü) × tür çarpanı (0,9/1,1/1,3) × U(0,95–1,05) × zafer serisi (×1,2 @2, ×1,5 @4+)`; 16 çatışma senaryosu (arazi, düşman birliği).
 > - **Pazar:** Asker'de pazar payı, pazar rakipleri, `pazar_musteri` (=0) ve `rakipler` YOK; rütbe = kariyer puanı **55/115/210/340** + şöhret 18/32/43/70 + askerî güç 18/70/150/340.
 > - **Arayüz:** Ordu sayfası = "Erin: x / limit", Moral·Talim·Güç kartları, "!" bilgi notları (`BilgiNotu`), görev rozetleri ve tıklanınca asgari güç hesabı.
-> - **Sıradaki (yapılmadı):** Madde 8 bütçe iki sütun/Kazanç etiketi/ganimet brüt-pay-net · Madde 9 mobil Mülkler sekmesi · Madde 10 ekstra vergi tutarsızlığı.
+> - **Bütçe/vergi (Madde 8, yapıldı):** tüm mesleklerde iki sütunlu bütçe (sol gelir, sağ gider, altta "Kazanç"); hazine payı **0–35 %5 · 35–75 %10 · 75–150 %15 · 150–450 %20 · 450+ %25** (marjinal, yalnız Asker, son Kazanç'tan); çatışma + savaş ganimeti yıl sonunda Kazanç'a girer ve vergilenir; ganimet üç satır (toplam / askerlere %x / size kalan).
+> - **Sıradaki (yapılmadı):** Madde 9 mobil Mülkler sekmesi · Madde 10 ekstra vergi tutarsızlığı.
 
 ## Oyunda olanlar (güncel)
 | Alan | Durum |
@@ -21,7 +22,7 @@ Bu dosya, Asker üzerinde yapılan tüm ayar konuşmalarının **tek yerde topla
 | Teçhizat/moral/talim | Kalite çarpanı 0,75/1/1,25; bakım 0,15/0,27/0,40; moral & talim tarafsız 50; yeni erler talim 25 |
 | Görevler (v64) | **5 görev, aynı anda tek görev**; güç başı 0,65–0,9; güç bantlı azalan verim (0–150 ×1 … 600+ ×0,45); kazandıran görev daha çok yaralı/az ölü/ara sıra firar verdirir; barışta kayıp bildirimi her yıl gelmez; arayüzde risk işareti |
 | Ganimet (v64) | Kademeli güç bantları + etkin güç tavanı 240; savaş zaferi 11–14, barış çatışması 2,6–3,2 (üç tür için aynı bantlar); yağma yumuşak bantlarla (ilk 3 savaş yılı) |
-| Hazine payı (v66) | KAZANÇ üzerinden kademeli vergi, en çok %40 (yalnız Asker) |
+| Hazine payı (v66 → Madde 8) | KAZANÇ üzerinden kademeli (marjinal) vergi: 0–35 %5 · 35–75 %10 · 75–150 %15 · 150–450 %20 · 450+ %25 (yalnız Asker) |
 | Düşman (v62) | Üç tür için sabit yıllık artış: 21–60 yaş her yıl aynı %, 60 sonrası sabit hız; haydut %5,6 · sınır %5,8 · savaş %6,7 |
 | Savaş/çatışma kayıpları | Zafer/yenilgi ölü-firar tabloları + tavanlar (zafer 16/9, yenilgi 31/15), yaralı oranları (çatışma 2–2,5, savaş 1,5–1,75), savaşın ilk 2 yılı toplam ≤ %6 |
 | Seferberlik / paralı | İki seferberlik (v67 Madde 6: %8 Gazi Çağrısı, %20 Tüm Erkekler; giriş talimi 55/10, moral −7/−15, ilk 2 yıl ek firar %5/%8; ordunun mevcut teçhizatıyla gelir), tamamı orduda kalır; paralı 2 seviye (%20/%40, peşin 6,4, yıllık 2,4, moral −7/−14) |
@@ -101,7 +102,7 @@ Testler: `birlik.test.ts` "v67 Madde 2" bloğu (net talim, politika morali, ücr
 | Yıllık sabit gönüllü er | 1 → **0** | `BARIS_YILLIK_ER` |
 | Devşirme Bürosu fiyatı | 20/35/52/75 → **24/42/62/90** (×1,2) | `FIYAT_DEVSIRME` (`meslekProfilleri.ts`) |
 | Revir fiyatı | 13/22/34/50 → **16/26/41/60** (×1,2) | `FIYAT_REVIR` |
-| Hazine payı ilk dilim (0–100) | %0 → **%10** (15/25/35/40 aynı) | `HAZINE_KADEMELERI` |
+| Hazine payı ilk dilim (0–100) | %0 → **%10** (15/25/35/40 aynı) — **Madde 8'de dilimler yeniden yazıldı (aşağıya bak)** | `HAZINE_KADEMELERI` |
 
 **Görev geliri artık ER bazlı:** `gelir = er × gorevErOrani(er) × erBasi × GOREV_GELIR_CARPANI × …` (eski: `güç × gorevGucOrani(güç) × …`); güç yalnız görevin AÇILIŞ eşiği için kullanılır. İstemci etiketi "Er başı gelir" ("/er"). `gorevGucOrani`/`GOREV_BANTLARI` yalnız eski test/gösterge için duruyor.
 
@@ -210,3 +211,12 @@ Bütçe önizlemeleri `BARIS_GANIMET_UST` (4,0) ve `BARIS_GANIMET_ORTA` (tür a�
 
 ## main ile birleştirme notu (v67 Madde 1–7 ↔ v69, 2026-11)
 Kullanıcı kararı: **çakışan tüm Asker denge değerleri v67 dalından** (v69'un aynı sabitlerdeki değerleri geçersiz): savaşta er başı ödeme çarpanı **×2** (v69: ×1), kıtlık ordu morali **−1,5** (v69: −1), bolluk ordu morali **0** (eski +1,5), sold 8,5 · er masrafı 0,23 · erzak 0,13. v69'un **mekanikleri korundu**: `soldDonemCarpani` (sold dönem çarpanı), `erzakDonemCarpani` (sabit tablo 0,9–1,1), görev dönem çarpanı kısıntısı ≤ %12, ülkeye özgü ödeme adı (Ulûfe…), ana ekran dünya satırı, karar penceresi şablonu (`GucKarsilastirma`). Yukarıdaki v69 metnindeki "savaşta ×3 / kıtlık −1,5 → −1" ifadeleri bu nota göre okunur. Özel birlik bakımı v67 Madde 4 gereği er başı sabittir (`turBakim`/`turErzak` yok).
+
+## v67 — Madde 8: bütçe iki sütun, Kazanç etiketi, ganimet dökümü, hazine payı dilimleri (2026-11)
+**1) Tek kaynaklı bütçe kalemleri.** `gameEngine.ts butceKalemleriHesapla` → `ButceKalemleri {gelir[], gider[]}` (`ButceKalemi {kod, ad{tr,en}, tutar, not?}`); `IsletmeGorunumu.butce.kalemler` ve `FinansOzeti.kalemler` aynı fonksiyondan gelir; istemci satır dizmez. **Değişmez:** Σ gelir − Σ gider = `butce.kazanc` (= ele kalan, vergi sonrası; negatif mülk geliri giderde). Asker: gelir = ödeme (yerel ad, `maasAdi`), görev, ganimet (görev), yağma, kale, çatışma ganimeti, mülk · gider = er masrafı, erzak, kiralık, kışla, teçhizat, özel birlik, yaralı, limit aşımı, kuşatma, talim, subay maaşı, yaşam, kira, hayvan, kredi, hazine payı. Cemaat/Tüccar/Zanaatkâr kalemleri kendi hesaplarından okunur.
+**2) Arayüz.** `ButceIkiSutun.tsx` (+ `butce-iki-sutun.css`): sol "Gelir" (yeşil), sağ "Gider" (kırmızı), her sütun altında toplam, tam genişlik "Kazanç" şeridi; mobil (390 px) ve PC'de yan yana. Ordu (`BirlikPaneli`), Dükkân/Atölye (`IsletmePaneli`), Cemaat (`CemaatPaneli`) ve Bütçen (`ButcePaneli`, işletmeli tüm meslekler) aynı bileşeni kullanır. Etiket her yerde yalnız **"Kazanç"** (EN "Earnings"; "Cebine kalan" ve "sonraki yıl" yazısı yok); API alanı `cebineKalan` aynı kaldı.
+**3) Bayat ana ekran Kazancı.** `AnaEkranMobil` Kazanç/Gelir/Gider'i taze `isletme.butce`'tan okur; `App.tsx` `finansGetir` yenileme efekti `isletme` değişince de çalışır (subay/çalışan alma, görev, yatırım sonrası anında güncellenir).
+**4) Ganimet dökümü.** `GanimetDokumu.tsx`: **Ganimet (toplam) +brüt · Askerlere %oran −erPayı (kırmızı) · Size kalan ganimet +net (yeşil, kalın)**; çatışma sonucu (`CatismaKarari`), savaş günü sonucu (`SavasSonucu`), savaş sonu uyarısı (`savas_ganimet`: `brut, erPayi, oran`) ve Ordu bütçesindeki çatışma ganimeti satırı. `ganimetBrut = ganimetErPayi + net` (esir parası ayrı satır). Görev ganimeti/yağma/kale askerlere pay kesilmeden size girer.
+**5) Ganimet vergilendirmesi.** Çatışma ganimeti artık olay anında cebe girmez: `BirlikDurumu.ganimet_birikimi`'ne yazılır (nakit hasar anında düşer); yıl sonunda `birlikYilIsle` savaş ganimetiyle (`barisNet`) birlikte yıllık Kazanç'a katılır ve hazine payı Kazanç üzerinden alınır. Sonuç ekranında BilgiNotu: "Kazanç'a eklenir; hazine payı yıl sonunda kesilir". Beklenen Kazanç (bütçe) rastgele olay ganimetini içermez.
+**6) Hazine payı dilimleri** (`data/birlik.ts HAZINE_KADEMELERI`, marjinal, yalnız Asker, son Kazanç'tan, diğer meslekler etkilenmez): 0–35 **%5** · 35–75 **%10** · 75–150 **%15** · 150–450 **%20** · 450+ **%25**. Örnek vergi: Kazanç 20→1 · 50→3,25 · 80→6,5 · 130→14 · 200→27 · 300→47 · 500→89,5 · 700→139,5 (eski %10/15/25/35/40: 2 / 5 / 8 / 14,5 / 25 / 45 / 95 / 165).
+**Testler:** `kazanc.test.ts` "v67 Madde 8" (dört meslekte Σgelir−Σgider = kazanç ve `finans.kalemler == butce.kalemler`; subay maaşı giderde; çatışma ganimeti birikimi gelirde, vergi sonrası artış), `birlikV39.test.ts` (yeni dilimler). **Not:** denge simülasyonu (`simulateBirlik`) yalnız bilgi amaçlıdır; vergi dilimleri ve çatışma ganimetinin yıl sonuna kayması net kazancı hafifçe yükseltir (üst dilimler düşük).

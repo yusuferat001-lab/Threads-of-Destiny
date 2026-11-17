@@ -3,6 +3,7 @@ import type { CemaatKararGirdisi, CemaatPolitikaGorunumu, IsletmeGorunumu, Islet
 import { useDil } from '../DilContext';
 import { useEscKapat } from '../hooks';
 import { RenkliEtki } from './Renkli';
+import { ButceIkiSutun } from './ButceIkiSutun';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
@@ -442,43 +443,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         </div>
         <div className="sayfa-blok blok-butce">
         <h4 className="isletme-butce-baslik">{dil === 'en' ? '📒 Your budget' : '📒 Bütçen'}</h4>
-        <div className="isletme-dokum">
-          <div>
-            {t('bagisKalemi')} ({formatMusteri(dil, c.bagisYapan)} {t('bagisYapan')} %{c.bagisOrani}): <strong className="s-gelir">+{formatPara(c.bagis)}</strong>
-          </div>
-          <div>
-            {t('faaliyetKalemi')}: <strong className="s-gelir">+{formatPara(c.faaliyetGelir)}</strong>
-          </div>
-          <div>
-            {t('toplamGelir')}: <strong className="s-gelir">+{formatPara(c.toplamGelir)}</strong>
-          </div>
-          <div>{t('gFaaliyet')}: <strong className="s-gider">−{formatPara(c.giderler.faaliyet)}</strong></div>
-          <div>{t('gAyin')}: <strong className="s-gider">−{formatPara(c.giderler.ayin)}</strong></div>
-          <div>{t('gBina')}: <strong className="s-gider">−{formatPara(c.giderler.bina)}</strong></div>
-          <div>{t('gYardim')}: <strong className="s-gider">−{formatPara(c.giderler.yardim)}</strong></div>
-          <div>{t('gAidat')}: <strong className="s-gider">−{formatPara(c.giderler.aidat)}</strong></div>
-          <div>{t('gVergi')}: <strong className="s-gider">−{formatPara(c.giderler.vergi)}</strong></div>
-          {durum.butce.maas > 0 && (
-            <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>
-          )}
-          <div className="isletme-dokum-net">
-            {dil === 'en' ? 'Parish net' : 'Cemaat neti'}: <strong className={durum.butce.net >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
-          </div>
-          <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
-          <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>
-          {durum.butce.evcilHayvan > 0 && (
-            <div>{dil === 'en' ? 'Pets' : 'Evcil hayvan'}: <strong className="s-gider">−{formatPara(durum.butce.evcilHayvan)}</strong></div>
-          )}
-          {durum.butce.krediTaksit > 0 && (
-            <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong className="s-gider">−{formatPara(durum.butce.krediTaksit)}</strong></div>
-          )}
-          {durum.butce.mulkGeliri !== 0 && (
-            <div>{dil === 'en' ? 'Property income' : 'Mülk geliri'}: <strong className={durum.butce.mulkGeliri >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.mulkGeliri >= 0 ? '+' : '−'}{formatPara(Math.abs(durum.butce.mulkGeliri))}</strong></div>
-          )}
-          <div className="isletme-dokum-net">
-            {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong className={durum.butce.kazanc >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.kazanc >= 0 ? '+' : ''}{formatPara(durum.butce.kazanc)} {pb}</strong>
-          </div>
-        </div>
+        <ButceIkiSutun kalemler={durum.butce.kalemler} kazanc={durum.butce.kazanc} paraBirimi={pb} />
 
         </div>
         <div className="sayfa-blok blok-dokum">
