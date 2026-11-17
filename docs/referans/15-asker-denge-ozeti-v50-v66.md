@@ -14,7 +14,7 @@ Bu dosya, Asker üzerinde yapılan tüm ayar konuşmalarının **tek yerde topla
 | Hazine payı (v66) | KAZANÇ üzerinden kademeli vergi, en çok %40 (yalnız Asker) |
 | Düşman (v62) | Üç tür için sabit yıllık artış: 21–60 yaş her yıl aynı %, 60 sonrası sabit hız; haydut %5,6 · sınır %5,8 · savaş %6,7 |
 | Savaş/çatışma kayıpları | Zafer/yenilgi ölü-firar tabloları + tavanlar (zafer 16/9, yenilgi 31/15), yaralı oranları (çatışma 2–2,5, savaş 1,5–1,75), savaşın ilk 2 yılı toplam ≤ %6 |
-| Seferberlik / paralı | İki seferberlik (%15 Gazi Çağrısı, %30 Tüm Erkekler), ilk 2 yıl ek firar %5/%10, tamamı orduda kalır; paralı 2 seviye (%20/%40, peşin 6,4, yıllık 2,4, moral −7/−14) |
+| Seferberlik / paralı | İki seferberlik (v67 Madde 6: %8 Gazi Çağrısı, %20 Tüm Erkekler; giriş talimi 55/10, moral −7/−15, ilk 2 yıl ek firar %5/%8; ordunun mevcut teçhizatıyla gelir), tamamı orduda kalır; paralı 2 seviye (%20/%40, peşin 6,4, yıllık 2,4, moral −7/−14) |
 | Devşirme | Büro 1–4 er/yıl, subay en çok 4 er; gönüllü %3 ve yağmadan gelen er kaldırıldı; yıllık sabit +1 er var |
 | Sağlık (v63/v64) | Büyük savaş toplam 5–20 (yıllara yayılır, yenilgide +3), çatışma/baskın/tehlikeli görev kayıpları; **alt limit yok (savaşta ölünür)**; rütbeden bağımsız sabit; Tabip subayı ve revir azaltır (arayüzde yazılı) |
 | Şöhret (v65/v66) | Haydut ±0–1, sınır ±1–2, baskın ±1 ek; **büyük savaş zaferi +6,5–8**, yenilgi −3…−5; çatışma ekranında ve savaş sonu bildiriminde görünür |
@@ -56,7 +56,7 @@ Yalnız TÜM ORDU (büyük savaş) yenilgisinde, karar savaşından sonraki ilk 
 
 **Moral/talim artış kaynakları kısıldı:** bolluk dönemi ordu morali **0** (eski +1,5); ağır teçhizat morali +1 (+1,5); revir +0,4/kademe (+0,75); görev morali devriye/garnizon/komuta 0,2/0,3/0,6 (0,3/0,5/1,2); haydut/sınır çatışması zafer morali +2/+3 (+3/+4); savaş kanat zaferi morali +6 (+10); sefer dönüşü moral/talim +3/+5 (+5/+10); barış çatışması talim zafer/yenilgi +3/+1 (+5/+2); savaş kanat talim +6/+3 (+10/+5).
 
-**Yüksekte pasif düşüş (yeni):** yıl başında moral ya da talim **70'in üstündeyse** o yıl ek olarak −(değer−70)×0,20 düşer (80'de −2, 90'da −4, 100'de −6; `yuksekPasifDusus`, `PASIF_DUSUS_ESIGI/KATSAYI`; `birlikYil.ts` adım 8 ve 9). **Yeni er giriş talimi 15** (`TALIM_YENI_ER_GIRIS`, eski 25).
+**Yüksekte pasif düşüş (yeni; v67 Madde 6: talim için kalktı, yalnız moral için sürer):** yıl başında moral ya da talim **70'in üstündeyse** o yıl ek olarak −(değer−70)×0,20 düşer (80'de −2, 90'da −4, 100'de −6; `yuksekPasifDusus`, `PASIF_DUSUS_ESIGI/KATSAYI`; `birlikYil.ts` adım 8 ve 9). **Yeni er giriş talimi 15** (`TALIM_YENI_ER_GIRIS`, eski 25).
 
 Testler: `birlik.test.ts` "v67 Madde 2" bloğu (net talim, politika morali, ücretsiz talim, ganimet payı, bolluk, pasif düşüş, metin) + `birlikV39.test.ts` sabit beklentileri. `simulateBirlik.ts` (N=40, Orta Çağ): dengeli/aktif net pozitif, batan %3-5, zafer %77-88 — ekonomi bozulmadı. Not: "görev kaybı" testine `para` verildi (moral gelir bonusu ×1,05 yokken ordu borca girip erzak firarını tetikliyordu). Açık: komuta tonu (moral ±3) hâlâ var (Madde 7), moral/talimin güce etkisi ±%25 (Madde 4).
 
@@ -138,3 +138,26 @@ Bütçe önizlemeleri `BARIS_GANIMET_UST` (4,0) ve `BARIS_GANIMET_ORTA` (tür a�
 - **Barış düşman arazi normalizasyonu** (`BARIS_DUSMAN_ARAZI_NORMU`, `barisDusmanAraziCarpani`): senaryolar düşmanın elverişli birliğini elverişli arazisiyle eşlediği için ham çarpan katalog ortalamasında düşman lehine ~%13–18 idi (ilk uygulamada dengeli zafer 72/74/47 → 57/49/33, batma %33'e çıkmıştı); düşman çarpanı yön başına katalog ortalamasına bölünür (ortalama 1, senaryolar arası çeşitlilik kalır).
 - **Arayüz** (`CatismaKarari.tsx`): senaryo adı ve metni, arazi (simge + ad), "saldırıda/savunmada güçlü/zayıf birliklerin" satırları; düşman tahmini yön başına kendi arazi çarpanıyla. `CatismaKarariDurumu.senaryo` / `.birlikArazi`, `BirlikCatismaBekleyen.senaryoId` / `.arazi` (sunucu + istemci tipleri).
 - **Simülasyon** (N=60, Orta Çağ, BİLGİ): dengeli zafer % (haydut/sınır/savaş) **71 / 68 / 42** (5b: 72/74/47), batma %13; aktif **74 / 73 / 39**, batma %20, S5 %20. Testler: `birlik.test.ts` "v67 Madde 5c" bloğu (katalog, seçim, barışta arazi, normalizasyon, eski kayıt) + `birlikArazi/birlikSavas` beklentileri. Özel birlik-arazi ek mekanikleri (pusu/ganimet/ölü/firar bonusları) yapılmadı (kullanıcı kararı).
+
+## v67 — Madde 6: seferberlik + Talim Alanı (2026-11)
+
+**Seferberlik** (`SEFERBERLIK_TANIMLARI`, `data/birlik.ts`; `seferberlikUygula`, `savasiBitir`, `birlikYil.ts`):
+| | Gazi Çağrısı (`secme`) | Tüm Erkekler (`genel`) |
+|---|---|---|
+| Çağrılan er (ordunun %'si) | %15 → **%8** | %30 → **%20** |
+| Teçhizat | sabit orta → **ordunun `hedef_kalite`'si** | sabit düşük → **ordunun `hedef_kalite`'si** |
+| Giriş talimi (sabit) | ordununki → **55** | 0 → **10** |
+| Ordu morali (bir kez) | −4 → **−7** | −12 → **−15** |
+| İlk 2 yıl ek firar (toplam) | %5 | %10 → **%8** |
+| Erzak eki / halk bedeli | +%4 / yok | +%15 / ahlak −2, mutluluk −2, şöhret −1 (aynı) |
+- **Kalıcı gazi kadrosu kaldırıldı** (`SEFERBERLIK_GAZI_ORANI` silindi): zaferde kalan seferberler artık kalite atlamaz; hepsi ordunun teçhizat kalitesinde kalır. `SEFERBERLIK_TANIMLARI.kalite` alanı yok; `sv.seferberlik_kalite` çağrı anındaki `hedef_kalite`dir (eski kayıtta alan yoksa `dusuk` varsayılır).
+- **Güç:** seferber er ham güce normal er gibi katılır; tek fark `etkinTalim` (giriş talimiyle er sayısına göre ağırlıklı ortalama, savaş bitince kalıcı ortalamaya katılır) ve çağrı morali. **Hedef (kullanıcı):** Gazi güç artışı +%7'yi geçmesin, Tüm Erkekler ≈ +%13. Ölçülen (100 er, orta teçhizat): moral/talim 50/50 → Gazi **+%5,9**, Tüm Erkekler **+%12,2**; 60/70 → 4,9 / 9,8; 70/80 (ağır) → 4,8 / 9,3; 50/30 → 6,2 / 13,0; ordu talimi 0 uç: 6,9 / 14,4. Ordu ne kadar eğitimliyse artış o kadar düşer. Yıllık ek gider (orta/ağır teçhizat): Gazi 4,8 / 5,8, Tüm Erkekler 12,0 / 14,4 (100 erlik ordu).
+- Gazi'nin moral bedeli −4'ten −7'ye çıktı çünkü %8 er + talim 55 ile −4'te en zayıf ordu +%8,0 verirdi (7'yi aşardı); −7'de uç +%6,9.
+
+**Talim Alanı (yeni Asker yatırımı, `id: "talim"`, 🎯, `YatirimEtkisi "talim"`):** 4 kademe, fiyat **18 / 32 / 50 / 75** (enflasyonsuz; yıllık bakım yok). Etki 1: yıllık talim kazancına **+1/+2/+3/+4** (`TALIM_ALANI_YILLIK`, politikadan bağımsız; hafif politikada da çalışır). Etki 2: ordunun talim **üst limiti** (`TALIM_ALANI_TAVAN = [70,75,80,85,90]`, bina yok 70; `talimKademesi` / `talimUstLimit` / `talimKazanci`, `game/birlik.ts`). Güçte en çok: limit 70 → +%8, 75 → +%10, 80 → +%12, 85 → +%14, 90 → +%16.
+- **Politikalar** (`TALIM_TANIMLARI`) artık tavan taşımaz (`tavan` alanı kalktı; orta politikanın eski 70 tavanı yerine bina limiti geçerli). Yıllık talim = `min(limit, talim + (politika artışı + bina artışı) × teçhizat katsayısı × (moral<30 ? 0,5 : 1) − 2)`; sonuç `[0, limit]`a kırpılır (limit üstündeki eski kayıt ilk yıl sonunda limite iner). Net (teçhizat orta): hafif −2 / orta +2 / ağır +7 (bina yok); bina 1–4: hafif −1/0/+1/+2, orta +3/+4/+5/+6, ağır +8/+9/+10/+11. Politikalar artık tavanı değil **hız ve moral bedelini** belirler (hafif +1, orta −1, ağır −5 yıllık moral); bina yokken ağır talim de 70'te durur (eski: 100'e çıkabilirdi).
+- **Pasif düşüş** (`yuksekPasifDusus`) artık yalnız **moral** içindir; talimin tavanını bina belirler.
+- Savaş kanat zaferi/yenilgisi (+6/+3), barış çatışması (+3/+1) ve sefer dönüşü (+5) talim kazancı limiti aşmaz (`talimKazanci`); sonuç ekranındaki talim satırı gerçekten eklenen puanı yazar.
+- **Arayüz:** `BirlikGorunumu.talim.limit` / `.alanKademe` (politika `tavan` alanı kalktı; `client/src/types.ts` eşlendi); Ordu sayfasında "Talim: 54 / 70 (+%x)". Yatırım kartı genel yatırım listesinden gelir (`yatirimEtkiMetni("talim")`: "Yıllık talim +k · talim sınırı L").
+- **Testler:** `birlik.test.ts` "v67 Madde 6" bloğu (güç artışı hedefi, moral −7/−15, kademe sabitleri/fiyat/metin, yıllık net talim 3 politika × 5 kademe, limitte durma, eski kayıt, kazanç limiti, moral pasif düşüşü), `birlikSavas.test.ts` / `birlikV39.test.ts` seferberlik beklentileri (%8/%20, 55/10, kalite = hedef, gazi kadrosu yok).
+- **Simülasyon** (N=60, Orta Çağ, BİLGİ — hedef yok; bot Talim Alanı satın almaz, talim limiti 70): dengeli zafer % (haydut/sınır/savaş) **68 / 67 / 42**, batma %15, S3 40y %68, S4 53y %32; aktif **63 / 59 / 29**, batma %20, S5 57y %12. (5c: dengeli 71/68/42 batma %13; aktif 74/73/39 batma %20.) Aktif botun düşüşü talim limitinden gelir (bot ağır talimle 70'in üstüne çıkamıyor); Talim Alanı yatırımı bu açığı kapatır.

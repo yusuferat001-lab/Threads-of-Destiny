@@ -1160,7 +1160,10 @@ export interface BirlikGorunumu {
     politika: BirlikTalim;
     gucYuzde: number;
     kayipYuzde: number;
-    politikalar: { id: BirlikTalim; ad: DilMetni; delta: number; tavan: number; masraf: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[];
+    /** Talim Alanı'nın belirlediği talim üst limiti ve binanın kademesi (0 = bina yok). */
+    limit: number;
+    alanKademe: number;
+    politikalar: { id: BirlikTalim; ad: DilMetni; delta: number; masraf: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[];
   };
   politikalar: {
     ganimetPayi: { secili: BirlikGanimetPayi; kilitKalanYil: number; secenekler: { id: BirlikGanimetPayi; ad: DilMetni; oran: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };

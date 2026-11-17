@@ -397,7 +397,7 @@ export function BirlikPaneli({
               🙂 {t('moral')}: <strong>{b.moral.deger}</strong> ({yuzdeMetni(b.moral.gucYuzde)})
             </span>
             <span>
-              🎖️ {t('talim')}: <strong>{b.talim.seviye}</strong> ({yuzdeMetni(b.talim.gucYuzde)})
+              🎖️ {t('talim')}: <strong>{b.talim.seviye}</strong> / {b.talim.limit} ({yuzdeMetni(b.talim.gucYuzde)})
             </span>
             {b.yarali.sayi > 0 && (
               <span>

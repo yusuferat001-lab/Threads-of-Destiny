@@ -155,20 +155,23 @@ export function kusatmaAdi(cag: string): DilliMetin {
 // ── Talim / tecrübe ─────────────────────────────────────────────────────────
 export const TALIM_SIRASI: BirlikTalim[] = ["hafif", "orta", "agir"];
 export interface TalimTanimi {
-  /** Yıllık talim seviyesi değişimi ve bu politikayla ulaşılabilecek tavan. */
+  /** Yıllık talim kazancı (unutma düşülmeden). Üst sınır politikaya değil Talim Alanı'na bağlıdır. */
   delta: number;
-  tavan: number;
   /** Er başına yıllık talim masrafı (enflasyonlu) ve yıllık moral değişimi. */
   masraf: number;
   moral: number;
   ad: DilliMetin;
 }
 export const TALIM_TANIMLARI: Record<BirlikTalim, TalimTanimi> = {
-  // Yıllık NET talim değişimi (doğal unutma −TALIM_DOGAL_DUSUS dahil, standart teçhizat): hafif −2 / orta +2 / ağır +7. Talim ücretsizdir; morale etkisi +1 / −1 / −5.
-  hafif: { delta: 0, tavan: 100, masraf: 0, moral: 1, ad: { tr: "Hafif talim", en: "Light drill" } },
-  orta: { delta: 4, tavan: 70, masraf: 0, moral: -1, ad: { tr: "Orta talim", en: "Regular drill" } },
-  agir: { delta: 9, tavan: 100, masraf: 0, moral: -5, ad: { tr: "Ağır talim", en: "Hard drill" } },
+  // Yıllık NET talim değişimi (doğal unutma −TALIM_DOGAL_DUSUS dahil, standart teçhizat, Talim Alanı yok): hafif −2 / orta +2 / ağır +7. Talim ücretsizdir; morale etkisi +1 / −1 / −5.
+  // Üst sınırı politika değil Talim Alanı binası belirler (v67 Madde 6: TALIM_ALANI_TAVAN).
+  hafif: { delta: 0, masraf: 0, moral: 1, ad: { tr: "Hafif talim", en: "Light drill" } },
+  orta: { delta: 4, masraf: 0, moral: -1, ad: { tr: "Orta talim", en: "Regular drill" } },
+  agir: { delta: 9, masraf: 0, moral: -5, ad: { tr: "Ağır talim", en: "Hard drill" } },
 };
+/** Talim Alanı yatırımı (v67 Madde 6): kademe başına yıllık talim kazancına eklenen puan (politikadan bağımsız) ve ordunun talim ÜST LİMİTİ (kademe 0 = bina yok). */
+export const TALIM_ALANI_YILLIK = [0, 1, 2, 3, 4];
+export const TALIM_ALANI_TAVAN = [70, 75, 80, 85, 90];
 /** Güç bonusu = seviye × katsayı (en çok +%20). */
 export const TALIM_GUC_KATSAYISI = 0.002;
 /** Kayıp çarpanı (talim, revir, tabip, zırhlı, doktrin indirimleri sonrası) bunun altına inmez: tam yatırım kaybı sıfırlamaz. */
@@ -197,7 +200,7 @@ export const MORAL_DIP_ESIGI = 30;
 export const MORAL_DIP_TOPARLANMA = 2;
 /** Talim bakım görmezse her yıl bu kadar unutulur; moral dipteyken (MORAL_DIP_ESIGI altı) talim kazancı yarıya iner. */
 export const TALIM_DOGAL_DUSUS = 2;
-/** Yüksekte pasif düşüş: yıl başındaki değer bu eşiğin üstündeyse o yıl ek olarak −(değer−eşik)×katsayı düşer (moral ve talim için; 80'de −2, 90'da −4, 100'de −6). */
+/** Yüksekte pasif düşüş (yalnız MORAL için; talimin üst sınırını Talim Alanı belirler): yıl başındaki değer bu eşiğin üstündeyse o yıl ek olarak −(değer−eşik)×katsayı düşer (80'de −2, 90'da −4, 100'de −6). */
 export const PASIF_DUSUS_ESIGI = 70;
 export const PASIF_DUSUS_KATSAYI = 0.2;
 export function yuksekPasifDusus(deger: number): number {
@@ -417,7 +420,6 @@ export function talimArtiEksi(id: BirlikTalim): ArtiEksi {
     const net = d.delta - TALIM_DOGAL_DUSUS;
     arti.push({ tr: `Talim yılda ${isaretli(net, sayiTr)} değişir`, en: `Drill ${isaretli(net, sayiEn)}/yr` });
     arti.push({ tr: `En çok +%${guc} güç, −%${kayip} kayıp`, en: `Up to +${guc}% power, −${kayip}% losses` });
-    if (d.tavan < 100) eksi.push({ tr: `Talim ${d.tavan}'te durur`, en: `Drill stops at ${d.tavan}` });
   } else {
     eksi.push({ tr: `Talim yılda −${TALIM_DOGAL_DUSUS} söner; güç ve kayıp avantajı erir`, en: `Drill fades −${TALIM_DOGAL_DUSUS}/yr; power and loss edge melt away` });
   }
@@ -969,9 +971,8 @@ export const SEFERBERLIK_TANIMLARI: Record<
     /** Savaşın İLK İKİ YILINDA çağrılan erlerden EK olarak firar eden TOPLAM % (iki yıla rastgele bölünür; ön yıl kayıp toplamından ayrıdır). */
     firar: number;
     erzak: number;
-    kalite: BirlikKalite;
-    /** Çağrılan erlerin giriş talimi; null = ordunun o anki talimi (etkisi yok). Ordunun gerçek talimi bozulmaz (etkin talim hesabı). */
-    talim: number | null;
+    /** Çağrılan erlerin giriş talimi (sabit). Ordunun gerçek talimi bozulmaz (etkin talim hesabı); savaş bitince ortalamaya katılır. Teçhizat kalitesi ordunun `hedef_kalite`'sidir (v67 Madde 6). */
+    talim: number;
     /** Bir kerelik halk bedeli: ahlak, mutluluk (oyuncu) ve şöhret. */
     ahlak: number;
     mutluluk: number;
@@ -981,12 +982,12 @@ export const SEFERBERLIK_TANIMLARI: Record<
   }
 > = {
   secme: {
-    er: 0.15, moral: -4, firar: 5, erzak: 0.04, kalite: "orta", talim: null, ahlak: 0, mutluluk: 0, sohret: 0,
+    er: 0.08, moral: -7, firar: 5, erzak: 0.04, talim: 55, ahlak: 0, mutluluk: 0, sohret: 0,
     ad: { tr: "Gazi Çağrısı", en: "Veterans' Call" },
-    aciklama: { tr: "Eski gaziler silah başına: az ama sağlam ve eğitimli; moral hafif düşer.", en: "Old veterans take up arms: few but steady and trained; morale dips slightly." },
+    aciklama: { tr: "Eski gaziler silah başına: az ama eğitimli; moral düşer.", en: "Old veterans take up arms: few but trained; morale dips." },
   },
   genel: {
-    er: 0.3, moral: -12, firar: 10, erzak: 0.15, kalite: "dusuk", talim: 0, ahlak: -2, mutluluk: -2, sohret: -1,
+    er: 0.2, moral: -15, firar: 8, erzak: 0.15, talim: 10, ahlak: -2, mutluluk: -2, sohret: -1,
     ad: { tr: "Tüm Erkekler", en: "Every Man" },
     aciklama: { tr: "Bütün erkekler silah altında: büyük ama eğitimsiz ordu; moral düşer, firar yüksek, halk ve şöhretin zarar görür.", en: "Every man is under arms: a big but untrained army; morale falls, desertion runs high, and the people and your renown suffer." },
   },
@@ -997,8 +998,6 @@ export const SEFERBERLIK_SIRASI: BirlikSeferberlik[] = ["secme", "genel"];
 /** Savaş sonunda seferberlerin HEPSİ (hayatta kalanlar) ordunun sıradan eri olarak kadroda kalır. */
 export const SEFERBERLIK_KALMA_ZAFER: Aralik = [1, 1];
 export const SEFERBERLIK_KALMA_YENILGI: Aralik = [1, 1];
-/** Zaferle biten savaşta kadroda kalan seferberlerin bu kesri bir kalite yukarı çıkar (kalıcı gazi kadrosu). */
-export const SEFERBERLIK_GAZI_ORANI = 0.3;
 
 // ── Ganimet / esir ──────────────────────────────────────────────────────────
 /** Esirin orduya katılan oranı (düşük kalite, eğitimsiz). */

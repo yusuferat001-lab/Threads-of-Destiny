@@ -125,6 +125,8 @@ import {
   type BirlikHesabi,
   type GucDokumu,
   etkinTalim,
+  talimKademesi,
+  talimUstLimit,
 } from "./birlik";
 import { SAVAS_SURE } from "../data/dunyaDonemleri";
 import { barisCatismaCoz, barisCatismaOtomatik, catismaBekliyorMu, esirleriIsle, savasBaslat, savasGunuCoz, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
@@ -814,7 +816,10 @@ export interface BirlikGorunumu {
     politika: BirlikTalim;
     gucYuzde: number;
     kayipYuzde: number;
-    politikalar: { id: BirlikTalim; ad: { tr: string; en: string }; delta: number; tavan: number; masraf: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[];
+    /** Talim Alanı'nın belirlediği talim üst limiti ve binanın kademesi (0 = bina yok). */
+    limit: number;
+    alanKademe: number;
+    politikalar: { id: BirlikTalim; ad: { tr: string; en: string }; delta: number; masraf: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[];
   };
   politikalar: {
     ganimetPayi: { secili: BirlikGanimetPayi; kilitKalanYil: number; secenekler: { id: BirlikGanimetPayi; ad: { tr: string; en: string }; oran: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
@@ -1008,8 +1013,10 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       politika: b.talim_politikasi,
       gucYuzde: Math.round(talimGucEtkisi(etkinTalim(state)) * 1000) / 10,
       kayipYuzde: Math.round(talimKayipEtkisi(etkinTalim(state)) * 1000) / 10,
+      limit: talimUstLimit(state),
+      alanKademe: talimKademesi(state),
       politikalar: TALIM_SIRASI.map((id) => ({
-        id, ad: TALIM_TANIMLARI[id].ad, delta: TALIM_TANIMLARI[id].delta, tavan: TALIM_TANIMLARI[id].tavan, masraf: r2(TALIM_TANIMLARI[id].masraf * er * bg.giderEnflasyon), moral: TALIM_TANIMLARI[id].moral, ...talimArtiEksi(id),
+        id, ad: TALIM_TANIMLARI[id].ad, delta: TALIM_TANIMLARI[id].delta, masraf: r2(TALIM_TANIMLARI[id].masraf * er * bg.giderEnflasyon), moral: TALIM_TANIMLARI[id].moral, ...talimArtiEksi(id),
       })),
     },
     politikalar: {

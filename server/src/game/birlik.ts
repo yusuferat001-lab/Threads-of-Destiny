@@ -59,6 +59,7 @@ import {
   TALIM_GUC_KATSAYISI,
   TALIM_KAYIP_KATSAYISI,
   KAYIP_CARPANI_TABANI,
+  TALIM_ALANI_TAVAN,
   TALIM_TANIMLARI,
   TUR_TANIMLARI,
   VEBA_GOREV_CARPANI,
@@ -321,6 +322,12 @@ export function birlikSenkron(state: CharacterState, enflasyon = 1): void {
 export const rutbeIndeksi = (state: CharacterState) => clamp((state.rutbe_seviye ?? 1) - 1, 0, 4);
 export const kislaKademesi = (state: CharacterState) => clamp(state.isletme?.yatirimlar.kisla ?? 0, 0, KISLA_ER_LIMITI.length - 1);
 export const kislaLimiti = (state: CharacterState) => KISLA_ER_LIMITI[kislaKademesi(state)];
+
+/** Talim Alanı kademesi (0 = bina yok) ve ordunun talim ÜST LİMİTİ (v67 Madde 6; politikadan bağımsız). */
+export const talimKademesi = (state: CharacterState) => clamp(state.isletme?.yatirimlar.talim ?? 0, 0, TALIM_ALANI_TAVAN.length - 1);
+export const talimUstLimit = (state: CharacterState) => TALIM_ALANI_TAVAN[talimKademesi(state)];
+/** Savaş / çatışma / sefer dönüşü talim kazanımı limiti aşamaz: gerçekte eklenecek puanı döner (en az 0). */
+export const talimKazanci = (state: CharacterState, mevcut: number, puan: number) => Math.max(0, Math.min(talimUstLimit(state), mevcut + puan) - mevcut);
 /** Ordu limiti = kışla limiti (+ kale bonusu); rütbe limiti kalktı. */
 export function komutaLimiti(state: CharacterState): number {
   const taban = kislaLimiti(state) + (state.isletme?.birlik?.kale ?? 0) * KALE_KOMUTA_BONUSU;

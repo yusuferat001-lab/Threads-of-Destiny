@@ -130,9 +130,9 @@ import {
   REVIR_MORAL_KADEME,
   ROL_TANIMLARI,
   SEFERBERLIK_KALMA_YENILGI,
-  SEFERBERLIK_GAZI_ORANI,
   MORAL_DIP_ESIGI,
   MORAL_DIP_TOPARLANMA,
+  TALIM_ALANI_YILLIK,
   TALIM_DOGAL_DUSUS,
   yuksekPasifDusus,
   TALIM_YENI_ER_GIRIS,
@@ -209,6 +209,9 @@ import {
   r2,
   rutbeIndeksi,
   sertlikGelirCarpani,
+  talimKademesi,
+  talimKazanci,
+  talimUstLimit,
   turPaylari,
   turOrani,
   dusmanReferansGucu,
@@ -384,10 +387,10 @@ export function seferberlikUygula(state: CharacterState, tur: BirlikSeferberlik,
   const istenen = Math.round(erSayisi(state) * t.er);
   // Çağrılan erler ücretsiz gelir (bedel moral, talim, firar, ahlak ve erzak); kışla limitine takılmaz, aşan kısım limit aşım gideri öder.
   // Ordunun gerçek talimi bozulmaz: giriş talimi `seferberlik_talim`de tutulur, güç ve kayıp "etkin talim" ortalamasından hesaplanır.
-  const eklenen = yeniErEkle(state, istenen, bg, { kalite: t.kalite, bedava: true, talim: b.talim, limitsiz: true }).eklenen;
+  const eklenen = yeniErEkle(state, istenen, bg, { kalite: b.hedef_kalite, bedava: true, talim: b.talim, limitsiz: true }).eklenen;
   sv.seferberlik_er += eklenen;
-  sv.seferberlik_talim = t.talim ?? b.talim;
-  sv.seferberlik_kalite = t.kalite;
+  sv.seferberlik_talim = t.talim;
+  sv.seferberlik_kalite = b.hedef_kalite;
   sv.baslangic_toplam = erSayisi(state);
   b.moral = clamp(b.moral + t.moral, 0, 100);
   // Halk bedeli: büyük çağrılar ahlak, mutluluk ve şöhreti götürür.
@@ -787,7 +790,7 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
     dusmanOlu: Math.round(E * (zafer ? rnd(dk.zafer[0], dk.zafer[1]) : rnd(dk.yenilgi[0], dk.yenilgi[1]))),
     ganimetTahmini: r2(net),
     esirTahmini: zafer ? Math.round(gucOnce * SAVAS_ZAFER_ESIR * yilSayisi) : 0,
-    talim: catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI,
+    talim: Math.round(talimKazanci(state, b.talim, catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI)),
   };
   sv.gun_cozuldu_yil = state.yil;
   sv.gun_gosterildi = false;
@@ -922,15 +925,6 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     const anaEr = Math.max(0, erSayisi(state) - kalanGercek);
     if (kalanGercek > 0 && anaEr + kalanGercek > 0) {
       b.talim = clamp((b.talim * anaEr + (sv.seferberlik_talim ?? b.talim) * kalanGercek) / (anaEr + kalanGercek), 0, 100);
-    }
-    // Kalıcı gazi kadrosu: zaferle biten savaşta kalanların bir kısmı bir kalite yukarı çıkar.
-    if (zafer && kalanGercek > 0) {
-      const yukari = Math.min(b.kalite[lk], Math.round(kalanGercek * SEFERBERLIK_GAZI_ORANI));
-      const hedef: BirlikKalite | null = lk === "dusuk" ? "orta" : lk === "orta" ? "yuksek" : null;
-      if (hedef && yukari > 0) {
-        b.kalite[lk] -= yukari;
-        b.kalite[hedef] += yukari;
-      }
     }
   }
   // Kiralık ordu savaşla gider (yaralılar dahil).
@@ -1079,7 +1073,8 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
   const net = brut - erPayi;
   const esirSayisi = zafer ? olasilikliYuvarla(guc * t.esir) : 0;
   const kayipAralik = BARIS_KAYBI[tur][zafer ? "zafer" : "yenilgi"];
-  b.talim = clamp(b.talim + (zafer ? BARIS_TALIM_ZAFER : BARIS_TALIM_YENILGI), 0, 100);
+  const talimKazanilan = talimKazanci(state, b.talim, zafer ? BARIS_TALIM_ZAFER : BARIS_TALIM_YENILGI);
+  b.talim += talimKazanilan;
   const dk = BARIS_DUSMAN_KAYBI[zafer ? "zafer" : "yenilgi"];
   const dusmanOlu = Math.round(E * rnd(dk[0], dk[1]));
   const kayip = kayipUygula(state, b, {
@@ -1122,7 +1117,7 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
     ganimet: r2(net + (esir?.para ?? 0)),
     esir: esirSayisi,
     nakitHasar,
-    talim: zafer ? BARIS_TALIM_ZAFER : BARIS_TALIM_YENILGI,
+    talim: Math.round(talimKazanilan),
     saglik: saglikKaybi,
     sohret: sohretDegisim,
   };
@@ -1230,7 +1225,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   else if (b.seferde) {
     b.seferde = false;
     if (state.etiketler.includes("yolculuk_tamamlandi")) {
-      b.talim = clamp(b.talim + SEFER_DONUS_TALIM, 0, 100);
+      b.talim += talimKazanci(state, b.talim, SEFER_DONUS_TALIM);
       b.moral = clamp(b.moral + SEFER_DONUS_MORAL, 0, 100);
     }
   }
@@ -1377,12 +1372,13 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     const t = k.dusuk + k.orta + k.yuksek;
     return t > 0 ? (k.dusuk * tablo.dusuk + k.orta * tablo.orta + k.yuksek * tablo.yuksek) / t : tablo.orta;
   };
-  // Talim: politikanın kazancı (kalite çarpanıyla; moral dipteyken yarıya iner, tavana kadar) − doğal unutma. Bakım yoksa talim kendiliğinden düşer.
-  const talimKazanc = talimT.delta > 0 ? talimT.delta * kaliteKatsayi(KALITE_TALIM_CARPANI) * (b.moral < MORAL_DIP_ESIGI ? 0.5 : 1) : 0;
-  const talimArti = talimKazanc > 0 ? Math.max(0, Math.min(talimT.tavan, b.talim + talimKazanc) - b.talim) : 0;
-  // Yıl başında talim eşiğin (70) üstündeyse ek pasif düşüş (yuksekPasifDusus): çok yüksek talim kendiliğinden söner.
-  b.talim = clamp(b.talim + talimArti - TALIM_DOGAL_DUSUS - yuksekPasifDusus(b.talim), 0, 100);
-  if (catisma) b.talim = clamp(b.talim + (catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI), 0, 100);
+  // Talim: (politikanın kazancı + Talim Alanı artışı) × teçhizat kalitesi (moral dipteyken yarıya iner) − doğal unutma; sonuç Talim Alanı'nın üst limitine kırpılır
+  // (bina yokken 70; limiti aşan eski kayıt ilk yıl sonunda limite iner). Bakım ve bina yoksa talim kendiliğinden düşer.
+  const talimLimit = talimUstLimit(state);
+  const talimTaban = talimT.delta + TALIM_ALANI_YILLIK[talimKademesi(state)];
+  const talimKazanc = talimTaban > 0 ? talimTaban * kaliteKatsayi(KALITE_TALIM_CARPANI) * (b.moral < MORAL_DIP_ESIGI ? 0.5 : 1) : 0;
+  b.talim = clamp(b.talim + talimKazanc - TALIM_DOGAL_DUSUS, 0, talimLimit);
+  if (catisma) b.talim += talimKazanci(state, b.talim, catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI);
 
   // 9. Moral: yıllık etkenler + bir kerelik olaylar; nötr 50'den başlar, bakım yapılmazsa zamanla düşer.
   let moral = GANIMET_PAYI_TANIMLARI[b.ganimet_payi].moral + TON_TANIMLARI[b.ton].moral + talimT.moral + (doktrin.moral + (yol.moral ?? 0));

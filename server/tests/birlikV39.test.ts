@@ -790,8 +790,8 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     const d = savasKarariDurumu(s, bg(s))!;
     const sec = d.adimlar.find((a) => a.adim === "seferberlik")!.secenekler;
     expect(sec.map((x) => x.id)).toEqual(["secme", "genel"]);
-    expect(sec[0].aciklama.tr).toContain("+15 er (100 → 115)");
-    expect(sec[1].aciklama.tr).toContain("+30 er (100 → 130)");
+    expect(sec[0].aciklama.tr).toContain("+8 er (100 → 108)");
+    expect(sec[1].aciklama.tr).toContain("+20 er (100 → 120)");
     for (const x of sec) {
       expect(x.aciklama.tr).not.toContain("peşin");
       expect(x.aciklama.tr).toMatch(/yıllık ekstra gider ≈ \d/);
@@ -805,7 +805,7 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     const para0 = s.para;
     savasKarariVer(s, "genel", bg(s));
     expect(s.para).toBe(para0); // seferberlik ücretsiz
-    expect(birlikAl(s).savas!.seferberlik_er).toBe(30);
+    expect(birlikAl(s).savas!.seferberlik_er).toBe(20);
   });
   it("savaşta asker başı ödeme yalnız ana kadroya (seferber hariç)", () => {
     const s = savasHazir();
@@ -887,9 +887,9 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     const { MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN } = await import("../src/data/birlik");
     expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([6, -17, -9]);
   });
-  it("etkin talim: Gazi etkisiz (ordunun talimi), Tüm Erkekler talimi seyreltir; ordunun gerçek talimi bozulmaz; savaş sonu katılan kadroya işler", async () => {
+  it("etkin talim: seferberlerin sabit giriş talimi (Gazi 55, Tüm Erkekler 10) ordunun talimini er sayısına göre seyreltir; ordunun gerçek talimi bozulmaz; savaş sonu katılan kadroya işler", async () => {
     const { etkinTalim } = await import("../src/game/birlik");
-    for (const [tur, giris] of [["secme", 70], ["genel", 0]] as const) {
+    for (const [tur, giris] of [["secme", 55], ["genel", 10]] as const) {
       const s = savasHazir();
       const b = birlikAl(s);
       b.talim = 70;
@@ -897,8 +897,8 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
       seferberlikUygula(s, tur, bg(s));
       expect(b.talim).toBe(70); // gerçek talim bozulmadı
       const sef = b.savas!.seferberlik_er;
-      const beklenen = tur === "secme" ? 70 : (70 * 100 + giris * sef) / (100 + sef);
-      expect(etkinTalim(s)).toBeCloseTo(beklenen, 6);
+      expect(b.savas!.seferberlik_talim).toBe(giris);
+      expect(etkinTalim(s)).toBeCloseTo((70 * 100 + giris * sef) / (100 + sef), 6);
     }
     const s = savasHazir();
     const b = birlikAl(s);
@@ -910,22 +910,25 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
     savasiBitir(s, b, bg(s), []);
     rnd.mockRestore();
-    expect(b.talim).toBeLessThan(70); // kalanlar (talim 0) ortalamaya katıldı
-    expect(b.talim).toBeGreaterThan(50);
+    expect(b.talim).toBeLessThan(70); // kalanlar (talim 10) ortalamaya katıldı: (70·100 + 10·20) / 120 = 60
+    expect(b.talim).toBeCloseTo(60, 6);
   });
-  it("kalıcı gazi kadrosu: zaferde kalanların %30'u bir kalite yukarı çıkar; yenilgide çıkmaz", () => {
-    for (const sonuc of ["zafer", "yenilgi"] as const) {
-      const s = savasHazir();
-      const b = birlikAl(s);
-      b.savas = null;
-      seferberlikUygula(s, "genel", bg(s));
-      b.savas!.sonuc = sonuc;
-      s.ulke.savasta = false;
-      const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
-      savasiBitir(s, b, bg(s), []);
-      rnd.mockRestore();
-      if (sonuc === "zafer") expect(b.kalite.orta).toBeGreaterThan(0);
-      else expect(b.kalite.orta).toBe(0);
+  it("kalıcı gazi kadrosu kalktı: zaferde de yenilgide de seferberler kalite atlamaz (ordunun teçhizat kalitesinde kalır)", () => {
+    for (const tur of ["secme", "genel"] as const) {
+      for (const sonuc of ["zafer", "yenilgi"] as const) {
+        const s = savasHazir();
+        const b = birlikAl(s);
+        b.hedef_kalite = "dusuk";
+        b.savas = null;
+        seferberlikUygula(s, tur, bg(s));
+        b.savas!.sonuc = sonuc;
+        s.ulke.savasta = false;
+        const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+        savasiBitir(s, b, bg(s), []);
+        rnd.mockRestore();
+        expect(b.kalite.orta).toBe(0);
+        expect(b.kalite.yuksek).toBe(0);
+      }
     }
   });
   it("seferber ahlak bedeli: Gazi 0; Tüm Erkekler −2/−2 ve şöhret −1", () => {
