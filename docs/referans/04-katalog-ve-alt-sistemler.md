@@ -249,3 +249,11 @@ Tests: [server/tests/hayatAmaclari.test.ts](server/tests/hayatAmaclari.test.ts) 
 **Soy sürdürme kaldırıldı (2026-09):** Eski `POST /:id/soy-surdur` endpoint'i, `gameEngine.soyuSurdur`, `SoyDevamiSecenekleri` ve `hanedan.test.ts` tamamen silindi. Ölüm kesin sondur; `createCharacter`'ın dördüncü parametresi artık `soyDevami` nesnesi değil, opsiyonel `oyuncuIsmi: string`'tir.
 
 **Liderlik tablosu sıralamaları:** `genel` (skor), `en_zengin`, `en_unlu` (un), `en_uzun_yasayan` (yas) — her biri **top 15** (2026-09'da 20→15). İstemci satırları sadeleşti: meslek/yerleşim/kişilik gösterilmiyor (rütbe zaten var), yalnız rütbe + çağ + yaş + ölüm nedeni + ünvan/efsanevi-ölüm rozetleri. Yama #1: `skorRepository.skorKaydet` artık `Score.para` alanına salt nakit değil **nakit + gayrimenkul değeri** (`gayrimenkulDegeriHesapla`) yazar → `en_zengin` net serveti sıralar, mülke yatırım yapan cezalanmaz.
+
+
+## v67 notları (Asker kataloğu)
+- **Asker yatırımları:** Kışla 🏯, Revir ⚕️, Devşirme Bürosu 📯 (fiyat 24/42/62/90), **Talim Alanı 🎯** (fiyat 18/32/50/75; yıllık talim +1…+4, talim üst limiti 75/80/85/90, bina yokken 70).
+- **Seferberlik:** `secme` Gazi Çağrısı (%8 er, talim 55, moral −7) ve `genel` Tüm Erkekler (%20, talim 10, moral −15); ordunun teçhizat kalitesiyle gelir; kalıcı gazi kadrosu yok.
+- **Asker hayat amaçları:** komuta, cephe_gazisi, guclu_ordu, tam_donanim, madalyali (normal) · serdar, sehir_kalkani, ordu_kurucusu, **fatih** (zor). "Baş Belası" ve genel "Rakip Üstünlüğü" Asker'de yok.
+- **Karanlık iş `kaza_duello`:** "Düşman Komutanıyla Düello" (rakip hedeflemez; şöhret + er devşirme + kariyer, ahlak/aranma bedeli).
+- **Şehir isteği "Rakibe darbe"** Asker'de yok (pazar rakibi kalktı).

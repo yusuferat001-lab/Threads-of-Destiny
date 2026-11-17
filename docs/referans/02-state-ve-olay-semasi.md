@@ -279,3 +279,10 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 - `kacak` — aynı kapatma mantığı, `kacakOlayi:true` ile (§17); `suc_seviyesi` ≥60 (kademe 3-4) iken bir baskın olayının başarılı sonucundan girilir (`etiket_ekle:["kacak"]`), kaçak-havuzundaki başarılı çıkış olaylarından (`etiket_sil:["kacak"]`) çıkılır.
 - `sarayda`, `sehir_yonetimi_basladi`, `hizip_secildi`, `evcil_hayvan_var`, `evcil_hayvan_tur:<tur>`, `cocuk_var`, `aile_mirasi_surduruldu`, `gozlemci_var` (belirsizlik aralığını daraltır, §12), `istihbarat_var` (tek seferlik: bir sonraki senaryoda net şans gösterir, senaryoUret'te tüketilir), `tarihi_savas_gordu:<rakip>`, `yolculuk_teklifi_edildi`, `yolculuk_teklifi_zamani`, `bilgi:yasak_ilim`, `fiziksel:*` (bazı seçenekleri kalıcı kilitler).
 - `saglik_esik_25_gorundu` / `saglik_esik_10_gorundu` (2026-09 sonu) — bir hayatta ilgili sağlık kritik eşiği (25/10) olayının zaten zorlandığını işaretler, aynı eşik bir daha tetiklenmez (§11 kural 1.5, §13).
+
+
+## v67 notları (Asker state değişiklikleri)
+- `pazar_musteri` Asker'de **0**, `rakipler` **[]** (`mesleğiSec`, `eskiKayitGocu`, `birlikBaslat`); Asker'de pazar payı yoktur. `rakip_adi` hikâye kişisi olarak kalır. Karanlık iş "müşteri" kazancı Asker'de sabit `ASKER_OLAY_OLCEGI = 195` ile ölçeklenir.
+- `BirlikDurumu` (`isletme.birlik`): **`ton` kaldırıldı**; yeni `zafer_toplam?: {haydut, sinir, savas}` (ömür boyu zafer sayacı, `zaferSerisiIsle` artırır; eski kayıtta yoksa 0); `zafer_serisi` aynen; `talim_politikasi` (hafif/orta/ağır) üst limiti politikada değil **Talim Alanı** yatırımında (`isletme.yatirimlar.talim` 0–4 → limit 70/75/80/85/90).
+- `BirlikSavasDurumu.seferberlik_kalite` = çağrı anındaki `hedef_kalite` (eski kayıtta yoksa `dusuk`); `seferberlik_talim` = tanımın sabit giriş talimi (55 / 10).
+- Hayat amaçları: Asker havuzunda "Baş Belası" yerine **"Fatih"** (`zafer_toplam` toplamı ≥ 6 + teçhizat 70+); "Rakip Üstünlüğü" Asker hariç.
