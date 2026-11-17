@@ -499,7 +499,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     return b;
   }
 
-  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta çatışmalar arası 2–3 yıl, savaş sonrası en az 1 yıl", () => {
+  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta çatışmalar arası 3 yıl, savaş sonrası en az 1 yıl", () => {
     const s = asker();
     const b = birlikAl(s);
     b.baris_bekleme = 2;
@@ -510,7 +510,7 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
     // savaş bitti: bekleme bitmiş sayaçla ilk barış yılında (zar tuttu) çatışma çıkar
     b.baris_bekleme = 0;
     b.savas = null;
-    expect(BARIS_BEKLEME_ARALIK).toEqual([1, 2]); // bekleme + 1 = çatışmalar arası 2–3 yıl
+    expect(BARIS_BEKLEME_ARALIK).toEqual([2, 2]); // bekleme + 1 = çatışmalar arası tam 3 yıl
     expect(BARIS_YILLIK_IHTIMAL).toBe(1);
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     const sonuc = birlikYilIsle(s, bg(s));
@@ -770,7 +770,7 @@ describe("savaş", () => {
     }
   });
 
-  it("pasif ordu bir savaşta tamamen erimez (medyan ≥ %60'ı kalır)", () => {
+  it("pasif ordu bir savaşta tamamen erimez (medyan ≥ %45'i kalır; ilk seçenek Öncü olduğu için kayıp ×1,5 tavan dışı biner)", () => {
     const kalan: number[] = [];
     for (let n = 0; n < 40; n++) {
       const s = asker();
@@ -786,7 +786,7 @@ describe("savaş", () => {
       kalan.push(s.meslek_musteri);
     }
     kalan.sort((a, b) => a - b);
-    expect(kalan[Math.floor(kalan.length / 2)]).toBeGreaterThanOrEqual(12);
+    expect(kalan[Math.floor(kalan.length / 2)]).toBeGreaterThanOrEqual(9);
   });
 
   it("arazi tercih şansı rütbeyle artar: 0/15/30/55/80", () => {
@@ -1404,10 +1404,10 @@ describe("v67 Madde 5 — düşman gücü", () => {
     expect(sayim.baskinSinir / sayim.sinir).toBeLessThan(0.48);
   });
 
-  it("barış ganimet aralığı türe göre: haydut 2,2–2,8, sınır 3,2–4,0; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
+  it("barış ganimet aralığı türe göre: haydut 1,9–2,3, sınır 2,5–3,0; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
     const d = await import("../src/data/birlik");
-    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [2.2, 2.8], sinir: [3.2, 4] });
-    expect(d.BARIS_GANIMET_UST).toBe(4);
+    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [1.9, 2.3], sinir: [2.5, 3] });
+    expect(d.BARIS_GANIMET_UST).toBe(3);
     expect(d.ZAFER_SERISI_ESIGI).toBe(2);
     expect(d.ZAFER_SERISI_DUSMAN_ARTISI).toBe(0.2);
     expect(d.ZAFER_SERISI_ESIGI_2).toBe(4);

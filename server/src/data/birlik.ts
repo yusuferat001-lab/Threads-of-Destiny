@@ -454,39 +454,37 @@ export const ER_MASRAFI = 0.23;
 export const ERZAK_BIRIMI = 0.13;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
 export const GANIMET_PAYI_KILIT_YIL = 5;
-/** Barış çatışması (haydut / sınır) zafer ganimeti = max(40; askerî güç) × U(a; b) × güç bantları (ganimetEtkinGuc; yenilgide ganimet yok). */
-export const BARIS_GANIMET_ARALIK: Record<"haydut" | "sinir", Aralik> = { haydut: [2.2, 2.8], sinir: [3.2, 4.0] };
+/** Barış çatışması (haydut / sınır) zafer ganimeti BRÜTÜ (asker payı düşülmeden) = ganimetEtkinGuc(max(40; askerî güç)) × U(a; b); yenilgide ganimet yok. */
+export const BARIS_GANIMET_ARALIK: Record<"haydut" | "sinir", Aralik> = { haydut: [1.9, 2.3], sinir: [2.5, 3.0] };
 /** Bütçe önizlemeleri için: tüm türlerdeki en yüksek çarpan ve tür ağırlıklı ortalama orta nokta. */
 export const BARIS_GANIMET_UST = Math.max(BARIS_GANIMET_ARALIK.haydut[1], BARIS_GANIMET_ARALIK.sinir[1]);
 export const BARIS_GANIMET_ORTA =
   BARIS_TUR_AGIRLIGI.haydut * ((BARIS_GANIMET_ARALIK.haydut[0] + BARIS_GANIMET_ARALIK.haydut[1]) / 2) +
   BARIS_TUR_AGIRLIGI.sinir * ((BARIS_GANIMET_ARALIK.sinir[0] + BARIS_GANIMET_ARALIK.sinir[1]) / 2);
-/** Ganimet tabanı: askerî gücü bunun altındaki ordu da zaferde (haydut, sınır ve savaş) 40 güçlük bir ordunun ganimetini alır. */
+/** Ganimet tabanı (haydut ve sınır çatışması): askerî gücü bunun altındaki ordu da zaferde 40 güçlük bir ordunun ganimetini alır. */
 export const GANIMET_TABAN_GUC = 40;
+/** Büyük savaş zaferinde ganimet tabanı: 25 güçlük ordu bile en az 25 güç üzerinden ganimet alır. */
+export const SAVAS_GANIMET_TABAN_GUC = 25;
 /**
- * Ganimet güç bantları (kademeli): her askerî güç dilimi kendi çarpanıyla sayılır ("etkin güç"), toplam güçle hiç azalmaz; etkin güç bir tavanda durur.
- * Aralıklar (SAVAS_ZAFER_GANIMET 11–14, BARIS_GANIMET_ARALIK) 0–40 bandının birim çarpanıdır; sonraki bantlarda ×0,80 / 0,55 / 0,35 / 0,22 / 0,12.
+ * Ganimet ve yağma güç bandı (v67 sonrası): güç `GANIMET_BANTSIZ_GUC`'a kadar BANTSIZ (×1); bu eşikten sonraki her güç dilimi
+ * `GANIMET_BANT_KATSAYI` ile sayılır (300–1000 ve sonrası; tavan yok). "Etkin güç" = katsayıyla sayılmış güç (ganimet ve yağma bu sayı üzerinden hesaplanır).
  */
-export const GANIMET_BANTLARI: [number, number, number][] = [[0, 40, 1], [40, 100, 0.8], [100, 200, 0.55], [200, 350, 0.35], [350, 500, 0.22], [500, Infinity, 0.12]];
-export const GANIMET_ETKIN_GUC_TAVANI = 240;
-function bantToplami(guc: number, bantlar: [number, number, number][]): number {
-  let t = 0;
-  for (const [lo, hi, f] of bantlar) t += Math.max(0, Math.min(guc, hi) - lo) * f;
-  return t;
-}
+export const GANIMET_BANTSIZ_GUC = 300;
+export const GANIMET_BANT_KATSAYI = 0.7;
 export function ganimetEtkinGuc(guc: number): number {
-  return Math.min(GANIMET_ETKIN_GUC_TAVANI, bantToplami(Math.max(0, guc), GANIMET_BANTLARI));
+  const g = Math.max(0, guc);
+  return g <= GANIMET_BANTSIZ_GUC ? g : GANIMET_BANTSIZ_GUC + GANIMET_BANT_KATSAYI * (g - GANIMET_BANTSIZ_GUC);
 }
-export function ganimetBrutTemel(guc: number, aralikDegeri: number): number {
-  return ganimetEtkinGuc(Math.max(GANIMET_TABAN_GUC, guc)) * aralikDegeri;
+export function ganimetBrutTemel(guc: number, aralikDegeri: number, taban: number = GANIMET_TABAN_GUC): number {
+  return ganimetEtkinGuc(Math.max(taban, guc)) * aralikDegeri;
 }
 /** Savaşta kışla/yapı bakımı bu oranda düşer. */
 export const SAVAS_KISLA_INDIRIMI = 0.25;
 /** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
 export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
 export const ASKER_KARIYER_GUC_TAVANI = 2.5;
-/** Çatışma sonrası bekleme (yıl, bu aralıktan tam sayı çekilir; savaşta sayaç durur, savaştan sonra en az 1 yıl): bekleme + 1 = çatışmalar arası 2–3 yıl. */
-export const BARIS_BEKLEME_ARALIK: [number, number] = [1, 2];
+/** Çatışma sonrası bekleme (yıl, bu aralıktan tam sayı çekilir; savaşta sayaç durur, savaştan sonra en az 1 yıl): bekleme + 1 = çatışmalar arası 3 yıl. */
+export const BARIS_BEKLEME_ARALIK: [number, number] = [2, 2];
 /** Bekleme bittikten sonra her yıl çatışma çıkma şansı (1 = bekleme biter bitmez çıkar). */
 export const BARIS_YILLIK_IHTIMAL = 1;
 export const BARIS_CATISMA_ILK_YIL = 2;
@@ -1121,11 +1119,11 @@ export const KARAKOL_KORUMA = [0, 0.15, 0.3, 0.45, 0.6];
 
 // ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
 /** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım barıştakiyle aynı (v69: savaş zammı kalktı). */
-/** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,28 / orta 0,22 / yumuşak 0,17); yalnız savaşın ilk YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %50/40/30 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
+/** Yağma ikmali (yıllık): ganimet = askerî güç × yağma türünün gucOrani'si (IKMAL_TANIMLARI.yagma: sert 0,27 / orta 0,21 / yumuşak 0,16; güç ganimetEtkinGuc bandıyla); yalnız savaşın ilk YAGMA_YIL yılında, yenilgi sonrası yok. Erzak masrafı savaş boyunca yağma türüne göre %50/40/30 düşer (YagmaTuru.erzakIndirimi); esir/yeni er oranları. */
 export const YAGMA_YIL = 3;
 export const YAGMA_ESIR = 0.0053;
-/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet = ganimetEtkinGuc(max(40; askerî güç)) × U(11; 14); esir = güç × bu × yıl. Yenilgide ganimet yok. */
-export const SAVAS_ZAFER_GANIMET: Aralik = [11, 14];
+/** Savaş zaferi (savaş sonu, genel zafer, tek seferde): ganimet BRÜTÜ (asker payı düşülmeden) = ganimetEtkinGuc(max(25; askerî güç)) × U(5; 7); esir = güç × bu × yıl. Yenilgide ganimet yok. */
+export const SAVAS_ZAFER_GANIMET: Aralik = [5, 7];
 export const SAVAS_ZAFER_ESIR = 0.02;
 /** Kiralık ordu (paralı asker): savaş başına bir kez, iki seviye; savaş süresince tutulur, eğitimli ve pahalıdır. Peşin ve yıllık ücret er başınadır (× gider enflasyonu); yıllık ücret erzak ve masrafı da kapsar (ayrı erzak/er masrafı yok). */
 export type KiralikSeviye = "kucuk" | "buyuk";

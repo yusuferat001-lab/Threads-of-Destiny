@@ -122,6 +122,27 @@ describe("kayıp: ölü – yaralı – firar", () => {
     expect(erSayisi(s)).toBeGreaterThanOrEqual(MIN_CEKIRDEK_ER);
   });
 
+  it("rol kayıp çarpanı (öncü ×1,5 / yedek ×0,6) savaş tavanından SONRA biner: tavanı aşabilir, tavan sayacına yalnız çarpansız kısım yazılır", () => {
+    const s = asker();
+    ordu(s, 200);
+    const b = birlikAl(s);
+    const sv = savasa(s, "secme");
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.99);
+    const k = kayipUygula(s, b, { oluPct: 30, firarPct: 0, oluTavan: 10, tavanSonrasiCarpan: 1.5 });
+    rnd.mockRestore();
+    expect(k.olu).toBeGreaterThan(10); // tavan (10) aşıldı
+    expect(k.olu).toBeLessThanOrEqual(15);
+    expect(sv.olu_toplam).toBe(10); // tavan sayacı çarpansız kısmı sayar
+    const s2 = asker();
+    ordu(s2, 200);
+    const sv2 = savasa(s2, "secme");
+    const rnd2 = vi.spyOn(Math, "random").mockReturnValue(0.99);
+    const y = kayipUygula(s2, birlikAl(s2), { oluPct: 30, firarPct: 0, oluTavan: 10, tavanSonrasiCarpan: 0.6 });
+    rnd2.mockRestore();
+    expect(y.olu).toBeLessThan(10); // yedek: tavan altına iner
+    expect(sv2.olu_toplam).toBe(y.olu);
+  });
+
   it("revir ve tabip yaralı oranını düşürür ve iyileşmeyi kısaltır (3 yıl → 1 yıl); oran en az 1", () => {
     const s = asker();
     ordu(s, 100);

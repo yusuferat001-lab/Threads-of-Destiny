@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik, barisCatismaCoz } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -94,9 +94,9 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut 2,2–2,8, sınır 3,2–4,0, savaş zaferi 11–14, yaralı 0,20, ganimet politikası morali −7/0/+4", () => {
-    expect(BARIS_GANIMET_ARALIK).toEqual({ haydut: [2.2, 2.8], sinir: [3.2, 4] }); // tür başı (haydut düşük, sınır yüksek)
-    expect(SAVAS_ZAFER_GANIMET).toEqual([11, 14]);
+  it("sabitler: haydut 1,9–2,3, sınır 2,5–3,0, savaş zaferi 5–7, yaralı 0,20, ganimet politikası morali −7/0/+4", () => {
+    expect(BARIS_GANIMET_ARALIK).toEqual({ haydut: [1.9, 2.3], sinir: [2.5, 3] }); // tür başı (haydut düşük, sınır yüksek)
+    expect(SAVAS_ZAFER_GANIMET).toEqual([5, 7]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
   });
@@ -421,7 +421,7 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     expect(sonuc.yagma_sert.moral).toBeGreaterThan(sonuc.yagma_yumusak.moral);
   });
 
-  it("yağma geliri bantsızdır: askerî güçle doğrusal artar (güç ×4 → yağma ×4)", () => {
+  it("yağma geliri ganimetle aynı bandı kullanır: 300 güce kadar doğrusal, sonra band katsayısıyla", () => {
     const { s, b, sv } = savasAskeri();
     sv.ikmal = "yagma_orta";
     const yagma = (guc: number) => {
@@ -429,8 +429,9 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
       return birlikHesapla(s, bg(s)).yagmaBrut;
     };
     expect(yagma(100)).toBeGreaterThan(0);
-    expect(yagma(400) / yagma(100)).toBeCloseTo(4, 6);
-    expect(yagma(1000) / yagma(500)).toBeCloseTo(2, 6);
+    expect(yagma(200) / yagma(100)).toBeCloseTo(2, 6); // 300'e kadar bantsız
+    expect(yagma(300) / yagma(100)).toBeCloseTo(3, 6);
+    expect(yagma(600) / yagma(100)).toBeCloseTo(ganimetEtkinGuc(600) / 100, 6); // 300'den sonra band katsayısı
   });
 
   it("yağma talimi yalnız savaşın ilk yılında, bir kez uygulanır (sert −8 / orta +1 / yumuşak +5); ikinci yılda fark kalmaz", () => {
@@ -497,14 +498,13 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
 });
 
 describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", () => {
-  it("ganimet etkin gücü kademelidir: 40 → 40 · 100 → 88 · 200 → 143 · 350 → 195,5 · 500 → 228,5; güçle hiç azalmaz; tavan 240", () => {
+  it("ganimet etkin gücü: 300'e kadar bantsız (×1), 300'den sonraki dilim ×0,7; tavan yok, güçle hiç azalmaz", () => {
     expect(ganimetEtkinGuc(0)).toBe(0);
-    expect(ganimetEtkinGuc(40)).toBeCloseTo(40, 8);
-    expect(ganimetEtkinGuc(100)).toBeCloseTo(88, 8);
-    expect(ganimetEtkinGuc(200)).toBeCloseTo(143, 8);
-    expect(ganimetEtkinGuc(350)).toBeCloseTo(195.5, 8);
-    expect(ganimetEtkinGuc(500)).toBeCloseTo(228.5, 8);
-    expect(ganimetEtkinGuc(100000)).toBe(240);
+    expect(ganimetEtkinGuc(100)).toBeCloseTo(100, 8);
+    expect(ganimetEtkinGuc(300)).toBeCloseTo(300, 8);
+    expect(ganimetEtkinGuc(500)).toBeCloseTo(300 + 0.7 * 200, 8);
+    expect(ganimetEtkinGuc(1000)).toBeCloseTo(790, 8);
+    expect(ganimetEtkinGuc(2000)).toBeCloseTo(300 + 0.7 * 1700, 8);
     let onceki = 0;
     for (let g = 0; g <= 3000; g += 10) {
       expect(ganimetEtkinGuc(g)).toBeGreaterThanOrEqual(onceki - 1e-9);
@@ -667,11 +667,12 @@ describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indiri
     expect(birlikHesapla(s, bg(s)).gorevGeliri).toBe(0);
   });
 
-  it("ganimet tabanı: askerî gücü 40'ın altındaki ordu da haydut/sınır ve savaş zaferinde 40 güçlük ordunun ganimetini alır", () => {
+  it("ganimet tabanı: haydut/sınır zaferinde 40, büyük savaş zaferinde 25 güçlük ordunun ganimeti sayılır", () => {
     expect(GANIMET_TABAN_GUC).toBe(40);
+    expect(SAVAS_GANIMET_TABAN_GUC).toBe(25);
     expect(ganimetBrutTemel(10, 2.9)).toBeCloseTo(40 * 2.9, 8); // 10 güç → 40 güç sayılır
-    expect(ganimetBrutTemel(10, 12.5)).toBeCloseTo(40 * 12.5, 8);
-    expect(ganimetBrutTemel(100, 2.9)).toBeCloseTo(88 * 2.9, 8); // taban devreye girmez
+    expect(ganimetBrutTemel(10, 6, SAVAS_GANIMET_TABAN_GUC)).toBeCloseTo(25 * 6, 8); // savaşta taban 25
+    expect(ganimetBrutTemel(100, 2.9)).toBeCloseTo(100 * 2.9, 8); // taban devreye girmez, 300'e kadar bantsız
   });
 
   it("savaşta kışla bakımı %25 düşer", () => {
