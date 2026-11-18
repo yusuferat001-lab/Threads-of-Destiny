@@ -352,7 +352,7 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("er payı yalnız büyük savaş zaferi ganimetinden düşer (%40/%55/%70); haydut/sınır, görev ganimeti ve yağma doğrudan hazineye", () => {
+  it("er payı yalnız büyük savaş zaferi ganimetinden düşer (%35/%50/%65); haydut/sınır (gelire yazılır, vergilenir), görev ganimeti ve yağma pay düşülmeden", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -372,7 +372,7 @@ describe("gelir ve gider", () => {
     expect(y.erPayi).toBe(0); // yağma direkt hazineye
     expect(y.ganimetNet).toBeCloseTo(y.yagmaBrut, 6);
     // savaş zaferi ganimetinden politikaya göre pay düşer
-    const oranlar: Record<string, number> = { az: 0.4, dengeli: 0.55, comert: 0.7 };
+    const oranlar: Record<string, number> = { az: 0.35, dengeli: 0.5, comert: 0.65 };
     for (const id of ["az", "dengeli", "comert"] as const) {
       const z = asker();
       z.meslek_musteri = 200;
@@ -425,7 +425,7 @@ describe("gelir ve gider", () => {
     const sonuc = savasiBitir(s, b, bg(s), uyar);
     expect(sonuc.zafer).toBe(true);
     expect(sonuc.brut).toBeGreaterThan(0);
-    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.55), 1);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.5), 1);
     expect(sonuc.kale).toBe(true);
     expect(b.kale).toBe(1);
     expect(s.unvanlar).toContain("Zafer Madalyası");
@@ -1176,10 +1176,10 @@ describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
     }
   });
 
-  it("ganimet payı: askere %40/%55/%70, sana %60/%45/%30; yıllık moral −7/0/+4", () => {
-    expect(GANIMET_PAYI_TANIMLARI.az.oran).toBe(0.4);
-    expect(GANIMET_PAYI_TANIMLARI.dengeli.oran).toBe(0.55);
-    expect(GANIMET_PAYI_TANIMLARI.comert.oran).toBe(0.7);
+  it("ganimet payı: askere %35/%50/%65, sana %65/%50/%35; yıllık moral −7/0/+4", () => {
+    expect(GANIMET_PAYI_TANIMLARI.az.oran).toBe(0.35);
+    expect(GANIMET_PAYI_TANIMLARI.dengeli.oran).toBe(0.5);
+    expect(GANIMET_PAYI_TANIMLARI.comert.oran).toBe(0.65);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
   });
 
@@ -1349,19 +1349,18 @@ describe("v67 Madde 4 — güç formülü", () => {
 });
 
 describe("v67 Madde 5 — düşman gücü", () => {
-  it("formül: (yaşa bağlı taban + oyuncu gücünün %30'u) × tür çarpanı; taban 20 yaşta başlar (7 / 8,5 / 10,5), oran %6,1 / %6,3 / %7,1", async () => {
+  it("formül SADE: düşman = taban(yaş) + oyuncu gücünün %30'u; taban 20 yaşta başlar (10,5 / 13 / 11,5) ve ölene kadar yılda 0,33 / 0,42 / 0,37 doğrusal artar", async () => {
     const d = await import("../src/data/birlik");
     expect(d.DUSMAN_OYUNCU_PAYI).toBe(0.3);
-    expect(d.DUSMAN_TUR_CARPANI).toEqual({ haydut: 0.9, sinir: 1.1, savas: 1.3 });
-    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 7, oran: 0.061 }, sinir: { taban20: 8.5, oran: 0.063 }, savas: { taban20: 10.5, oran: 0.071 } });
+    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 10.5, artis: 0.33 }, sinir: { taban20: 13, artis: 0.42 }, savas: { taban20: 11.5, artis: 0.37 } });
     for (const t of ["haydut", "sinir", "savas"] as const) {
-      expect(d.dusmanGucuYas(20, t)).toBeCloseTo(d.DUSMAN_PARAMETRELERI[t].taban20, 9);
-      expect(d.dusmanGucuYas(21, t) / d.dusmanGucuYas(20, t)).toBeCloseTo(1 + d.DUSMAN_PARAMETRELERI[t].oran, 9);
-      for (const guc of [0, 50, 200]) {
-        expect(d.dusmanGucuHesapla(35, t, guc)).toBeCloseTo((d.dusmanGucuYas(35, t) + 0.3 * guc) * d.DUSMAN_TUR_CARPANI[t], 9);
-      }
-      // oyuncu gücü arttıkça düşman da artar; 100 güç → tam 30 × çarpan
-      expect(d.dusmanGucuHesapla(35, t, 100) - d.dusmanGucuHesapla(35, t, 0)).toBeCloseTo(30 * d.DUSMAN_TUR_CARPANI[t], 9);
+      const { taban20, artis } = d.DUSMAN_PARAMETRELERI[t];
+      expect(d.dusmanGucuYas(15, t)).toBeCloseTo(taban20, 9); // 20 altı sabit
+      expect(d.dusmanGucuYas(20, t)).toBeCloseTo(taban20, 9);
+      expect(d.dusmanGucuYas(45, t)).toBeCloseTo(taban20 + 25 * artis, 9);
+      expect(d.dusmanGucuYas(80, t) - d.dusmanGucuYas(79, t)).toBeCloseTo(artis, 9); // ölene kadar aynı hız, kırılma yok
+      for (const guc of [0, 50, 200]) expect(d.dusmanGucuHesapla(35, t, guc)).toBeCloseTo(d.dusmanGucuYas(35, t) + 0.3 * guc, 9);
+      expect(d.dusmanGucuHesapla(35, t, 100) - d.dusmanGucuHesapla(35, t, 0)).toBeCloseTo(30, 9); // 100 güç → tam +30
     }
   });
 
@@ -1404,10 +1403,10 @@ describe("v67 Madde 5 — düşman gücü", () => {
     expect(sayim.baskinSinir / sayim.sinir).toBeLessThan(0.48);
   });
 
-  it("barış ganimet aralığı türe göre: haydut 2,0–2,3, sınır 2,2–2,5; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
+  it("barış ganimet aralığı türe göre: haydut 1,8–2,1, sınır 2,0–2,3; zafer serisi 2→×1,2, 4→×1,5 sabit", async () => {
     const d = await import("../src/data/birlik");
-    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [2, 2.3], sinir: [2.2, 2.5] });
-    expect(d.BARIS_GANIMET_UST).toBe(2.5);
+    expect(d.BARIS_GANIMET_ARALIK).toEqual({ haydut: [1.8, 2.1], sinir: [2, 2.3] });
+    expect(d.BARIS_GANIMET_UST).toBe(2.3);
     expect(d.ZAFER_SERISI_ESIGI).toBe(2);
     expect(d.ZAFER_SERISI_DUSMAN_ARTISI).toBe(0.2);
     expect(d.ZAFER_SERISI_ESIGI_2).toBe(4);

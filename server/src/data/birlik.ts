@@ -285,39 +285,27 @@ export function agirlikliSec<T extends string>(agirliklar: Partial<Record<T, num
   return girdiler[girdiler.length - 1][0];
 }
 /**
- * Düşman gücü (v67): E = (yaşa bağlı TABAN + oyuncu gücünün DUSMAN_OYUNCU_PAYI'ı) × tür çarpanı × sapma × zafer serisi hazırlığı.
- * TABAN (`dusmanGucuYas`) yaşla SABİT HIZLA artar, üç tür için ayrı başlangıç ve yıllık oran:
- *   15–20 yaş: neredeyse düz (taban20 / 1,15'ten taban20'ye doğrusal) — ilk yıllar çok artmaz.
- *   20–60 yaş: taban20 × (1 + oran)^(yaş − 20)  (her yıl aynı yüzde; sıçrama yok).
- *   60 yaş sonrası: 60 yaşındaki artış hızı SABİT kalır (doğrusal; yaş 70→80 hızlanmaz).
- * Tür çarpanı: haydut en kolay, sınır (düzenli düşman) daha güçlü, büyük savaş en güçlü. Oyuncu güçlendikçe düşman da büyür.
+ * Düşman gücü (v67 sonrası, SADE): E = TABAN(yaş) + DUSMAN_OYUNCU_PAYI × oyuncu gücü; sapma ve zafer serisi hazırlığı çağıranda çarpılır.
+ * TABAN yaşla DOĞRUSAL artar: 20 yaşında `taban20`, sonra her yıl `artis` kadar eklenir ve ölene kadar aynı hızla sürer (20 altı sabit; üstel büyüme, 60 yaş dönüm noktası ve tür çarpanı YOK).
+ * Üç tür için ayrı başlangıç ve yıllık artış; haydut en kolay, sınır daha güçlü, büyük savaş en güçlü. Oyuncu güçlendikçe düşman da (%30) büyür.
  */
 export type DusmanTuru = "haydut" | "sinir" | "savas";
-export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban20: number; oran: number }> = {
-  haydut: { taban20: 7, oran: 0.061 },
-  sinir: { taban20: 8.5, oran: 0.063 },
-  savas: { taban20: 10.5, oran: 0.071 },
+export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban20: number; artis: number }> = {
+  haydut: { taban20: 10.5, artis: 0.33 },
+  sinir: { taban20: 13, artis: 0.42 },
+  savas: { taban20: 11.5, artis: 0.37 },
 };
-/** Düşman gücüne eklenen oyuncu askerî gücü payı ve tür çarpanları. */
+/** Düşman gücüne eklenen oyuncu askerî gücü payı. */
 export const DUSMAN_OYUNCU_PAYI = 0.3;
-export const DUSMAN_TUR_CARPANI: Record<DusmanTuru, number> = { haydut: 0.9, sinir: 1.1, savas: 1.3 };
-export const DUSMAN_ILK_YIL_ORANI = 1.15;
 export const DUSMAN_BASLANGIC_YASI = 20;
-export const DUSMAN_SABIT_ARTIS_YASI = 60;
-/** Yaşa bağlı TABAN (oyuncu gücü hariç). */
+/** Yaşa bağlı TABAN (oyuncu gücü hariç): taban20 + artis × (yaş − 20), 20 altında taban20. */
 export function dusmanGucuYas(yas: number, tur: DusmanTuru): number {
-  const { taban20, oran } = DUSMAN_PARAMETRELERI[tur];
-  if (yas < DUSMAN_BASLANGIC_YASI) {
-    const e15 = taban20 / DUSMAN_ILK_YIL_ORANI;
-    return e15 + ((taban20 - e15) * Math.max(0, yas - 15)) / (DUSMAN_BASLANGIC_YASI - 15);
-  }
-  const e = (y: number) => taban20 * Math.pow(1 + oran, y - DUSMAN_BASLANGIC_YASI);
-  if (yas <= DUSMAN_SABIT_ARTIS_YASI) return e(yas);
-  return e(DUSMAN_SABIT_ARTIS_YASI) * (1 + oran * (yas - DUSMAN_SABIT_ARTIS_YASI));
+  const { taban20, artis } = DUSMAN_PARAMETRELERI[tur];
+  return taban20 + artis * Math.max(0, yas - DUSMAN_BASLANGIC_YASI);
 }
-/** Düşmanın gücü (sapma ve zafer serisi hazırlığı ÇAĞIRANDA): (taban + oyuncu gücü × pay) × tür çarpanı. */
+/** Düşmanın gücü (sapma ve zafer serisi hazırlığı ÇAĞIRANDA): taban(yaş) + oyuncu gücü × pay. */
 export function dusmanGucuHesapla(yas: number, tur: DusmanTuru, oyuncuGuc: number): number {
-  return (dusmanGucuYas(yas, tur) + DUSMAN_OYUNCU_PAYI * Math.max(0, oyuncuGuc)) * DUSMAN_TUR_CARPANI[tur];
+  return dusmanGucuYas(yas, tur) + DUSMAN_OYUNCU_PAYI * Math.max(0, oyuncuGuc);
 }
 /** Tablo görünümü (5 yılda bir; test ve belge için). */
 export const BARIS_DUSMAN_TABLOLARI: Record<"haydut" | "sinir", [number, number][]> = {
@@ -365,9 +353,9 @@ export function talimKayipEtkisi(talim: number): number {
 }
 /** Yıllık moral etkenleri. */
 export const GANIMET_PAYI_TANIMLARI: Record<BirlikGanimetPayi, { oran: number; moral: number; ad: DilliMetin }> = {
-  az: { oran: 0.4, moral: -7, ad: { tr: "Az pay", en: "Small share" } },
-  dengeli: { oran: 0.55, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
-  comert: { oran: 0.7, moral: 4, ad: { tr: "Cömert pay", en: "Generous share" } },
+  az: { oran: 0.35, moral: -7, ad: { tr: "Az pay", en: "Small share" } },
+  dengeli: { oran: 0.5, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
+  comert: { oran: 0.65, moral: 4, ad: { tr: "Cömert pay", en: "Generous share" } },
 };
 export const GANIMET_SIRASI: BirlikGanimetPayi[] = ["az", "dengeli", "comert"];
 
@@ -455,7 +443,7 @@ export const ERZAK_BIRIMI = 0.13;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
 export const GANIMET_PAYI_KILIT_YIL = 5;
 /** Barış çatışması (haydut / sınır) zafer ganimeti BRÜTÜ (asker payı düşülmeden) = ganimetEtkinGuc(max(30; askerî güç)) × U(a; b); yenilgide ganimet yok. Haydut/sınır ganimetinden ASKER PAYI DÜŞÜLMEZ (yalnız büyük savaş zaferinden düşer). */
-export const BARIS_GANIMET_ARALIK: Record<"haydut" | "sinir", Aralik> = { haydut: [2.0, 2.3], sinir: [2.2, 2.5] };
+export const BARIS_GANIMET_ARALIK: Record<"haydut" | "sinir", Aralik> = { haydut: [1.8, 2.1], sinir: [2.0, 2.3] };
 /** Bütçe önizlemeleri için: tüm türlerdeki en yüksek çarpan ve tür ağırlıklı ortalama orta nokta. */
 export const BARIS_GANIMET_UST = Math.max(BARIS_GANIMET_ARALIK.haydut[1], BARIS_GANIMET_ARALIK.sinir[1]);
 export const BARIS_GANIMET_ORTA =
@@ -465,9 +453,10 @@ export const BARIS_GANIMET_ORTA =
 export const GANIMET_TABAN_GUC = 30;
 /**
  * Ganimet ve yağma güç bandı (KADEMELİ, vergi dilimi gibi; bileşik DEĞİL): güç dilimlere bölünür ve her dilim kendi katsayısıyla sayılır,
- * toplam "etkin güç" olur. 0–400 ×1, 400–600 ×0,8, 600+ ×0,6. Tavan yok. Önceki dilimler sonraki katsayıdan etkilenmez.
+ * toplam "etkin güç" olur. 0–400 ×1, 400–700 ×0,85, 700+ ×0,70. Tavan yok. Önceki dilimler sonraki katsayıdan etkilenmez.
+ * Aynı bant GANİMET, YAĞMA ve GÖREV GELİRİ için ortaktır (görevde ortalama verim = etkin güç / güç).
  */
-export const GANIMET_BANTLARI: [number, number, number][] = [[0, 400, 1], [400, 600, 0.8], [600, Infinity, 0.6]];
+export const GANIMET_BANTLARI: [number, number, number][] = [[0, 400, 1], [400, 700, 0.85], [700, Infinity, 0.7]];
 export function ganimetEtkinGuc(guc: number): number {
   const g = Math.max(0, guc);
   let toplam = 0;
@@ -832,7 +821,12 @@ export const BOLGE_ARAZI_AGIRLIGI: Record<string, [number, number, number]> = {
 export const ARAZI_DEGISIM_ORANI = 0.4;
 /** İnisiyatif zarı: oyuncu seçer / zorunlu saldırı / zorunlu savunma. */
 export const INISIYATIF_OYUNCU_SECER = 0.4;
-export const INISIYATIF_ZORUNLU_SALDIRI = 0.3;
+/**
+ * Düşman inisiyatifi (v67 sonrası): oyuncu seçemediği (1 − INISIYATIF_OYUNCU_SECER) durumda inisiyatifi DÜŞMAN belirler ve bunu güçlü tarafına göre yapar.
+ * d = (düşman saldırı − savunma) / (toplam), −0,25…+0,25. Oyuncunun zorunlu SAVUNMAYA düşme olasılığı = 0,5 + d × SAVAS_DUSMAN_INISIYATIF_ETKISI (saldırı üstünse sık BASKIN, savunma üstünse düşman bekler, sen saldırmak zorunda kalırsın).
+ * Düşman saldırı tarafı üstünken zorunlu savunma BASKINDIR: savunman BASKIN_PUSU_CEZASI kadar pusu cezası alır (Keşif, Karakol ve okçu azaltır).
+ */
+export const SAVAS_DUSMAN_INISIYATIF_ETKISI = 1;
 /** Büyük savaşta düşman gücü sapması: referans × [0,95; 1,05] (savaş başında bir kez çekilir; oyuncuya ±%6,5 aralık olarak gösterilir, Keşif ile ±%2,5'e kadar). */
 export const DUSMAN_ORAN: [number, number] = [0.95, 1.05];
 /** Savaş günü / çatışma zarı: her taraf güç × (1 ± %4) (d20: (zar − 10,5) / SAVAS_ZAR_BOLEN, uçlar ±9,5 → ±%4, iki taraf için de). */
@@ -1213,8 +1207,8 @@ export const MAAS_ADLARI: Record<string, DilliMetin> = {
 };
 export const maasAdi = (cag: string, bolge: string): DilliMetin => MAAS_ADLARI[`${cag}|${bolge}`] ?? { tr: "Maaş", en: "Pay" };
 
-// ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %40. Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
-export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 100, 0.1], [100, 250, 0.15], [250, 500, 0.25], [500, 900, 0.35], [900, Infinity, 0.4]];
+// ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %25. Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
+export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 100, 0.1], [100, 250, 0.15], [250, 500, 0.2], [500, Infinity, 0.25]];
 export function hazinePayi(reelNet: number): number {
   if (!(reelNet > 0)) return 0;
   let t = 0;
@@ -1242,15 +1236,10 @@ export const ZAFER_SERISI_DUSMAN_ARTISI_2 = 0.5;
 export type ZaferSerisi = { haydut: number; sinir: number; savas: number };
 export const ZAFER_SERISI_BOS: ZaferSerisi = { haydut: 0, sinir: 0, savas: 0 };
 
-// ── Görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7): ilk 100 er tam verim; sonra doğrusal düşer, en büyük kışla kapasitesinde (500) %75 ──
-export const GOREV_VERIM_TAM_ER = 100;
-export const GOREV_VERIM_KAPASITE_ORANI = 0.75;
-/** Göreve çıkan er sayısı için gelir çarpanı (ortalama verim): er ≤ 100 → 1; 500 erde 0,75; arası doğrusal. Toplam gelir (er × verim) kapasiteye kadar hep artar. */
-export function gorevErOrani(er: number): number {
-  const kap = KISLA_ER_LIMITI[KISLA_ER_LIMITI.length - 1];
-  if (er <= GOREV_VERIM_TAM_ER) return 1;
-  const k = Math.min(er, kap);
-  return 1 - (1 - GOREV_VERIM_KAPASITE_ORANI) * ((k - GOREV_VERIM_TAM_ER) / (kap - GOREV_VERIM_TAM_ER));
+// ── Görev gelirinde güç bandı: ganimet ve yağmayla AYNI bant (GANIMET_BANTLARI); ortalama verim = etkin güç / güç ──
+/** Göreve ayrılan güç için gelir çarpanı (ortalama verim): güç ≤ 400 → 1; sonrası ganimetle aynı bantla düşer. Toplam gelir (er × verim) güçle hep artar. */
+export function gorevBantOrani(guc: number): number {
+  return guc > 0 ? ganimetEtkinGuc(guc) / guc : 1;
 }
 
 // ── Büyük savaş yenilgisinde bozgun firarı (v68): yalnız TÜM ORDU yenilgisi (büyük savaş); karar savaşından sonraki ilk yıl (savaşın 4. yılı) ──

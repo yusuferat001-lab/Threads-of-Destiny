@@ -573,7 +573,7 @@ export function BirlikPaneli({
           {dokum && dokum.birlik && (
             <div className="isletme-dokum">
               <div>
-                {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('gGanimet')} {formatPara(dokum.birlik.ganimetPara)}
+                {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('gGanimet')} {formatPara(dokum.birlik.ganimetPara + (dokum.birlik.catismaGanimeti ?? 0))}
               </div>
               {dokum.uyarilar.map((u, i) => {
                 const sm = uyariMetni(u);

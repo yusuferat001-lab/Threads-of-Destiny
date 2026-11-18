@@ -53,7 +53,7 @@ import {
   IKMAL_SIRASI,
   IKMAL_TANIMLARI,
   INISIYATIF_OYUNCU_SECER,
-  INISIYATIF_ZORUNLU_SALDIRI,
+  SAVAS_DUSMAN_INISIYATIF_ETKISI,
   kaliteAdlari,
   KALITE_CARPANI,
   KALITE_BAKIM,
@@ -89,7 +89,7 @@ import {
   doktrinSecenekleri,
   gorevAdi,
   gorevGetir,
-  gorevErOrani,
+  gorevBantOrani,
   gorevRiski,
   kusatmaAdi,
   moralGucEtkisi,
@@ -386,18 +386,23 @@ export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | n
   // SAVAŞ GÜNÜ (savaşın 3. yılı, tek pencere): arazi (rütbeye göre ihtimalle) + rol + inisiyatif (oyuncu seçiyorsa).
   const kararYili = (b.savas?.yil_sayac ?? 0) + 1 === SAVAS_KARAR_YILI;
   let zorunlu: "saldiri" | "savunma" | null = null;
+  let baskin = false;
   if (kararYili) {
     // Arazi seçme ekranı yalnız rütbenin verdiği ihtimalle gelir (S1'de hiç); seçilen arazi kesin geçerlidir.
     if (Math.random() < araziIhtimali(state)) adimlar.push("arazi");
     adimlar.push("rol");
-    const r = Math.random();
-    if (r >= INISIYATIF_OYUNCU_SECER) zorunlu = r < INISIYATIF_OYUNCU_SECER + INISIYATIF_ZORUNLU_SALDIRI ? "saldiri" : "savunma";
-    else adimlar.push("inisiyatif");
+    if (Math.random() >= INISIYATIF_OYUNCU_SECER) {
+      // Düşman inisiyatifi güçlü tarafına göre alır: saldırı üstünse sık baskın (sen savunursun), savunma üstünse bekler (sen saldırırsın).
+      const t = dusmanSavasTaraflari(b.savas?.dusman_tur ?? "karma", null);
+      const d = (t.saldiri - t.savunma) / (t.saldiri + t.savunma);
+      zorunlu = Math.random() < Math.min(1, Math.max(0, 0.5 + SAVAS_DUSMAN_INISIYATIF_ETKISI * d)) ? "savunma" : "saldiri";
+      baskin = zorunlu === "savunma" && d > 0;
+    } else adimlar.push("inisiyatif");
   }
   // ESİR: Rütbe 3+ ilk esir çıkınca bir kez sorulur (savaş boyu geçerli).
   if (b.savas?.esir_bekliyor && !b.savas.esir_karari && rutbeIndeksi(state) + 1 >= ESIR_YETKI_RUTBE) adimlar.push("esir");
   b.savas_karari = {
-    yil: state.yil, adimlar, adim: 0, inisiyatif_zorunlu: zorunlu, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma_orta", esir: "karma",
+    yil: state.yil, adimlar, adim: 0, inisiyatif_zorunlu: zorunlu, baskin, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma_orta", esir: "karma",
   };
   return b.savas_karari;
 }
@@ -1051,7 +1056,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         const pay = gp.find((x) => x.gorev.id === g.id);
         const hs = h.gorevler.find((x) => x.id === g.id);
         return {
-          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * gorevErOrani(pay?.er ?? erSayisi(state)) * bg.enflasyon),
+          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * gorevBantOrani(pay?.guc ?? gucHesapla(state).guc) * bg.enflasyon),
           risk: gorevRiski(g), yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
           erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0), bonuslar: gorevBonuslari(g),
         };

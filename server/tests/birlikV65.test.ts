@@ -4,7 +4,7 @@ import { birlikAl, birlikHesapla } from "../src/game/birlik";
 import { gucHesapla } from "../src/game/birlik";
 import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
 import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
-import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
+import { SAVAS_ZAR_YUZDE, gorevBantOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
 import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
@@ -139,17 +139,16 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(catismaKarariDurumu(s, bg(s))!.hazirlikli).toBe(false);
   });
 
-  it("görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7): ilk 100 er ×1, sonra doğrusal; 300 → 0,875, 500 → 0,75; gelir ere göre hep artar", () => {
-    expect(gorevErOrani(40)).toBe(1);
-    expect(gorevErOrani(100)).toBe(1);
-    expect(gorevErOrani(200)).toBeCloseTo(0.9375, 8);
-    expect(gorevErOrani(300)).toBeCloseTo(0.875, 8);
-    expect(gorevErOrani(500)).toBeCloseTo(0.75, 8);
-    expect(gorevErOrani(800)).toBeCloseTo(0.75, 8); // kapasite üstü sabit
+  it("görev geliri ganimet/yağmayla AYNI güç bandını kullanır: güç ≤ 400 → verim 1; 500 → 0,97; 1000 → 0,865; gelir güçle hep artar", () => {
+    expect(gorevBantOrani(40)).toBe(1);
+    expect(gorevBantOrani(400)).toBe(1);
+    expect(gorevBantOrani(500)).toBeCloseTo(485 / 500, 8);
+    expect(gorevBantOrani(700)).toBeCloseTo(655 / 700, 8);
+    expect(gorevBantOrani(1000)).toBeCloseTo(865 / 1000, 8);
     let onceki = 0;
-    for (let e = 10; e <= 500; e += 10) {
-      expect(e * gorevErOrani(e)).toBeGreaterThan(onceki);
-      onceki = e * gorevErOrani(e);
+    for (let g = 10; g <= 2000; g += 10) {
+      expect(g * gorevBantOrani(g)).toBeGreaterThan(onceki);
+      onceki = g * gorevBantOrani(g);
     }
   });
 

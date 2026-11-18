@@ -104,7 +104,6 @@ import {
   IKMAL_TANIMLARI,
   YAGMA_YIL,
   INISIYATIF_OYUNCU_SECER,
-  INISIYATIF_ZORUNLU_SALDIRI,
   KALITE_FIYATI,
   KARAKOL_KORUMA,
   MORAL_BARIS_YILLIK,
@@ -684,6 +683,7 @@ export interface CatismaSonucu {
   oran: number;
   arazi: BirlikArazi;
   inisiyatif: "saldiri" | "savunma";
+  baskin?: boolean;
 }
 
 function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami): CatismaSonucu {
@@ -700,7 +700,10 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   const ctx = { enflasyon: bg.enflasyon, savas: { arazi, dusmanTur: sv.dusman_tur, inisiyatif } };
   const d = gucHesapla(state, ctx);
   // Kıyas yönü: SALDIRIDAYSAN senin saldırı gücün düşmanın SAVUNMA gücüyle, SAVUNMADAYSAN senin savunma gücün düşmanın SALDIRI gücüyle yarışır.
-  const oyuncuG = inisiyatif === "saldiri" ? d.saldiri : d.savunma;
+  // Düşman baskını (zorunlu savunma, düşman saldırı tarafı üstün): savunma pusu cezasıyla düşer (Keşif subayı, Karakol ve okçu azaltır).
+  const baskin = !!karar?.baskin && inisiyatif === "savunma" && !karar?.inisiyatif;
+  const pusu = baskin ? BASKIN_PUSU_CEZASI * (1 - clamp(subayToplami(state).pusuAzalt + OKCU_PUSU_AZALTMA * turOrani(b, "okcu"), 0, 1)) : 0;
+  const oyuncuG = (inisiyatif === "saldiri" ? d.saldiri : d.savunma) * (1 - pusu);
   // Düşmanın gücü MUTLAKTIR (yaşa göre referans × savaş başında çekilen ±%5 × zafer serisi hazırlığı): bizim gücümüz sonucu doğrudan belirler.
   const E = dusmanGucuHesapla(state.yas, "savas", gucHesapla(state, { enflasyon: bg.enflasyon }).guc) * sv.dusman_orani * (sv.hazirlik ?? 1);
   // Arazi düşmanın baskın birliğini de etkiler (oyuncuyla aynı tablo); zayıf taraf güçlü tarafın en az DUSMAN_TARAF_MIN_ORAN'ı kadardır.
@@ -742,7 +745,7 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   // Karar savaşı sonucu oyuncunun kendi morali (mutluluk) için; ordu morali yıl işlemede (MORAL_ZAFER / MORAL_YENILGI).
   state.mutluluk = clamp(state.mutluluk + SAVAS_KISI_MORALI[genelZafer ? "zafer" : "yenilgi"], 0, 100);
   catismaIzleyici.fn?.({ tur: "savas", zafer: genelZafer, yas: state.yas, oyuncuGuc: d.guc, dusmanGuc: E, oyuncuEtkin: oyuncuG, dusmanEtkin: dusmanG, tablo: dusmanReferansGucu(state) });
-  return { kanatZafer, genelZafer, oran: R, arazi, inisiyatif };
+  return { kanatZafer, genelZafer, oran: R, arazi, inisiyatif, baskin };
 }
 
 /** Yağma yıllarında (savaşın ilk YAGMA_YIL yılı) seçilen yağma türünün ölü/firar çarpanı; diğer yıllarda 1. `yil` savaşın kaçıncı yılı olduğu (1 tabanlı). */
@@ -782,6 +785,7 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
   const yilSayisi = Math.max(1, (sv.yil_sayac ?? 0) + 1);
   const sonuc: SavasGunuSonucu = {
     yil: state.yil,
+    baskin: !!catisma.baskin,
     zafer,
     kanatZafer: catisma.kanatZafer,
     arazi: catisma.arazi,
@@ -1097,7 +1101,9 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
     nakitHasar = r2(gelirTaban * BASKIN_NAKIT_HASARI);
   }
   const esir = esirSayisi > 0 ? esirleriIsle(state, b, esirSayisi, "karma", bg) : null;
-  state.para = r2(state.para + net + (esir?.para ?? 0) - nakitHasar);
+  // Ganimet (net) ve esir geliri KASAYA HEMEN girmez: sonraki yıl işlemede ordu gelirine yazılır (Kazanç ve hazine payına tabi). Baskın nakit hasarı hemen düşer.
+  state.para = r2(state.para - nakitHasar);
+  b.catisma_geliri = r2((b.catisma_geliri ?? 0) + net + (esir?.para ?? 0));
   // Ordu ve kişi morali çatışma türüne göre farklı etkilenir (haydut hafif, sınır ağır).
   b.moral = clamp(b.moral + CATISMA_ORDU_MORALI[tur][zafer ? "zafer" : "yenilgi"], 0, 100);
   state.mutluluk = clamp(state.mutluluk + CATISMA_KISI_MORALI[tur][zafer ? "zafer" : "yenilgi"], 0, 100);
@@ -1473,13 +1479,15 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   const esirGeliri = esir ? esir.para : 0;
   const barisNet = savasSonu?.net ?? 0;
+  const catismaGeliri = r2(b.catisma_geliri ?? 0); // önceki yıl çözülen haydut/sınır çatışmalarının geliri (gelire yazılır, vergilendirilir)
+  b.catisma_geliri = 0;
   // Subay maaşı gerçek nakitten düşer (Tüccar/Zanaatkâr/Din ile aynı; eskiden Asker'de hiç düşülmüyordu → Kazanç subay maaşı kadar şaşıyordu).
   const calisanMaasi = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
-  const net = r2(h.net + barisNet + esirGeliri - nakitHasar - ekstraGider - yeniErMaliyet - calisanMaasi);
+  const net = r2(h.net + barisNet + esirGeliri + catismaGeliri - nakitHasar - ekstraGider - yeniErMaliyet - calisanMaasi);
   const yeniEr = erSayisi(state);
   const dokum: IsletmeDokum = {
     yil: state.yil,
-    satis: r2(h.toplamGelir + barisNet + esirGeliri),
+    satis: r2(h.toplamGelir + barisNet + esirGeliri + catismaGeliri),
     alim: r2(h.erMasrafi + h.erzak + h.talimMasrafi + h.yaraliGideri),
     depoMasrafi: r2(h.kislaBakim + h.techizatBakim + h.kusatmaBakim),
     yatirimMasrafi: 0,
@@ -1488,7 +1496,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     nakitHasar: r2(nakitHasar),
     ekstraGider: r2(ekstraGider + yeniErMaliyet),
     curumeKaybi: 0,
-    brutKar: r2(h.net + barisNet + esirGeliri),
+    brutKar: r2(h.net + barisNet + esirGeliri + catismaGeliri),
     borcOdeme: 0,
     net,
     vergi: 0,
@@ -1503,6 +1511,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
       erBasiGelir: r2(h.erBasiGelir),
       gorevGeliri: r2(h.gorevGeliri),
       ganimetPara: r2(h.ganimetBrut - h.yagmaBrut + (savasSonu?.brut ?? 0)), // yağma ayrı kalem (yagmaPara)
+      catismaGanimeti: catismaGeliri,
       savasOdenegi: r2(h.savasOdenegi),
       yagmaPara: r2(h.yagmaBrut),
       kiralikMasrafi: r2(h.kiralikMasrafi),

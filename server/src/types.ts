@@ -1079,6 +1079,8 @@ export interface IsletmeDokum {
     erBasiGelir: number;
     gorevGeliri: number;
     ganimetPara: number;
+    /** Önceki yıl çözülen haydut/sınır çatışmalarının ganimeti (net; gelire dahildir, hazine payına tabidir). */
+    catismaGanimeti?: number;
     savasOdenegi?: number;
     yagmaPara?: number;
     kiralikMasrafi?: number;
@@ -1161,6 +1163,8 @@ export interface BirlikSavasKarari {
   adim: number;
   /** Zorunlu inisiyatif (oyuncu seçemiyorsa: emir saldırı / düşman saldırısı savunma); seçebiliyorsa null. */
   inisiyatif_zorunlu: "saldiri" | "savunma" | null;
+  /** Düşman baskını: zorunlu savunma düşman saldırı tarafı üstünken geldi (pusu cezası uygulanır). */
+  baskin?: boolean;
   seferberlik: BirlikSeferberlik | null;
   /** İstenen arazi (gerçekleşme ihtimali rütbeye bağlı); null = bölge zarına bırak. */
   arazi: BirlikArazi | null;
@@ -1230,6 +1234,8 @@ export interface CatismaSonucuGorunum {
 /** Savaş Günü sonucu (Savaş Sonucu ekranı): güçler, zarlar, kayıplar, düşman kaybı tahmini, ganimet tahmini. */
 export interface SavasGunuSonucu {
   yil: number;
+  /** Düşman baskın yaptı: savunmaya zorlandın ve pusu cezası aldın. */
+  baskin?: boolean;
   /** Genel savaş sonucu ve cephedeki kanat sonucu. */
   zafer: boolean;
   kanatZafer: boolean;
@@ -1379,6 +1385,8 @@ export interface BirlikDurumu {
   erzak_oran: number;
   /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
   baris_bekleme?: number;
+  /** Haydut/sınır çatışması ganimeti (net) + esir geliri: sonraki yıl işlemede ordu gelirine (dolayısıyla Kazanç ve hazine payına) yazılır; çözülür çözülmez kasaya girmez. */
+  catisma_geliri?: number;
   /** Her tür için (haydut, sınır, büyük savaş) arka arkaya zafer sayısı; yenilgide sıfırlanır; ≥3 iken düşman +%10–15 güçlenir. */
   zafer_serisi?: { haydut: number; sinir: number; savas: number };
   /** Ömür boyu toplam zafer sayıları (seri sıfırlansa da kalır; 'Fatih' hayat amacı için, v67 Madde 7). */
