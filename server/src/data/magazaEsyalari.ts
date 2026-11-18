@@ -46,10 +46,15 @@ export function koleksiyonKategorisiMi(kategori: MagazaEsyaKategori): boolean {
   return kategori !== "sifa";
 }
 
-/** Vitrinde aynı anda görünen eşya adedi (kategori başına); listede olmayan kategori (şifa) hep tam görünür. */
-export const MAGAZA_VITRIN_ADET: Partial<Record<MagazaEsyaKategori, number>> = { luks: 2, sanat: 3, binek: 2 };
-/** Vitrin yenileme aralığı (yıl, [min, max]). */
-export const MAGAZA_VITRIN_YENILEME_YIL: [number, number] = [3, 4];
+/**
+ * Lüks vitrini (v70): sanat ve binek artık "Lüks Tüketim" sekmesinin içindedir; vitrinde AYNI ANDA en çok
+ * MAGAZA_VITRIN_TOPLAM eşya görünür (şifa vitrine tabi değil, hep tam görünür). Hedef dağılım kategori başınadır;
+ * bir kategoride yeterli (sahip olunmayan) eşya yoksa eksik diğerlerinden tamamlanır, toplam yine aşılmaz.
+ */
+export const MAGAZA_VITRIN_TOPLAM = 5;
+export const MAGAZA_VITRIN_DAGILIMI: Partial<Record<MagazaEsyaKategori, number>> = { luks: 2, sanat: 2, binek: 1 };
+/** Vitrin yenileme aralığı (yıl, [min, max]): tam 3 yılda bir. */
+export const MAGAZA_VITRIN_YENILEME_YIL: [number, number] = [3, 3];
 
 /**
  * Fiyat/etki dengesi kasıtlı olarak KADEMELİDİR: ucuz "sifa" eşyaları sadece

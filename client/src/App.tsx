@@ -153,6 +153,7 @@ import { ogretiBekliyor, talepBekliyor, doktrinBekliyor, savasKarariOlasi, catis
 import { OgretiSecimi } from './components/OgretiSecimi';
 import { DoktrinSecimi } from './components/DoktrinSecimi';
 import { TerfiPenceresi } from './components/TerfiPenceresi';
+import { KapatX } from './components/KararKabuk';
 import { SavasKararlari } from './components/SavasKararlari';
 import { SavasSonucu } from './components/SavasSonucu';
 import { CatismaKarari, CatismaSonucu } from './components/CatismaKarari';
@@ -2114,6 +2115,61 @@ function App() {
   // PC: Evin / Mağaza / Sosyalleş / İlişkiler / Gayrimenkuller de strateji sayfaları gibi ana ekranın ortasında açılır
   // (sol-sağ panel ve alttaki meslek tuşları görünür kalır). Yalnız "ilerle" modunda ve bekleyen olay yokken.
   const yanEkranPc = !mobil && !!karakter && ilerleModu && !senaryo && !tanisma && !tanismaSonuc && YAN_EKRANLAR.includes(ekran);
+
+  /**
+   * ESC / ✕ ile "geri": açık ekranı bir üst düzeye döndürür. Pencere (modal) açıksa o önce kapanır; zorunlu karar
+   * pencereleri (doktrin, öğreti, savaş planı, ürün seçimi…) ESC ile kapanmaz (Savaş kararında ESC bir önceki soruya döner).
+   * Dönüş: bir şey yapıldıysa true.
+   */
+  function ekranGeri(): boolean {
+    // 1) Açık, arka plana tıklayınca kapanan pencere: en üsttekini kapat (ayarlar, gösterge, kişilik, bildirim, sonuç…).
+    const katmanlar = document.querySelectorAll<HTMLElement>('.ayarlar-katman, .skor-detay-katman, .gecmis-hayat-detay-katman, .kariyer-sonuc-katman');
+    if (katmanlar.length > 0) {
+      katmanlar[katmanlar.length - 1].click();
+      return true;
+    }
+    // 2) Zorunlu karar penceresi açık: ESC yok.
+    if (document.querySelector('.kk-katman, .ogreti-katman')) return false;
+    // 3) Ekran geri.
+    if (YAN_EKRANLAR.includes(ekran)) {
+      setIslemMesaji(null);
+      setEkran(karakter ? 'oyun' : 'giris');
+      return true;
+    }
+    if (ekran === 'strateji') {
+      setIslemMesaji(null);
+      setStratejiSayfa(null);
+      setEkran('oyun');
+      return true;
+    }
+    if (!mobil && ekran === 'oyun' && stratejiSayfa) {
+      setStratejiSayfa(null);
+      return true;
+    }
+    if (ekran === 'liderlik') {
+      setEkran(karakter?.aktif ? 'giris' : karakter ? 'olum' : 'giris');
+      return true;
+    }
+    if (ekran === 'isim_sec') {
+      setEkran('cag_sec');
+      return true;
+    }
+    if (ekran === 'cag_sec') {
+      setEkran('giris');
+      return true;
+    }
+    return false;
+  }
+  const ekranGeriRef = useRef(ekranGeri);
+  ekranGeriRef.current = ekranGeri;
+  useEffect(() => {
+    const dinle = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      if (ekranGeriRef.current()) e.preventDefault();
+    };
+    window.addEventListener('keydown', dinle);
+    return () => window.removeEventListener('keydown', dinle);
+  }, []);
   const yanEkranBasligi: Partial<Record<Ekran, string>> = {
     finans: m.shEv,
     yatirim: m.iyBaslik,
@@ -2283,6 +2339,7 @@ function App() {
           onSosyallesme={sosyallesmeEkraniniAc}
           onMagaza={magazaEkraniniAc}
           onAile={aileEkraniniAc}
+          onMulk={yatirimEkraniniAc}
         />
       )}
       {islemMesaji && (ekran === 'oyun' || ekran === 'sonuc') && (
@@ -3412,6 +3469,7 @@ function App() {
 
       {ekran === 'liderlik' && (
         <div className="ekran ekran-liderlik">
+          <KapatX onClick={() => ekranGeri()} />
           <h2>{m.liderlikBaslik}</h2>
           <p className="liderlik-skor-ipucu">💡 {m.acilisSkorIpucu}</p>
           <div className="liderlik-donem-sekmeler">

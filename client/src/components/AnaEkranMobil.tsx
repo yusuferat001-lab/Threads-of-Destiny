@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDil } from '../DilContext';
 import { useEscKapat } from '../hooks';
+import { KapatX } from './KararKabuk';
 import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
 import { talepBekliyor } from '../ogreti';
@@ -247,6 +248,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         return (
           <div className="kariyer-sonuc-katman" onClick={() => setSavasAcik(false)}>
             <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <KapatX onClick={() => setSavasAcik(false)} />
               <h3>⚔️ {tr ? 'Savaş' : 'War'} {p.yil}/{p.toplamYil}</h3>
               <ul className="ana-donem-liste">
                 {p.seferberlik && (
@@ -319,6 +321,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
       {rakipAcik && isletme?.birlik && (
         <div className="kariyer-sonuc-katman" onClick={() => setRakipAcik(false)}>
           <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setRakipAcik(false)} />
             <h3>⚔️ {tr ? 'Askerî Güç' : 'Military Strength'}</h3>
             <ul className="ana-donem-liste">
               <li>
@@ -338,6 +341,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
       {donemAcik && (
         <div className="kariyer-sonuc-katman" onClick={() => setDonemAcik(false)}>
           <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setDonemAcik(false)} />
             <h3>
               {donem ? `${donem.ikon} ${tr ? donem.tr : donem.en}` : tr ? 'Dönem' : 'Era'}
             </h3>

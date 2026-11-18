@@ -8,6 +8,7 @@ import type {
   SosyalAksiyonSonucu,
 } from '../types';
 import { useDil } from '../DilContext';
+import { KapatX } from './KararKabuk';
 import { bic } from '../i18n';
 import { formatPara } from '../format';
 import { HazardWidget, UcKagitciWidget, BilekGuresiWidget } from './MiniOyunlar';
@@ -69,7 +70,7 @@ export function SosyallesmePaneli({
   const fiyatEtiketi = (f: number) => (f === 0 ? m.spAksiyonBedava : `${formatPara(f)} ${paraBirimi}`);
 
   return (
-    <div className="ekran ekran-tam-sayfa ekran-sosyallesme">
+    <div className="ekran ekran-tam-sayfa ekran-yan ekran-sosyallesme">
       <h2>{m.spSosyallesBaslik}</h2>
       <p className="giris-aciklama tam-yardimci-metin">{m.spIntro}</p>
 
@@ -77,6 +78,7 @@ export function SosyallesmePaneli({
       {sonMesaj && (
         <div className="kariyer-sonuc-katman" onClick={() => setSonMesaj(null)}>
           <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setSonMesaj(null)} />
             <p>{sonMesaj}</p>
             <button onClick={() => setSonMesaj(null)}>{dil === 'en' ? 'OK' : 'Tamam'}</button>
           </div>

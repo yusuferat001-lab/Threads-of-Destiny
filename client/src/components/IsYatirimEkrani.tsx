@@ -3,7 +3,7 @@ import type { MulkKartBilgisi, MulkTuru } from '../types';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
-import { KararOnay, KararSatiri } from './KararKabuk';
+import { KapatX, KararOnay, KararSatiri } from './KararKabuk';
 
 interface IsYatirimEkraniProps {
   paraBirimi: string;
@@ -43,12 +43,13 @@ export function IsYatirimEkrani({
   }, [islemMesaji]);
 
   return (
-    <div className="ekran ekran-tam-sayfa">
+    <div className="ekran ekran-tam-sayfa ekran-yan">
       <h2>{m.iyBaslik}</h2>
 
       {modalMesaj && (
         <div className="kariyer-sonuc-katman" onClick={() => setModalMesaj(null)}>
           <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setModalMesaj(null)} />
             <p>{modalMesaj}</p>
             <button onClick={() => setModalMesaj(null)}>{en ? 'OK' : 'Tamam'}</button>
           </div>
@@ -59,7 +60,7 @@ export function IsYatirimEkrani({
         <div className="tam-sutun">
           <h3 className="tam-baslik">{m.iyYatirimlikGayrimenkuller}</h3>
 
-          <div className="kk-liste kk-secimler">
+          <div className="kk-liste kk-secimler kk-ikili">
             {mulkler.map((mulk) => {
               const sinyal = PIYASA_SINYAL_ETIKET[mulk.piyasaSinyali];
               const zararda = mulk.tahminiYillikGetiriYuzdesi < 0;
