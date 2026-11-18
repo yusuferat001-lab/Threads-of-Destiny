@@ -1,4 +1,4 @@
-import type { CharacterState, CemaatDurumu, IsletmeDokum, IsletmeHat, IsletmeUyari } from "../types";
+import type { CharacterState, CemaatAyin, CemaatDurumu, IsletmeDokum, IsletmeHat, IsletmeUyari } from "../types";
 import { isletmeProfiliGetir, rolAdiGetir } from "../data/meslekProfilleri";
 import {
   AHLAK_BANTLARI,
@@ -11,6 +11,7 @@ import {
   ASIRI_OTORITE,
   ASIRI_SOHRET,
   AYIN_MASRAF_ORANI,
+  AYIN_POLITIKASI,
   BAGIS_ORANI_TAVAN,
   BAGIS_POLITIKASI,
   BAGIS_BIRIMI,
@@ -99,6 +100,8 @@ export function cemaatVarsayilan(): CemaatDurumu {
     kitle: "genel",
     yardim: "orta",
     ton: "dengeli",
+    ayin: "yok",
+    ayin_son_yil: null,
     fanatiklik: 0,
     ogretiler: [],
     bekleyen_ogreti: 1,
@@ -163,6 +166,8 @@ export function cemaatHazirla(state: CharacterState): void {
   if (!Array.isArray(c.ogretiler)) c.ogretiler = [];
   if (c.mezun_son_yil === undefined) c.mezun_son_yil = null;
   if (c.asiri_son_yil === undefined) c.asiri_son_yil = null;
+  if (!c.ayin) c.ayin = "yok";
+  if (c.ayin_son_yil === undefined) c.ayin_son_yil = null;
   if (typeof c.fanatiklik !== "number") c.fanatiklik = 0;
   ogretiBekleyenSeviye(state);
   if (is.adaylar.length === 0) adaylariYenile(state);
@@ -216,6 +221,22 @@ export function gelmeKaynagiBul(state: CharacterState): GelmeKaynagi {
 
 export function gelmeAraligi(state: CharacterState): [number, number] {
   return GELME_ARALIKLARI[gelmeKaynagiBul(state)];
+}
+
+// ── Büyük Ayin ──────────────────────────────────────────────────────────────
+/** Bu yıl geçerli ayin politikası (eski kayıtta alan yoksa "yok"). */
+export function aktifAyin(cm: CemaatDurumu) {
+  return AYIN_POLITIKASI[cm.ayin ?? "yok"];
+}
+/** Seçilemiyorsa nedeni ("rutbe" | "bekleme"), seçilebiliyorsa null. */
+export function ayinKilitNedeni(state: CharacterState, ayin: CemaatAyin): "rutbe" | "bekleme" | null {
+  const cm = state.isletme?.cemaat;
+  const p = AYIN_POLITIKASI[ayin];
+  if (!cm || !p) return "rutbe";
+  if (ayin === "yok") return null;
+  if (p.minRutbe > (state.rutbe_seviye ?? 1)) return "rutbe";
+  if (cm.ayin_son_yil != null && state.yil - cm.ayin_son_yil < p.bekleme) return "bekleme";
+  return null;
 }
 
 // ── Küçük yardımcılar ───────────────────────────────────────────────────────
@@ -290,8 +311,9 @@ export function cemaatHesapla(state: CharacterState, b: IsletmeBaglami, gelmeTab
   const bp = BAGIS_POLITIKASI[cm.bagis];
   const kitle = KITLE_POLITIKASI[cm.kitle];
   const yp = YARDIM_POLITIKASI[cm.yardim];
+  const ay = aktifAyin(cm);
   const inanan = musteriSayisi(state);
-  const gelmeOrani = clamp(gelmeTaban + o.gelmeOrani, 0.05, 0.98);
+  const gelmeOrani = clamp(gelmeTaban + o.gelmeOrani + ay.gelme, 0.05, 0.98);
   const kapasite = binaKapasitesi(state, o);
   const gelen = Math.min(inanan * gelmeOrani, kapasite);
   const tasan = Math.max(0, inanan * gelmeOrani - kapasite);
@@ -302,6 +324,7 @@ export function cemaatHesapla(state: CharacterState, b: IsletmeBaglami, gelmeTab
     b.enflasyon *
     bp.miktar *
     kitle.bagis *
+    ay.bagis *
     d.bagis *
     (imtiyazAktifMi(state, "kutsal_gun_imtiyazi") ? 1.1 : 1) *
     piyasaCarpani(state, "talep") *
@@ -316,7 +339,7 @@ export function cemaatHesapla(state: CharacterState, b: IsletmeBaglami, gelmeTab
   const faaliyetGelir = faaliyetler.reduce((t, x) => t + x.gelir, 0);
   const faaliyetMasraf = faaliyetler.reduce((t, x) => t + x.masraf, 0);
   const toplamGelir = bagis + faaliyetGelir;
-  const ayinMasrafi = bagis * AYIN_MASRAF_ORANI;
+  const ayinMasrafi = bagis * (AYIN_MASRAF_ORANI + ay.masraf);
   const binaBakim = r2(binaBakimMasrafi(state, b.giderEnflasyon) + yatirimYillikMasrafi(state, b.giderEnflasyon)); // cemaat giderleri: bina bakımı + yatırım kademe masrafı
   const yardim = toplamGelir * yp.oran * d.yardim * (1 - clamp(o.yardimMaliyet, 0, 0.8));
   const aidat = toplamGelir * loncaAidatiOrani(pazarPayiHesapla(state));
@@ -375,6 +398,7 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
   const altC = cm.kitle === "alt" ? o.altKitle : 1;
   const acik = acikFaaliyetler(state);
   const kitleBoyu = Math.max(1, state.meslek_musteri);
+  const ay = aktifAyin(cm);
   const kalemler: { kod: string; deger: number }[] = [
     { kod: "sohret", deger: sohretMusteriSayisi(state.un) / kitleBoyu },
     { kod: "ahlak", deger: ahlakInananEtkisi(state.ahlak) * CEMAAT_INANAN_OLCEK },
@@ -383,6 +407,7 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
     { kod: "yardim", deger: yp.inanan * (yp.inanan > 0 ? yE : 1) * CEMAAT_INANAN_OLCEK },
     { kod: "faaliyet", deger: acik.reduce((t, f) => t + f.inanan, 0) * CEMAAT_INANAN_OLCEK },
     { kod: "ogreti", deger: o.inanan * CEMAAT_INANAN_OLCEK },
+    { kod: "ayin", deger: (state.veba?.aktif ? ay.vebaInanan : ay.inanan) * CEMAAT_INANAN_OLCEK },
     { kod: "tanitim", deger: tanitimBuyumesi(state) / kitleBoyu },
     { kod: "asevi", deger: (yp.oran >= 0.2 ? ASEVI_INANAN_YILLIK[Math.min(aseviKademesi(state), ASEVI_INANAN_YILLIK.length - 1)] : 0) / kitleBoyu },
     { kod: "davetci", deger: bon.musteri / kitleBoyu },
@@ -396,10 +421,11 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
     yp.ahlak * (yp.ahlak > 0 ? yE : 1) +
     acik.reduce((t, f) => t + f.ahlak, 0) +
     (yp.oran >= 0.2 ? ASEVI_AHLAK_YILLIK[Math.min(aseviKademesi(state), ASEVI_AHLAK_YILLIK.length - 1)] : 0) +
-    o.ahlak -
+    o.ahlak +
+    ay.ahlak -
     aranmaAhlakKaybi(state.suc_seviyesi);
-  const otorite = kitle.otorite + o.otorite - FANATIK_OTORITE_KATSAYI * cm.fanatiklik;
-  const fanatiklikDegisim = TON_FANATIKLIK[cm.ton] - FANATIK_DOGAL_SONUM;
+  const otorite = kitle.otorite + o.otorite + ay.otorite - FANATIK_OTORITE_KATSAYI * cm.fanatiklik;
+  const fanatiklikDegisim = TON_FANATIKLIK[cm.ton] - FANATIK_DOGAL_SONUM + ay.fanatiklik;
   return { kalemler, toplam, ahlak, otorite, fanatiklikDegisim };
 }
 
@@ -538,6 +564,10 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   state.ahlak = clamp(state.ahlak + etken.ahlak, 0, 100);
   state.yonetim_iliski = clamp((state.yonetim_iliski ?? 0) + etken.otorite, 0, 100);
   cm.fanatiklik = clamp(cm.fanatiklik + etken.fanatiklikDegisim, 0, 100);
+  if (cm.ayin && cm.ayin !== "yok") {
+    cm.ayin_son_yil = state.yil;
+    cm.ayin = "yok";
+  }
   if (cm.fanatiklik > ASIRI_ESIK && (cm.asiri_son_yil == null || state.yil - cm.asiri_son_yil >= ASIRI_COOLDOWN_YIL)) {
     const risk = ((cm.fanatiklik - ASIRI_ESIK) / 300) * o.asiriRisk;
     if (Math.random() < risk) {

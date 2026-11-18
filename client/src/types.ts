@@ -1000,6 +1000,9 @@ export interface CemaatPolitikaSecenegi {
   id: string;
   ad: DilliMetin;
   aciklama: DilliMetin;
+  /** Büyük Ayin için: seçilemiyorsa nedeni; minRutbe seçeneğin rütbe kilidi. */
+  kilit?: 'rutbe' | 'bekleme' | null;
+  minRutbe?: number;
 }
 export interface CemaatPolitikaGorunumu {
   secili: string;
@@ -1032,6 +1035,7 @@ export interface CemaatKararGirdisi {
   kitle?: string;
   yardim?: string;
   ton?: string;
+  ayin?: string;
 }
 export interface CemaatGorunumu {
   inanan: number;
@@ -1050,7 +1054,7 @@ export interface CemaatGorunumu {
   beklenenNet: number;
   bagisOrani: number;
   bagisYapan: number;
-  politikalar: { bagis: CemaatPolitikaGorunumu; kitle: CemaatPolitikaGorunumu; yardim: CemaatPolitikaGorunumu; ton: CemaatPolitikaGorunumu };
+  politikalar: { bagis: CemaatPolitikaGorunumu; kitle: CemaatPolitikaGorunumu; yardim: CemaatPolitikaGorunumu; ton: CemaatPolitikaGorunumu; ayin: CemaatPolitikaGorunumu };
   fanatiklik: number;
   fanatiklikDegisim: number;
   fanatikEtkisi: { bagisCarpani: number; yillikKacis: number; yillikOtorite: number; asiriRisk: number };

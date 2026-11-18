@@ -72,6 +72,9 @@ const M = {
   pKitle: { tr: 'Vaaz kitlesi', en: 'Sermon audience' },
   pYardim: { tr: 'Yardım harcaması', en: 'Aid spending' },
   pTon: { tr: 'Vaaz tonu', en: 'Sermon tone' },
+  pAyin: { tr: 'Bu yılki ayin', en: 'This year\'s service' },
+  ayinRutbe: { tr: 'Daha yüksek rütbe gerekir.', en: 'Needs a higher rank.' },
+  ayinBekleme: { tr: 'Yakın zamanda düzenledin; biraz beklemelisin.', en: 'You held one recently; wait a while.' },
   faaliyetler: { tr: 'Faaliyetler', en: 'Activities' },
   faaliyetNot: { tr: 'Rütbeyle yeni faaliyet ve yer açılır. Gelir inanan sayına bağlıdır.', en: 'Rank unlocks more activities and slots. Income depends on your flock.' },
   slot: { tr: 'Açık faaliyet', en: 'Open activities' },
@@ -128,6 +131,7 @@ const INANAN_KALEMLERI: Record<string, D> = {
   yardim: { tr: 'Yardım', en: 'Aid' },
   faaliyet: { tr: 'Faaliyetler', en: 'Activities' },
   ogreti: { tr: 'Öğretiler', en: 'Doctrines' },
+  ayin: { tr: 'Büyük Ayin', en: 'Great Service' },
   tanitim: { tr: 'Vaaz ve davet', en: 'Outreach' },
   davetci: { tr: 'Davetçiler', en: 'Outreach workers' },
   yatkinlik: { tr: 'Yatkınlık', en: 'Aptitude' },
@@ -229,8 +233,8 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
             <button
               key={s.id}
               className={p.secili === s.id ? '' : 'ikincil'}
-              disabled={yukleniyor}
-              title={d(s.aciklama)}
+              disabled={yukleniyor || !!s.kilit}
+              title={s.kilit ? t(s.kilit === 'rutbe' ? 'ayinRutbe' : 'ayinBekleme') : d(s.aciklama)}
               onClick={() => onKarar([], { [anahtar]: s.id })}
             >
               {d(s.ad)}
@@ -307,6 +311,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         {politika(t('pKitle'), 'kitle', c.politikalar.kitle)}
         {politika(t('pYardim'), 'yardim', c.politikalar.yardim)}
         {politika(t('pTon'), 'ton', c.politikalar.ton)}
+        {politika(t('pAyin'), 'ayin', c.politikalar.ayin)}
 
         </div>
         <div className="sayfa-blok blok-ahlak">

@@ -1,4 +1,4 @@
-import type { CemaatBagis, CemaatKitle, CemaatTon, CemaatYardim, DonemTuru } from "../types";
+import type { CemaatAyin, CemaatBagis, CemaatKitle, CemaatTon, CemaatYardim, DonemTuru } from "../types";
 import type { DilliMetin } from "./meslekProfilleri";
 import type { FaaliyetId } from "./ogretiler";
 
@@ -180,6 +180,45 @@ export const TON_ADLARI: Record<CemaatTon, { ad: DilliMetin; aciklama: DilliMeti
     aciklama: { tr: "Fanatiklik yılda 1,2 artar (doğal sönüm −0,3).", en: "Zealotry rises by 1.2 a year (natural fade −0.3)." },
   },
 };
+
+// ── Büyük Ayin (yıllık seçim; seçildiği yıl etkili, sonra bekleme) ──────────
+export interface AyinPolitikasi {
+  minRutbe: number;
+  /** Bir önceki ayinden en az bu kadar yıl sonra yeniden seçilebilir. */
+  bekleme: number;
+  /** Ayine gelme oranına eklenir. */
+  gelme: number;
+  /** Bağış birimi çarpanı. */
+  bagis: number;
+  /** Ek ayin masrafı (bağışın oranı; AYIN_MASRAF_ORANI'na eklenir). */
+  masraf: number;
+  /** Yıllık inanan değişimi (kesir); vebada kalabalık bulaş getirir. */
+  inanan: number;
+  vebaInanan: number;
+  ahlak: number;
+  otorite: number;
+  fanatiklik: number;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+}
+export const AYIN_POLITIKASI: Record<CemaatAyin, AyinPolitikasi> = {
+  yok: {
+    minRutbe: 1, bekleme: 0, gelme: 0, bagis: 1, masraf: 0, inanan: 0, vebaInanan: 0, ahlak: 0, otorite: 0, fanatiklik: 0,
+    ad: { tr: "Olağan yıl", en: "Ordinary year" },
+    aciklama: { tr: "Özel bir ayin düzenlenmez.", en: "No special service is held." },
+  },
+  olcul: {
+    minRutbe: 2, bekleme: 2, gelme: 0.04, bagis: 1.06, masraf: 0.04, inanan: 0.01, vebaInanan: -0.005, ahlak: 0.3, otorite: 0.5, fanatiklik: 0,
+    ad: { tr: "Bayram ayini", en: "Feast-day service" },
+    aciklama: { tr: "Kutsal gün için düzenli bir ayin. Cemaat ısınır, masraf artar; salgında kalabalık risklidir.", en: "A tidy service for the holy day. The flock warms to you and costs rise; crowds are risky in a plague." },
+  },
+  buyuk: {
+    minRutbe: 3, bekleme: 4, gelme: 0.09, bagis: 1.15, masraf: 0.10, inanan: 0.03, vebaInanan: -0.025, ahlak: 0, otorite: 1, fanatiklik: 2,
+    ad: { tr: "Büyük Ayin", en: "Great Service" },
+    aciklama: { tr: "Şehri toplayan büyük bir tören. Bağış ve inanan çeker, masraf ağırdır, coşku fanatikliği yükseltir; salgında bedeli ağırdır.", en: "A grand ceremony that gathers the city. It draws gifts and followers, costs dearly, and stokes zealotry; in a plague the price is steep." },
+  },
+};
+export const AYIN_SIRASI: CemaatAyin[] = ["yok", "olcul", "buyuk"];
 
 // ── Faaliyetler ─────────────────────────────────────────────────────────────
 export interface FaaliyetTanimi {

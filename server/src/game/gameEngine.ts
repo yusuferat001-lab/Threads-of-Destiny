@@ -196,7 +196,9 @@ import {
 } from "./isletme";
 import {
   acikFaaliyetler,
+  aktifAyin,
   aseviKademesi,
+  ayinKilitNedeni,
   binaKademesi,
   binaKapasitesi,
   cemaatDonemBilesik,
@@ -216,6 +218,8 @@ import {
   AHLAK_BANTLARI,
   ASEVI_KADEME_ETKISI,
   ASIRI_ESIK,
+  AYIN_POLITIKASI,
+  AYIN_SIRASI,
   BAGIS_POLITIKASI,
   BAGIS_SIRASI,
   FAALIYETLER,
@@ -233,7 +237,7 @@ import {
 } from "../data/cemaat";
 import { ogretiGetir, ogretiSecenekleri, ogretiToplami } from "../data/ogretiler";
 import { YAP_ACIKLAMA, YAP_DIGER_OTORITE, YAPMA_ACIKLAMA, YAPMA_DIGER_OTORITE } from "../data/cemaat";
-import type { CemaatBagis, CemaatKitle, CemaatTon, CemaatYardim } from "../types";
+import type { CemaatAyin, CemaatBagis, CemaatKitle, CemaatTon, CemaatYardim } from "../types";
 import {
   isletmeProfiliGetir,
   hatTanimiGetir,
@@ -4980,6 +4984,9 @@ export interface CemaatPolitikaSecenegi {
   id: string;
   ad: IkiDilMetin;
   aciklama: IkiDilMetin;
+  /** Büyük Ayin için: seçilemiyorsa nedeni; minRutbe seçeneğin rütbe kilidi. */
+  kilit?: "rutbe" | "bekleme" | null;
+  minRutbe?: number;
 }
 export interface CemaatPolitikaGorunumu {
   secili: string;
@@ -5028,7 +5035,7 @@ export interface CemaatGorunumu {
   beklenenNet: number;
   bagisOrani: number;
   bagisYapan: number;
-  politikalar: { bagis: CemaatPolitikaGorunumu; kitle: CemaatPolitikaGorunumu; yardim: CemaatPolitikaGorunumu; ton: CemaatPolitikaGorunumu };
+  politikalar: { bagis: CemaatPolitikaGorunumu; kitle: CemaatPolitikaGorunumu; yardim: CemaatPolitikaGorunumu; ton: CemaatPolitikaGorunumu; ayin: CemaatPolitikaGorunumu };
   fanatiklik: number;
   fanatiklikDegisim: number;
   /** Fanatikliğin şu anki etkileri (bilgi). */
@@ -5140,8 +5147,8 @@ function cemaatGorunumuHesapla(state: CharacterState, b: IsletmeBaglami): Cemaat
     inanan: Math.round(h.inanan * 10) / 10,
     kapasite: h.kapasite,
     binaKademesi: binaKademesi(state),
-    gelmeMin: Math.round((gmn + o.gelmeOrani) * 100),
-    gelmeMax: Math.round((gmx + o.gelmeOrani) * 100),
+    gelmeMin: Math.round((gmn + o.gelmeOrani + aktifAyin(cm).gelme) * 100),
+    gelmeMax: Math.round((gmx + o.gelmeOrani + aktifAyin(cm).gelme) * 100),
     gelmeKaynagi: gelmeKaynagiBul(state),
     gelenTahmin: Math.round(h.gelen * 10) / 10,
     tasmaVar: h.tasan > 0.05,
@@ -5161,6 +5168,10 @@ function cemaatGorunumuHesapla(state: CharacterState, b: IsletmeBaglami): Cemaat
       kitle: { secili: cm.kitle, secenekler: secenek(KITLE_POLITIKASI, KITLE_SIRASI) },
       yardim: { secili: cm.yardim, secenekler: secenek(YARDIM_POLITIKASI, YARDIM_SIRASI) },
       ton: { secili: cm.ton, secenekler: secenek(TON_ADLARI, TON_SIRASI) },
+      ayin: {
+        secili: cm.ayin ?? "yok",
+        secenekler: secenek(AYIN_POLITIKASI, AYIN_SIRASI).map((x) => ({ ...x, kilit: ayinKilitNedeni(state, x.id as CemaatAyin), minRutbe: AYIN_POLITIKASI[x.id as CemaatAyin].minRutbe })),
+      },
     },
     fanatiklik: Math.round(cm.fanatiklik * 10) / 10,
     fanatiklikDegisim: Math.round(etken.fanatiklikDegisim * 10) / 10,
@@ -5400,6 +5411,7 @@ export interface CemaatKararGirdisi {
   kitle?: string;
   yardim?: string;
   ton?: string;
+  ayin?: string;
 }
 
 export async function isletmeKararVer(
@@ -5468,6 +5480,12 @@ async function cemaatKararVer(
   if (k?.kitle !== undefined && !KITLE_SIRASI.includes(k.kitle as CemaatKitle)) throw new Error("Geçersiz vaaz kitlesi.");
   if (k?.yardim !== undefined && !YARDIM_SIRASI.includes(k.yardim as CemaatYardim)) throw new Error("Geçersiz yardım politikası.");
   if (k?.ton !== undefined && !TON_SIRASI.includes(k.ton as CemaatTon)) throw new Error("Geçersiz vaaz tonu.");
+  if (k?.ayin !== undefined) {
+    if (!AYIN_SIRASI.includes(k.ayin as CemaatAyin)) throw new Error("Geçersiz ayin seçimi.");
+    const kilit = ayinKilitNedeni(state, k.ayin as CemaatAyin);
+    if (kilit === "rutbe") throw new Error("Bu ayin için rütben yetersiz.");
+    if (kilit === "bekleme") throw new Error("Bu ayini yakın zamanda düzenledin; biraz beklemelisin.");
+  }
   for (const h of is.hatlar) {
     const g = secenekler.get(h.id);
     if (g?.acik !== undefined) h.acik = g.acik;
@@ -5476,6 +5494,7 @@ async function cemaatKararVer(
   if (k?.kitle !== undefined) cm.kitle = k.kitle as CemaatKitle;
   if (k?.yardim !== undefined) cm.yardim = k.yardim as CemaatYardim;
   if (k?.ton !== undefined) cm.ton = k.ton as CemaatTon;
+  if (k?.ayin !== undefined) cm.ayin = k.ayin as CemaatAyin;
   await oturumKaydet(state);
   return { state, durum: isletmeGorunumuHesapla(state) };
 }

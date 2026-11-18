@@ -1122,12 +1122,17 @@ export type CemaatBagis = IsletmeFiyat;
 export type CemaatKitle = "alt" | "genel" | "ust";
 export type CemaatYardim = "dusuk" | "orta" | "yuksek";
 export type CemaatTon = "ilimli" | "dengeli" | "atesli";
+/** Büyük Ayin: yalnız seçildiği yıl etkili, sonra "yok"a döner; bekleme süreli. */
+export type CemaatAyin = "yok" | "olcul" | "buyuk";
 
 export interface CemaatDurumu {
   bagis: CemaatBagis;
   kitle: CemaatKitle;
   yardim: CemaatYardim;
   ton: CemaatTon;
+  ayin: CemaatAyin;
+  /** Son Büyük Ayin yılı (bekleme süresi için). */
+  ayin_son_yil: number | null;
   /** 0-100: yavaş artar, bağış oranını yükseltir ama inanan kaçışı, otorite kaybı ve aşırılık riski getirir. */
   fanatiklik: number;
   /** Seçilen öğreti id'leri (rütbe seviyesi başına bir). */
