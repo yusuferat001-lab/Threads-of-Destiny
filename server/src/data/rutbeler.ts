@@ -33,7 +33,7 @@ export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.16,
 const PAY_ESIGI_CARPANI: Record<string, number> = { Tüccar: 1, Asker: 1, Zanaatkâr: 0.85, "Din Adamı": 1.2 };
 
 /** Asker rütbesi pazar payına değil askerî güce bağlıdır (anahtar HEDEF kademe); eşikler simulateBirlik ile ayarlanır. */
-export const RUTBE_GUC_ESIGI_ASKER: Record<number, number> = { 2: 24, 3: 90, 4: 195, 5: 450 };
+export const RUTBE_GUC_ESIGI_ASKER: Record<number, number> = { 2: 18, 3: 70, 4: 150, 5: 340 };
 export function rutbeGucEsigi(meslek: string, hedefSeviye: number): number | undefined {
   return meslek === "Asker" ? RUTBE_GUC_ESIGI_ASKER[hedefSeviye] : undefined;
 }
@@ -91,18 +91,18 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
       unvanlar: ["Er", "Onbaşı", "Silahşor", "Kumandan", "Serdar"],
       esikler: [
         { kariyer_puani: 55, un: 18 },
-        { kariyer_puani: 125, un: 32 },
-        { kariyer_puani: 215, un: 43 },
-        { kariyer_puani: 300, un: 70 },
+        { kariyer_puani: 115, un: 32 },
+        { kariyer_puani: 210, un: 43 },
+        { kariyer_puani: 340, un: 70 },
       ],
     },
     "Sanayi Devrimi": {
       unvanlar: ["Er", "Onbaşı", "Çavuş", "Yüzbaşı", "Binbaşı"],
       esikler: [
         { kariyer_puani: 55, un: 18 },
-        { kariyer_puani: 125, un: 32 },
-        { kariyer_puani: 215, un: 43 },
-        { kariyer_puani: 300, un: 70 },
+        { kariyer_puani: 115, un: 32 },
+        { kariyer_puani: 210, un: 43 },
+        { kariyer_puani: 340, un: 70 },
       ],
     },
   },

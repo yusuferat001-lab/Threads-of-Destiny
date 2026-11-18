@@ -1,7 +1,7 @@
 import type { CharacterState } from "../src/types";
 import { ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
 import { ogretiSecenekleri } from "../src/data/ogretiler";
-import { vergiBekliyorMu } from "../src/data/ekstraVergi";
+import { talepBekliyorMu } from "../src/data/ekstraVergi";
 import { senaryoUret, stateGetir, yonetimTalebiKararlastir } from "../src/game/gameEngine";
 import { doktrinBekleyenSeviye } from "../src/game/birlik";
 import { doktrinSec, savasKarariBekliyorMu, savasKarariDurumu, savasKarariVer } from "../src/game/birlikIslem";
@@ -42,14 +42,17 @@ export function savasKararlariniVer(state: CharacterState): void {
   }
 }
 
-/** Uzun bot döngüleri: bekleyen ekstra vergi talebini öder (yoksa hiçbir şey yapmaz), sonra senaryo çeker. */
+/** Uzun bot döngüleri: bekleyen otorite talebini yanıtlar (vergi → öde, diğerleri → reddet; yoksa hiçbir şey yapmaz), sonra senaryo çeker. */
 export async function vergisizSenaryo(state: CharacterState) {
   ogretileriTamamla(state);
-  if (vergiBekliyorMu(state)) await yonetimTalebiKararlastir(state.id, "kabul");
+  if (talepBekliyorMu(state)) await yonetimTalebiKararlastir(state.id, state.yonetim_talep?.tur === "vergi" ? "kabul" : "ret");
   return senaryoUret(state.id);
 }
 
 /** Motor üzerinden oynayan Asker testleri: id ile durumu bulup bekleyen öğreti/doktrin/savaş kararlarını tamamlar. */
 export async function bekleyenleriCoz(id: string): Promise<void> {
-  ogretileriTamamla(await stateGetir(id));
+  const state = await stateGetir(id);
+  ogretileriTamamla(state);
+  // Zorunlu otorite talebi (bağış/sadakat/açıklama/vergi) rastgele doğabilir: vergi → öde, diğerleri → reddet.
+  if (talepBekliyorMu(state)) await yonetimTalebiKararlastir(id, state.yonetim_talep?.tur === "vergi" ? "kabul" : "ret");
 }

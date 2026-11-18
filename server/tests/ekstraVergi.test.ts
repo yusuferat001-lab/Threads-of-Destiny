@@ -11,6 +11,7 @@ import {
   ekstraVergiSonrakiYil,
 } from "../src/data/ekstraVergi";
 import type { CharacterState, YonetimTalep } from "../src/types";
+import { doktrinleriTamamla } from "./_ogreti";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -121,24 +122,40 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
   });
 });
 
-describe("bekleyen vergi talebi oyunu durdurur", () => {
-  async function bekleyenVergi() {
-    const state = await oturum();
+describe("bekleyen otorite talebi (vergi / bağış / sadakat) oyunu durdurur", () => {
+  const TALEPLER: Record<string, YonetimTalep> = {
+    vergi: { id: "v3", kimden: "yonetici", kimAdi: "x", tur: "vergi", tutar: 300, kalem: "ekstra vergi", sonYil: EKSTRA_VERGI_SONSUZ_YIL },
+    bagis: { id: "b3", kimden: "yonetici", kimAdi: "x", tur: "bagis", tutar: 40, kalem: "şehir surlarının onarımı için katkı", sonYil: 99999 },
+    sadakat: { id: "s3", kimden: "yonetici", kimAdi: "x", tur: "sadakat", tutar: 0, kalem: "şehre sadakat yemini", sonYil: 99999 },
+  };
+  async function bekleyen(tur: string, meslek = "Tüccar") {
+    const state = await oturum(meslek);
     state.zaman_modeli = "ilerle";
-    state.yonetim_talep = { id: "v3", kimden: "yonetici", kimAdi: "x", tur: "vergi", tutar: 300, kalem: "ekstra vergi", sonYil: EKSTRA_VERGI_SONSUZ_YIL };
+    state.yonetim_talep = { ...TALEPLER[tur] };
     return state;
   }
 
-  it("senaryoUret, secimUygula ve yilGec reddedilir", async () => {
-    const state = await bekleyenVergi();
-    await expect(yilGec(state.id)).rejects.toThrow("ekstra vergi");
-    delete state.zaman_modeli; // klasik mod: senaryo/seçim yolları
-    await expect(senaryoUret(state.id)).rejects.toThrow("ekstra vergi");
-    await expect(secimUygula(state.id, 0)).rejects.toThrow("ekstra vergi");
+  for (const tur of ["vergi", "bagis", "sadakat"]) {
+    it(`${tur}: senaryoUret, secimUygula ve yilGec reddedilir`, async () => {
+      const state = await bekleyen(tur);
+      await expect(yilGec(state.id)).rejects.toThrow("otorite talebini");
+      delete state.zaman_modeli; // klasik mod: senaryo/seçim yolları
+      await expect(senaryoUret(state.id)).rejects.toThrow("otorite talebini");
+      await expect(secimUygula(state.id, 0)).rejects.toThrow("otorite talebini");
+    });
+  }
+
+  it("Asker'de de bağış bekleyince yıl geçilemez; reddedince akış serbest kalır (kilitlenme yok)", async () => {
+    const state = await bekleyen("bagis", "Asker");
+    doktrinleriTamamla(state); // Asker'in bekleyen rütbe doktrini talepten önce kontrol edilir
+    state.para = 0; // bağışı ödeyemez ama reddedebilir
+    await expect(yilGec(state.id)).rejects.toThrow("otorite talebini");
+    await expect(yonetimTalebiKararlastir(state.id, "ret")).resolves.toBeDefined();
+    await expect(yilGec(state.id)).resolves.toBeDefined();
   });
 
   it("öde dedikten sonra akış serbest kalır", async () => {
-    const state = await bekleyenVergi();
+    const state = await bekleyen("vergi");
     await yonetimTalebiKararlastir(state.id, "kabul");
     await expect(yilGec(state.id)).resolves.toBeDefined();
   });

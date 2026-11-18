@@ -4,6 +4,7 @@ import { useEscKapat } from '../hooks';
 import { KapatX } from './KararKabuk';
 import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
+import { talepBekliyor } from '../ogreti';
 
 /** Ana ekrandaki dört sabit tuşun kimliği — konum ve renk her meslekte aynıdır, yalnız ad/ikon değişir. */
 export type AnaTusId = 'isletme' | 'yatirim' | 'calisan' | 'cevre';
@@ -233,7 +234,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
           </button>
         ))}
       </div>
-      <button type="button" className="ana-ilerle" disabled={yukleniyor} onClick={onIlerle}>
+      <button type="button" className="ana-ilerle" disabled={yukleniyor || talepBekliyor(karakter)} onClick={onIlerle}>
         <b>{tr ? 'İLERLE' : 'ADVANCE'}</b>
         <small>▸ {tr ? '1 yıl' : '1 year'}</small>
       </button>

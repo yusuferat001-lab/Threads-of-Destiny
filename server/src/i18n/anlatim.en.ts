@@ -613,8 +613,6 @@ export const ANLATIM_EN: Record<string, string> = {
   "{0}'in talebini geri çevirdin; aranız soğudu.": "You turned down {0}'s demand; things cooled between you.",
   "{0} yalanını yakaladı; hem parayı verdin hem itibarını.": "{0} caught your lie; you lost both the money and your reputation.",
   "\"Elim darda\" dedin; {0} homurdanarak kabul etti.": "You said \"I'm short on money\"; {0} grudgingly accepted.",
-  "{0}'in talebini görmezden geldin; aranız açıldı.": "You ignored {0}'s demand; a rift opened between you.",
-  "{0} senden bir şey bekliyor — Kariyer ekranından yanıtlayabilirsin.": "{0} expects something from you — you can respond on the Career screen.",
   // Talep kalemleri (yönetici / patron)
   "saray onarımı için bağış": "a donation for palace repairs",
   "ordu masrafları için katkı": "a contribution to army expenses",
@@ -956,6 +954,8 @@ export const ANLATIM_EN: Record<string, string> = {
   "şehir meclisinde destek sözü": "a pledge of support in the city council",
   "rakip tüccarlarla iş yapmama taahhüdü": "a promise not to do business with rival merchants",
   "şehre sadakat yemini": "an oath of loyalty to the city",
+  "gazi ve şehit ailelerine yardım sandığına bağış": "a donation to the aid fund for veterans and the families of the fallen",
+  "yöneticinin emrinde sefere çıkma sözü": "a pledge to march on campaign under the governor's command",
   // Gösterge detay penceresi (gostergeDetay.ts)
   "{0}: {1}/yıl":
     "{0}: {1}/yr",

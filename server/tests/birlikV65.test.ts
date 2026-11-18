@@ -5,7 +5,7 @@ import { gucHesapla } from "../src/game/birlik";
 import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
 import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
 import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
-import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK } from "../src/data/birlik";
+import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
 
@@ -26,7 +26,7 @@ const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
   it("kışla bakımı düşük kademede yumuşak; tam dolu kışlada er başı bakım kademeyle artar", () => {
-    expect(KISLA_BAKIM).toEqual([2, 6, 18, 50, 120]);
+    expect(KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
     const erBasi = KISLA_BAKIM.map((x, i) => x / KISLA_ER_LIMITI[i]);
     for (let i = 1; i < erBasi.length; i++) expect(erBasi[i]).toBeGreaterThan(erBasi[i - 1]);
     for (let i = 1; i < KISLA_BAKIM.length; i++) expect(KISLA_BAKIM[i]).toBeGreaterThan(KISLA_BAKIM[i - 1]);
@@ -99,19 +99,15 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(SAVAS_ZAR_YUZDE).toBe(0.04);
   });
 
-  it("zafer serisi: her tür ayrı sayılır; 3 arka arkaya zaferden sonra düşman +%10–15, yenilgi sıfırlar", () => {
+  it("zafer serisi: her tür ayrı sayılır; 2 arka arkaya zaferden sonra düşman ×1,2, yenilgi sıfırlar", () => {
     const s = asker();
     const b = birlikAl(s);
-    for (let i = 0; i < 2; i++) zaferSerisiIsle(b, "haydut", true);
-    expect(hazirlikCek(b, "haydut")).toBe(1);
+    zaferSerisiIsle(b, "haydut", true);
+    expect(hazirlikCek(b, "haydut")).toBe(1); // 1 zafer: bonus yok
     zaferSerisiIsle(b, "haydut", true);
     expect(b.zafer_serisi!.haydut).toBe(ZAFER_SERISI_ESIGI);
     expect(b.zafer_serisi!.sinir).toBe(0); // türler ayrı
-    for (let i = 0; i < 40; i++) {
-      const h = hazirlikCek(b, "haydut");
-      expect(h).toBeGreaterThanOrEqual(1.1);
-      expect(h).toBeLessThanOrEqual(1.15);
-    }
+    expect(hazirlikCek(b, "haydut")).toBeCloseTo(1.2, 9); // sabit ×1,2 (rastgele aralık yok)
     expect(hazirlikCek(b, "sinir")).toBe(1);
     zaferSerisiIsle(b, "haydut", true); // seri sürer
     expect(hazirlikCek(b, "haydut")).toBeGreaterThan(1);
@@ -143,11 +139,13 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(catismaKarariDurumu(s, bg(s))!.hazirlikli).toBe(false);
   });
 
-  it("görev gelirinde er sayısına bağlı azalan verim: ≤200 er ×1, 350 → ~0,93, 500 → ~0,86; gelir ere göre hep artar", () => {
+  it("görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7): ilk 100 er ×1, sonra doğrusal; 300 → 0,875, 500 → 0,75; gelir ere göre hep artar", () => {
+    expect(gorevErOrani(40)).toBe(1);
     expect(gorevErOrani(100)).toBe(1);
-    expect(gorevErOrani(200)).toBe(1);
-    expect(gorevErOrani(350)).toBeCloseTo((200 + 150 * 0.85) / 350, 8);
-    expect(gorevErOrani(500)).toBeCloseTo((200 + 127.5 + 150 * 0.7) / 500, 8);
+    expect(gorevErOrani(200)).toBeCloseTo(0.9375, 8);
+    expect(gorevErOrani(300)).toBeCloseTo(0.875, 8);
+    expect(gorevErOrani(500)).toBeCloseTo(0.75, 8);
+    expect(gorevErOrani(800)).toBeCloseTo(0.75, 8); // kapasite üstü sabit
     let onceki = 0;
     for (let e = 10; e <= 500; e += 10) {
       expect(e * gorevErOrani(e)).toBeGreaterThan(onceki);
@@ -175,24 +173,20 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(kayip("yagma_sert")).toBeGreaterThan(kayip("yagma_orta"));
   });
 
-  it("zafer serisi 5'e ulaşınca düşman bonusu +%20–25'e çıkar (3–4'te +%10–15); etki seri sürdükçe kalıcıdır; yenilgi sıfırlar", () => {
+  it("zafer serisi 4'e ulaşınca düşman ×1,5 (2–3'te ×1,2); bonuslar üst üste binmez, 5-6-7 zaferde de ×1,5 kalır; yenilgi sıfırlar", () => {
     const s = asker();
     const b = birlikAl(s);
     b.zafer_serisi = { haydut: 0, sinir: 0, savas: 0 };
     for (let i = 0; i < ZAFER_SERISI_ESIGI_2 - 1; i++) zaferSerisiIsle(b, "sinir", true);
-    for (let i = 0; i < 40; i++) {
-      const h = hazirlikCek(b, "sinir"); // seri 4
-      expect(h).toBeGreaterThanOrEqual(1.1);
-      expect(h).toBeLessThanOrEqual(1.15);
+    expect(b.zafer_serisi!.sinir).toBe(3);
+    expect(hazirlikCek(b, "sinir")).toBeCloseTo(1.2, 9); // seri 3: hâlâ ×1,2
+    zaferSerisiIsle(b, "sinir", true); // seri 4
+    expect(hazirlikCek(b, "sinir")).toBeCloseTo(1.5, 9);
+    for (const seri of [5, 6, 7]) {
+      zaferSerisiIsle(b, "sinir", true); // seri 5, 6, 7: bonus ×1,5'te kalır, 1,2×1,5'e binmez
+      expect(b.zafer_serisi!.sinir).toBe(seri);
+      expect(hazirlikCek(b, "sinir")).toBeCloseTo(1.5, 9);
     }
-    zaferSerisiIsle(b, "sinir", true); // seri 5
-    for (let i = 0; i < 40; i++) {
-      const h = hazirlikCek(b, "sinir");
-      expect(h).toBeGreaterThanOrEqual(1.2);
-      expect(h).toBeLessThanOrEqual(1.25);
-    }
-    for (let i = 0; i < 6; i++) zaferSerisiIsle(b, "sinir", true); // kalıcı: seri sürerken bonus düşmez
-    expect(hazirlikCek(b, "sinir")).toBeGreaterThanOrEqual(1.2);
     expect(hazirlikCek(b, "haydut")).toBe(1); // türler ayrı
     zaferSerisiIsle(b, "sinir", false);
     expect(hazirlikCek(b, "sinir")).toBe(1);
@@ -243,20 +237,18 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     b.kalite = { dusuk: 200, orta: 0, yuksek: 0 };
     b.gorevler = ["tahsilat"];
     b.birlik_turler = [];
-    const guc0 = gucHesapla(s).guc;
     const g0 = birlikHesapla(s, bg(s)).gorevGeliri;
     b.birlik_turler = ["suvari"];
-    const guc1 = gucHesapla(s).guc;
     const g1 = birlikHesapla(s, bg(s)).gorevGeliri;
     expect(g0).toBeGreaterThan(0);
     expect(SUVARI_GOREV_GELIRI).toBe(0.1);
-    expect(g1 / g0).toBeGreaterThan(1.05 * (guc1 / guc0) * 0.9); // güç değişimi + %10 bonus (güç/er bantları aynı bantta)
+    expect(g1 / g0).toBeCloseTo(1.1, 3); // görev geliri er bazlı: yalnız %10 süvari bonusu
     b.gorevler = ["eskort"];
     b.birlik_turler = [];
-    const e0 = birlikHesapla(s, bg(s)).gorevGeliri / gucHesapla(s).guc;
+    const e0 = birlikHesapla(s, bg(s)).gorevGeliri;
     b.birlik_turler = ["suvari"];
-    const e1 = birlikHesapla(s, bg(s)).gorevGeliri / gucHesapla(s).guc;
-    expect(e1 / e0).toBeCloseTo(1, 1); // eskortta bonus yok
+    const e1 = birlikHesapla(s, bg(s)).gorevGeliri;
+    expect(e1 / e0).toBeCloseTo(1, 3); // eskortta bonus yok
   });
 });
 
@@ -298,9 +290,10 @@ describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", ()
     }
   });
 
-  it("savaşta er başı ödeme zammı yok; kıtlık morali yılda −1", () => {
-    expect(SAVAS_ER_BASI_CARPANI).toBe(1);
-    expect(MORAL_KITLIK_YILLIK).toBe(-1);
+  it("savaşta er başı ödeme ×2 (v67 Madde 3); kıtlık morali yılda −1,5; bolluk morali 0", () => {
+    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
+    expect(MORAL_KITLIK_YILLIK).toBe(-1.5);
+    expect(MORAL_BOLLUK_YILLIK).toBe(0);
   });
 
   it("ana ekran dünya satırı Asker için maaş yerine sold/erzak/görev geliri yazar", () => {
@@ -310,7 +303,7 @@ describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", ()
     expect(metin).toMatch(/Soldée −%10/); // Fransa (Orta Çağ) ödeme adı; "sold" kelimesi yazılmaz
     expect(metin).not.toMatch(/(^|[\s:·])sold(\s|$)/i);
     expect(metin).toMatch(/erzak \+%10/);
-    expect(metin).toMatch(/moral −1\/yıl/);
+    expect(metin).toMatch(/moral −1,5\/yıl/);
     expect(metin).toMatch(/moral/);
   });
 });

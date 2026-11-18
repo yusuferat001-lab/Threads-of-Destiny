@@ -1144,7 +1144,6 @@ export type BirlikKalite = "dusuk" | "orta" | "yuksek";
 export type BirlikTur = "okcu" | "suvari" | "mizrakli" | "zirhli" | "kusatma";
 export type BirlikGanimetPayi = "az" | "dengeli" | "comert";
 export type BirlikTalim = "hafif" | "orta" | "agir";
-export type BirlikTon = "merhametli" | "dengeli" | "sert";
 export type BirlikArazi = "ova" | "dag" | "orman";
 export type BirlikRol = "onc" | "ana" | "yedek";
 /** Savaş planındaki ikmal kararı: yalnız üç yağma türü. */
@@ -1179,6 +1178,10 @@ export interface BirlikCatismaBekleyen {
   /** Baskın: oyuncu savunmaya mecbur; değilse karşılaşma (saldırı ya da savunma seçilir). */
   baskin: boolean;
   dusmanTur: "okcu" | "suvari" | "mizrakli" | "zirhli" | "karma";
+  /** Çatışma senaryosu (v67): tür × yön başına 4 senaryodan biri; eski kayıtta yok (arazisiz çözülür). */
+  senaryoId?: string;
+  /** Senaryonun arazisi (barış çatışmasında da arazi gücü etkiler). */
+  arazi?: BirlikArazi;
   /** Düşmanın o çatışma için çekilmiş mutlak gücü (oyuncuya aralık olarak gösterilir). */
   dusmanGuc: number;
   /** Zafer serisi: bu karşılaşmada düşmana uygulanan güç çarpanı (>1; yoksa uygulanmadı). */
@@ -1191,6 +1194,10 @@ export interface CatismaKarariDurumu {
   baskin: boolean;
   dusmanTur: string;
   ad: { tr: string; en: string };
+  /** Senaryo adı/metni ve arazi (eski kayıtta null). */
+  senaryo: { ad: { tr: string; en: string }; metin: { tr: string; en: string }; arazi: BirlikArazi; araziAd: { tr: string; en: string }; araziSimge: string } | null;
+  /** Bu arazide açık özel birliklerinin saldırıda/savunmada güçlü (≥1,15) ve zayıf (≤0,90) olanları (ad listeleri). */
+  birlikArazi: { saldiriGuclu: { tr: string; en: string }[]; saldiriZayif: { tr: string; en: string }[]; savunmaGuclu: { tr: string; en: string }[]; savunmaZayif: { tr: string; en: string }[] } | null;
   oyuncu: { saldiri: number; savunma: number };
   dusman: { saldiri: [number, number]; savunma: [number, number] };
   /** Zafer serisi: düşman seni tanıyor, bu sefer hazırlıklı (sayı gösterilmez). */
@@ -1347,7 +1354,6 @@ export interface BirlikDurumu {
   ganimet_payi: BirlikGanimetPayi;
   /** Ganimet payı en erken bu oyun yılında yeniden değiştirilebilir (5 yılda bir); yoksa/null = serbest. */
   ganimet_kilit_bitis?: number | null;
-  ton: BirlikTon;
   moral: number;
   sertlik: number;
   /** Açık görev id'leri (slot sayısı rütbeyle). */
@@ -1375,6 +1381,8 @@ export interface BirlikDurumu {
   baris_bekleme?: number;
   /** Her tür için (haydut, sınır, büyük savaş) arka arkaya zafer sayısı; yenilgide sıfırlanır; ≥3 iken düşman +%10–15 güçlenir. */
   zafer_serisi?: { haydut: number; sinir: number; savas: number };
+  /** Ömür boyu toplam zafer sayıları (seri sıfırlansa da kalır; 'Fatih' hayat amacı için, v67 Madde 7). */
+  zafer_toplam?: { haydut: number; sinir: number; savas: number };
   /** Çıkmış ama oyuncunun henüz karar vermediği barış çatışması (karar verilene dek zaman ilerlemez). */
   catisma_bekleyen?: BirlikCatismaBekleyen | null;
   /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */

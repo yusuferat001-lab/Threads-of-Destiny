@@ -22,9 +22,9 @@ import type { CharacterState } from "../src/types";
 import { KREDI_HAVUZU, annuiteTaksit } from "../src/data/krediHavuzu";
 import { vergisizSenaryo } from "./_ogreti";
 
-function taze(): CharacterState {
+function taze(meslek = "Asker"): CharacterState {
   const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
-  mesleğiSec(s, "Asker");
+  mesleğiSec(s, meslek);
   s.para = 500;
   s.maas_yillik = 20; // kredi tavanı rastgele dönem etkisine bağlı kalmasın
   return s;
@@ -32,14 +32,14 @@ function taze(): CharacterState {
 
 describe("Derin rakip ilişkileri", () => {
   it("meslek seçilince iki isimli rakip üretilir; rakip_adi büyük rakiple aynı kişi", () => {
-    const s = taze();
+    const s = taze("Tüccar"); // Asker'de pazar rakibi yok (v67 Madde 7)
     expect(s.rakipler).toHaveLength(2);
     expect(s.rakipler[0].ad).toBe(s.rakip_adi);
     expect(s.rakipler.every((r) => !r.yenildi)).toBe(true);
   });
 
   it("rakipMusteriKir: rakibin müşterisini azaltır, pazar payı (para + kariyer) verir, husumet artırır", () => {
-    const s = taze();
+    const s = taze("Tüccar"); // Asker'de pazar rakibi yok (v67 Madde 7)
     const r = s.rakipler[0];
     const onceMusteri = r.musteri;
     const payOnce = s.meslek_musteri;
@@ -56,7 +56,7 @@ describe("Derin rakip ilişkileri", () => {
   });
 
   it("rakibin payı %4'ün altına inince yenildi olur ve bir daha kırılamaz", () => {
-    const s = taze();
+    const s = taze("Tüccar"); // Asker'de pazar rakibi yok (v67 Madde 7)
     const r = s.rakipler[0];
     r.musteri = s.pazar_musteri * 0.05;
     const sonuc = rakipMusteriKir(s, r.ad, 0.5, 1);
@@ -66,14 +66,14 @@ describe("Derin rakip ilişkileri", () => {
   });
 
   it("rakiplerGuncelle: husumet soğur (müşteri hareketi piyasaYillikUygula'da)", () => {
-    const s = taze();
+    const s = taze("Tüccar"); // Asker'de pazar rakibi yok (v67 Madde 7)
     s.rakipler[0].husumet = 60;
     rakiplerGuncelle(s, 4);
     expect(s.rakipler[0].husumet).toBeLessThan(60);
   });
 
   it("rakipMisillemesiDene: hapiste iken misilleme yapılmaz", () => {
-    const s = taze();
+    const s = taze("Tüccar"); // Asker'de pazar rakibi yok (v67 Madde 7)
     s.rakipler[0].husumet = 100;
     etiketEkle(s, ["hapiste"]);
     for (let i = 0; i < 20; i++) expect(rakipMisillemesiDene(s, 2)).toBeNull();

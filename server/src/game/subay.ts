@@ -22,11 +22,12 @@ export interface SubayTablosu {
   savunma: [number, number, number];
 }
 export const SUBAY_DEGERLERI = {
-  taarruz: { saldiri: [0.09, 0.15, 0.2], ganimet: [0.04, 0.07, 0.1], kayipArtis: [0.03, 0.04, 0.06] },
-  savunma: { savunma: [0.09, 0.15, 0.2], olu: [0.04, 0.07, 0.1], ganimetEksi: [0.02, 0.04, 0.05] },
-  kesif: { arazi: [0.22, 0.34, 0.46], tahmin: [0.055, 0.04, 0.025], pusu: [0.24, 0.48, 0.72] },
-  devsirme: { er: [1.5, 3, 3.8] },
-  tabip: { oluFirar: [0.13, 0.22, 0.3], yarali: [0.08, 0.14, 0.21] },
+  // v67: faydalı bonuslar ~%10 düşürüldü (bedeller ve keşif tahmin aralığı aynı).
+  taarruz: { saldiri: [0.081, 0.135, 0.18], ganimet: [0.036, 0.063, 0.09], kayipArtis: [0.03, 0.04, 0.06] },
+  savunma: { savunma: [0.081, 0.135, 0.18], olu: [0.036, 0.063, 0.09], ganimetEksi: [0.02, 0.04, 0.05] },
+  kesif: { arazi: [0.2, 0.31, 0.41], tahmin: [0.055, 0.04, 0.025], pusu: [0.22, 0.43, 0.65] },
+  devsirme: { er: [1.35, 2.7, 3.4] },
+  tabip: { oluFirar: [0.117, 0.198, 0.27], yarali: [0.072, 0.126, 0.19] },
 } as const;
 
 /** `devsirme`: tüm devşirme subaylarının toplamı en çok bu kadar er/yıl (tek subay da en çok 4: Y100 + sadık). */

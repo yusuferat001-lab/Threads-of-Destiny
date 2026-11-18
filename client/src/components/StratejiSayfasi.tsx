@@ -66,7 +66,6 @@ interface StratejiSayfasiProps {
   pazarDurum: PazarDurumu | null;
   onEtkilesim: (etkilesimId: string, kademe?: number, varyant?: string) => void;
   onIstek: (istekId: string, rusvet?: boolean) => void;
-  onTalep: (karar: 'kabul' | 'ret' | 'yalan' | 'rusvet') => void;
   onEkipCikar: (ekipId: string) => void;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; ajanId?: string }) => void;
   /** Bütçen (gelir & gider dökümü) — Evin ekranından buraya taşındı. */
@@ -255,18 +254,11 @@ function iliskiKademe(v: number, en: boolean): string {
   return en ? 'cold' : 'soğuk';
 }
 
-/**
- * Meslek pazarı kartı: oyuncunun gücü, rakiplerin gücü ve pazar payları tek bir
- * yığılmış çubukta; altında maaşa etkisi, yıllık kariyer puanı katkısı ve
- * (varsa) sıradaki rütbenin pazar şartı.
- */
-function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; meslek: string; birlik?: IsletmeGorunumu['birlik'] }) {
+/** Asker: pazar payı yok (v67 Madde 7) — askerî güç ve yıllık kariyer puanı kartı. */
+function AskerGucKarti({ birlik }: { birlik: NonNullable<IsletmeGorunumu['birlik']> }) {
   const { dil } = useDil();
   const en = dil === 'en';
-  const kitle = kitleSozlugu(meslek, en ? 'en' : 'tr');
-  // Asker: pazar payı yok — yerine askerî güç ve rakip komutanların gücü gösterilir.
-  if (birlik) {
-    return (
+  return (
       <div className="aile-koken-karti pazar-karti">
         <h3>⚔️ {en ? 'Military Strength' : 'Askerî Güç'}</h3>
         <ul className="pazar-satirlari">
@@ -275,7 +267,7 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
           </li>
         </ul>
         <p className="pazar-etki">
-          🎖️ {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
+          🎖️ {en ? 'Career XP' : 'Kariyer puanı'} +{birlik.rutbe.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
         </p>
         <p className="pazar-ipucu">
           {en
@@ -283,8 +275,18 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
             : 'Gücün rütbeyi, kariyer puanını ve görev ile yağmadan kazandığını belirler.'}
         </p>
       </div>
-    );
-  }
+  );
+}
+
+/**
+ * Meslek pazarı kartı: oyuncunun gücü, rakiplerin gücü ve pazar payları tek bir
+ * yığılmış çubukta; altında maaşa etkisi, yıllık kariyer puanı katkısı ve
+ * (varsa) sıradaki rütbenin pazar şartı.
+ */
+function PazarKarti({ pazar, meslek }: { pazar: PazarDurumu; meslek: string }) {
+  const { dil } = useDil();
+  const en = dil === 'en';
+  const kitle = kitleSozlugu(meslek, en ? 'en' : 'tr');
   const yuzde = (v: number) => formatYuzde(dil, v);
   const isaretli = (v: number) => (v > 0 ? '+' : v < 0 ? '−' : '') + formatYuzde(dil, Math.abs(v));
   return (
@@ -336,11 +338,7 @@ function PazarKarti({ pazar, meslek, birlik = null }: { pazar: PazarDurumu; mesl
       )}
       <PiyasaHaberleri pazar={pazar} sayilarGoster={pazar.pazarMusteri > 0 && pazar.musteri > 0} adet={3} meslek={meslek} />
       <p className="pazar-ipucu">
-        {meslek === 'Asker'
-          ? en
-            ? 'Your standing grows with victories, a strong army and good officers; every blow to a rival commander lifts you above them.'
-            : 'Payın zaferlerle, güçlü bir orduyla ve iyi subaylarla büyür; rakip komutana indirdiğin her darbe seni onun önüne geçirir.'
-          : meslek === 'Din Adamı'
+        {meslek === 'Din Adamı'
             ? en
               ? 'Your share grows with your good works, generous donations and good clergy; every blow to a rival hands you their believers.'
               : 'Payın hayırlarla, cömert bağışlarla ve iyi hizmetlilerle büyür; rakibe indirdiğin her darbe onun inananını sana geçirir.'
@@ -573,7 +571,6 @@ export function StratejiSayfasi({
   pazarDurum,
   onEtkilesim,
   onIstek,
-  onTalep,
   onEkipCikar,
   onKotuIs,
   dedikodular,
@@ -633,17 +630,7 @@ export function StratejiSayfasi({
   // v10: Tüccar sermayesi ve Din Adamı nüfuzu kalktı; yerlerini pazar payı / cemaat paneli aldı.
   void ticaretSermaye;
   void nufuz;
-  const dinMi = meslek === 'Din Adamı';
-
-  const talep = yonetimDurum?.talep ?? null;
   const bikkin = (yonetimDurum?.bikkinlik ?? 0) >= 3;
-  // Talep bağışsa ve nakit yetmiyorsa "Öde" kapalı (sunucu zaten reddediyor; buton
-  // tıklanabilir görünüp hata vermesin).
-  const talepParasiYok = !!talep && talep.tur === 'bagis' && talep.tutar > (yonetimDurum?.para ?? Infinity);
-  // Kral talebi penceresi ekranı tamamen kilitliyordu; oyuncu "sonra" deyip ekranı
-  // kullanabilsin (talebin zaten bir son yılı var, sonra karar verebilir).
-  const [hukumdarTalebiErtelendi, setHukumdarTalebiErtelendi] = useState<string | null>(null);
-  const hukumdarModalAcik = !!talep && talep.kimden === 'yonetici' && !yonetimDurum?.tekOtorite && hukumdarTalebiErtelendi !== talep.id;
 
   const ilerleme = rutbeIlerlemeHesapla(
     meslek,
@@ -716,18 +703,18 @@ export function StratejiSayfasi({
                   </span>
                 </div>
               )}
-              {pazarDurum?.gucSarti && pazarDurum.gucSarti.seviye === rutbeSeviye + 1 && (
+              {isletme?.birlik?.rutbe.gucSarti && isletme.birlik.rutbe.gucSarti.seviye === rutbeSeviye + 1 && (
                 <div className="kariyer-ilerleme-cubuk-satiri">
                   <span className="kariyer-ilerleme-etiket">{en ? 'Military strength' : 'Askerî Güç'}</span>
                   <div className="kariyer-ilerleme-cubuk">
                     <div
                       className="kariyer-ilerleme-cubuk-dolu"
-                      style={{ width: `${Math.min(100, Math.round((pazarDurum.gucSarti.mevcut / pazarDurum.gucSarti.gerekli) * 100))}%` }}
+                      style={{ width: `${Math.min(100, Math.round((isletme.birlik.rutbe.gucSarti.mevcut / isletme.birlik.rutbe.gucSarti.gerekli) * 100))}%` }}
                     />
                   </div>
                   <span className="kariyer-ilerleme-deger">
-                    {pazarDurum.gucSarti.mevcut}/{pazarDurum.gucSarti.gerekli}
-                    {pazarDurum.gucSarti.karsilaniyor && ' ✓'}
+                    {isletme.birlik.rutbe.gucSarti.mevcut}/{isletme.birlik.rutbe.gucSarti.gerekli}
+                    {isletme.birlik.rutbe.gucSarti.karsilaniyor && ' ✓'}
                   </span>
                 </div>
               )}
@@ -796,43 +783,7 @@ export function StratejiSayfasi({
 
       {!(sayfa === 'isletme' && isletme?.aktif) && kademeBlok}
 
-      {/* Hükümdar bağış/sadakat talebi — kralın huzurunda "param yok" yalanına yer
-          yok; sadece öde ya da kaç (kaçmak aranmanı ciddi artırır, bkz. onTalep('ret')
-          için gameEngine.ts'teki hat==='yonetici' özel dalı). Kral için sade,
-          "bekleyen banner" yerine ayrı ve dikkat çeken bir açılır pencere. */}
-      {talep && hukumdarModalAcik && (
-        <div className="kariyer-sonuc-katman">
-          <div className="kariyer-sonuc-modal kariyer-hukumdar-talep-modal">
-            <strong>👑 {talep.kimAdi}</strong>
-            <p>
-              {talep.tur === 'bagis'
-                ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
-                : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
-            </p>
-            <p className="kariyer-hukumdar-talep-uyari">
-              {en
-                ? "Fleeing a king's demand is a crime — your wanted level will rise sharply."
-                : 'Hükümdarın talebinden kaçmak suçtur — aranma seviyen ciddi şekilde artar.'}
-            </p>
-            {talepParasiYok && (
-              <p className="kariyer-hukumdar-talep-uyari">
-                {en ? "You don't have enough money to pay right now." : 'Şu an ödeyecek kadar paran yok.'}
-              </p>
-            )}
-            <div className="kariyer-talep-butonlar">
-              <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
-                {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
-              </button>
-              <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
-                {en ? 'Flee' : 'Kaç'}
-              </button>
-              <button className="ikincil" disabled={yukleniyor} onClick={() => setHukumdarTalebiErtelendi(talep.id)}>
-                {en ? 'Decide later' : 'Sonra karar ver'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Otorite talepleri (bağış / sadakat / açıklama / ekstra vergi) artık ana ekranda kapatılamaz pencere olarak çıkar (OtoriteTalebi.tsx). */}
 
       {/* PC'de iki sütunlu "saray" düzeni: solda geniş yönetim/ilişki bölümü,
           sağda mesleğe özel güç özeti — strateji oyunlarındaki danışman
@@ -842,71 +793,6 @@ export function StratejiSayfasi({
           {/* ===== YÖNETİMLE BAĞLAR ===== */}
           {gor('cevre') && yonetimDurum && (
             <section className="kariyer-bolum kariyer-yonetim">
-              {talep && talep.kimden === 'yonetici' && !yonetimDurum.tekOtorite && !hukumdarModalAcik && (
-                <div className="kariyer-talep-afisi">
-                  <strong>👑 {talep.kimAdi}</strong>
-                  <p>
-                    {talep.tur === 'bagis'
-                      ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
-                      : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
-                  </p>
-                  <div className="kariyer-talep-butonlar">
-                    <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
-                      {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
-                    </button>
-                    <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
-                      {en ? 'Flee' : 'Kaç'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {talep && (talep.kimden === 'patron' || yonetimDurum.tekOtorite) && (
-                <div className="kariyer-talep-afisi">
-                  <strong>{yonetimDurum.tekOtorite ? '🏛️' : '📜'} {talep.kimAdi}</strong>
-                  <p>
-                    {talep.tur === 'vergi'
-                      ? `${en ? 'Extra tax' : 'Ekstra vergi'} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
-                      : talep.tur === 'bagis'
-                      ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
-                      : talep.tur === 'aciklama'
-                        ? `${en ? 'Asks you to ' : 'Senden istiyor: '}${talep.kalem}.`
-                        : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
-                  </p>
-                  {dinMi && talep.tur === 'aciklama' && (
-                    <p className="kariyer-hukumdar-talep-uyari">
-                      {en
-                        ? 'Do it: authority +13–15, morality −7–8, your flock −3%. Refuse: authority −18–20, morality +2, fame −3 and your flock +2%.'
-                        : 'Yaparsan: otorite +13–15, ahlak −7–8, inanan −%3. Yapmazsan: otorite −18–20, ahlak +2, şöhret −3, inanan +%2.'}
-                    </p>
-                  )}
-                  {talep.tur === 'vergi' ? (
-                    <div className="kariyer-talep-butonlar">
-                      <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
-                        {en ? 'Pay' : 'Öde'}
-                      </button>
-                      <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('rusvet')}>
-                        {en ? 'Offer a bribe' : 'Rüşvet ver'}
-                      </button>
-                    </div>
-                  ) : (
-                  <div className="kariyer-talep-butonlar">
-                    <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
-                      {dinMi ? (en ? 'Do it' : 'Yap') : talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
-                    </button>
-                    <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
-                      {dinMi ? (en ? "Don't" : 'Yapma') : en ? 'Refuse' : 'Reddet'}
-                    </button>
-                    {!dinMi && (
-                      <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('yalan')}>
-                        {en ? '“I’m broke”' : '“Param yok” de'}
-                      </button>
-                    )}
-                  </div>
-                  )}
-                </div>
-              )}
-
               {bikkin && (
                 <p className="kariyer-bikkin-uyari">
                   ⚠️ {en
@@ -1042,7 +928,8 @@ export function StratejiSayfasi({
         </div>
 
         <aside className="kariyer-yan-sutun">
-          {gor('cevre') && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} meslek={meslek} birlik={isletme?.birlik ?? null} />}
+          {gor('cevre') && isletme?.birlik && <AskerGucKarti birlik={isletme.birlik} />}
+          {gor('cevre') && !isletme?.birlik && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} meslek={meslek} />}
           {gor('isletme') && meslekGucSatirlari.length > 0 && (
             <div className="aile-koken-karti">
               <h3>{m.geMeslekGucu}</h3>

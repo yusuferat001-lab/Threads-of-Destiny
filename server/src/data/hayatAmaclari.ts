@@ -56,6 +56,11 @@ const tarihiSavasSayisi = (s: CharacterState) =>
 const gizemliEsyaVar = (s: CharacterState) =>
   s.etiketler.some((e) => e.startsWith("esya:") || e.startsWith("envanter:"));
 const yenilenRakip = (s: CharacterState) => (s.rakipler ?? []).filter((r) => r.yenildi).length;
+/** Asker: ömür boyu toplam çatışma/savaş zaferi (BirlikDurumu.zafer_toplam). */
+const zaferToplami = (s: CharacterState): number => {
+  const z = s.isletme?.birlik?.zafer_toplam;
+  return z ? z.haydut + z.sinir + z.savas : 0;
+};
 const temizEl = (s: CharacterState) => s.suc_seviyesi < TEMIZ_EL_SUC_ESIGI;
 const zirveSuc = (s: CharacterState) => s.omur_zirve_suc ?? s.suc_seviyesi ?? 0;
 const borcsuz = (s: CharacterState) => !s.kredi;
@@ -237,7 +242,7 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => luksEsyaSayisi(s) >= 3 && s.un >= 75,
   },
   {
-    id: "rakip_ustunlugu", zorluk: "zor", kontrolAni: "herhangi",
+    id: "rakip_ustunlugu", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar", "Din Adamı", "Zanaatkâr"], // Asker'de pazar rakibi yok (v67 Madde 7)
     baslik: { tr: "Rakipsiz Kalmak", en: "Without Rival" },
     aciklama: { tr: "En az bir isimli rakibini tamamen alt et ve şöhretini 72'nin üzerine çıkar.", en: "Utterly defeat at least one named rival and raise your renown past 72." },
     kosul: (s) => yenilenRakip(s) >= 1 && s.un >= 72,
@@ -301,12 +306,10 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => s.sehir_yonetim_seviyesi >= 5 && s.patron_iliski >= 60,
   },
   {
-    id: "bas_belasi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
-    baslik: { tr: "Baş Belası", en: "The Scourge" },
-    // 2026-09: karakterin artık tek bir isimli rakibi var (eskiden 2 idi) — hedef
-    // buna göre 1'e indirildi, aksi halde bu amaç hiçbir zaman tamamlanamazdı.
-    aciklama: { tr: "İsimli rakibini tamamen alt et; bunu güçlü bir orduyla (teçhizat 70+) başar.", en: "Utterly defeat your named rival — with a well-equipped army (equipment 70+) behind you." },
-    kosul: (s) => yenilenRakip(s) >= 1 && s.ordu_techizat_seviyesi >= 70,
+    id: "fatih", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
+    baslik: { tr: "Fatih", en: "The Conqueror" },
+    aciklama: { tr: "Toplam 6 çatışma ya da savaş zaferi kazan; bunu güçlü bir orduyla (teçhizat 70+) başar.", en: "Win 6 clashes or battles in total, with a well-equipped army (equipment 70+) behind you." },
+    kosul: (s) => zaferToplami(s) >= 6 && s.ordu_techizat_seviyesi >= 70,
   },
   {
     id: "ordu_kurucusu", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
@@ -621,7 +624,7 @@ export const AMAC_ILERLEME: Record<
   madalyali: { hedef: 3, metrik: (s) => s.unvanlar?.length ?? 0 },
   serdar: { hedef: 5, metrik: (s) => s.rutbe_seviye },
   sehir_kalkani: { hedef: 5, metrik: (s) => s.sehir_yonetim_seviyesi },
-  bas_belasi: { hedef: 1, metrik: (s) => (s.rakipler ?? []).filter((r) => r.yenildi).length },
+  fatih: { hedef: 6, metrik: (s) => zaferToplami(s) },
   ordu_kurucusu: { hedef: 280, metrik: (s) => s.ordu_mevcudu },
   lonca_ustasi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   uc_kepenk: { hedef: 3, metrik: (s) => s.mulkler?.length ?? 0 },

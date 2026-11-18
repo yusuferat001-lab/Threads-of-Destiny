@@ -93,3 +93,8 @@ Sunucu tarafı, **anahtar korumalı**, oyuncuya hiç gösterilmeyen bir metrik k
 - **Uçlar** ([istatistik.routes.ts](server/src/routes/istatistik.routes.ts), `server.ts`'te `istatistikLimiti` 20/60sn): `POST /olay` (yalnız `tur:"ziyaret"` kabul, `olayGovdesiTemizle` saf doğrulayıcı); `GET /` (JSON özet, `ISTATISTIK_ANAHTARI` env yoksa/eşleşmezse 403); `GET /panel` (aynı anahtar, sunucuda render edilen bağımlılıksız HTML — [istatistikPanel.ts](server/src/utils/istatistikPanel.ts), **inline script yok** çünkü helmet CSP `script-src 'self'`).
 - **Env:** `ISTATISTIK_ANAHTARI` (opsiyonel; `.env.example` + `render.yaml` `sync:false`). Boşsa okuma uçları 403, yazma çalışır.
 - **Test:** [istatistik.test.ts](server/tests/istatistik.test.ts) — `ozetHesapla` + `olayGovdesiTemizle`. `_prismaStub.ts`'e `metrik` modeli eklendi.
+
+
+## v67 notu (başarım/i18n)
+- "Rakipsiz" başarımı (`kosul: rakipler.length > 0 && hepsi yenildi`) Asker'de tetiklenmez (Asker'de `rakipler` boş).
+- Yeni oyuncuya görünen Ordu metinleri bileşene gömülü TR/EN'dir (`BirlikPaneli.tsx` `M`, `BilgiNotu`); sunucu tarafı: `data/birlik.ts` `DilliMetin`, `i18n/katalog.en.ts` ("Düşman Komutanıyla Düello"); "Bölge Hâkimiyeti" kataloğu kaldırıldı. "sold" kelimesi oyuncuya görünen metinde yazılmaz (`askerOdemeAdi.test.ts`).

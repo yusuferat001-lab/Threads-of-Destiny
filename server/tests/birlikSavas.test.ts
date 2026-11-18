@@ -227,14 +227,14 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
     expect(SAVAS_KAYIP_TAVANI.yenilgi).toEqual({ olu: 31, firar: 15 });
     const s = asker();
     ordu(s, 100);
-    const sv = savasa(s, "genel"); // 100 + 30 = 130
-    expect(sv.baslangic_toplam).toBe(130);
+    const sv = savasa(s, "genel"); // 100 + 20 = 120
+    expect(sv.baslangic_toplam).toBe(120);
     sv.sonuc = "zafer";
-    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 20, firar: 11 }); // 130 × %16 / %9
+    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 19, firar: 10 }); // 120 × %16 / %9
     sv.sonuc = "yenilgi";
-    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 40, firar: 19 }); // 130 × %31 / %15
-    sv.olu_toplam = 38;
-    sv.firar_toplam = 19;
+    expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 37, firar: 18 }); // 120 × %31 / %15
+    sv.olu_toplam = 35;
+    sv.firar_toplam = 18;
     expect(savasKayipTavani(s, birlikAl(s))).toEqual({ olu: 2, firar: 0 });
   });
 
@@ -265,38 +265,43 @@ describe("savaş: 3. yıl tek karar savaşı", () => {
     const s = asker();
     ordu(s, 100);
     const b = birlikAl(s);
-    const sv = savasa(s, "genel"); // 100 ana + 30 seferber
-    expect(sv.seferberlik_er).toBe(30);
+    const sv = savasa(s, "genel"); // 100 ana + 20 seferber
+    expect(sv.seferberlik_er).toBe(20);
     const k = kayipUygula(s, b, { oluPct: 20, firarPct: 0 });
-    // 130 × %20 ≈ 26 ölü; seferberler payı 30/130
-    expect(k.oluLevy).toBeGreaterThanOrEqual(Math.floor((k.olu * 30) / 130) - 1);
-    expect(k.oluLevy).toBeLessThanOrEqual(Math.ceil((k.olu * 30) / 130) + 1);
-    expect(sv.seferberlik_er).toBe(30 - k.oluLevy);
+    // 120 × %20 ≈ 24 ölü; seferberler payı 20/120
+    expect(k.oluLevy).toBeGreaterThanOrEqual(Math.floor((k.olu * 20) / 120) - 1);
+    expect(k.oluLevy).toBeLessThanOrEqual(Math.ceil((k.olu * 20) / 120) + 1);
+    expect(sv.seferberlik_er).toBe(20 - k.oluLevy);
   });
 });
 
 describe("seferberlik ve savaş sonu terhis", () => {
-  it("iki seçenek: Gazi Çağrısı %15 orta, Tüm Erkekler %30 düşük; moral −4/−12; ilk 2 yıl ek firar toplamı %5/10; talim: Gazi ordunun talimi, Tüm Erkekler 0; savaş sonu hepsi kalır", () => {
-    expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.15);
-    expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.3);
+  it("iki seçenek: Gazi Çağrısı %8, Tüm Erkekler %20; moral −7/−15; ilk 2 yıl ek firar toplamı %5/8; sabit giriş talimi 55/10; teçhizat ordunun mevcut kalitesi; savaş sonu hepsi kalır", () => {
+    expect(SEFERBERLIK_TANIMLARI.secme.er).toBe(0.08);
+    expect(SEFERBERLIK_TANIMLARI.genel.er).toBe(0.2);
     expect(SEFERBERLIK_SIRASI).toEqual(["secme", "genel"]);
-    expect([SEFERBERLIK_TANIMLARI.secme.moral, SEFERBERLIK_TANIMLARI.genel.moral]).toEqual([-4, -12]);
-    expect([SEFERBERLIK_TANIMLARI.secme.firar, SEFERBERLIK_TANIMLARI.genel.firar]).toEqual([5, 10]);
-    expect(SEFERBERLIK_TANIMLARI.secme.talim).toBeNull(); // etkisi yok (ordunun talimi)
-    expect(SEFERBERLIK_TANIMLARI.genel.talim).toBe(0);
+    expect([SEFERBERLIK_TANIMLARI.secme.moral, SEFERBERLIK_TANIMLARI.genel.moral]).toEqual([-7, -15]);
+    expect([SEFERBERLIK_TANIMLARI.secme.firar, SEFERBERLIK_TANIMLARI.genel.firar]).toEqual([5, 8]);
+    expect([SEFERBERLIK_TANIMLARI.secme.talim, SEFERBERLIK_TANIMLARI.genel.talim]).toEqual([55, 10]);
+    expect("kalite" in SEFERBERLIK_TANIMLARI.secme).toBe(false); // sabit seçenek kalitesi yok
     expect(SEFERBERLIK_KALMA_ZAFER).toEqual([1, 1]);
     expect(SEFERBERLIK_KALMA_YENILGI).toEqual([1, 1]);
-    for (const [tur, kalite, adet] of [["secme", "orta", 15], ["genel", "dusuk", 30]] as const) {
-      const s = asker();
-      ordu(s, 100);
-      const sv = savasa(s, tur);
-      expect(sv.seferberlik_er).toBe(adet);
-      expect(sv.seferberlik_kalite).toBe(kalite);
-      expect(birlikAl(s).kalite[kalite]).toBe((kalite === "dusuk" ? 100 : 0) + adet);
+    for (const [tur, adet] of [["secme", 8], ["genel", 20]] as const) {
+      for (const kalite of ["dusuk", "orta", "yuksek"] as const) {
+        const s = asker();
+        ordu(s, 100);
+        birlikAl(s).hedef_kalite = kalite;
+        const once = birlikAl(s).kalite[kalite];
+        const sv = savasa(s, tur);
+        expect(sv.seferberlik_er).toBe(adet);
+        expect(sv.seferberlik_kalite).toBe(kalite);
+        expect(birlikAl(s).kalite[kalite]).toBe(once + adet);
+        expect(sv.seferberlik_talim).toBe(SEFERBERLIK_TANIMLARI[tur].talim);
+      }
     }
   });
-  it("seferber ek firarı yalnız savaşın ilk iki yılında, ayrı bir toplam: Gazi %5, Tüm Erkekler %10 (iki yıla rastgele bölünür); 3. yıldan sonra yok; savaş tavanına sayılmaz", () => {
-    for (const [tur, toplam] of [["secme", 5], ["genel", 10]] as const) {
+  it("seferber ek firarı yalnız savaşın ilk iki yılında, ayrı bir toplam: Gazi %5, Tüm Erkekler %8 (iki yıla rastgele bölünür); 3. yıldan sonra yok; savaş tavanına sayılmaz", () => {
+    for (const [tur, toplam] of [["secme", 5], ["genel", 8]] as const) {
       let farkli = 0;
       for (let n = 0; n < 30; n++) {
         const s = asker();
@@ -435,21 +440,20 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("5 görev: güç başı kazanç 0,65–0,9 arası, açılış eşiği (askeri güç) 8–200; kazandıran görev daha çok yaralı/ölü/firar verdirir; masraf alanı yok", () => {
+  it("5 görev: er başı kazanç 0,55–0,70 arası, açılış eşiği (askeri güç) 10–250; kazandıran görev daha çok yaralı/ölü/firar verdirir; masraf alanı yok", () => {
     expect(GOREVLER).toHaveLength(5);
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
-      expect(g.erBasi).toBeGreaterThanOrEqual(0.65 - 1e-6);
-      expect(g.erBasi).toBeLessThanOrEqual(0.9 + 1e-6);
+      expect(g.erBasi).toBeGreaterThanOrEqual(0.55 - 1e-6);
+      expect(g.erBasi).toBeLessThanOrEqual(0.7 + 1e-6);
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
-    expect(sira[0].minGuc).toBe(8);
-    expect(sira[sira.length - 1].minGuc).toBe(200);
-    expect(sira[0].erBasi).toBe(0.65);
-    expect(sira[sira.length - 1].erBasi).toBe(0.9);
+    expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
+    expect(sira[0].erBasi).toBe(0.55);
+    expect(sira[sira.length - 1].erBasi).toBe(0.7);
     // kayıp: çoğunlukla yaralı, az ölü, ara sıra firar; kazandıran görevde artar
     for (let i = 0; i < sira.length; i++) {
       const k = sira[i].kayip;
@@ -462,33 +466,33 @@ describe("görev geliri ve erzak tabloları", () => {
     }
     expect(Math.max(...GOREVLER.map((g) => g.sohret ?? 0))).toBe(GOREVLER.find((g) => g.id === "komuta")!.sohret);
   });
-  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,15 / 0,27 / 0,40", () => {
+  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,13 / 0,24 / 0,36", () => {
     for (const v of Object.values(ERZAK_DONEM_CARPANI)) {
       expect(v).toBeGreaterThanOrEqual(0.8);
       expect(v).toBeLessThanOrEqual(1.3);
     }
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.27, yuksek: 0.4 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
     const s = asker();
     ordu(s, 40);
     birlikAl(s).kalite = { dusuk: 10, orta: 10, yuksek: 20 };
     const h = birlikHesapla(s, bg(s));
-    expect(h.techizatBakim).toBeCloseTo((10 * 0.15 + 10 * 0.27 + 20 * 0.4) * bg(s).giderEnflasyon, 4);
+    expect(h.techizatBakim).toBeCloseTo((10 * 0.13 + 10 * 0.24 + 20 * 0.36) * bg(s).giderEnflasyon, 4);
   });
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 9; asker başı 0,15, savaşta zam yok (×1; yalnız ana kadro)", () => {
-    expect(SOLD).toEqual([9, 9, 9, 9, 9]);
+  it("sabit maaş 8,5; asker başı 0,15, savaşta ×2 (0,30; yalnız ana kadro)", () => {
+    expect(SOLD).toEqual([8.5, 8.5, 8.5, 8.5, 8.5]);
     expect(ER_BASI_GELIR).toBe(0.15);
-    expect(SAVAS_ER_BASI_CARPANI).toBe(1);
+    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
     const s = asker();
     ordu(s, 100);
     const baris = birlikHesapla(s, bg(s));
     s.ulke.savasta = true;
     const savas = birlikHesapla(s, bg(s));
     const e = bg(s).enflasyon;
-    expect(baris.sold).toBeCloseTo(9 * e + 100 * 0.15 * e, 3);
-    expect(savas.sold).toBeCloseTo(9 * e + 100 * 0.15 * e, 3);
+    expect(baris.sold).toBeCloseTo(8.5 * e + 100 * 0.15 * e, 3);
+    expect(savas.sold).toBeCloseTo(8.5 * e + 100 * 0.3 * e, 3);
   });
 
   it("4. yıl (sonuç yılı) kayıpları büyüdü ve beklenen toplam kullanıcı tavanının altında kalır", () => {
@@ -526,7 +530,7 @@ describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
   it("Eyalet Komutanlığı ve Saray Muhafızlığı açıkken yıllık şöhret artar; düşük görevlerde artmaz", () => {
     const s = asker();
     s.rutbe_seviye = 5;
-    ordu(s, 300);
+    ordu(s, 340); // komuta görevi 250 askerî güç ister
     const b = birlikAl(s);
     b.gorevler = ["devriye"];
     s.un = 30;
@@ -546,14 +550,14 @@ describe("askeri güç belirleyici (v34)", () => {
 
   it("görev eşikleri er değil askeri güçle ölçülür: aynı er sayısında orta teçhizat daha üst görev açar", () => {
     const s = asker();
-    ordu(s, 60);
+    ordu(s, 90);
     const b = birlikAl(s);
-    b.gorevler = ["tahsilat"]; // 52 askeri güç (×0,75 ölçeği)
-    expect(gorevPaylari(s)[0].aktif).toBe(false); // 60 düşük er ≈ 47 güç
-    b.kalite = { dusuk: 0, orta: 60, yuksek: 0 };
-    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 orta er ≈ 63 güç
-    b.kalite = { dusuk: 0, orta: 0, yuksek: 60 };
-    expect(gorevPaylari(s)[0].aktif).toBe(true); // 60 yüksek er ≈ 79 güç (teçhizat 0,75 / 1 / 1,25)
+    b.gorevler = ["tahsilat"]; // 80 askeri güç ister
+    expect(gorevPaylari(s)[0].aktif).toBe(false); // 90 düşük er ≈ 71 güç
+    b.kalite = { dusuk: 0, orta: 90, yuksek: 0 };
+    expect(gorevPaylari(s)[0].aktif).toBe(true); // 90 orta er ≈ 95 güç
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 90 };
+    expect(gorevPaylari(s)[0].aktif).toBe(true); // 90 yüksek er ≈ 118 güç (teçhizat 0,75 / 1 / 1,25)
     expect(() => birlikKararUygula(s, { gorevler: ["tahsilat"] }, bg(s))).not.toThrow();
   });
 
@@ -586,8 +590,10 @@ describe("askeri güç belirleyici (v34)", () => {
       b.birlik_turler = ["okcu", "suvari", "mizrakli"];
       b.birlik_seviye = 3;
     });
-    expect(zayif).toBeLessThan(0.2);
-    expect(guclu).toBeGreaterThan(0.9);
+    // v67: düşman gücünün %30'u oyuncu gücünden gelir; zayıf ordunun düşmanı da zayıftır, ama yine de güçlü ordudan çok az kazanır
+    expect(zayif).toBeLessThan(0.35);
+    expect(guclu).toBeGreaterThan(0.85);
+    expect(guclu).toBeGreaterThan(zayif + 0.5);
   });
 
   it("düşman gücü bizim gücümüzden bağımsızdır; yaşla büyür", () => {

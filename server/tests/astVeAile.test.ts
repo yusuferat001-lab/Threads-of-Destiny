@@ -170,7 +170,7 @@ describe("astlar", () => {
     rutbeGuncelle(state);
     const ilkAstIsim = state.astlar[0].isim;
 
-    state.kariyer_puani = 130; // Asker S3 eşiği 125
+    state.kariyer_puani = 130; // Asker S3 eşiği 115
     state.un = 55;
     state.yil += 12; // seviye 3 cooldown'u aşılır
     rutbeGuncelle(state);

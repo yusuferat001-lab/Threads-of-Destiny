@@ -185,20 +185,28 @@ describe("karanlık işler (illegal işler paneli)", () => {
     expect(arttiMi).toBe(true);
   });
 
-  it("kaza süsü düello başarılı olursa rakip saf dışı kalır", async () => {
+  it("düşman komutanıyla düello (Asker): başarılı olursa şöhret ve er artar; rakip hedefi yok", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     const s = await stateGetir(state.id);
-    const rakipAd = s.rakipler[0].ad;
+    expect(s.rakipler).toHaveLength(0); // Asker'de pazar rakibi yok
+    let kazanildi = false;
     // Kaybedilen düello ölüm ya da hapisle bitebilir; her denemede karakteri sıfırlayıp yeniden dene.
-    for (let i = 0; i < 80 && !s.rakipler.find((r) => r.ad === rakipAd)?.yenildi; i++) {
+    for (let i = 0; i < 80 && !kazanildi; i++) {
       s.kotu_is_kilit = {};
       s.saglik = 100;
       s.aktif = true;
+      s.un = 40;
       s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
-      await kotuIsYap(state.id, "kaza_duello", { hedefRakipAd: rakipAd });
+      const erOnce = s.meslek_musteri;
+      const { kazandi } = await kotuIsYap(state.id, "kaza_duello");
+      if (kazandi) {
+        kazanildi = true;
+        expect(s.un).toBeGreaterThan(40);
+        expect(s.meslek_musteri).toBeGreaterThan(erOnce);
+      }
     }
-    expect(s.rakipler.find((r) => r.ad === rakipAd)?.yenildi).toBe(true);
+    expect(kazanildi).toBe(true);
   });
 
   it("peşin maliyeti olan işte para yetmezse hata verir", async () => {
