@@ -1,5 +1,6 @@
 import type { FinansOzeti, GecmisNoktasi } from '../types';
 import { GecmisGrafik } from './GecmisGrafik';
+import { ButceIkiSutun } from './ButceIkiSutun';
 import { formatPara } from '../format';
 import { useDil } from '../DilContext';
 
@@ -33,7 +34,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
     giderKalemleri.evcilHayvan +
     giderKalemleri.savasVergisi +
     finans.krediTaksit;
-  // "Cebine kalan" tek kaynak: bu yılın beklenen, her şey dahil durumu (aralıkla). Üstteki "geçen yıl" satırı geçmiş bilgisidir.
+  // "Kazanç" tek kaynak: bu yılın beklenen, her şey dahil durumu (aralıkla). Üstteki "geçen yıl" satırı geçmiş bilgisidir.
   const kz = finans.kazanc;
   const gercekNet = kz ? kz.net : netYillik + gayrimenkulYillikGelir;
   const netEtiketi =
@@ -50,6 +51,10 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
       <h3 className="tam-baslik">{m.feButcen}</h3>
 
           <div className="finans-karti">
+            {isletmeAktif && finans.kalemler ? (
+              <ButceIkiSutun kalemler={finans.kalemler} kazanc={gercekNet} paraBirimi={paraBirimi} />
+            ) : (
+              <>
             <div className="finans-satiri finans-gelir">
               <span>{isletmeAktif ? netEtiketi : m.feYillikMaas}</span>
               <span className={maasYillik < 0 ? 's-gider' : 's-gelir'}>
@@ -186,12 +191,14 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
             )}
 
             <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
-              <span>{isletmeAktif ? (dil === 'en' ? 'Left in your pocket (this year, expected)' : 'Cebine kalan (bu yıl, beklenen)') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
+              <span>{isletmeAktif ? (dil === 'en' ? 'Earnings' : 'Kazanç') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
               <span className={gercekNet >= 0 ? 's-gelir' : 's-gider'}>
                 {gercekNet >= 0 ? '+' : ''}
                 {formatPara(gercekNet)} {paraBirimi}
               </span>
             </div>
+              </>
+            )}
           </div>
 
           <GecmisGrafik gecmis={gecmis} paraBirimi={paraBirimi} />

@@ -2,6 +2,18 @@
 
 Tek kaynak: `client/src/renk-paleti.css` (`:root` değişkenleri + `.s-*` yardımcı sınıfları). PC strateji sayfalarının kuralları `client/src/strateji-panel.css` sonundaki "Sayı renkleri" bloğunda.
 
+## Yüzey kuralı (DEĞİŞMEZ): zemin KAHVE, tablo KREM
+Her ekranda **arka plan kahve (mocha)**, **tablo / kart / satır / bütçe yüzeyi krem (latte)**. Tablo şeffaf bırakılmaz; kahve zemin üstüne doğrudan koyu yazı konmaz. Yeni renk uydurulmaz, oyundaki tonlar:
+| Rol | Değişken | Değer |
+|---|---|---|
+| Kahve sayfa zemini | `strateji.css .strateji-sayfa` | `#6a4e3a → #55402f → #463223` |
+| Kahve kart/başlık | `--s-mocha-1/2/3` | `#6a4e3a / #4a3425 / #3a281c` (kenar `--s-mocha-kenar #c7b08a`, yazı `--s-mocha-yazi #f2e8d6`) |
+| **Krem kart/tablo** | `--s-latte-1 → --s-latte-2` | `#d8c5a6 → #bda585` (gradyan) |
+| Açık krem (şerit, özet) | `--s-latte-acik` | `#e9dcc3` |
+| Krem kenar / yazı / soluk | `--s-latte-kenar / -yazi / -soluk` | `#6e4f35 / #2c1f15 / #5e4733` |
+| Karar penceresi kremi | `--c-lk-1/2/yazi/soluk/kenar/cip` | `#dcc7a4 / #cdb38b / #2c1f15 / #5e4733 / #6e4f35 / #f4ead6` |
+Krem yüzeyde sayı renkleri **açık-zemin** değerleri (`--c-arti`, `--c-eksi`, `--c-lacivert-1`, `--c-esik`); `-koyu` değerler yalnız kahve/koyu zeminde. Krem kartı `.zemin-koyu` kapsayıcısı içine koyarsan sayı renklerini açık-zemin değerine sabitle (bkz. `butce-iki-sutun.css`). Örnek: `ButceIkiSutun` = iki krem kart (Gelir / Gider) + krem "Kazanç" şeridi, kahve zeminin üstünde.
+
 ## Anlam tablosu
 
 | Renk | Açık zemin (latte kart) | Koyu zemin | Ne için | Örnek |
@@ -42,3 +54,6 @@ Yüzey ve kol renkleri `renk-paleti.css`'te token (`§53 Faz 10`, `13-garanti-si
 
 ## v67 Madde 7 (Ordu sayfası)
 Moral/Talim/Güç kartlarında sayı **lacivert** (durum), "Gelecek yıl" değişimi ve "güçte %x" **yeşil/kırmızı** (artı/eksi), er/limit satırında limit **eflatun**; moral çubuğu <30 kırmızı, ≥70 yeşil, aksi lacivert (50 nötr çizgisi). Görev kartı: "en az N askerî güç" eflatun; rozetler artı yeşil / eksi kırmızı (sertlik artışı ve şöhret düşüşü kırmızı); açılır hesapta gereken eflatun, şimdiki güç lacivert, ✓ yeşil, "Eksik" kırmızı.
+
+## v67 Madde 8 (bütçe iki sütun, ganimet dökümü)
+Bütçe: **sol sütun Gelir — başlık ve tutarlar yeşil** (`s-gelir`), **sağ sütun Gider — kırmızı** (`s-gider`), "Toplam gelir/gider" kalın aynı renk, "Kazanç" şeridi (`--c-para-sirit`) işaretine göre yeşil/kırmızı. Ganimet dökümü: "Ganimet (toplam)" yeşil artı, "Askerlere %x" kırmızı eksi, **"Size kalan ganimet" yeşil ve kalın**. Yeni renk yok.

@@ -786,6 +786,9 @@ export function savasGunuCoz(state: CharacterState, b: BirlikDurumu, bg: Isletme
     kalanEr: erSayisi(state),
     dusmanOlu: Math.round(E * (zafer ? rnd(dk.zafer[0], dk.zafer[1]) : rnd(dk.yenilgi[0], dk.yenilgi[1]))),
     ganimetTahmini: r2(net),
+    ganimetBrutTahmini: r2(brut),
+    ganimetErPayiTahmini: r2(brut - net),
+    ganimetPayOrani: Math.round(GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran * 100),
     esirTahmini: zafer ? Math.round(gucOnce * SAVAS_ZAFER_ESIR * yilSayisi) : 0,
     talim: Math.round(talimKazanci(state, b.talim, catisma.kanatZafer ? TALIM_SAVAS_ZAFER : TALIM_SAVAS_YENILGI)),
   };
@@ -942,7 +945,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     sonuc.erPayi = r2(sonuc.brut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran);
     sonuc.net = r2(sonuc.brut - sonuc.erPayi);
     sonuc.esir = olasilikliYuvarla(guc * SAVAS_ZAFER_ESIR * Math.max(1, sv.yil_sayac ?? state.yil - sv.baslangic_yili));
-    uyarilar.push({ kod: "savas_ganimet", tutar: sonuc.net, sayi: sonuc.esir });
+    uyarilar.push({ kod: "savas_ganimet", tutar: sonuc.net, brut: sonuc.brut, erPayi: sonuc.erPayi, oran: Math.round(GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran * 100), sayi: sonuc.esir });
     madalyaVer(state, b, "zafer", uyarilar);
     // Kale: yeterli askerî güç ve genel zafer.
     // Kuşatma kolu / topçu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında değil).
@@ -1085,7 +1088,9 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
     nakitHasar = r2(gelirTaban * BASKIN_NAKIT_HASARI);
   }
   const esir = esirSayisi > 0 ? esirleriIsle(state, b, esirSayisi, "karma", bg) : null;
-  state.para = r2(state.para + net + (esir?.para ?? 0) - nakitHasar);
+  // v67 Madde 8: çatışma ganimeti (net + esir parası) olay anında cebe yazılmaz; o yılın Kazanç'ına eklenir (yıl sonunda hazine payı Kazanç'tan kesilir).
+  b.ganimet_birikimi = r2((b.ganimet_birikimi ?? 0) + net + (esir?.para ?? 0));
+  state.para = r2(state.para - nakitHasar);
   // Ordu ve kişi morali çatışma türüne göre farklı etkilenir (haydut hafif, sınır ağır).
   b.moral = clamp(b.moral + CATISMA_ORDU_MORALI[tur][zafer ? "zafer" : "yenilgi"], 0, 100);
   state.mutluluk = clamp(state.mutluluk + CATISMA_KISI_MORALI[tur][zafer ? "zafer" : "yenilgi"], 0, 100);
@@ -1112,6 +1117,9 @@ export function barisCatismaCoz(state: CharacterState, b: BirlikDurumu, bg: Isle
     kalanEr: erSayisi(state),
     dusmanOlu,
     ganimet: r2(net + (esir?.para ?? 0)),
+    ganimetBrut: r2(brut),
+    ganimetErPayi: r2(erPayi),
+    ganimetPayOrani: Math.round(GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran * 100),
     esir: esirSayisi,
     nakitHasar,
     talim: Math.round(talimKazanilan),
@@ -1455,7 +1463,10 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   birlikSenkron(state, bg.enflasyon);
 
   const esirGeliri = esir ? esir.para : 0;
-  const barisNet = savasSonu?.net ?? 0;
+  // Çatışma ganimeti birikimi (v67 Madde 8) savaş zaferi ganimetiyle aynı yoldan o yılın Kazanç'ına girer.
+  const ganimetBirikimi = b.ganimet_birikimi ?? 0;
+  b.ganimet_birikimi = 0;
+  const barisNet = (savasSonu?.net ?? 0) + ganimetBirikimi;
   // Subay maaşı gerçek nakitten düşer (Tüccar/Zanaatkâr/Din ile aynı; eskiden Asker'de hiç düşülmüyordu → Kazanç subay maaşı kadar şaşıyordu).
   const calisanMaasi = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
   const net = r2(h.net + barisNet + esirGeliri - nakitHasar - ekstraGider - yeniErMaliyet - calisanMaasi);

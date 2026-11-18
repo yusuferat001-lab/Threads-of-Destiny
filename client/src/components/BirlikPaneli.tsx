@@ -5,6 +5,8 @@ import { RenkliEtki } from './Renkli';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
 import { BilgiNotu } from './BilgiNotu';
+import { ButceIkiSutun } from './ButceIkiSutun';
+import { GanimetDokumu } from './GanimetDokumu';
 import { GucKarsilastirma, KararSatiri } from './KararKabuk';
 import { kolOlarak, useKolEtiketi } from './kararKol';
 import { isletmeUyariMetni } from './IsletmePaneli';
@@ -142,9 +144,8 @@ const M = {
   gHayvan: { tr: 'Evcil hayvan', en: 'Pets' },
   gKredi: { tr: 'Kredi taksidi', en: 'Loan instalment' },
   gMulk: { tr: 'Mülk geliri', en: 'Property income' },
-  cebineKalan: { tr: 'Cebine kalan', en: 'Left in your pocket' },
   gHazine: { tr: 'Hazine payı', en: 'Treasury share' },
-  barisTahmin: { tr: 'Bir çatışma zaferinde tahmini ganimetin', en: 'Estimated loot from a clash victory' },
+  barisGanimetBaslik: { tr: 'Çatışma zaferinde ganimet', en: 'Loot from a clash victory' },
   sonDokum: { tr: 'Geçen yıl', en: 'Last year' },
   firar: { tr: 'firar', en: 'deserted' },
   olen: { tr: 'kayıp', en: 'lost' },
@@ -542,34 +543,17 @@ export function BirlikPaneli({
         </div>
         <div className="sayfa-blok blok-butce">
           <h4>{t('dokumBaslik')}</h4>
-          <div className="isletme-dokum">
-            <div>{d(b.hesap.soldAdi)}: <strong className="s-gelir">+{formatPara(b.hesap.sold)}</strong></div>
-            <div>{t('gorevGeliri')}: <strong className="s-gelir">+{formatPara(b.hesap.gorevGeliri)}</strong></div>
-            {b.hesap.ganimetNet - b.hesap.yagmaBrut > 0.005 && <div>{t('gGanimet')}: <strong className="s-gelir">+{formatPara(b.hesap.ganimetNet - b.hesap.yagmaBrut)}</strong></div>}
-            {b.hesap.yagmaBrut > 0 && <div>{t('gYagma')}: <strong className="s-gelir">+{formatPara(b.hesap.yagmaBrut)}</strong></div>}
-            {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong className="s-gelir">+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
-            {durum.butce.mulkGeliri !== 0 && <div>{t('gMulk')}: <strong className={durum.butce.mulkGeliri >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.mulkGeliri >= 0 ? '+' : '−'}{formatPara(Math.abs(durum.butce.mulkGeliri))}</strong></div>}
-            <div>{t('toplamGelir')}: <strong className="s-gelir">+{formatPara(b.hesap.toplamGelir + Math.max(0, durum.butce.mulkGeliri))}</strong></div>
-            <div>{t('gErMasrafi')}: <strong className="s-gider">−{formatPara(b.hesap.erMasrafi)}</strong></div>
-            <div>{t('gErzak')}: <strong className="s-gider">−{formatPara(b.hesap.erzak)}</strong></div>
-            {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong className="s-gider">−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
-            <div>{t('gKisla')}: <strong className="s-gider">−{formatPara(b.hesap.kislaBakim)}</strong></div>
-            <div>{t('gTechizat')}: <strong className="s-gider">−{formatPara(b.hesap.techizatBakim)}</strong></div>
-            {b.hesap.birlikBakim > 0 && <div>{t('gBirlikBakim')}: <strong className="s-gider">−{formatPara(b.hesap.birlikBakim)}</strong></div>}
-            {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong className="s-gider">−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
-            {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-gider">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
-            {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
-            <div>{t('gTalim')}: <strong className="s-gider">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
-            {(durum.butce.hazinePayi ?? 0) > 0 && <div>{t('gHazine')}: <strong className="s-gider">−{formatPara(durum.butce.hazinePayi ?? 0)}</strong></div>}
-            {durum.butce.maas > 0 && <div>{t('gSubay')}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>}
-            <div>{t('gYasam')}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
-            <div>{t('gKira')}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>
-            {durum.butce.evcilHayvan > 0 && <div>{t('gHayvan')}: <strong className="s-gider">−{formatPara(durum.butce.evcilHayvan)}</strong></div>}
-            {durum.butce.krediTaksit > 0 && <div>{t('gKredi')}: <strong className="s-gider">−{formatPara(durum.butce.krediTaksit)}</strong></div>}
-            <div className="isletme-dokum-net">
-              {t('cebineKalan')}: <strong className={durum.butce.kazanc >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.kazanc >= 0 ? '+' : ''}{formatPara(durum.butce.kazanc)} {pb}{t('yil')}</strong>
-            </div>
-          </div>
+          <ButceIkiSutun kalemler={durum.butce.kalemler} kazanc={durum.butce.kazanc} paraBirimi={pb} />
+          {b.hesap.barisGanimetBrut > 0 && (
+            <GanimetDokumu
+              baslik={t('barisGanimetBaslik')}
+              brut={b.hesap.barisGanimetBrut}
+              erPayi={b.hesap.barisGanimetErPayi}
+              oran={b.hesap.barisGanimetPayOrani}
+              net={b.hesap.barisGanimetTahmini}
+              paraBirimi={pb}
+            />
+          )}
           {dokum && dokum.birlik && (
             <div className="isletme-dokum">
               <div>

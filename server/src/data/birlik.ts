@@ -1203,8 +1203,8 @@ export const MAAS_ADLARI: Record<string, DilliMetin> = {
 };
 export const maasAdi = (cag: string, bolge: string): DilliMetin => MAAS_ADLARI[`${cag}|${bolge}`] ?? { tr: "Maaş", en: "Pay" };
 
-// ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %40. Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
-export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 100, 0.1], [100, 250, 0.15], [250, 500, 0.25], [500, 900, 0.35], [900, Infinity, 0.4]];
+// ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %25 (v67 Madde 8; çatışma ve savaş ganimeti de bu Kazanç'a girer). Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
+export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 35, 0.05], [35, 75, 0.1], [75, 150, 0.15], [150, 450, 0.2], [450, Infinity, 0.25]]; // v67 Madde 8: 5 dilim (%5/10/15/20/25), kademeli
 export function hazinePayi(reelNet: number): number {
   if (!(reelNet > 0)) return 0;
   let t = 0;

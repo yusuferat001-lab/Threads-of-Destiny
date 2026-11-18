@@ -75,3 +75,55 @@ describe("Kazanç tek kaynak (FinansOzeti.kazanc)", () => {
     expect(durum.butce.gelir).toBeGreaterThan(0);
   });
 });
+
+describe("v67 Madde 8 — iki sütunlu bütçe kalemleri", () => {
+  for (const meslek of MESLEKLER) {
+    it(`${meslek}: Σgelir − Σgider = Kazanç (butce.kazanc = finans.kazanc.net); gelir sol, gider sağ`, async () => {
+      const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "T", "tr", undefined, "ilerle");
+      await mesleğiAta(st.id, meslek);
+      const d = await isletmeDurumGetir(st.id);
+      const f = await finansGetir(st.id);
+      const k = d.butce.kalemler;
+      expect(k.gelir.length).toBeGreaterThan(0);
+      expect(k.gider.length).toBeGreaterThan(0);
+      for (const x of [...k.gelir, ...k.gider]) expect(x.tutar).toBeGreaterThan(0);
+      const gelir = k.gelir.reduce((t, x) => t + x.tutar, 0);
+      const gider = k.gider.reduce((t, x) => t + x.tutar, 0);
+      expect(gelir - gider).toBeCloseTo(d.butce.kazanc, 1);
+      expect(f.kalemler).toEqual(k); // iki ekran aynı kaynak
+      expect(f.kazanc.net).toBeCloseTo(d.butce.kazanc, 1);
+    });
+  }
+
+  it("Asker: subay maaşı gider sütununda ve Kazanç'ı düşürür; kalem toplamı hâlâ Kazanç'a eşit", async () => {
+    const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "T", "tr", undefined, "ilerle");
+    await mesleğiAta(st.id, "Asker");
+    const state = await stateGetir(st.id);
+    const once = (await isletmeDurumGetir(st.id)).butce;
+    state.ekip = [{ id: "o1", isim: "Test", rol: "Harp subayı", rol_turu: "ana", maas: 5, sadakat: 70, gercekKalite: 60, y_giris: 60, s_giris: 70, maas_taban: 5 } as never];
+    const sonra = (await isletmeDurumGetir(st.id)).butce;
+    expect(sonra.kazanc).toBeLessThan(once.kazanc);
+    const maas = sonra.kalemler.gider.find((x) => x.kod === "maas");
+    expect(maas?.tutar).toBeCloseTo(5, 1);
+    const gelir = sonra.kalemler.gelir.reduce((t, x) => t + x.tutar, 0);
+    const gider = sonra.kalemler.gider.reduce((t, x) => t + x.tutar, 0);
+    expect(gelir - gider).toBeCloseTo(sonra.kazanc, 1);
+  });
+
+  it("Asker: çatışma ganimeti birikimi Kazanç'a eklenir ve hazine payına tabi olur (gelir sütununda 'Çatışma ganimeti')", async () => {
+    const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "T", "tr", undefined, "ilerle");
+    await mesleğiAta(st.id, "Asker");
+    const state = await stateGetir(st.id);
+    const once = (await isletmeDurumGetir(st.id)).butce;
+    state.isletme!.birlik!.ganimet_birikimi = 80;
+    const sonra = (await isletmeDurumGetir(st.id)).butce;
+    const g = sonra.kalemler.gelir.find((x) => x.kod === "catisma_ganimeti");
+    expect(g?.tutar).toBeCloseTo(80, 1);
+    expect(sonra.kazanc).toBeGreaterThan(once.kazanc);
+    expect(sonra.kazanc - once.kazanc).toBeLessThan(80); // vergi (hazine payı) kesildi
+    expect(sonra.hazinePayi).toBeGreaterThan(once.hazinePayi);
+    const gelir = sonra.kalemler.gelir.reduce((t, x) => t + x.tutar, 0);
+    const gider = sonra.kalemler.gider.reduce((t, x) => t + x.tutar, 0);
+    expect(gelir - gider).toBeCloseTo(sonra.kazanc, 1);
+  });
+});
