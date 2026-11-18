@@ -10,7 +10,7 @@ import {
   TEZGAH_URETIM_KADEME,
   TEZGAH_FIYAT_PRIMI,
 } from "./isletme";
-import { DEVSIRME_BUROSU_ER, KISLA_BAKIM, KISLA_ER_LIMITI, REVIR_KAYIP_KADEME, TALIM_ALANI_TAVAN, TALIM_ALANI_YILLIK } from "../data/birlik";
+import { DEVSIRME_BUROSU_ER, KISLA_BAKIM_ER_BASI, KISLA_ER_LIMITI, REVIR_KAYIP_KADEME, TALIM_ALANI_TAVAN, TALIM_ALANI_YILLIK } from "../data/birlik";
 import { ASEVI_AHLAK_YILLIK, ASEVI_INANAN_YILLIK, ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
 
 /** 12.5 → "12,5" (tr) / "12.5" (en); tam sayılar ondalıksız. */
@@ -67,8 +67,8 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
       const i = Math.min(k, KISLA_ER_LIMITI.length - 1);
       return dili((d) =>
         d === "tr"
-          ? `${KISLA_ER_LIMITI[i]} er komuta kapasitesi · bakım ${sayi(r2(KISLA_BAKIM[i] * enflasyon), d)}/yıl`
-          : `Holds ${KISLA_ER_LIMITI[i]} soldiers · upkeep ${sayi(r2(KISLA_BAKIM[i] * enflasyon), d)}/yr`
+          ? `${KISLA_ER_LIMITI[i]} er komuta kapasitesi · bakım er başı ${sayi(r2(KISLA_BAKIM_ER_BASI * enflasyon), d)}/yıl`
+          : `Holds ${KISLA_ER_LIMITI[i]} soldiers · upkeep ${sayi(r2(KISLA_BAKIM_ER_BASI * enflasyon), d)} per man/yr`
       );
     }
     case "revir":
@@ -103,8 +103,9 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
 export function yatirimMasrafGorunumu(y: YatirimTanimi, kademe: number, enflasyon: number): { yillikMasraf: number; sonrakiMasraf: number | null } {
   const r2 = (n: number) => Math.round(n * 100) / 100;
   const sonVar = kademe < y.fiyatlar.length;
-  if (y.etki === "depo" || y.etki === "bina" || y.etki === "kisla") {
-    const tablo = y.etki === "depo" ? DEPO_BAKIM : y.etki === "kisla" ? KISLA_BAKIM : BINA_BAKIM;
+  // Kışla bakımı er başına sabittir (ordu sayısına bağlı): kademe başına yıllık masrafı yoktur.
+  if (y.etki === "depo" || y.etki === "bina") {
+    const tablo = y.etki === "depo" ? DEPO_BAKIM : BINA_BAKIM;
     const simdi = tablo[Math.min(kademe, tablo.length - 1)] * enflasyon;
     const sonraki = tablo[Math.min(kademe + 1, tablo.length - 1)] * enflasyon;
     return { yillikMasraf: r2(simdi), sonrakiMasraf: sonVar ? r2(sonraki - simdi) : null };

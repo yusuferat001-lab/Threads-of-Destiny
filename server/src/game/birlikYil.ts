@@ -68,7 +68,8 @@ import {
   BARIS_TALIM_YENILGI,
   BARIS_TALIM_ZAFER,
   BARIS_GANIMET_ARALIK,
-  GOREV_FIRAR_YIL_IHTIMALI,
+  BARIS_FIRAR_IHTIMALI,
+  BARIS_FIRAR_YUZDE,
   GOREV_KAYIP_BILDIRIM_ESIGI,
   EMIRLER,
   KALE_GUC_ESIGI,
@@ -1353,22 +1354,18 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const esir = esirSayisi > 0 ? esirleriIsle(state, b, esirSayisi, esirKarari, bg) : null;
   if (esir && esirSayisi > 0) uyarilar.push({ kod: "esir", sayi: esirSayisi });
 
-  // 5. Kayıplar: ölü – yaralı – firar (tam sayı). Savaşta yıl tablosu, barış çatışmasında olay aralığı; görev kayıpları ek ölüdür.
+  // 5. Kayıplar: ölü – yaralı – firar (tam sayı). Savaşta yıl tablosu, barış çatışmasında olay aralığı; barış yılında kalıcı kayıp YALNIZ nadir firardır (görev yalnız yaralı verir).
   const kc = kayipCarpani(state);
-  let gorevOlu = 0;
   let gorevYarali = 0;
-  let gorevFirar = 0;
   const yaraliGorevler: string[] = [];
   const yaraliGorevlerEn: string[] = [];
-  // Görev kaybı (yalnız barışta; savaşta görev açık değildir): kazandıran görev daha çok kaybettirir — çoğunlukla yaralı, az ölü, firar ara sıra.
+  // Görev kaybı (yalnız barışta; savaşta görev açık değildir): kazandıran görev daha çok yaralı verir (ölü ve firar yok; kalıcı kayıp yalnız nadir barış firarı).
   for (const g of h.gorevler) {
     if (!g.aktif || g.er <= 0) continue;
     const tn = gorevGetir(g.id);
     if (!tn) continue;
     const k = tn.kayip;
     gorevYarali += olasilikliYuvarla(g.er * k.yarali * kc);
-    gorevOlu += olasilikliYuvarla(g.er * k.olu * kc);
-    if (Math.random() < GOREV_FIRAR_YIL_IHTIMALI) gorevFirar += olasilikliYuvarla((g.er * k.firar * clamp(kc, 0.4, 1.2)) / GOREV_FIRAR_YIL_IHTIMALI);
     const ad = gorevAdi(tn, state.cag);
     yaraliGorevler.push(ad.tr);
     yaraliGorevlerEn.push(ad.en);
@@ -1387,14 +1384,13 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     oluPct = savasYili.oluPct;
     firarPct = savasYili.firarPct + ayar.puan + (borc?.firar ?? 0);
   } else {
-    firarPct = ayar.tetik ? ayar.puan : 0;
+    // Barış: tek kalıcı kayıp nadir firar — yaklaşık 2 yılda 1, ordunun ~%4'ü (tam sayı); moral/erzak/sertlik büyüklüğe eklenir.
+    if (Math.random() < BARIS_FIRAR_IHTIMALI) firarPct = Math.max(0, BARIS_FIRAR_YUZDE + (ayar.tetik ? ayar.puan : 0));
   }
-  if (gorevFirar > 0 && !savasta) firarPct += (gorevFirar / Math.max(1, eskiEr)) * 100;
   const tavan = savasta ? savasKayipTavani(state, b) : null;
   const kayip = kayipUygula(state, b, {
     oluPct,
     firarPct,
-    ekOlu: gorevOlu,
     ekYarali: gorevYarali,
     ...(savasYili?.yaraliPct != null ? { yaraliPct: savasYili.yaraliPct } : {}),
     // Seferber EK firarı: yalnız savaşın ilk iki yılı, ayrı toplam (%5 / %10); ağır borç eşiğinde ×1,5.
@@ -1413,6 +1409,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const gorevKayipToplam = olen + firar + kayip.yaralanan;
   const gorevBildir =
     savasta ||
+    firar > 0 ||
     ayar.tetik ||
     (gorevKayipToplam > 0 &&
       (gorevKayipToplam >= Math.max(GOREV_KAYIP_BILDIRIM_ESIGI.mutlak, eskiEr * GOREV_KAYIP_BILDIRIM_ESIGI.oran) || Math.random() < GOREV_KAYIP_BILDIRIM_ESIGI.ihtimal));

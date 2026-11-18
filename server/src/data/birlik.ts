@@ -22,8 +22,8 @@ export const ER_TAVANI = 500;
 export const ASKER_OLAY_OLCEGI = 195;
 /** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
 export const KISLA_ER_LIMITI = [30, 70, 140, 280, 500];
-/** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu). Düşük kademe yumuşak; er başı bakım kademeyle artar (tam dolu kışlada er başı ≈ 0,07 / 0,09 / 0,13 / 0,18 / 0,24). */
-export const KISLA_BAKIM = [3, 8, 22, 60, 150];
+/** Kışla bakımı ER BAŞINA yıllık sabit (enflasyonlu) ve TÜM kademelerde aynıdır (v67 sonrası; eskiden kademeye göre 3/8/22/60/150 sabit tutardı). Yıllık kışla bakımı = er × bu. */
+export const KISLA_BAKIM_ER_BASI = 0.1;
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
@@ -37,7 +37,7 @@ export const KALITE_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.75, orta:
 /** Düşükten verilen kaliteye yükseltmenin er başı fiyatı (enflasyonsuz). */
 export const KALITE_FIYATI: Record<BirlikKalite, number> = { dusuk: 0, orta: 0, yuksek: 0 };
 /** Teçhizat bakımı: er başı yıllık (enflasyonlu), seviyeye göre. */
-export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.13, orta: 0.24, yuksek: 0.36 };
+export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.09, orta: 0.19, yuksek: 0.31 };
 /** Teçhizat seviyesinin yıllık moral etkisi (kalite karışımının ağırlıklı ortalaması) ve talim kazancı çarpanı. */
 export const KALITE_MORAL: Record<BirlikKalite, number> = { dusuk: -1, orta: 0, yuksek: 1 };
 export const KALITE_TALIM_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.9, orta: 1, yuksek: 1.1 };
@@ -287,13 +287,14 @@ export function agirlikliSec<T extends string>(agirliklar: Partial<Record<T, num
 /**
  * Düşman gücü (v67 sonrası, SADE): E = TABAN(yaş) + DUSMAN_OYUNCU_PAYI × oyuncu gücü; sapma ve zafer serisi hazırlığı çağıranda çarpılır.
  * TABAN yaşla DOĞRUSAL artar: 20 yaşında `taban20`, sonra her yıl `artis` kadar eklenir ve ölene kadar aynı hızla sürer (20 altı sabit; üstel büyüme, 60 yaş dönüm noktası ve tür çarpanı YOK).
- * Üç tür için ayrı başlangıç ve yıllık artış: haydut en kolay, sınır daha güçlü, büyük savaş en güçlü; aradaki fark yaşla AÇILIR (artışlar 0,07 < 0,42 < 0,68). Oyuncu güçlendikçe düşman da (%30) büyür.
+ * Üç tür için ayrı başlangıç ve yıllık artış: haydut en kolay, sınır daha güçlü, büyük savaş en güçlü; tabanlar 15 < 18 < 22 ve yıllık artışlar birbirine yakın (taban20'nin %1,8 < %2 < %2,2'si). Oyuncu güçlendikçe düşman da (%30) büyür.
  */
 export type DusmanTuru = "haydut" | "sinir" | "savas";
 export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban20: number; artis: number }> = {
-  haydut: { taban20: 9.5, artis: 0.07 },
-  sinir: { taban20: 14, artis: 0.42 },
-  savas: { taban20: 15, artis: 0.68 },
+  // artış = taban20'nin yıllık %1,8 / %2 / %2,2'si (mutlak +1,8/+2/+2,2 güç/yıl okuması oynanamaz çıktı: kazanma %2–8).
+  haydut: { taban20: 15, artis: 0.27 },
+  sinir: { taban20: 18, artis: 0.36 },
+  savas: { taban20: 22, artis: 0.484 },
 };
 /** Düşman gücüne eklenen oyuncu askerî gücü payı. */
 export const DUSMAN_OYUNCU_PAYI = 0.3;
@@ -699,7 +700,9 @@ export function gorevRiski(g: GorevTanimi): number {
   const sira = [...GOREVLER].sort((a, b) => a.kayip.yarali - b.kayip.yarali);
   return sira.findIndex((x) => x.id === g.id) + 1;
 }
-export const GOREV_FIRAR_YIL_IHTIMALI = 0.3;
+/** Barışta TEK kalıcı rastgele er kaybı = firar (v67 sonrası): her barış yılı bu olasılıkla (0,5 ≈ 2 yılda 1) ordunun BARIS_FIRAR_YUZDE'si kadar er kaçar (tam sayı). Görev ölü/firar kaybı ve moral kaynaklı sürekli firar kalktı; moral/erzak/sertlik yalnız bu olayın büyüklüğüne eklenir. */
+export const BARIS_FIRAR_IHTIMALI = 0.5;
+export const BARIS_FIRAR_YUZDE = 4;
 /** Barışta görev kaybı bildirimi: kayıp ordunun %5'ini (en az 4 er) aşarsa her zaman; daha azsa yalnız bu olasılıkla ("ara sıra"). */
 export const GOREV_KAYIP_BILDIRIM_ESIGI = { mutlak: 4, oran: 0.05, ihtimal: 0.3 };
 /** (v67: görev geliri artık ER sayısına bağlı — gorevErOrani; bu güç bantları yalnız eski gösterge/test içindir.) Görev geliri güçle azalan verimle ödenirdi: her güç dilimi kendi çarpanıyla sayılırdı. */
@@ -1236,15 +1239,13 @@ export const ZAFER_SERISI_DUSMAN_ARTISI_2 = 0.5;
 export type ZaferSerisi = { haydut: number; sinir: number; savas: number };
 export const ZAFER_SERISI_BOS: ZaferSerisi = { haydut: 0, sinir: 0, savas: 0 };
 
-// ── Görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7; güç bandına çevrilip geri alındı): ilk 100 er tam verim; sonra doğrusal düşer, en büyük kışla kapasitesinde (500) %75 ──
-export const GOREV_VERIM_TAM_ER = 100;
-export const GOREV_VERIM_KAPASITE_ORANI = 0.75;
-/** Göreve çıkan er sayısı için gelir çarpanı (ortalama verim): er ≤ 100 → 1; 500 erde 0,75; arası doğrusal. Toplam gelir (er × verim) kapasiteye kadar hep artar. */
+// ── Görev gelirinde er sayısına bağlı kademeli verim (v67 sonrası): ilk 200 er ×1, 200'den sonraki her er ×0,80 (vergi dilimi gibi, bileşik değil) ──
+export const GOREV_TAM_VERIM_ER = 200;
+export const GOREV_UST_VERIM = 0.8;
+/** Göreve çıkan er sayısı için gelir çarpanı (ortalama verim): er ≤ 200 → 1; sonrası etkin er = 200 + 0,8 × (er − 200), verim = etkin er / er (500 erde 0,88). Toplam gelir ere göre hep artar. */
 export function gorevErOrani(er: number): number {
-  const kap = KISLA_ER_LIMITI[KISLA_ER_LIMITI.length - 1];
-  if (er <= GOREV_VERIM_TAM_ER) return 1;
-  const k = Math.min(er, kap);
-  return 1 - (1 - GOREV_VERIM_KAPASITE_ORANI) * ((k - GOREV_VERIM_TAM_ER) / (kap - GOREV_VERIM_TAM_ER));
+  if (er <= GOREV_TAM_VERIM_ER) return 1;
+  return (GOREV_TAM_VERIM_ER + GOREV_UST_VERIM * (er - GOREV_TAM_VERIM_ER)) / er;
 }
 
 // ── Büyük savaş yenilgisinde bozgun firarı (v68): yalnız TÜM ORDU yenilgisi (büyük savaş); karar savaşından sonraki ilk yıl (savaşın 4. yılı) ──

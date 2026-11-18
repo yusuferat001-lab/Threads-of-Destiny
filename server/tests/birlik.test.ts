@@ -71,6 +71,8 @@ import { pazarPayiHesapla, pazarAdlariGetir } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
   BARIS_BEKLEME_ARALIK,
+  BARIS_FIRAR_IHTIMALI,
+  BARIS_FIRAR_YUZDE,
   BARIS_YILLIK_IHTIMAL,
   BASLANGIC_ER,
   TUR_PAYI,
@@ -857,9 +859,9 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(birlikAl(s).kalite.yuksek).toBe(erSayisi(s));
   });
 
-  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,13/0,24/0,36; güç başına gider yükseldikçe biraz azalır (yükseltme teşvik edilir, ama hiçbiri baskın değil)", () => {
+  it("teçhizat sabitleri: güç 0,75/1/1,25; bakım 0,09/0,19/0,31; güç başına gider yükseldikçe biraz azalır (yükseltme teşvik edilir, ama hiçbiri baskın değil)", () => {
     expect(KALITE_CARPANI).toEqual({ dusuk: 0.75, orta: 1, yuksek: 1.25 });
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.09, orta: 0.19, yuksek: 0.31 });
     const g = (q: "dusuk" | "orta" | "yuksek") => (ER_MASRAFI + ERZAK_BIRIMI + KALITE_BAKIM[q]) / KALITE_CARPANI[q];
     expect(g("yuksek")).toBeLessThan(g("orta"));
     expect(g("orta")).toBeLessThan(g("dusuk"));
@@ -1127,6 +1129,7 @@ describe("kışla kademesi düşürme", () => {
 describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
   /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir: yalnız politika etkisi ölçülür. */
   function sabitOrdu(politika: "hafif" | "orta" | "agir", talim: number, moral = 60) {
+    vi.spyOn(Math, "random").mockReturnValue(0.99); // barış firar olayı (p=0,5) tetiklenmesin: yalnız talim etkisi ölçülür
     const s = asker();
     s.para = 1_000_000;
     s.meslek_musteri = komutaLimiti(s);
@@ -1230,8 +1233,8 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
     expect(d.SOLD).toEqual([10, 10, 10, 10, 10]);
     expect(d.SAVAS_ER_BASI_CARPANI).toBe(1);
     expect(d.BARIS_YILLIK_ER).toBe(0);
-    expect(d.KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
-    expect(d.KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
+    expect(d.KISLA_BAKIM_ER_BASI).toBe(0.1); // er başı, tüm kademelerde aynı
+    expect(d.KALITE_BAKIM).toEqual({ dusuk: 0.09, orta: 0.19, yuksek: 0.31 });
   });
 
   it("görev asgari güçleri 10/40/80/145/250; er başı katsayı 0,55…0,70 eşit adımlı", () => {
@@ -1240,8 +1243,8 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
     expect(sira.map((g) => g.erBasi)).toEqual([0.55, 0.5875, 0.625, 0.6625, 0.7]);
   });
 
-  it("gider (tam ağır teçhizat, özel birlik yok): 40 er 36,8 · 80 er 79,6 · 150 er 168,0 (enflasyonsuz); talim ücretsiz", () => {
-    for (const [er, kisla, beklenen] of [[40, 1, 36.8], [80, 2, 79.6], [150, 3, 168.0]] as const) {
+  it("gider (tam ağır teçhizat, özel birlik yok): er başı 0,77 (masraf 0,23 + erzak 0,13 + teçhizat 0,31 + kışla 0,10): 40 er 30,8 · 80 er 61,6 · 150 er 115,5 (enflasyonsuz); talim ücretsiz", () => {
+    for (const [er, kisla, beklenen] of [[40, 1, 30.8], [80, 2, 61.6], [150, 3, 115.5]] as const) {
       const s = asker();
       s.ulke.donem = undefined as never; // dönem erzak çarpanı karışmasın
       s.isletme!.yatirimlar.kisla = kisla;
@@ -1349,10 +1352,10 @@ describe("v67 Madde 4 — güç formülü", () => {
 });
 
 describe("v67 Madde 5 — düşman gücü", () => {
-  it("formül SADE: düşman = taban(yaş) + oyuncu gücünün %30'u; taban 20 yaşta başlar (9,5 / 14 / 15) ve ölene kadar yılda 0,07 / 0,42 / 0,68 doğrusal artar (haydut < sınır < savaş, fark yaşla açılır)", async () => {
+  it("formül SADE: düşman = taban(yaş) + oyuncu gücünün %30'u; taban 20 yaşta başlar (15 / 18 / 22) ve ölene kadar yılda taban20'nin %1,8 / %2 / %2,2'si (0,27 / 0,36 / 0,484) doğrusal artar", async () => {
     const d = await import("../src/data/birlik");
     expect(d.DUSMAN_OYUNCU_PAYI).toBe(0.3);
-    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 9.5, artis: 0.07 }, sinir: { taban20: 14, artis: 0.42 }, savas: { taban20: 15, artis: 0.68 } });
+    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 15, artis: 0.27 }, sinir: { taban20: 18, artis: 0.36 }, savas: { taban20: 22, artis: 0.484 } });
     for (const yas of [20, 30, 45, 60, 80]) {
       expect(d.dusmanGucuYas(yas, "haydut")).toBeLessThan(d.dusmanGucuYas(yas, "sinir"));
       expect(d.dusmanGucuYas(yas, "sinir")).toBeLessThan(d.dusmanGucuYas(yas, "savas"));
@@ -1608,6 +1611,7 @@ describe("v67 Madde 6 — seferberlik ve Talim Alanı", () => {
 
   /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir: yalnız politika + bina etkisi ölçülür. */
   function sabitOrdu(politika: "hafif" | "orta" | "agir", kademe: number, talim: number, moral = 60) {
+    vi.spyOn(Math, "random").mockReturnValue(0.99); // barış firar olayı (p=0,5) tetiklenmesin: yalnız talim etkisi ölçülür
     const s = asker();
     s.para = 1_000_000;
     s.meslek_musteri = komutaLimiti(s);
@@ -1687,8 +1691,39 @@ describe("v67 Madde 6 — seferberlik ve Talim Alanı", () => {
 });
 
 describe("v67 Madde 7 — Ordu sayfası: gelecek yıl değişimi, rütbe verisi, Asker'de pazar yok, Fatih", () => {
+  it("barış yılında TEK kalıcı rastgele kayıp nadir firardır: ~2 yılda 1 (p=0,5), ordunun ~%4'ü, tam sayı; görev ölü/firar vermez", () => {
+    expect(BARIS_FIRAR_IHTIMALI).toBe(0.5);
+    expect(BARIS_FIRAR_YUZDE).toBe(4);
+    const yilGecir = (rastgele: number) => {
+      const s = asker();
+      s.para = 1_000_000;
+      s.isletme!.yatirimlar.kisla = 3; // 280 er kapasite
+      s.meslek_musteri = 280;
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 280, yuksek: 0 };
+      b.hedef_kalite = "orta";
+      b.baris_bekleme = 99; // çatışma yok
+      b.gorevler = ["komuta"]; // en riskli görev: eskiden ölü ve firar da verirdi
+      b.moral = 60;
+      s.ulke.donem = undefined as never;
+      vi.spyOn(Math, "random").mockReturnValue(rastgele);
+      const sonuc = birlikYilIsle(s, bg(s));
+      vi.restoreAllMocks();
+      return sonuc.dokum.birlik!;
+    };
+    const olay = yilGecir(0.1); // zar < 0,5 → firar olayı
+    expect(Number.isInteger(olay.firar)).toBe(true);
+    expect(olay.firar).toBeGreaterThanOrEqual(8); // ≈ %4 × 280 = 11
+    expect(olay.firar).toBeLessThanOrEqual(14);
+    expect(olay.olen).toBe(0); // görev ölü vermez
+    const sakin = yilGecir(0.99); // zar ≥ 0,5 → o yıl hiç kayıp yok
+    expect(sakin.firar).toBe(0);
+    expect(sakin.olen).toBe(0);
+  });
+
   /** Ordu kışla sınırında dolu (yeni er gelmez), standart teçhizat, bakım ödenir, çatışma yok: yıl işleme kesin sonuç verir. */
   function sabitOrdu(politika: "hafif" | "orta" | "agir", ganimet: "az" | "dengeli" | "comert" = "dengeli", talim = 40, moral = 55) {
+    vi.spyOn(Math, "random").mockReturnValue(0.99); // barış firar olayı (p=0,5) tetiklenmesin: önizleme ile yıl işleme aynı sonucu versin
     const s = asker();
     s.para = 1_000_000;
     s.meslek_musteri = komutaLimiti(s);

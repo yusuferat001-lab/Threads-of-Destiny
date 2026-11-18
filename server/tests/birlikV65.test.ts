@@ -5,7 +5,7 @@ import { gucHesapla } from "../src/game/birlik";
 import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
 import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
 import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
-import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../src/data/birlik";
+import { KISLA_BAKIM_ER_BASI, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
 
@@ -25,11 +25,15 @@ function asker(): CharacterState {
 const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
-  it("kışla bakımı düşük kademede yumuşak; tam dolu kışlada er başı bakım kademeyle artar", () => {
-    expect(KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
-    const erBasi = KISLA_BAKIM.map((x, i) => x / KISLA_ER_LIMITI[i]);
-    for (let i = 1; i < erBasi.length; i++) expect(erBasi[i]).toBeGreaterThan(erBasi[i - 1]);
-    for (let i = 1; i < KISLA_BAKIM.length; i++) expect(KISLA_BAKIM[i]).toBeGreaterThan(KISLA_BAKIM[i - 1]);
+  it("kışla bakımı ER BAŞINA sabit ve tüm kademelerde aynı: 0,10; yıllık bakım = er × 0,10", () => {
+    expect(KISLA_BAKIM_ER_BASI).toBe(0.1);
+    for (const kademe of [0, 2, 4]) {
+      const s = asker();
+      s.isletme!.yatirimlar.kisla = kademe;
+      s.meslek_musteri = Math.min(25, KISLA_ER_LIMITI[kademe]);
+      const h = birlikHesapla(s, bg(s));
+      expect(h.kislaBakim / bg(s).giderEnflasyon).toBeCloseTo(s.meslek_musteri * 0.1, 6);
+    }
   });
 
   it("şöhret aralıkları: haydut < sınır < savaş; yenilgi zaferden az değil (savaşta daha ağır)", () => {
@@ -139,13 +143,12 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(catismaKarariDurumu(s, bg(s))!.hazirlikli).toBe(false);
   });
 
-  it("görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7): ilk 100 er ×1, sonra doğrusal; 300 → 0,875, 500 → 0,75; gelir ere göre hep artar", () => {
+  it("görev gelirinde er sayısına bağlı KADEMELİ verim: ilk 200 er ×1, 200'den sonrası ×0,80 (vergi dilimi gibi); 300 → 0,933, 500 → 0,88; gelir ere göre hep artar", () => {
     expect(gorevErOrani(40)).toBe(1);
-    expect(gorevErOrani(100)).toBe(1);
-    expect(gorevErOrani(200)).toBeCloseTo(0.9375, 8);
-    expect(gorevErOrani(300)).toBeCloseTo(0.875, 8);
-    expect(gorevErOrani(500)).toBeCloseTo(0.75, 8);
-    expect(gorevErOrani(800)).toBeCloseTo(0.75, 8); // kapasite üstü sabit
+    expect(gorevErOrani(200)).toBe(1);
+    expect(gorevErOrani(300)).toBeCloseTo((200 + 0.8 * 100) / 300, 8);
+    expect(gorevErOrani(500)).toBeCloseTo((200 + 0.8 * 300) / 500, 8);
+    expect(gorevErOrani(800)).toBeCloseTo((200 + 0.8 * 600) / 800, 8);
     let onceki = 0;
     for (let e = 10; e <= 500; e += 10) {
       expect(e * gorevErOrani(e)).toBeGreaterThan(onceki);

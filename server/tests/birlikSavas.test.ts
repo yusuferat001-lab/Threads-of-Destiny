@@ -487,17 +487,17 @@ describe("görev geliri ve erzak tabloları", () => {
     }
     expect(Math.max(...GOREVLER.map((g) => g.sohret ?? 0))).toBe(GOREVLER.find((g) => g.id === "komuta")!.sohret);
   });
-  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,13 / 0,24 / 0,36", () => {
+  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,09 / 0,19 / 0,31", () => {
     for (const v of Object.values(ERZAK_DONEM_CARPANI)) {
       expect(v).toBeGreaterThanOrEqual(0.8);
       expect(v).toBeLessThanOrEqual(1.3);
     }
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.13, orta: 0.24, yuksek: 0.36 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.09, orta: 0.19, yuksek: 0.31 });
     const s = asker();
     ordu(s, 40);
     birlikAl(s).kalite = { dusuk: 10, orta: 10, yuksek: 20 };
     const h = birlikHesapla(s, bg(s));
-    expect(h.techizatBakim).toBeCloseTo((10 * 0.13 + 10 * 0.24 + 20 * 0.36) * bg(s).giderEnflasyon, 4);
+    expect(h.techizatBakim).toBeCloseTo((10 * 0.09 + 10 * 0.19 + 20 * 0.31) * bg(s).giderEnflasyon, 4);
   });
 });
 
@@ -553,6 +553,7 @@ describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
     s.rutbe_seviye = 5;
     ordu(s, 340); // komuta görevi 250 askerî güç ister
     const b = birlikAl(s);
+    vi.spyOn(Math, "random").mockReturnValue(0.99); // barış firar olayı tetiklenmesin (ordu küçülürse şöhret etkisi karışır)
     b.gorevler = ["devriye"];
     s.un = 30;
     birlikYilIsle(s, bg(s));
