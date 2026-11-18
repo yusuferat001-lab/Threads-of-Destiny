@@ -6,6 +6,7 @@ import { bic, type Metinler } from '../i18n';
 import { useDil } from '../DilContext';
 import { useMobilEkran } from '../hooks';
 import { RenkliEtki } from './Renkli';
+import { KararOnay, KararSatiri } from './KararKabuk';
 
 function etkiSatiriGetir(
   m: Metinler,
@@ -66,6 +67,8 @@ export function FinansEkrani({
   const { m, kt, dil } = useDil();
   const mobil = useMobilEkran();
   const [aktifSekme, setAktifSekme] = useState(0);
+  const [secimYasam, setSecimYasam] = useState<string | null>(null);
+  const [secimKonut, setSecimKonut] = useState<string | null>(null);
   const { giderEnflasyonYuzdesi } = finans;
   // Yaşam tarzı + konut listesindeki liste fiyatları enflasyonsuz; gider dökümündeki
   // gerçek yaşam/kira tutarıyla BİREBİR hizalamak için GİDER enflasyonu çarpanını
@@ -75,7 +78,7 @@ export function FinansEkrani({
   const enflasyonluTutar = (taban: number) => Math.round(taban * enfCarpan * 100) / 100;
 
   return (
-    <div className="ekran ekran-tam-sayfa">
+    <div className="ekran ekran-tam-sayfa ekran-yan">
       <h2>{m.shEv}</h2>
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
 
@@ -98,43 +101,54 @@ export function FinansEkrani({
         <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
           <h3 className="tam-baslik">{m.feYasamTarzin}</h3>
           <p className="giris-aciklama tam-yardimci-metin">{m.feDegistirNot}</p>
-          <div className="yatirim-kartlari finans-secim-izgara">
+          <div className="kk-liste kk-secimler">
             {yasamSecenekleri.map((secenek) => {
               const guncel = secenek.id === guncelYasamSecimiId;
               const etkiSatiri = etkiSatiriGetir(m, secenek);
               const gorunum = yasamGoruntusuGetir(secenek.id, secenek.ad, secenek.simge, cag, bolge, dil);
               return (
-                <button
+                <KararSatiri
                   key={secenek.id}
-                  className={`yatirim-kart${guncel ? ' yatirim-kart-secili' : ''}`}
+                  kol={guncel ? 'sadik' : 'evrensel'}
+                  simge={gorunum.simge}
+                  dal={guncel ? (dil === 'en' ? 'Current' : 'Şu an') : undefined}
+                  ad={gorunum.ad}
+                  cipler={
+                    <>
+                      <span className="kk-cip s-gider">
+                        {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}/{m.yil}
+                      </span>
+                      {etkiSatiri && (
+                        <span className="kk-cip">
+                          <RenkliEtki metin={etkiSatiri} />
+                        </span>
+                      )}
+                    </>
+                  }
+                  detay={kt(secenek.aciklama)}
+                  secili={secimYasam === secenek.id}
                   disabled={yukleniyor || guncel}
-                  onClick={() => onYasamSecimiDegistir(secenek.id)}
-                  title={kt(secenek.aciklama)}
-                >
-                  <span className="meslek-simge">{gorunum.simge}</span>
-                  <strong>
-                    {gorunum.ad}
-                    {guncel ? ' ✓' : ''}
-                  </strong>
-                  <span className="meslek-aciklama s-gider">
-                    {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}/{m.yil}
-                  </span>
-                  {etkiSatiri && (
-                    <span className="meslek-aciklama yatirim-etki-satiri">
-                      <RenkliEtki metin={etkiSatiri} />
-                    </span>
-                  )}
-                </button>
+                  onClick={() => setSecimYasam(secenek.id)}
+                />
               );
             })}
           </div>
-
+          <KararOnay
+            not={secimYasam ? '' : dil === 'en' ? 'Pick a lifestyle.' : 'Bir yaşam tarzı seç.'}
+            etiket={dil === 'en' ? 'Switch' : 'Değiştir'}
+            disabled={yukleniyor || !secimYasam}
+            onClick={() => {
+              if (!secimYasam) return;
+              onYasamSecimiDegistir(secimYasam);
+              setSecimYasam(null);
+            }}
+          />
         </div>
 
         <div className="tam-sutun" hidden={mobil && aktifSekme !== 1}>
           <h3 className="tam-baslik">{m.feEvin}</h3>
           <p className="giris-aciklama tam-yardimci-metin">{bic(m.feTasinNotKisa, tasinmaMaliyeti, paraBirimi)}</p>
-          <div className="yatirim-kartlari finans-secim-izgara">
+          <div className="kk-liste kk-secimler">
             {konutlar.map((konut) => {
               const guncel = konut.id === guncelKonutId;
               const guncelKira = konutlar.find((k) => k.id === guncelKonutId)?.kiraYillik ?? 0;
@@ -143,31 +157,43 @@ export function FinansEkrani({
               const gorunum = konutGoruntusuGetir(konut.id, konut.ad, konut.simge, cag, bolge, dil);
               const etkiSatiri = etkiSatiriGetir(m, konut);
               return (
-                <button
+                <KararSatiri
                   key={konut.id}
-                  className={`yatirim-kart${guncel ? ' yatirim-kart-secili' : ''}`}
+                  kol={guncel ? 'sadik' : 'evrensel'}
+                  simge={gorunum.simge}
+                  dal={guncel ? (dil === 'en' ? 'Current' : 'Şu an') : undefined}
+                  ad={gorunum.ad}
+                  cipler={
+                    <>
+                      <span className="kk-cip s-gider">
+                        {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}/{m.yil}
+                      </span>
+                      {!guncel && !geriCekilme && <span className="kk-cip s-gider">{bic(m.feTasinmaKisa, tasinmaMaliyeti, paraBirimi).replace(/^\s*·\s*/, '')}</span>}
+                      {etkiSatiri && (
+                        <span className="kk-cip">
+                          <RenkliEtki metin={etkiSatiri} />
+                        </span>
+                      )}
+                    </>
+                  }
+                  detay={kt(konut.aciklama)}
+                  secili={secimKonut === konut.id}
                   disabled={yukleniyor || guncel || tasinamaz}
-                  onClick={() => onKonutDegistir(konut.id)}
-                  title={kt(konut.aciklama)}
-                >
-                  <span className="meslek-simge">{gorunum.simge}</span>
-                  <strong>
-                    {gorunum.ad}
-                    {guncel ? ' ✓' : ''}
-                  </strong>
-                  <span className="meslek-aciklama s-gider">
-                    {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}/{m.yil}
-                    {!guncel && !geriCekilme ? bic(m.feTasinmaKisa, tasinmaMaliyeti, paraBirimi) : ''}
-                  </span>
-                  {etkiSatiri && (
-                    <span className="meslek-aciklama yatirim-etki-satiri">
-                      <RenkliEtki metin={etkiSatiri} />
-                    </span>
-                  )}
-                </button>
+                  onClick={() => setSecimKonut(konut.id)}
+                />
               );
             })}
           </div>
+          <KararOnay
+            not={secimKonut ? '' : dil === 'en' ? 'Pick a home.' : 'Bir ev seç.'}
+            etiket={dil === 'en' ? 'Move' : 'Taşın'}
+            disabled={yukleniyor || !secimKonut}
+            onClick={() => {
+              if (!secimKonut) return;
+              onKonutDegistir(secimKonut);
+              setSecimKonut(null);
+            }}
+          />
         </div>
       </div>
 

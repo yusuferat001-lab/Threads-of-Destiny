@@ -344,15 +344,16 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
     expect(state.magaza_envanteri[0].kalanYil).toBeLessThanOrEqual(6);
   });
 
-  it("vitrin: kategori başına adet sınırı, çağa uygunluk, 3-4 yılda bir yenilenme, sahip olunan eser vitrine girmez", () => {
+  it("vitrin: toplam en çok 5 (lüks 2 + sanat 2 + binek 1), çağa uygunluk, 3 yılda bir yenilenme, sahip olunan eser vitrine girmez", () => {
     const state = taze();
     expect(magazaVitriniYenile(state)).toBe(true);
     const v = state.magaza_vitrin!;
-    expect(v.yenileme_yili - state.yil).toBeGreaterThanOrEqual(3);
-    expect(v.yenileme_yili - state.yil).toBeLessThanOrEqual(4);
+    expect(v.yenileme_yili - state.yil).toBe(3);
     const say = (k: string) => v.idler.filter((id) => magazaEsyasiTanimiGetir(id).kategori === k).length;
-    expect(say("sanat")).toBe(3);
-    expect(say("binek")).toBe(2);
+    expect(v.idler.length).toBeLessThanOrEqual(5);
+    expect(v.idler.length).toBe(5);
+    expect(say("sanat")).toBe(2);
+    expect(say("binek")).toBe(1);
     expect(say("luks")).toBe(2);
     expect(say("sifa")).toBe(0);
     for (const id of v.idler) {
@@ -370,6 +371,21 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
       state.magaza_vitrin = null;
       magazaVitriniYenile(state);
       expect(state.magaza_vitrin!.idler).not.toContain("oc_ikon");
+    }
+  });
+
+  it("vitrin: bir kategoride eşya yetmezse eksik diğerlerinden tamamlanır, toplam 5'i aşmaz", () => {
+    const state = taze();
+    // Tüm binekleri satın alınmış say: binek kotası boş kalır, vitrin yine 5 eşyaya tamamlanır.
+    for (const t of MAGAZA_ESYALARI.filter((e) => e.kategori === "binek" && (!e.cag || e.cag === "Orta Çağ"))) {
+      state.magaza_envanteri.push({ id: `b-${t.id}`, katalogId: t.id, ad: t.ad, simge: t.simge, kategori: "binek", alisYili: state.yil, kalanYil: 9 });
+    }
+    for (let i = 0; i < 20; i++) {
+      state.magaza_vitrin = null;
+      magazaVitriniYenile(state);
+      const idler = state.magaza_vitrin!.idler;
+      expect(idler.length).toBe(5);
+      expect(idler.every((id) => magazaEsyasiTanimiGetir(id).kategori !== "binek")).toBe(true);
     }
   });
 

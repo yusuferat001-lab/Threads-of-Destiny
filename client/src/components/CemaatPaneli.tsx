@@ -6,7 +6,7 @@ import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
-import { KararSatiri } from './KararKabuk';
+import { KapatX, KararSatiri } from './KararKabuk';
 import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
 
 interface Props {
@@ -544,6 +544,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
       {uyariAcik && dokum && (
         <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" onClick={() => setUyariAcik(false)}>
           <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setUyariAcik(false)} />
             <h4>{t('olayBaslik')}</h4>
             {onemliUyarilar.map((u, i) => (
               <p key={i}><RenkliEtki metin={uyariMetni(u)} /></p>

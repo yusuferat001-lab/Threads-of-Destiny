@@ -12,6 +12,7 @@ export function KararKatman({
   alt,
   rozet,
   genis,
+  sabit,
   children,
 }: {
   simge: string;
@@ -19,11 +20,13 @@ export function KararKatman({
   alt?: string;
   rozet?: string;
   genis?: boolean;
+  /** Çok adımlı pencerelerde çerçeve boyu sabit kalır; yalnız içindeki sorular değişir. */
+  sabit?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className="kk-katman zemin-koyu" role="dialog" aria-modal="true">
-      <div className={`kk-panel${genis ? ' kk-genis' : ''}`}>
+      <div className={`kk-panel${genis ? ' kk-genis' : ''}${sabit ? ' kk-sabit' : ''}`}>
         <div className="kk-ust">
           <div>
             <h2 className="kk-baslik">
@@ -193,5 +196,15 @@ export function GucKarsilastirma({
         </div>
       </div>
     </div>
+  );
+}
+
+/** Pencerenin sağ üst köşesindeki ✕ (PC ve telefon): tüm kapatılabilir pencerelerde aynı yerde durur; ESC de aynı işi yapar. */
+export function KapatX({ onClick }: { onClick: () => void }) {
+  const { dil } = useDil();
+  return (
+    <button type="button" className="kapat-x" aria-label={dil === 'en' ? 'Close' : 'Kapat'} title={dil === 'en' ? 'Close (Esc)' : 'Kapat (Esc)'} onClick={onClick}>
+      ✕
+    </button>
   );
 }
