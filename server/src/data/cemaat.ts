@@ -220,6 +220,77 @@ export const AYIN_POLITIKASI: Record<CemaatAyin, AyinPolitikasi> = {
 };
 export const AYIN_SIRASI: CemaatAyin[] = ["yok", "olcul", "buyuk"];
 
+// ── Hizmet Görevleri (çok yıllı; aynı anda tek) ─────────────────────────────
+export type HizmetId = "hayir" | "hac" | "misyon" | "emanet" | "veba_bakimi" | "ordu_papazi";
+export interface HizmetTanimi {
+  id: HizmetId;
+  simge: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+  minRutbe: number;
+  /** Görevin süresi (yıl). */
+  sure: number;
+  /** Yalnız savaş / salgın sürerken alınabilir; koşul bitince görev erken kapanır. */
+  yalnizSavas?: boolean;
+  yalnizVeba?: boolean;
+  /** Her yıl: inanan kesri, ahlak/otorite/fanatiklik puanı; şöhret puanı; sağlık kaybı (en az 1 kalır). */
+  yillik: { inanan: number; ahlak: number; otorite: number; fanatiklik: number; sohret: number; saglik: number };
+  /** İnanan başına yıllık gelir / masraf (b cinsinden, gelir enflasyonlu / masraf gider enflasyonlu). */
+  gelir: number;
+  masraf: number;
+  /** Bitişte tek seferlik ödül (başarıda aynen, başarısızlıkta eksi yarısı): inanan kesri, şöhret, ahlak, otorite. */
+  son: { inanan: number; sohret: number; ahlak: number; otorite: number };
+  /** Başarısızlık tabanı (0-1). */
+  zorluk: number;
+}
+export const HIZMET_GOREVLERI: HizmetTanimi[] = [
+  {
+    id: "hayir", simge: "🍞", minRutbe: 1, sure: 2, gelir: 0.05, masraf: 0.10, zorluk: 0.05,
+    yillik: { inanan: 0.012, ahlak: 0.6, otorite: 0.3, fanatiklik: 0, sohret: 0.5, saglik: 0 },
+    son: { inanan: 0.03, sohret: 2, ahlak: 1, otorite: 1 },
+    ad: { tr: "Hayır kampanyası", en: "Charity drive" },
+    aciklama: { tr: "Yoksullara sofra, bağışçılara hesap. Ahlak ve cemaat ısınır; kasa pek dolmaz.", en: "Meals for the poor, accounts for the donors. Morality and flock warm; the till barely fills." },
+  },
+  {
+    id: "hac", simge: "🧭", minRutbe: 2, sure: 3, gelir: 0, masraf: 0.16, zorluk: 0.15,
+    yillik: { inanan: 0.010, ahlak: 0.2, otorite: 0.2, fanatiklik: 0.5, sohret: 1, saglik: 1 },
+    son: { inanan: 0.04, sohret: 3, ahlak: 0, otorite: 1 },
+    ad: { tr: "Hac kafilesi", en: "Pilgrim caravan" },
+    aciklama: { tr: "Müritleri kutsal topraklara götürürsün. Pahalı ve yorucu, ama dönüşte adın büyür.", en: "You lead followers to the holy lands. Costly and tiring, but your name grows on return." },
+  },
+  {
+    id: "misyon", simge: "🕊️", minRutbe: 2, sure: 4, gelir: 0, masraf: 0.12, zorluk: 0.25,
+    yillik: { inanan: 0.022, ahlak: 0, otorite: -0.3, fanatiklik: 1, sohret: 0.5, saglik: 1 },
+    son: { inanan: 0.07, sohret: 2, ahlak: 0, otorite: -1 },
+    ad: { tr: "Misyon seferi", en: "Mission journey" },
+    aciklama: { tr: "Uzak köylerde yeni inananlar kazanırsın. Büyüme hızlı, ama sert ve riskli; yönetici bu gayreti sevmez.", en: "You win new believers in far villages. Growth is fast but harsh and risky; the authorities dislike the zeal." },
+  },
+  {
+    id: "emanet", simge: "🏺", minRutbe: 3, sure: 3, gelir: 0.10, masraf: 0.08, zorluk: 0.15,
+    yillik: { inanan: 0.014, ahlak: -0.2, otorite: 0.3, fanatiklik: 0.8, sohret: 1.5, saglik: 0 },
+    son: { inanan: 0.05, sohret: 4, ahlak: -1, otorite: 1 },
+    ad: { tr: "Kutsal emanet gezisi", en: "Relic procession" },
+    aciklama: { tr: "Emaneti şehir şehir dolaştırırsın. Şöhret ve adak yağar; halk coşar, bazıları da şüphelenir.", en: "You parade the relic from town to town. Fame and offerings pour in; the crowd swells, some grow suspicious." },
+  },
+  {
+    id: "veba_bakimi", simge: "🩺", minRutbe: 1, sure: 2, yalnizVeba: true, gelir: 0, masraf: 0.08, zorluk: 0.20,
+    yillik: { inanan: 0.020, ahlak: 0.8, otorite: 0.4, fanatiklik: -0.3, sohret: 1, saglik: 3 },
+    son: { inanan: 0.05, sohret: 3, ahlak: 2, otorite: 1 },
+    ad: { tr: "Salgın bakımı", en: "Plague nursing" },
+    aciklama: { tr: "Salgında hastaların başında beklersin. Halkın sevgisini kazanırsın; bedeli canındır.", en: "You tend the sick through the plague. You win the people's love; the price is your health." },
+  },
+  {
+    id: "ordu_papazi", simge: "⚔️", minRutbe: 2, sure: 2, yalnizSavas: true, gelir: 0.12, masraf: 0.05, zorluk: 0.20,
+    yillik: { inanan: 0.006, ahlak: 0.3, otorite: 0.6, fanatiklik: 0.4, sohret: 1.5, saglik: 2 },
+    son: { inanan: 0.03, sohret: 4, ahlak: 1, otorite: 2 },
+    ad: { tr: "Ordu papazlığı", en: "Army chaplaincy" },
+    aciklama: { tr: "Orduyla sefere çıkarsın; askere ayin, yaralıya dua. Yönetici memnun olur, yol tehlikelidir.", en: "You march with the army: services for the soldiers, prayers for the wounded. The rulers are pleased; the road is dangerous." },
+  },
+];
+export function hizmetGetir(id: string): HizmetTanimi | undefined {
+  return HIZMET_GOREVLERI.find((h) => h.id === id);
+}
+
 // ── Faaliyetler ─────────────────────────────────────────────────────────────
 export interface FaaliyetTanimi {
   id: FaaliyetId;

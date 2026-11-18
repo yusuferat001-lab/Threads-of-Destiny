@@ -208,6 +208,7 @@ import {
   faaliyetSlotSayisi,
   gelmeAraligi,
   gelmeKaynagiBul,
+  hizmetKilitNedeni,
   okulKademesi,
   ogretiBekleyenSeviye,
   ogretiBekliyorMu,
@@ -226,6 +227,8 @@ import {
   FANATIK_BAGIS_KATSAYI,
   FANATIK_KACIS_KATSAYI,
   FANATIK_OTORITE_KATSAYI,
+  HIZMET_GOREVLERI,
+  hizmetGetir,
   KITLE_POLITIKASI,
   KITLE_SIRASI,
   OKUL_MEZUN_SANSI,
@@ -4988,6 +4991,17 @@ export interface CemaatPolitikaSecenegi {
   kilit?: "rutbe" | "bekleme" | null;
   minRutbe?: number;
 }
+export interface CemaatHizmetGorunumu {
+  id: string;
+  ad: IkiDilMetin;
+  aciklama: IkiDilMetin;
+  minRutbe: number;
+  simge: string;
+  sure: number;
+  yalnizSavas: boolean;
+  yalnizVeba: boolean;
+  kilit: "rutbe" | "savas" | "veba" | "hapis" | null;
+}
 export interface CemaatPolitikaGorunumu {
   secili: string;
   secenekler: CemaatPolitikaSecenegi[];
@@ -5030,7 +5044,10 @@ export interface CemaatGorunumu {
   bagis: number;
   faaliyetGelir: number;
   toplamGelir: number;
-  giderler: { faaliyet: number; ayin: number; bina: number; yardim: number; aidat: number; vergi: number };
+  hizmetGelir: number;
+  giderler: { faaliyet: number; hizmet: number; ayin: number; bina: number; yardim: number; aidat: number; vergi: number };
+  /** Hizmet görevi: yürüyen görev (kalan/geçen yıl) ve alınabilecek görevler. */
+  hizmet: { aktif: { id: string; kalan: number; gecen: number } | null; secenekler: CemaatHizmetGorunumu[] };
   beklenenBrut: number;
   beklenenNet: number;
   bagisOrani: number;
@@ -5155,8 +5172,17 @@ function cemaatGorunumuHesapla(state: CharacterState, b: IsletmeBaglami): Cemaat
     bagis: paraYuvarla(h.bagis),
     faaliyetGelir: paraYuvarla(h.faaliyetGelir),
     toplamGelir: paraYuvarla(h.toplamGelir),
+    hizmetGelir: paraYuvarla(h.hizmetGelir),
+    hizmet: {
+      aktif: cm.hizmet ? { id: cm.hizmet.id, kalan: cm.hizmet.kalan, gecen: cm.hizmet.gecen } : null,
+      secenekler: HIZMET_GOREVLERI.map((t) => ({
+        id: t.id, simge: t.simge, sure: t.sure, minRutbe: t.minRutbe, yalnizSavas: !!t.yalnizSavas, yalnizVeba: !!t.yalnizVeba,
+        ad: { tr: t.ad.tr, en: t.ad.en }, aciklama: { tr: t.aciklama.tr, en: t.aciklama.en },
+        kilit: hizmetKilitNedeni(state, t.id),
+      })),
+    },
     giderler: {
-      faaliyet: paraYuvarla(h.faaliyetMasraf), ayin: paraYuvarla(h.ayinMasrafi), bina: paraYuvarla(h.binaBakim),
+      faaliyet: paraYuvarla(h.faaliyetMasraf), hizmet: paraYuvarla(h.hizmetMasraf), ayin: paraYuvarla(h.ayinMasrafi), bina: paraYuvarla(h.binaBakim),
       yardim: paraYuvarla(h.yardim), aidat: paraYuvarla(h.aidat), vergi: paraYuvarla(vergiTutar),
     },
     beklenenBrut: paraYuvarla(h.brutKar),
@@ -5412,6 +5438,7 @@ export interface CemaatKararGirdisi {
   yardim?: string;
   ton?: string;
   ayin?: string;
+  hizmet?: string;
 }
 
 export async function isletmeKararVer(
@@ -5486,9 +5513,25 @@ async function cemaatKararVer(
     if (kilit === "rutbe") throw new Error("Bu ayin için rütben yetersiz.");
     if (kilit === "bekleme") throw new Error("Bu ayini yakın zamanda düzenledin; biraz beklemelisin.");
   }
+  const hizmetT = k?.hizmet !== undefined && k.hizmet !== "yok" ? hizmetGetir(k.hizmet) : undefined;
+  if (k?.hizmet !== undefined && k.hizmet !== "yok") {
+    if (!hizmetT) throw new Error("Geçersiz hizmet görevi.");
+    if (cm.hizmet && cm.hizmet.id !== hizmetT.id) throw new Error("Önce yürüyen görevini bitirmeli ya da bırakmalısın.");
+    const kilit = cm.hizmet ? null : hizmetKilitNedeni(state, hizmetT.id);
+    if (kilit === "rutbe") throw new Error("Bu görev için rütben yetersiz.");
+    if (kilit === "savas") throw new Error("Bu görev yalnız savaş sürerken alınabilir.");
+    if (kilit === "veba") throw new Error("Bu görev yalnız salgın sürerken alınabilir.");
+    if (kilit === "hapis") throw new Error("Hapisteyken göreve çıkamazsın.");
+  }
   for (const h of is.hatlar) {
     const g = secenekler.get(h.id);
     if (g?.acik !== undefined) h.acik = g.acik;
+  }
+  if (k?.hizmet === "yok" && cm.hizmet) {
+    if (cm.hizmet.gecen > 0) state.un = Math.max(0, state.un - 1.5); // yarıda bırakmanın bedeli
+    cm.hizmet = null;
+  } else if (hizmetT && !cm.hizmet) {
+    cm.hizmet = { id: hizmetT.id, kalan: hizmetT.sure, gecen: 0 };
   }
   if (k?.bagis !== undefined) cm.bagis = k.bagis as CemaatBagis;
   if (k?.kitle !== undefined) cm.kitle = k.kitle as CemaatKitle;

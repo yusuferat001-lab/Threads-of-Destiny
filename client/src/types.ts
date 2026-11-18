@@ -808,8 +808,12 @@ export interface IsletmeUyari {
     | 'yarali_iyilesti'
     | 'limit_asimi'
     | 'limit_asimi_seferber'
-    | 'savas_saglik';
+    | 'savas_saglik'
+    | 'hizmet_sonuc';
   hat?: string;
+  /** hizmet_sonuc: başarıyla mı bitti; yariyolda = koşul bittiği için erken kapandı (hat = görev id). */
+  basari?: boolean;
+  yariyolda?: boolean;
   isim?: string;
   sonuc?:
     | 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'baskin' | 'nakit'
@@ -1004,6 +1008,17 @@ export interface CemaatPolitikaSecenegi {
   kilit?: 'rutbe' | 'bekleme' | null;
   minRutbe?: number;
 }
+export interface CemaatHizmetGorunumu {
+  id: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+  minRutbe: number;
+  simge: string;
+  sure: number;
+  yalnizSavas: boolean;
+  yalnizVeba: boolean;
+  kilit: 'rutbe' | 'savas' | 'veba' | 'hapis' | null;
+}
 export interface CemaatPolitikaGorunumu {
   secili: string;
   secenekler: CemaatPolitikaSecenegi[];
@@ -1036,6 +1051,7 @@ export interface CemaatKararGirdisi {
   yardim?: string;
   ton?: string;
   ayin?: string;
+  hizmet?: string;
 }
 export interface CemaatGorunumu {
   inanan: number;
@@ -1049,7 +1065,9 @@ export interface CemaatGorunumu {
   bagis: number;
   faaliyetGelir: number;
   toplamGelir: number;
-  giderler: { faaliyet: number; ayin: number; bina: number; yardim: number; aidat: number; vergi: number };
+  hizmetGelir: number;
+  hizmet: { aktif: { id: string; kalan: number; gecen: number } | null; secenekler: CemaatHizmetGorunumu[] };
+  giderler: { faaliyet: number; hizmet: number; ayin: number; bina: number; yardim: number; aidat: number; vergi: number };
   beklenenBrut: number;
   beklenenNet: number;
   bagisOrani: number;

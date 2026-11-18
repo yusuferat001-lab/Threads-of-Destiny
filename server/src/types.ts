@@ -988,8 +988,12 @@ export interface IsletmeUyari {
     | "kesif_savas"
     | "yarali_iyilesti"
     | "limit_asimi"
-    | "savas_saglik";
+    | "savas_saglik"
+    | "hizmet_sonuc";
   hat?: string;
+  /** hizmet_sonuc: görev başarıyla mı bitti; yariyolda = koşul bittiği için erken kapandı (hat = görev id). */
+  basari?: boolean;
+  yariyolda?: boolean;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
   sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit" | "kumbara" | "muridcalma" | "bidat" | "aforoz" | "yangin" | "engizisyon" | "er_ayartma" | "entrika" | "firar";
@@ -1133,6 +1137,8 @@ export interface CemaatDurumu {
   ayin: CemaatAyin;
   /** Son Büyük Ayin yılı (bekleme süresi için). */
   ayin_son_yil: number | null;
+  /** Yürüyen hizmet görevi (aynı anda tek); yoksa null. `gecen` = tamamlanan yıl. */
+  hizmet: { id: string; kalan: number; gecen: number } | null;
   /** 0-100: yavaş artar, bağış oranını yükseltir ama inanan kaçışı, otorite kaybı ve aşırılık riski getirir. */
   fanatiklik: number;
   /** Seçilen öğreti id'leri (rütbe seviyesi başına bir). */

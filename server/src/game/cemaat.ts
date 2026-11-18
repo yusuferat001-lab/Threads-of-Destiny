@@ -39,6 +39,7 @@ import {
   YARDIM_POLITIKASI,
   ahlakInananEtkisi,
   faaliyetGetir,
+  hizmetGetir,
   type CemaatDonemEtkisi,
   type DiniSaldiri,
   type GelmeKaynagi,
@@ -102,6 +103,7 @@ export function cemaatVarsayilan(): CemaatDurumu {
     ton: "dengeli",
     ayin: "yok",
     ayin_son_yil: null,
+    hizmet: null,
     fanatiklik: 0,
     ogretiler: [],
     bekleyen_ogreti: 1,
@@ -168,6 +170,7 @@ export function cemaatHazirla(state: CharacterState): void {
   if (c.asiri_son_yil === undefined) c.asiri_son_yil = null;
   if (!c.ayin) c.ayin = "yok";
   if (c.ayin_son_yil === undefined) c.ayin_son_yil = null;
+  if (c.hizmet === undefined) c.hizmet = null;
   if (typeof c.fanatiklik !== "number") c.fanatiklik = 0;
   ogretiBekleyenSeviye(state);
   if (is.adaylar.length === 0) adaylariYenile(state);
@@ -239,6 +242,59 @@ export function ayinKilitNedeni(state: CharacterState, ayin: CemaatAyin): "rutbe
   return null;
 }
 
+// ── Hizmet Görevi ───────────────────────────────────────────────────────────
+/** Yürüyen görevin tanımı (yoksa undefined). */
+export function aktifHizmet(cm: CemaatDurumu) {
+  return cm.hizmet ? hizmetGetir(cm.hizmet.id) : undefined;
+}
+/** Görev alınamıyorsa nedeni, alınabiliyorsa null. */
+export function hizmetKilitNedeni(state: CharacterState, id: string): "rutbe" | "savas" | "veba" | "hapis" | null {
+  const t = hizmetGetir(id);
+  if (!t) return "rutbe";
+  if (t.minRutbe > (state.rutbe_seviye ?? 1)) return "rutbe";
+  if (t.yalnizSavas && !state.ulke.savasta) return "savas";
+  if (t.yalnizVeba && !state.veba?.aktif) return "veba";
+  if (state.etiketler.includes("hapiste")) return "hapis";
+  return null;
+}
+/** Başarı şansı: görevin zorluğu, ahlak ve (varsa) kadro/öğreti yardımı. */
+export function hizmetBasariSansi(state: CharacterState, zorluk: number): number {
+  return clamp(0.8 - zorluk + clamp(state.ahlak, 0, 100) / 500, 0.2, 0.95);
+}
+/** Koşulu biten (savaş/salgın) ya da hapse düşülen görev: erkenden kapanır. Yıl işlemeden önce çağrılır. */
+function hizmetKosulKontrol(state: CharacterState, cm: CemaatDurumu, uyarilar: IsletmeUyari[]): void {
+  const t = aktifHizmet(cm);
+  if (!t || !cm.hizmet) return;
+  if ((t.yalnizSavas && !state.ulke.savasta) || (t.yalnizVeba && !state.veba?.aktif)) {
+    if (cm.hizmet.gecen > 0) hizmetUygulaSon(state, t, 0.5, true, uyarilar, true);
+    cm.hizmet = null;
+  }
+}
+/** Bitiş ödülü/cezası: `katsayi` ödülü ölçekler (başarısızlıkta −0,5 × ödül). */
+function hizmetUygulaSon(state: CharacterState, t: NonNullable<ReturnType<typeof aktifHizmet>>, katsayi: number, basari: boolean, uyarilar: IsletmeUyari[], yariyolda = false): void {
+  const k = basari ? katsayi : -0.5;
+  const kayma = olasilikliYuvarla(state.meslek_musteri * t.son.inanan * k);
+  if (kayma !== 0) musteriKaydir(state, "oyuncu", kayma);
+  state.un = clamp(state.un + t.son.sohret * k, 0, 100);
+  state.ahlak = clamp(state.ahlak + t.son.ahlak * k, 0, 100);
+  state.yonetim_iliski = clamp((state.yonetim_iliski ?? 0) + t.son.otorite * k, 0, 100);
+  uyarilar.push({ kod: "hizmet_sonuc", hat: t.id, basari, yariyolda, musteriKaybi: kayma });
+}
+/** Yıl sonu: sağlık/şöhret bedeli, süre sayacı, bitişte zar. Yıllık inanan/ahlak/otorite/fanatiklik `cemaatEtkenleri`'nden gelir. */
+function hizmetYilSonu(state: CharacterState, cm: CemaatDurumu, uyarilar: IsletmeUyari[]): void {
+  const t = aktifHizmet(cm);
+  if (!t || !cm.hizmet) return;
+  state.un = clamp(state.un + t.yillik.sohret, 0, 100);
+  const saglikKaybi = olasilikliYuvarla(t.yillik.saglik);
+  if (saglikKaybi > 0) state.saglik = Math.max(1, state.saglik - saglikKaybi);
+  cm.hizmet.gecen += 1;
+  cm.hizmet.kalan -= 1;
+  if (cm.hizmet.kalan <= 0) {
+    hizmetUygulaSon(state, t, 1, Math.random() < hizmetBasariSansi(state, t.zorluk), uyarilar);
+    cm.hizmet = null;
+  }
+}
+
 // ── Küçük yardımcılar ───────────────────────────────────────────────────────
 export function binaKademesi(state: CharacterState): number {
   return clamp(yatirimKademesi(state, "bina"), 0, BINA_KAPASITE.length - 1);
@@ -291,6 +347,8 @@ export interface CemaatHesabi {
   faaliyetler: { id: FaaliyetId; gelir: number; masraf: number }[];
   faaliyetGelir: number;
   faaliyetMasraf: number;
+  hizmetGelir: number;
+  hizmetMasraf: number;
   ayinMasrafi: number;
   binaBakim: number;
   yardim: number;
@@ -338,17 +396,20 @@ export function cemaatHesapla(state: CharacterState, b: IsletmeBaglami, gelmeTab
   });
   const faaliyetGelir = faaliyetler.reduce((t, x) => t + x.gelir, 0);
   const faaliyetMasraf = faaliyetler.reduce((t, x) => t + x.masraf, 0);
-  const toplamGelir = bagis + faaliyetGelir;
+  const hz = aktifHizmet(cm);
+  const hizmetGelir = hz ? inanan * hz.gelir * BAGIS_BIRIMI * b.enflasyon : 0;
+  const hizmetMasraf = hz ? inanan * hz.masraf * BAGIS_BIRIMI * b.giderEnflasyon : 0;
+  const toplamGelir = bagis + faaliyetGelir + hizmetGelir;
   const ayinMasrafi = bagis * (AYIN_MASRAF_ORANI + ay.masraf);
   const binaBakim = r2(binaBakimMasrafi(state, b.giderEnflasyon) + yatirimYillikMasrafi(state, b.giderEnflasyon)); // cemaat giderleri: bina bakımı + yatırım kademe masrafı
   const yardim = toplamGelir * yp.oran * d.yardim * (1 - clamp(o.yardimMaliyet, 0, 0.8));
   const aidat = toplamGelir * loncaAidatiOrani(pazarPayiHesapla(state));
-  const brutKar = toplamGelir - faaliyetMasraf - ayinMasrafi - binaBakim - yardim - aidat;
+  const brutKar = toplamGelir - faaliyetMasraf - hizmetMasraf - ayinMasrafi - binaBakim - yardim - aidat;
   const vOran = Math.max(0.05, vergiOrani(state) - o.vergiPuan);
   const vergi = brutKar > 0 ? brutKar * vOran : 0;
   return {
     inanan, gelmeOrani, gelmeKaynagi: gelmeKaynagiBul(state), kapasite, gelen, tasan, bagisOrani, bagisYapan, bagisBirimi, bagis,
-    faaliyetler, faaliyetGelir, faaliyetMasraf, ayinMasrafi, binaBakim, yardim, aidat, toplamGelir, brutKar, vergiOrani: vOran, vergi,
+    faaliyetler, faaliyetGelir, faaliyetMasraf, hizmetGelir, hizmetMasraf, ayinMasrafi, binaBakim, yardim, aidat, toplamGelir, brutKar, vergiOrani: vOran, vergi,
   };
 }
 
@@ -399,6 +460,7 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
   const acik = acikFaaliyetler(state);
   const kitleBoyu = Math.max(1, state.meslek_musteri);
   const ay = aktifAyin(cm);
+  const hy = aktifHizmet(cm)?.yillik;
   const kalemler: { kod: string; deger: number }[] = [
     { kod: "sohret", deger: sohretMusteriSayisi(state.un) / kitleBoyu },
     { kod: "ahlak", deger: ahlakInananEtkisi(state.ahlak) * CEMAAT_INANAN_OLCEK },
@@ -407,6 +469,7 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
     { kod: "yardim", deger: yp.inanan * (yp.inanan > 0 ? yE : 1) * CEMAAT_INANAN_OLCEK },
     { kod: "faaliyet", deger: acik.reduce((t, f) => t + f.inanan, 0) * CEMAAT_INANAN_OLCEK },
     { kod: "ogreti", deger: o.inanan * CEMAAT_INANAN_OLCEK },
+    { kod: "hizmet", deger: (hy?.inanan ?? 0) * CEMAAT_INANAN_OLCEK },
     { kod: "ayin", deger: (state.veba?.aktif ? ay.vebaInanan : ay.inanan) * CEMAAT_INANAN_OLCEK },
     { kod: "tanitim", deger: tanitimBuyumesi(state) / kitleBoyu },
     { kod: "asevi", deger: (yp.oran >= 0.2 ? ASEVI_INANAN_YILLIK[Math.min(aseviKademesi(state), ASEVI_INANAN_YILLIK.length - 1)] : 0) / kitleBoyu },
@@ -422,10 +485,11 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
     acik.reduce((t, f) => t + f.ahlak, 0) +
     (yp.oran >= 0.2 ? ASEVI_AHLAK_YILLIK[Math.min(aseviKademesi(state), ASEVI_AHLAK_YILLIK.length - 1)] : 0) +
     o.ahlak +
-    ay.ahlak -
+    ay.ahlak +
+    (hy?.ahlak ?? 0) -
     aranmaAhlakKaybi(state.suc_seviyesi);
-  const otorite = kitle.otorite + o.otorite + ay.otorite - FANATIK_OTORITE_KATSAYI * cm.fanatiklik;
-  const fanatiklikDegisim = TON_FANATIKLIK[cm.ton] - FANATIK_DOGAL_SONUM + ay.fanatiklik;
+  const otorite = kitle.otorite + o.otorite + ay.otorite + (hy?.otorite ?? 0) - FANATIK_OTORITE_KATSAYI * cm.fanatiklik;
+  const fanatiklikDegisim = TON_FANATIKLIK[cm.ton] - FANATIK_DOGAL_SONUM + ay.fanatiklik + (hy?.fanatiklik ?? 0);
   return { kalemler, toplam, ahlak, otorite, fanatiklikDegisim };
 }
 
@@ -468,6 +532,8 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   const sadakat = calisanSadakatKontrolleri(state, gelirTaban, uyarilar);
   nakitHasar += sadakat.nakitHasar;
   ekstraGider += sadakat.ekstraGider;
+
+  hizmetKosulKontrol(state, cm, uyarilar);
 
   // 2. Gelir ve gider: ayine gelme oranı her yıl yeniden zarlanır.
   const [gmn, gmx] = gelmeAraligi(state);
@@ -568,6 +634,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
     cm.ayin_son_yil = state.yil;
     cm.ayin = "yok";
   }
+  hizmetYilSonu(state, cm, uyarilar);
   if (cm.fanatiklik > ASIRI_ESIK && (cm.asiri_son_yil == null || state.yil - cm.asiri_son_yil >= ASIRI_COOLDOWN_YIL)) {
     const risk = ((cm.fanatiklik - ASIRI_ESIK) / 300) * o.asiriRisk;
     if (Math.random() < risk) {
@@ -594,7 +661,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   const dokum: IsletmeDokum = {
     yil: state.yil,
     satis: r2(h.toplamGelir),
-    alim: r2(h.faaliyetMasraf + h.ayinMasrafi),
+    alim: r2(h.faaliyetMasraf + h.hizmetMasraf + h.ayinMasrafi),
     depoMasrafi: r2(h.binaBakim),
     yatirimMasrafi: yatirimYillikMasrafi(state, b.giderEnflasyon),
     loncaAidati: r2(h.aidat),

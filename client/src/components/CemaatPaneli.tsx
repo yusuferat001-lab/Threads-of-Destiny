@@ -72,6 +72,16 @@ const M = {
   pKitle: { tr: 'Vaaz kitlesi', en: 'Sermon audience' },
   pYardim: { tr: 'Yardım harcaması', en: 'Aid spending' },
   pTon: { tr: 'Vaaz tonu', en: 'Sermon tone' },
+  pHizmet: { tr: 'Hizmet görevi', en: 'Service mission' },
+  hizmetBirak: { tr: 'Görevi bırak', en: 'Abandon mission' },
+  hizmetYok: { tr: 'Çok yıllı bir görev üstlenebilirsin; cemaate ve adına etkisi büyüktür.', en: 'You may take on a multi-year mission; it weighs heavily on your flock and name.' },
+  hizmetKalan: { tr: 'kalan', en: 'left' },
+  hKilitRutbe: { tr: 'Daha yüksek rütbe gerekir.', en: 'Needs a higher rank.' },
+  hKilitSavas: { tr: 'Yalnız savaş sürerken.', en: 'Only while a war is on.' },
+  hKilitVeba: { tr: 'Yalnız salgın sürerken.', en: 'Only while a plague is on.' },
+  hKilitHapis: { tr: 'Hapisteyken olmaz.', en: 'Not while imprisoned.' },
+  gHizmet: { tr: 'Hizmet görevi masrafı', en: 'Mission costs' },
+  hizmetGelirKalemi: { tr: 'Hizmet görevi geliri', en: 'Mission income' },
   pAyin: { tr: 'Bu yılki ayin', en: 'This year\'s service' },
   ayinRutbe: { tr: 'Daha yüksek rütbe gerekir.', en: 'Needs a higher rank.' },
   ayinBekleme: { tr: 'Yakın zamanda düzenledin; biraz beklemelisin.', en: 'You held one recently; wait a while.' },
@@ -123,6 +133,7 @@ const GELME_KAYNAK: Record<string, D> = {
   savas: { tr: 'savaş', en: 'war' },
   veba: { tr: 'salgın — halk evinde kalıyor', en: 'plague — people stay home' },
 };
+const HIZMET_KILIT = { rutbe: 'hKilitRutbe', savas: 'hKilitSavas', veba: 'hKilitVeba', hapis: 'hKilitHapis' } as const;
 const INANAN_KALEMLERI: Record<string, D> = {
   sohret: { tr: 'Şöhret', en: 'Fame' },
   ahlak: { tr: 'Ahlak bandı', en: 'Morality band' },
@@ -132,6 +143,7 @@ const INANAN_KALEMLERI: Record<string, D> = {
   faaliyet: { tr: 'Faaliyetler', en: 'Activities' },
   ogreti: { tr: 'Öğretiler', en: 'Doctrines' },
   ayin: { tr: 'Büyük Ayin', en: 'Great Service' },
+  hizmet: { tr: 'Hizmet görevi', en: 'Service mission' },
   tanitim: { tr: 'Vaaz ve davet', en: 'Outreach' },
   davetci: { tr: 'Davetçiler', en: 'Outreach workers' },
   yatkinlik: { tr: 'Yatkınlık', en: 'Aptitude' },
@@ -187,6 +199,14 @@ export function cemaatUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: '
         const sizma = u.sizma ? ` 🕵️ ${en ? `${u.isim ?? ''} leaked inside information (+30% damage, guards bypassed).` : `${u.isim ?? ''} içeriden bilgi sızdırdı (hasar %30 arttı, güvenlik devre dışı).`}` : '';
         return `⚔️ ${kim} ${d(SALDIRI_SONUCLARI[tur] ?? SALDIRI_SONUCLARI.nakit)}${kayiplar.length ? ` — ${kayiplar.join(', ')}` : ''}.${sizma}`;
       }
+      case 'hizmet_sonuc': {
+        const g = durum.cemaat?.hizmet.secenekler.find((x) => x.id === u.hat);
+        const ad = g ? `${g.simge} ${d(g.ad)}` : '';
+        const k = u.musteriKaybi ? ` (${u.musteriKaybi > 0 ? '+' : ''}${formatMusteri(dil, u.musteriKaybi)} ${en ? 'believers' : 'inanan'})` : '';
+        if (u.basari && u.yariyolda) return en ? `${ad}: circumstances changed and the mission closed early, but your effort was rewarded${k}.` : `${ad}: koşullar değişti, görev erken kapandı; emeğin karşılığını aldın${k}.`;
+        if (u.basari) return en ? `${ad}: the mission succeeded; your flock and name grew${k}.` : `${ad}: görev başarıyla tamamlandı; cemaatin ve adın büyüdü${k}.`;
+        return en ? `${ad}: the mission fell short; your flock and name suffered${k}.` : `${ad}: görev amacına ulaşamadı; cemaatin ve adın zarar gördü${k}.`;
+      }
       case 'vergi_indirimi_bitti':
         return en ? '🧾 Your tax reduction has ended.' : '🧾 Vergi indirimin sona erdi.';
       case 'imtiyaz_bitti':
@@ -223,6 +243,10 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
 
   const uyariMetni = (u: IsletmeUyari): string => cemaatUyariMetni(u, durum, dil);
 
+  const hizmetAd = (id: string) => {
+    const s = c.hizmet.secenekler.find((x) => x.id === id);
+    return s ? `${s.simge} ${d(s.ad)}` : id;
+  };
   const politika = (baslik: string, anahtar: keyof CemaatKararGirdisi, p: CemaatPolitikaGorunumu) => {
     const secili = p.secenekler.find((s) => s.id === p.secili) ?? p.secenekler[0];
     return (
@@ -312,6 +336,36 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         {politika(t('pYardim'), 'yardim', c.politikalar.yardim)}
         {politika(t('pTon'), 'ton', c.politikalar.ton)}
         {politika(t('pAyin'), 'ayin', c.politikalar.ayin)}
+        <div className="cemaat-politika">
+          <div className="isletme-hat-kontrol">
+            <strong>{t('pHizmet')}:</strong>
+            {c.hizmet.aktif ? (
+              <>
+                <span>
+                  {hizmetAd(c.hizmet.aktif.id)} · {c.hizmet.aktif.kalan} {t('yilKisa')} {t('hizmetKalan')}
+                </span>
+                <button className="ikincil" disabled={yukleniyor} onClick={() => onKarar([], { hizmet: 'yok' })}>
+                  {t('hizmetBirak')}
+                </button>
+              </>
+            ) : (
+              c.hizmet.secenekler.map((s) => (
+                <button
+                  key={s.id}
+                  className="ikincil"
+                  disabled={yukleniyor || !!s.kilit}
+                  title={s.kilit ? t(HIZMET_KILIT[s.kilit]) : d(s.aciklama)}
+                  onClick={() => onKarar([], { hizmet: s.id })}
+                >
+                  {s.simge} {d(s.ad)}
+                </button>
+              ))
+            )}
+          </div>
+          <div className="isletme-fiyat-not">
+            {c.hizmet.aktif ? d(c.hizmet.secenekler.find((s) => s.id === c.hizmet.aktif!.id)?.aciklama ?? { tr: '', en: '' }) : t('hizmetYok')}
+          </div>
+        </div>
 
         </div>
         <div className="sayfa-blok blok-ahlak">
@@ -454,10 +508,16 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
           <div>
             {t('faaliyetKalemi')}: <strong className="s-gelir">+{formatPara(c.faaliyetGelir)}</strong>
           </div>
+          {c.hizmetGelir > 0 && (
+            <div>
+              {t('hizmetGelirKalemi')}: <strong className="s-gelir">+{formatPara(c.hizmetGelir)}</strong>
+            </div>
+          )}
           <div>
             {t('toplamGelir')}: <strong className="s-gelir">+{formatPara(c.toplamGelir)}</strong>
           </div>
           <div>{t('gFaaliyet')}: <strong className="s-gider">−{formatPara(c.giderler.faaliyet)}</strong></div>
+          {c.giderler.hizmet > 0 && <div>{t('gHizmet')}: <strong className="s-gider">−{formatPara(c.giderler.hizmet)}</strong></div>}
           <div>{t('gAyin')}: <strong className="s-gider">−{formatPara(c.giderler.ayin)}</strong></div>
           <div>{t('gBina')}: <strong className="s-gider">−{formatPara(c.giderler.bina)}</strong></div>
           <div>{t('gYardim')}: <strong className="s-gider">−{formatPara(c.giderler.yardim)}</strong></div>

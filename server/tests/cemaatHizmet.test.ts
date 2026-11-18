@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { yeniOyun, mesleğiAta, stateGetir, isletmeKararVer } from "../src/game/gameEngine";
 import { isletmeBaglami } from "../src/game/stateManager";
-import { cemaatHesapla, cemaatEtkenleri, cemaatYilIsle, ayinKilitNedeni, ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
+import { cemaatHesapla, cemaatEtkenleri, cemaatYilIsle, ayinKilitNedeni, hizmetKilitNedeni, ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import type { CharacterState } from "../src/types";
 
@@ -79,5 +79,88 @@ describe("Büyük Ayin", () => {
     expect(cm.ayin).toBe("yok");
     expect(cm.ayin_son_yil).toBe(s.yil);
     expect(ayinKilitNedeni(s, "olcul")).toBe("bekleme");
+  });
+});
+
+describe("Hizmet Görevi (Ordu Papazı ve Salgın Bakımı dahil)", () => {
+  it("kilit nedenleri: rütbe, savaş, salgın, hapis", async () => {
+    const s = await din(1);
+    expect(hizmetKilitNedeni(s, "hayir")).toBeNull();
+    expect(hizmetKilitNedeni(s, "hac")).toBe("rutbe");
+    s.rutbe_seviye = 3;
+    expect(hizmetKilitNedeni(s, "ordu_papazi")).toBe("savas");
+    expect(hizmetKilitNedeni(s, "veba_bakimi")).toBe("veba");
+    s.ulke.savasta = true;
+    s.veba = { aktif: true } as never;
+    expect(hizmetKilitNedeni(s, "ordu_papazi")).toBeNull();
+    expect(hizmetKilitNedeni(s, "veba_bakimi")).toBeNull();
+    s.etiketler.push("hapiste");
+    expect(hizmetKilitNedeni(s, "hayir")).toBe("hapis");
+  });
+
+  it("karar: görev seçilir, ikincisi reddedilir, 'yok' yarıda bırakır", async () => {
+    const s = await din(3);
+    await expect(isletmeKararVer(s.id, [], { hizmet: "yok_boyle_gorev" })).rejects.toThrow("Geçersiz");
+    await expect(isletmeKararVer(s.id, [], { hizmet: "ordu_papazi" })).rejects.toThrow("savaş");
+    const r = await isletmeKararVer(s.id, [], { hizmet: "hac" });
+    expect(r.durum.cemaat!.hizmet.aktif).toEqual({ id: "hac", kalan: 3, gecen: 0 });
+    await expect(isletmeKararVer(s.id, [], { hizmet: "misyon" })).rejects.toThrow("yürüyen görevini");
+    const un = s.un;
+    const r2 = await isletmeKararVer(s.id, [], { hizmet: "yok" });
+    expect(r2.durum.cemaat!.hizmet.aktif).toBeNull();
+    expect(s.un).toBe(un); // hiç yıl geçmediyse ceza yok
+  });
+
+  it("masraf brüt kârdan düşer; gelirli görev toplam geliri artırır; inanan kalemi eklenir", async () => {
+    const s = await din(3);
+    const b = isletmeBaglami(s);
+    const cm = s.isletme!.cemaat!;
+    const taban = cemaatHesapla(s, b, 0.8);
+    cm.hizmet = { id: "hac", kalan: 3, gecen: 0 };
+    const hac = cemaatHesapla(s, b, 0.8);
+    expect(hac.hizmetMasraf).toBeGreaterThan(0);
+    expect(hac.brutKar).toBeLessThan(taban.brutKar);
+    cm.hizmet = { id: "emanet", kalan: 3, gecen: 0 };
+    expect(cemaatHesapla(s, b, 0.8).hizmetGelir).toBeGreaterThan(0);
+    const k = cemaatEtkenleri(s).kalemler.find((x) => x.kod === "hizmet")!;
+    expect(k.deger).toBeGreaterThan(0);
+  });
+
+  it("yıl sonu: süre azalır; bitişte başarı ödül, başarısızlık ceza verir", async () => {
+    const s = await din(3);
+    const cm = s.isletme!.cemaat!;
+    cm.hizmet = { id: "hayir", kalan: 2, gecen: 0 };
+    cemaatYilIsle(s, isletmeBaglami(s));
+    expect(cm.hizmet).toEqual({ id: "hayir", kalan: 1, gecen: 1 });
+    vi.spyOn(Math, "random").mockReturnValue(0); // zar: başarı
+    const ahlak = s.ahlak;
+    const sonuc = cemaatYilIsle(s, isletmeBaglami(s));
+    expect(cm.hizmet).toBeNull();
+    expect(sonuc.dokum.uyarilar!.find((u) => u.kod === "hizmet_sonuc")).toMatchObject({ hat: "hayir", basari: true });
+    expect(s.ahlak).toBeGreaterThan(ahlak);
+  });
+
+  it("başarısız bitiş", async () => {
+    const s = await din(3);
+    const cm = s.isletme!.cemaat!;
+    cm.hizmet = { id: "hac", kalan: 1, gecen: 2 };
+    vi.spyOn(Math, "random").mockReturnValue(0.999);
+    const sonuc = cemaatYilIsle(s, isletmeBaglami(s));
+    expect(sonuc.dokum.uyarilar!.find((u) => u.kod === "hizmet_sonuc")).toMatchObject({ hat: "hac", basari: false });
+  });
+
+  it("ordu papazlığı: savaş bitince erken kapanır, yarım ödül; sağlık en az 1 kalır", async () => {
+    const s = await din(3);
+    const cm = s.isletme!.cemaat!;
+    s.ulke.savasta = true;
+    cm.hizmet = { id: "ordu_papazi", kalan: 2, gecen: 0 };
+    s.saglik = 1;
+    cemaatYilIsle(s, isletmeBaglami(s));
+    expect(s.saglik).toBe(1);
+    expect(cm.hizmet!.gecen).toBe(1);
+    s.ulke.savasta = false;
+    const sonuc = cemaatYilIsle(s, isletmeBaglami(s));
+    expect(cm.hizmet).toBeNull();
+    expect(sonuc.dokum.uyarilar!.find((u) => u.kod === "hizmet_sonuc")).toMatchObject({ hat: "ordu_papazi", basari: true, yariyolda: true });
   });
 });
