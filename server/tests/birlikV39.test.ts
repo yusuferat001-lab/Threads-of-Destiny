@@ -369,13 +369,13 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("er başı görev geliri 0,55–0,70 arası (×1,05); görev kademesi arttıkça gelir ve etkiler artar", async () => {
+  it("er başı görev geliri 0,59–0,70 arası (×1,05); görev kademesi arttıkça gelir ve etkiler artar", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
     expect(GOREV_GELIR_CARPANI).toBe(1.05);
     const v = GOREVLER.map((g) => g.erBasi);
-    expect(Math.min(...v)).toBeCloseTo(0.55, 6);
+    expect(Math.min(...v)).toBeCloseTo(0.59, 6);
     expect(Math.max(...v)).toBeCloseTo(0.7, 6);
-    for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
+    for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThanOrEqual(v[i - 1]); // devriye ve eskort 0,59'da eşit
     // her görev farklı bir karışımla şöhret/moral/otorite/ahlak etkiler; sıfır olmayan her etki en az 0,2
     for (const g of GOREVLER) {
       const etkiler = [g.sohret, g.moral, g.otorite, g.ahlak].filter((x): x is number => typeof x === "number" && x !== 0);
@@ -926,7 +926,7 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     seferberlikUygula(s, "genel", bg(s));
     const sef = birlikHesapla(s, bg(s));
     expect(sef.sold).toBeCloseTo(yalin.sold, 6);
-    expect(yalin.sold).toBeCloseTo(10 * e + 100 * 0.15 * e, 3);
+    expect(yalin.sold).toBeCloseTo(10 * e + 100 * 0.17 * 2 * e, 3);
   });
   it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
     const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");

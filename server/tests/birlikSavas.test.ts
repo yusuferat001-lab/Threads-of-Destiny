@@ -401,16 +401,16 @@ describe("limit aşımı", () => {
   it("kışla limitini aşan her er masraf ve erzakta ×2,5 öder; savaşta seferberlik erleri muaf", () => {
     expect(LIMIT_ASIM_GIDER_CARPANI).toBe(2.5);
     const s = asker();
-    ordu(s, 30, 0); // limit 30
+    ordu(s, 40, 0); // limit 40
     expect(komutaLimiti(s)).toBe(KISLA_ER_LIMITI[0]);
     const h0 = birlikHesapla(s, bg(s));
     expect(limitAsimEri(s)).toBe(0);
-    s.meslek_musteri = 40;
-    birlikAl(s).kalite = { dusuk: 40, orta: 0, yuksek: 0 };
+    s.meslek_musteri = 50;
+    birlikAl(s).kalite = { dusuk: 50, orta: 0, yuksek: 0 };
     expect(limitAsimEri(s)).toBe(10);
     const h1 = birlikHesapla(s, bg(s));
-    const birim = (h0.erMasrafi + h0.erzak) / 30;
-    expect(h1.erMasrafi + h1.erzak).toBeCloseTo(birim * (30 + 10 * 2.5), 4);
+    const birim = (h0.erMasrafi + h0.erzak) / 40;
+    expect(h1.erMasrafi + h1.erzak).toBeCloseTo(birim * (40 + 10 * 2.5), 4);
     expect(h1.limitAsimGideri).toBeCloseTo(birim * 10 * 1.5, 4);
     // savaşta: seferberlik erleri aşım sayılmaz
     s.ulke.savasta = true;
@@ -461,19 +461,19 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("5 görev: er başı kazanç 0,55–0,70 arası, açılış eşiği (askeri güç) 10–250; kazandıran görev daha çok yaralı/ölü/firar verdirir; masraf alanı yok", () => {
+  it("5 görev: er başı kazanç 0,59–0,70 arası, açılış eşiği (askeri güç) 10–250; kazandıran görev daha çok yaralı/ölü/firar verdirir; masraf alanı yok", () => {
     expect(GOREVLER).toHaveLength(5);
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
-      expect(g.erBasi).toBeGreaterThanOrEqual(0.55 - 1e-6);
+      expect(g.erBasi).toBeGreaterThanOrEqual(0.59 - 1e-6);
       expect(g.erBasi).toBeLessThanOrEqual(0.7 + 1e-6);
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
     expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
-    expect(sira[0].erBasi).toBe(0.55);
+    expect(sira[0].erBasi).toBe(0.59);
     expect(sira[sira.length - 1].erBasi).toBe(0.7);
     // kayıp: çoğunlukla yaralı, az ölü, ara sıra firar; kazandıran görevde artar
     for (let i = 0; i < sira.length; i++) {
@@ -502,18 +502,18 @@ describe("görev geliri ve erzak tabloları", () => {
 });
 
 describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
-  it("sabit maaş 10; asker başı 0,15, savaşta da aynı (×1; yalnız ana kadro)", () => {
+  it("sabit maaş 10; asker başı 0,17, savaşta ×2 (0,34; yalnız ana kadro)", () => {
     expect(SOLD).toEqual([10, 10, 10, 10, 10]);
-    expect(ER_BASI_GELIR).toBe(0.15);
-    expect(SAVAS_ER_BASI_CARPANI).toBe(1);
+    expect(ER_BASI_GELIR).toBe(0.17);
+    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
     const s = asker();
     ordu(s, 100);
     const baris = birlikHesapla(s, bg(s));
     s.ulke.savasta = true;
     const savas = birlikHesapla(s, bg(s));
     const e = bg(s).enflasyon;
-    expect(baris.sold).toBeCloseTo(10 * e + 100 * 0.15 * e, 3);
-    expect(savas.sold).toBeCloseTo(10 * e + 100 * 0.15 * e, 3);
+    expect(baris.sold).toBeCloseTo(10 * e + 100 * 0.17 * e, 3);
+    expect(savas.sold).toBeCloseTo(10 * e + 100 * 0.17 * 2 * e, 3);
   });
 
   it("4. yıl (sonuç yılı) kayıpları büyüdü ve beklenen toplam kullanıcı tavanının altında kalır", () => {

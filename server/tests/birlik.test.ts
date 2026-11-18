@@ -269,16 +269,16 @@ describe("askerî güç ve pay", () => {
 describe("limitler ve yeni er katılımı", () => {
   it("ordu limiti yalnız kışla (rütbe limiti ve seferberlik çarpanı yok)", () => {
     const s = asker();
-    expect(KISLA_ER_LIMITI).toEqual([30, 70, 140, 280, 500]);
+    expect(KISLA_ER_LIMITI).toEqual([40, 80, 160, 300, 500]);
     expect(komutaLimiti(s)).toBe(kislaLimiti(s));
-    expect(komutaLimiti(s)).toBe(30);
+    expect(komutaLimiti(s)).toBe(40);
     s.rutbe_seviye = 1;
     s.isletme!.yatirimlar.kisla = 4;
     expect(komutaLimiti(s)).toBe(500); // rütbe sınırlamaz
     s.isletme!.yatirimlar.kisla = 2;
     birlikAl(s).savas = savasBaslat(s);
     birlikAl(s).savas!.seferberlik = "genel";
-    expect(komutaLimiti(s)).toBe(140); // seferberlik limiti büyütmez
+    expect(komutaLimiti(s)).toBe(160); // seferberlik limiti büyütmez
   });
 
   it("subay limiti: rütbe tabanı 1..5 + kışla bonusu, en çok 4", () => {
@@ -1225,26 +1225,27 @@ describe("v67 Madde 2 — talim / moral / ganimet payı", () => {
 });
 
 describe("v67 Madde 3 — ekonomi sabitleri", () => {
-  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,15, sold 10, savaşta er başı ödeme zammı yok (×1), yıllık sabit er yok", async () => {
+  it("sabitler: er masrafı 0,23, erzak 0,13, devlet er başı 0,17, sold 10, savaşta er başı ödeme ×2, yıllık sabit er yok", async () => {
     const d = await import("../src/data/birlik");
     expect(d.ER_MASRAFI).toBe(0.23);
     expect(d.ERZAK_BIRIMI).toBe(0.13);
-    expect(d.ER_BASI_GELIR).toBe(0.15);
+    expect(d.ER_BASI_GELIR).toBe(0.17);
     expect(d.SOLD).toEqual([10, 10, 10, 10, 10]);
-    expect(d.SAVAS_ER_BASI_CARPANI).toBe(1);
+    expect(d.SAVAS_ER_BASI_CARPANI).toBe(2);
     expect(d.BARIS_YILLIK_ER).toBe(0);
-    expect(d.KISLA_BAKIM).toEqual([3, 8, 20, 55, 130]); // kademe başına sabit tutar
+    expect(d.KISLA_BAKIM).toEqual([4, 8, 16, 30, 50]); // kapasite × 0,1, kademe başına sabit tutar
     expect(d.KALITE_BAKIM).toEqual({ dusuk: 0.09, orta: 0.19, yuksek: 0.31 });
   });
 
-  it("görev asgari güçleri 10/40/80/145/250; er başı katsayı 0,55…0,70 eşit adımlı", () => {
+  it("görev asgari güçleri 10/40/80/145/250; er başı katsayı en az 0,59, en çok 0,70", () => {
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
-    expect(sira.map((g) => g.erBasi)).toEqual([0.55, 0.5875, 0.625, 0.6625, 0.7]);
+    expect(sira.map((g) => g.erBasi)).toEqual([0.59, 0.59, 0.625, 0.6625, 0.7]); // en düşük görev bile en az 0,59
+    expect(Math.min(...GOREVLER.map((g) => g.erBasi))).toBeGreaterThanOrEqual(0.59);
   });
 
-  it("gider (tam ağır teçhizat, özel birlik yok): er başı 0,67 (masraf 0,23 + erzak 0,13 + teçhizat 0,31) + kademe başına sabit kışla: 40 er 34,8 · 80 er 73,6 · 150 er 155,5 (enflasyonsuz); talim ücretsiz", () => {
-    for (const [er, kisla, beklenen] of [[40, 1, 34.8], [80, 2, 73.6], [150, 3, 155.5]] as const) {
+  it("gider (tam ağır teçhizat, özel birlik yok): er başı 0,67 (masraf 0,23 + erzak 0,13 + teçhizat 0,31) + kademe başına sabit kışla: 40 er 34,8 · 80 er 69,6 · 150 er 130,5 (enflasyonsuz); talim ücretsiz", () => {
+    for (const [er, kisla, beklenen] of [[40, 1, 34.8], [80, 2, 69.6], [150, 3, 130.5]] as const) {
       const s = asker();
       s.ulke.donem = undefined as never; // dönem erzak çarpanı karışmasın
       s.isletme!.yatirimlar.kisla = kisla;

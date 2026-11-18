@@ -21,9 +21,11 @@ export const ER_TAVANI = 500;
 /** Asker'de pazar yok; karanlık işlerin "müşteri" (er devşirme) kazancı bu sabit ölçekle çarpılır (eskiden pazar büyüklüğü ≈195 / 416, v67 Madde 7). */
 export const ASKER_OLAY_OLCEGI = 195;
 /** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
-export const KISLA_ER_LIMITI = [30, 70, 140, 280, 500];
-/** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu): kademe başına SABİT tutar, ordu sayısına bağlı DEĞİL; kapasitedeki er başı üzerinden hesaplandı (30/70/140/280/500 erde ≈ 0,10 / 0,114 / 0,143 / 0,196 / 0,26). v67 sonrası: 3/8/22/60/150 → 3/8/20/55/130. */
-export const KISLA_BAKIM = [3, 8, 20, 55, 130];
+export const KISLA_ER_LIMITI = [40, 80, 160, 300, 500];
+/** Kışla bakımı: kapasitedeki er başı SABİT 0,1 (enflasyonlu); yıllık bakım = kademe kapasitesi × 0,1 (kademe başına sabit tutar, fiilî er sayısından bağımsız). */
+export const KISLA_BAKIM_KAPASITE_ER_BASI = 0.1;
+/** Kışla kademesi K0..K4 → yıllık bakım = kapasite × KISLA_BAKIM_KAPASITE_ER_BASI = 4 / 8 / 16 / 30 / 50. */
+export const KISLA_BAKIM = KISLA_ER_LIMITI.map((kapasite) => Math.round(kapasite * KISLA_BAKIM_KAPASITE_ER_BASI * 100) / 100);
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
@@ -429,7 +431,7 @@ export const MORAL_SERBEST = 3;
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
 export const SOLD = [10, 10, 10, 10, 10];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir); yalnız ana kadro içindir, seferber ve kiralık erler ödeme almaz. */
-export const ER_BASI_GELIR = 0.15;
+export const ER_BASI_GELIR = 0.17;
 /** Görev geliri ek çarpanı (1 = yok). Teçhizat çarpanı 0,75/1/1,25'e inince güç ≈×0,75 oldu; güçle orantılı gelirler (görev, yağma, ganimet) ×1,33 ile yeniden dengelendi (1,11 × 1,333). */
 export const GOREV_GELIR_CARPANI = 1.05; // v67: görev geliri +%5
 /** Her rütbede sabit yıllık gönüllü er (savaşta ayrıca çarpılmaz; vebada kısılır, kışla limitine takılır). */
@@ -438,7 +440,7 @@ export const BARIS_YILLIK_ER = 0; // v67: yıllık sabit gönüllü er kalktı (
 export const MIZRAKLI_YARALI_AZALTMA = 0.1;
 export const ZIRHLI_OLU_AZALTMA = 0.15;
 export const OKCU_PUSU_AZALTMA = 0.05;
-export const SAVAS_ER_BASI_CARPANI = 1;
+export const SAVAS_ER_BASI_CARPANI = 2;
 export const ER_MASRAFI = 0.23;
 export const ERZAK_BIRIMI = 0.13;
 /** Ganimet payı politikası (az/dengeli/cömert) en çok bu kadar yılda bir değiştirilebilir. */
@@ -664,13 +666,13 @@ export interface GorevTanimi {
 }
 export const GOREVLER: GorevTanimi[] = [
   {
-    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 10, erBasi: 0.55, moral: 0.2, yalnizSavas: false, ganimet: 0,
+    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 10, erBasi: 0.59, moral: 0.2, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.003, olu: 0.0003, firar: 0.0005 }, sertlik: 0, savasCarpani: 1.1, senaryo: null,
     ad: { orta: { tr: "Nöbet ve Devriye", en: "Watch & Patrol" }, sanayi: { tr: "Asayiş ve Devriye", en: "Policing & Patrol" } },
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 40, erBasi: 0.5875, sohret: 0.3, otorite: 0.3, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 40, erBasi: 0.59, sohret: 0.3, otorite: 0.3, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.006, olu: 0.0006, firar: 0.001 }, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
