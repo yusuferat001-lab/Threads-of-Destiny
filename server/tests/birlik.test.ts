@@ -1233,7 +1233,7 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
     expect(d.SOLD).toEqual([10, 10, 10, 10, 10]);
     expect(d.SAVAS_ER_BASI_CARPANI).toBe(1);
     expect(d.BARIS_YILLIK_ER).toBe(0);
-    expect(d.KISLA_BAKIM_ER_BASI).toBe(0.1); // er başı, tüm kademelerde aynı
+    expect(d.KISLA_BAKIM).toEqual([3, 8, 20, 55, 130]); // kademe başına sabit tutar
     expect(d.KALITE_BAKIM).toEqual({ dusuk: 0.09, orta: 0.19, yuksek: 0.31 });
   });
 
@@ -1243,8 +1243,8 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
     expect(sira.map((g) => g.erBasi)).toEqual([0.55, 0.5875, 0.625, 0.6625, 0.7]);
   });
 
-  it("gider (tam ağır teçhizat, özel birlik yok): er başı 0,77 (masraf 0,23 + erzak 0,13 + teçhizat 0,31 + kışla 0,10): 40 er 30,8 · 80 er 61,6 · 150 er 115,5 (enflasyonsuz); talim ücretsiz", () => {
-    for (const [er, kisla, beklenen] of [[40, 1, 30.8], [80, 2, 61.6], [150, 3, 115.5]] as const) {
+  it("gider (tam ağır teçhizat, özel birlik yok): er başı 0,67 (masraf 0,23 + erzak 0,13 + teçhizat 0,31) + kademe başına sabit kışla: 40 er 34,8 · 80 er 73,6 · 150 er 155,5 (enflasyonsuz); talim ücretsiz", () => {
+    for (const [er, kisla, beklenen] of [[40, 1, 34.8], [80, 2, 73.6], [150, 3, 155.5]] as const) {
       const s = asker();
       s.ulke.donem = undefined as never; // dönem erzak çarpanı karışmasın
       s.isletme!.yatirimlar.kisla = kisla;
@@ -1352,10 +1352,10 @@ describe("v67 Madde 4 — güç formülü", () => {
 });
 
 describe("v67 Madde 5 — düşman gücü", () => {
-  it("formül SADE: düşman = taban(yaş) + oyuncu gücünün %30'u; taban 20 yaşta başlar (15 / 18 / 22) ve ölene kadar yılda taban20'nin %1,8 / %2 / %2,2'si (0,27 / 0,36 / 0,484) doğrusal artar", async () => {
+  it("formül SADE: düşman = taban(yaş) + oyuncu gücünün %30'u; taban 20 yaşta başlar (10 / 12,5 / 15,5) ve ölene kadar yılda 0,27 / 0,36 / 0,484 doğrusal artar", async () => {
     const d = await import("../src/data/birlik");
     expect(d.DUSMAN_OYUNCU_PAYI).toBe(0.3);
-    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 15, artis: 0.27 }, sinir: { taban20: 18, artis: 0.36 }, savas: { taban20: 22, artis: 0.484 } });
+    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 10, artis: 0.27 }, sinir: { taban20: 12.5, artis: 0.36 }, savas: { taban20: 15.5, artis: 0.484 } });
     for (const yas of [20, 30, 45, 60, 80]) {
       expect(d.dusmanGucuYas(yas, "haydut")).toBeLessThan(d.dusmanGucuYas(yas, "sinir"));
       expect(d.dusmanGucuYas(yas, "sinir")).toBeLessThan(d.dusmanGucuYas(yas, "savas"));

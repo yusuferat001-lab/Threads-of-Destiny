@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik, barisCatismaCoz } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM_ER_BASI, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -703,7 +703,7 @@ describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indiri
   it("savaşta kışla bakımı %25 düşer", () => {
     const { s } = ordu(100);
     const baris = birlikHesapla(s, bg(s)).kislaBakim;
-    expect(baris).toBeCloseTo(erSayisi(s) * KISLA_BAKIM_ER_BASI * bg(s).giderEnflasyon, 6); // er başı, kademeden bağımsız
+    expect(baris).toBeCloseTo(KISLA_BAKIM[4] * bg(s).giderEnflasyon, 6); // kademe başına sabit, ordu sayısından bağımsız
     s.ulke.savasta = true;
     expect(SAVAS_KISLA_INDIRIMI).toBe(0.25);
     expect(birlikHesapla(s, bg(s)).kislaBakim).toBeCloseTo(baris * 0.75, 6);
@@ -930,8 +930,11 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
   });
   it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
     const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");
-    expect(CATISMA_ORDU_MORALI.haydut).toEqual({ zafer: 2, yenilgi: -3 });
-    expect(CATISMA_ORDU_MORALI.sinir).toEqual({ zafer: 3, yenilgi: -5 });
+    expect(CATISMA_ORDU_MORALI.haydut).toEqual({ zafer: 4, yenilgi: -3 });
+    expect(CATISMA_ORDU_MORALI.sinir).toEqual({ zafer: 6, yenilgi: -5 });
+    expect(CATISMA_KISI_MORALI.haydut.zafer).toBe(2);
+    expect(CATISMA_KISI_MORALI.sinir.zafer).toBe(4);
+    expect(SAVAS_KISI_MORALI.zafer).toBe(8);
     expect(CATISMA_KISI_MORALI.sinir.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.haydut.yenilgi);
     expect(SAVAS_KISI_MORALI.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.sinir.yenilgi);
     const s = asker();
@@ -942,8 +945,8 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
     barisCatismaCoz(s, b, bg(s), "saldiri");
     rnd.mockRestore();
-    expect(b.moral).toBeGreaterThanOrEqual(54); // +4 sınır zaferi (+ ilk zaferde madalya morali)
-    expect(s.mutluluk).toBe(52);
+    expect(b.moral).toBeGreaterThanOrEqual(56); // +6 sınır zaferi (+ ilk zaferde madalya morali)
+    expect(s.mutluluk).toBe(54); // +4 sınır zaferi
   });
 });
 
@@ -995,9 +998,9 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     expect(b.moral).toBeGreaterThanOrEqual(10 - 16 + 2 > 0 ? 0 : 0);
     expect(b.moral).toBeGreaterThan(0);
   });
-  it("savaş morali: ordu zafer +6 / yenilgi −17; kanat bozgunu −9", async () => {
+  it("savaş morali: ordu zafer +10 / yenilgi −17; kanat bozgunu −9", async () => {
     const { MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN } = await import("../src/data/birlik");
-    expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([6, -17, -9]);
+    expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([10, -17, -9]);
   });
   it("etkin talim: seferberlerin sabit giriş talimi (Gazi 55, Tüm Erkekler 10) ordunun talimini er sayısına göre seyreltir; ordunun gerçek talimi bozulmaz; savaş sonu katılan kadroya işler", async () => {
     const { etkinTalim } = await import("../src/game/birlik");

@@ -43,7 +43,7 @@ import {
   KALITE_FIYATI,
   KARSI_TUR,
   KARSI_TUR_BONUSU,
-  KISLA_BAKIM_ER_BASI,
+  KISLA_BAKIM,
   KISLA_ER_LIMITI,
   MORAL_BASLANGIC,
   TALIM_BASLANGIC,
@@ -710,7 +710,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const erMasrafi = giderEri * ER_MASRAFI * bg.giderEnflasyon * mC;
   const seferEk = b.savas?.seferberlik ? SEFERBERLIK_TANIMLARI[b.savas.seferberlik]?.erzak ?? 0 : 0;
   const erzak = giderEri * ERZAK_BIRIMI * bg.giderEnflasyon * erzakDonemCarpani(state) * (1 + seferEk) * mC * ikmal.maliyet * (savasta ? 1 - ikmal.yagma.erzakIndirimi : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
-  const kislaBakim = er * KISLA_BAKIM_ER_BASI * bg.giderEnflasyon * (savasta ? 1 - SAVAS_KISLA_INDIRIMI : 1);
+  const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon * (savasta ? 1 - SAVAS_KISLA_INDIRIMI : 1);
   const techizatBakim = (b.kalite.dusuk * KALITE_BAKIM.dusuk + b.kalite.orta * KALITE_BAKIM.orta + b.kalite.yuksek * KALITE_BAKIM.yuksek) * bg.giderEnflasyon;
   const yaraliGideri = yaraliSayisi(state) * YARALI_TEDAVI_GIDERI * bg.giderEnflasyon;
   // Özel birlik bakımı: her birlikte kaç er varsa (ordu eri × birlik payı) o kadar × birliğin er başı sabit bakımı (v67).

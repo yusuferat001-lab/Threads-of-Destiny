@@ -22,8 +22,8 @@ export const ER_TAVANI = 500;
 export const ASKER_OLAY_OLCEGI = 195;
 /** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
 export const KISLA_ER_LIMITI = [30, 70, 140, 280, 500];
-/** Kışla bakımı ER BAŞINA yıllık sabit (enflasyonlu) ve TÜM kademelerde aynıdır (v67 sonrası; eskiden kademeye göre 3/8/22/60/150 sabit tutardı). Yıllık kışla bakımı = er × bu. */
-export const KISLA_BAKIM_ER_BASI = 0.1;
+/** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu): kademe başına SABİT tutar, ordu sayısına bağlı DEĞİL; kapasitedeki er başı üzerinden hesaplandı (30/70/140/280/500 erde ≈ 0,10 / 0,114 / 0,143 / 0,196 / 0,26). v67 sonrası: 3/8/22/60/150 → 3/8/20/55/130. */
+export const KISLA_BAKIM = [3, 8, 20, 55, 130];
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
@@ -287,14 +287,14 @@ export function agirlikliSec<T extends string>(agirliklar: Partial<Record<T, num
 /**
  * Düşman gücü (v67 sonrası, SADE): E = TABAN(yaş) + DUSMAN_OYUNCU_PAYI × oyuncu gücü; sapma ve zafer serisi hazırlığı çağıranda çarpılır.
  * TABAN yaşla DOĞRUSAL artar: 20 yaşında `taban20`, sonra her yıl `artis` kadar eklenir ve ölene kadar aynı hızla sürer (20 altı sabit; üstel büyüme, 60 yaş dönüm noktası ve tür çarpanı YOK).
- * Üç tür için ayrı başlangıç ve yıllık artış: haydut en kolay, sınır daha güçlü, büyük savaş en güçlü; tabanlar 15 < 18 < 22 ve yıllık artışlar birbirine yakın (taban20'nin %1,8 < %2 < %2,2'si). Oyuncu güçlendikçe düşman da (%30) büyür.
+ * Üç tür için ayrı başlangıç ve yıllık artış: haydut en kolay, sınır daha güçlü, büyük savaş en güçlü; tabanlar 10 < 12,5 < 15,5 ve yıllık artışlar birbirine yakın (0,27 < 0,36 < 0,484). Oyuncu güçlendikçe düşman da (%30) büyür.
  */
 export type DusmanTuru = "haydut" | "sinir" | "savas";
 export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban20: number; artis: number }> = {
-  // artış = taban20'nin yıllık %1,8 / %2 / %2,2'si (mutlak +1,8/+2/+2,2 güç/yıl okuması oynanamaz çıktı: kazanma %2–8).
-  haydut: { taban20: 15, artis: 0.27 },
-  sinir: { taban20: 18, artis: 0.36 },
-  savas: { taban20: 22, artis: 0.484 },
+  // yıllık artış mutlak güç/yıl (0,27 / 0,36 / 0,484); tabanlar 10 / 12,5 / 15,5 (v67 sonrası; artışlar önceki tabanlarda %1,8 / %2 / %2,2 idi).
+  haydut: { taban20: 10, artis: 0.27 },
+  sinir: { taban20: 12.5, artis: 0.36 },
+  savas: { taban20: 15.5, artis: 0.484 },
 };
 /** Düşman gücüne eklenen oyuncu askerî gücü payı. */
 export const DUSMAN_OYUNCU_PAYI = 0.3;
@@ -419,7 +419,7 @@ export const MORAL_YUKSEK_KAYIP_ESIGI = 0.1;
 export const MORAL_YUKSEK_KAYIP = -4;
 export const REVIR_MORAL_KADEME = 0.4;
 /** Bir kerelik moral etkileri. */
-export const MORAL_ZAFER = 6;
+export const MORAL_ZAFER = 10;
 export const MORAL_KANAT_BOZGUN = -9;
 export const MORAL_YENILGI = -17;
 export const MORAL_IDAM = -3;
@@ -580,14 +580,14 @@ export const BARIS_MORAL_ZAFER = 4;
 export const BARIS_MORAL_YENILGI = -4;
 /** Çatışma türüne göre ordu morali (haydut hafif, sınır daha ağır) ve oyuncunun kendi morali (mutluluk). Savaş türü: ordu morali MORAL_ZAFER/MORAL_YENILGI (yıl işleme), kişi morali SAVAS_KISI_MORALI. */
 export const CATISMA_ORDU_MORALI: Record<"haydut" | "sinir", { zafer: number; yenilgi: number }> = {
-  haydut: { zafer: 2, yenilgi: -3 },
-  sinir: { zafer: 3, yenilgi: -5 },
+  haydut: { zafer: 4, yenilgi: -3 },
+  sinir: { zafer: 6, yenilgi: -5 },
 };
 export const CATISMA_KISI_MORALI: Record<"haydut" | "sinir", { zafer: number; yenilgi: number }> = {
-  haydut: { zafer: 1, yenilgi: -2 },
-  sinir: { zafer: 2, yenilgi: -4 },
+  haydut: { zafer: 2, yenilgi: -2 },
+  sinir: { zafer: 4, yenilgi: -4 },
 };
-export const SAVAS_KISI_MORALI = { zafer: 6, yenilgi: -10 };
+export const SAVAS_KISI_MORALI = { zafer: 8, yenilgi: -10 };
 /** Yıllık erzak fiyatı dönem çarpanı (giderler üzerinden). */
 /** Erzak giderinin döneme göre çarpanı: eski [0,8–1,3] bandı [0,9–1,1] aralığına sıkıştırıldı (durgunluk 1 sabit; aşağı ve yukarı ayrı ölçeklendi). */
 export const ERZAK_DONEM_CARPANI = { bolluk: 0.9, durgunluk: 1, kitlik: 1.1, savas: 1.07, veba: 1.03 };
