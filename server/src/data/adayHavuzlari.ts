@@ -302,6 +302,16 @@ export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
     a("guvenlik", "sadik_cirak", "çan kulesinde nöbet tutan vefalı bir yetim", "a loyal orphan who keeps watch in the bell tower"),
     a("guvenlik", "siradan", "kasaba kapısından emekli, sakin bir nöbetçi", "a calm retired sentry from the town gate"),
     a("guvenlik", "usta_sadik", "kutsal emanetleri gözü gibi koruyan yaşlı bir muhafız", "an old guard who protects the relics like his own eyes"),
+    // savunma = Âlim
+    a("savunma", "sadik_cirak", "manastır kütüphanesinde gece gündüz okuyan çırak keşiş", "a novice monk who reads day and night in the monastery library"),
+    a("savunma", "siradan", "kasabanın dört kitabını ezbere bilen orta halli bir âlim", "a middling scholar who knows the town's four books by heart"),
+    a("savunma", "usta_guvenilmez", "söz oyunlarında usta ama kimin bayrağı altında olduğu belirsiz bir hatip", "a rhetorician skilled at word-play whose true allegiance is unclear"),
+    a("savunma", "usta_sadik", "yıllarca üniversitede tartışmış, ilkesinden dönmeyen yaşlı bir âlim", "an old scholar who disputed for years at the university and never abandoned his principles"),
+    // kesif = Haberci
+    a("kesif", "sadik_cirak", "pazar yerinde dedikodu toplayan meraklı bir genç", "a curious youth who gathers gossip in the marketplace"),
+    a("kesif", "siradan", "köyden köye mektup taşıyan, kulağı açık bir ulak", "a well-informed courier who carries letters from village to village"),
+    a("kesif", "usta_guvenilmez", "her kapıdan haber alan ama sırrı satan eski bir kâtip", "a former clerk who hears news at every door but sells secrets"),
+    a("kesif", "usta_sadik", "rakip kürsülerin her sözünü sana ileten emektar bir haberci", "a veteran informant who relays every word from rival pulpits to you"),
   ],
 
   "Din Adamı|Sanayi Devrimi": [
@@ -336,5 +346,15 @@ export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
     a("guvenlik", "sadik_cirak", "gece boyunca ibadethaneyi gezen genç bir bekçi", "a young watchman who patrols the chapel all night"),
     a("guvenlik", "siradan", "fabrika kapısından ibadethaneye geçmiş sıradan bir bekçi", "an ordinary guard who moved from a factory gate to the chapel"),
     a("guvenlik", "usta_sadik", "kasa ve bağış kutularını gözü gibi koruyan kıdemli bir bekçibaşı", "a senior head-watchman who guards the safe and offering boxes like his own eyes"),
+    // savunma = Âlim
+    a("savunma", "sadik_cirak", "ilahiyat okulunda gece lambasıyla ders çalışan bir öğrenci", "a theology student who studies by lamplight at night"),
+    a("savunma", "siradan", "dergilerde yazan, tartışmayı seven vasat bir ilahiyatçı", "a middling theologian who writes in the journals and likes a debate"),
+    a("savunma", "usta_guvenilmez", "salon tartışmalarında parlayan ama sözünü pazarlayan bir hatip", "an orator who shines in salon debates but sells his word"),
+    a("savunma", "usta_sadik", "otuz yıl kürsüde ilkesinden dönmemiş saygın bir ilahiyat hocası", "a respected theology teacher who never gave up his principles in thirty years at the lectern"),
+    // kesif = Haberci
+    a("kesif", "sadik_cirak", "gazete bayiinde çalışıp mahalle haberlerini toplayan bir genç", "a youth who works at a newsstand and collects neighbourhood news"),
+    a("kesif", "siradan", "telgraf idaresinde çalışan, kulağı açık bir memur", "a well-informed clerk at the telegraph office"),
+    a("kesif", "usta_guvenilmez", "rakip cemaatin toplantılarına sızan ama kime çalıştığı belirsiz bir muhabir", "a reporter who infiltrates rival congregations but whose loyalty is unclear"),
+    a("kesif", "usta_sadik", "mahalle mahalle dolaşıp rakip vaizlerin sözlerini sana getiren sadık bir haberci", "a faithful informant who walks the districts and brings you the rival preachers' words"),
   ],
 };

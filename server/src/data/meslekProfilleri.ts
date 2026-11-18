@@ -276,6 +276,8 @@ const DIN_ROLLER: RolTanimi[] = [
   { tur: "maliyet", ad: { tr: "Ekonom", en: "Steward" } },
   { tur: "musteri", ad: { tr: "Davetçi", en: "Outreach worker" } },
   { tur: "guvenlik", ad: { tr: "Kilise bekçisi", en: "Church watchman" } },
+  { tur: "savunma", ad: { tr: "Âlim", en: "Scholar" } },
+  { tur: "kesif", ad: { tr: "Haberci", en: "Informant" } },
 ];
 
 
@@ -366,8 +368,8 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat" | "birlik"
     musteri: { tr: "Yılda +1…+5 inanan kazandırır", en: "Brings +1…+5 worshippers a year" },
     guvenlik: { tr: "Kumbarayı ve ibadethaneyi korur", en: "Protects the offering box and sanctuary" },
     taarruz: { tr: "Saldırıyı ve ganimeti artırır, kaybı da artırır", en: "Raises attack and loot, also raises losses" },
-    savunma: { tr: "Savunmayı güçlendirir, ölümü azaltır, ganimeti azaltır", en: "Strengthens defence, cuts deaths, trims loot" },
-    kesif: { tr: "Arazi seçmeyi ve düşman tahminini iyileştirir, savaşı önceden bildirir", en: "Improves terrain choice and enemy estimates, warns of war ahead" },
+    savunma: { tr: "Münazarada gücünü ve hizmet görevlerinde başarı şansını artırır", en: "Strengthens you in disputations and improves mission success" },
+    kesif: { tr: "Münazarada rakibini daha iyi okumanı sağlar", en: "Lets you read your rival better in disputations" },
   },
   ticaret: {
     ana: { tr: "Yıllık satışı artırır", en: "Raises yearly sales" },

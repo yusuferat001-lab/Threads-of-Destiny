@@ -70,6 +70,7 @@ import {
   calisanMaaslariniGuncelle,
   calisanSadakatKontrolleri,
   calisanlariGelistir,
+  calisanBonusu,
   ekipBonuslari,
   ilkYillarGuvenli,
   imtiyazAktifMi,
@@ -257,9 +258,23 @@ export function hizmetKilitNedeni(state: CharacterState, id: string): "rutbe" | 
   if (state.etiketler.includes("hapiste")) return "hapis";
   return null;
 }
-/** Başarı şansı: görevin zorluğu, ahlak ve (varsa) kadro/öğreti yardımı. */
+// ── Kadro (Âlim ve Haberci) ─────────────────────────────────────────────────
+/** Kadro tavanı (kesir): aynı türden çok çalışan toplanır ama bu sınırı aşmaz. */
+const KADRO_TAVANI = 0.3;
+/** Âlim: münazara gücü ve görev başarısı; Haberci: münazarada rakibi okuma (tahmin aralığı daralır). */
+export function kadroEtkisi(state: CharacterState): { alim: number; okuma: number } {
+  let alim = 0;
+  let okuma = 0;
+  for (const u of state.ekip) {
+    const b = calisanBonusu(u);
+    if (b?.tur === "savunma") alim += b.deger;
+    else if (b?.tur === "kesif") okuma += b.deger;
+  }
+  return { alim: Math.min(KADRO_TAVANI, alim), okuma: Math.min(KADRO_TAVANI, okuma) };
+}
+/** Başarı şansı: görevin zorluğu, ahlak ve Âlim yardımı. */
 export function hizmetBasariSansi(state: CharacterState, zorluk: number): number {
-  return clamp(0.8 - zorluk + clamp(state.ahlak, 0, 100) / 500, 0.2, 0.95);
+  return clamp(0.8 - zorluk + clamp(state.ahlak, 0, 100) / 500 + kadroEtkisi(state).alim * 0.5, 0.2, 0.95);
 }
 /** Koşulu biten (savaş/salgın) ya da hapse düşülen görev: erkenden kapanır. Yıl işlemeden önce çağrılır. */
 function hizmetKosulKontrol(state: CharacterState, cm: CemaatDurumu, uyarilar: IsletmeUyari[]): void {

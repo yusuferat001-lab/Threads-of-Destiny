@@ -924,7 +924,7 @@ describe("işletme (Din Adamı — cemaat, ticaret modu)", () => {
 
   it("rol adları ve şehir yöneticisi (tek otorite): Vaiz/Ekonom/Davetçi/Kilise bekçisi; Selçuklu'da Subaşı", async () => {
     const s = await dinAdami();
-    const roller = new Set(["Ekonom", "Davetçi", "Kilise bekçisi"]);
+    const roller = new Set(["Ekonom", "Davetçi", "Kilise bekçisi", "Âlim", "Haberci"]);
     expect(s.isletme!.adaylar.every((a) => roller.has(a.rol))).toBe(true);
     expect((await isletmeDurumGetir(s.id)).otorite).toBe("Prévôt");
     const st = await dinAdami("Orta Çağ", "Selçuklu");

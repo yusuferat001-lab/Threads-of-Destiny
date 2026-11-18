@@ -62,6 +62,10 @@ function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string
     }
     case 'guvenlik':
       return `${tr ? 'Koruma' : 'Protection'} ${formatYuzde(dil, yuzde, true)}`;
+    case 'savunma':
+      return mod === 'cemaat' ? `${tr ? 'Münazara gücü' : 'Disputation strength'} ${formatYuzde(dil, yuzde, true)}` : null;
+    case 'kesif':
+      return mod === 'cemaat' ? (tr ? 'Münazarada rakibi okur' : 'Reads rivals in disputations') : null;
     case 'ana': {
       const ad = mod === 'birlik' ? (tr ? 'Askerî güç' : 'Military strength') : mod === 'cemaat' ? (tr ? 'Bağışlar' : 'Donations') : mod === 'uretim' ? (tr ? 'Yıllık üretim' : 'Yearly output') : tr ? 'Satışlar' : 'Sales';
       return `${ad} ${formatYuzde(dil, yuzde, true)}`;

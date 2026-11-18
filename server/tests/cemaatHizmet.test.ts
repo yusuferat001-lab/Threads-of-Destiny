@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { yeniOyun, mesleğiAta, stateGetir, isletmeKararVer } from "../src/game/gameEngine";
 import { isletmeBaglami } from "../src/game/stateManager";
-import { cemaatHesapla, cemaatEtkenleri, cemaatYilIsle, ayinKilitNedeni, hizmetKilitNedeni, ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
+import { adaylariYenile, ekipBonuslari } from "../src/game/isletme";
+import { cemaatHesapla, cemaatEtkenleri, cemaatYilIsle, ayinKilitNedeni, hizmetKilitNedeni, hizmetBasariSansi, kadroEtkisi, ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import type { CharacterState } from "../src/types";
 
@@ -162,5 +163,41 @@ describe("Hizmet Görevi (Ordu Papazı ve Salgın Bakımı dahil)", () => {
     const sonuc = cemaatYilIsle(s, isletmeBaglami(s));
     expect(cm.hizmet).toBeNull();
     expect(sonuc.dokum.uyarilar!.find((u) => u.kod === "hizmet_sonuc")).toMatchObject({ hat: "ordu_papazi", basari: true, yariyolda: true });
+  });
+});
+
+describe("Kadro (Âlim ve Haberci)", () => {
+  const uye = (rol: "savunma" | "kesif" | "guvenlik", kalite: number) =>
+    ({ id: rol + kalite, isim: "x", rol_turu: rol, gercekKalite: kalite, sadakat: 50, maas: 1, maas_taban: 1 }) as never;
+
+  it("kadro etkisi yeteneğe bağlı, tavanlı; koruma ve diğer bonuslara karışmaz", async () => {
+    const s = await din();
+    expect(kadroEtkisi(s)).toEqual({ alim: 0, okuma: 0 });
+    s.ekip = [uye("savunma", 80), uye("kesif", 20)];
+    const k = kadroEtkisi(s);
+    expect(k.alim).toBeGreaterThan(0.15);
+    expect(k.okuma).toBeGreaterThan(0);
+    expect(k.okuma).toBeLessThan(k.alim);
+    expect(ekipBonuslari(s).koruma).toBe(0);
+    s.ekip = Array.from({ length: 6 }, () => uye("savunma", 100));
+    expect(kadroEtkisi(s).alim).toBeLessThanOrEqual(0.3);
+  });
+
+  it("Âlim görev başarı şansını artırır", async () => {
+    const s = await din();
+    const tabanSans = hizmetBasariSansi(s, 0.25);
+    s.ekip = [uye("savunma", 90)];
+    expect(hizmetBasariSansi(s, 0.25)).toBeGreaterThan(tabanSans);
+  });
+
+  it("aday havuzu Âlim ve Haberci adayı da sunar", async () => {
+    const s = await din();
+    const roller = new Set<string>();
+    for (let i = 0; i < 30; i++) {
+      adaylariYenile(s);
+      s.isletme!.adaylar.forEach((a) => roller.add(a.rolTuru));
+    }
+    expect(roller.has("savunma")).toBe(true);
+    expect(roller.has("kesif")).toBe(true);
   });
 });

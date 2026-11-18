@@ -304,6 +304,10 @@ export function calisanBonusu(uye: EkipUyesi): { tur: IsletmeRolTuru; deger: num
       return { tur: "musteri", deger: Math.round(1.25 * (1 + 3 * y) * k) }; // yıllık müşteri SAYISI, tam sayı (+1…+5)
     case "guvenlik":
       return { tur: "guvenlik", deger: (0.08 + 0.8 * y) * k };
+    case "savunma": // yalnız Din Adamı (Âlim) — Asker subayı subay.ts'ten gelir; kesir, cemaat.ts kadroEtkisi toplar
+      return { tur: "savunma", deger: (0.05 + 0.2 * y) * k };
+    case "kesif": // yalnız Din Adamı (Haberci)
+      return { tur: "kesif", deger: (0.05 + 0.2 * y) * k };
     default:
       return null;
   }
@@ -318,7 +322,7 @@ export function ekipBonuslari(state: CharacterState): EkipBonuslari {
     if (b.tur === "ana") sonuc.ana += b.deger;
     else if (b.tur === "maliyet") sonuc.maliyetCarpani *= 1 - b.deger;
     else if (b.tur === "musteri") sonuc.musteri += b.deger;
-    else sonuc.koruma += b.deger;
+    else if (b.tur === "guvenlik") sonuc.koruma += b.deger;
   }
   sonuc.maliyet = 1 - sonuc.maliyetCarpani;
   return sonuc;
