@@ -71,7 +71,7 @@ import {
   moralGucEtkisi,
   odenmeyenCeza,
   type GorevTanimi,
-  gorevBantOrani,
+  gorevErOrani,
   SUVARI_GOREV_GELIRI,
   SUVARI_BONUS_GOREVLERI,
   hazinePayi,
@@ -679,10 +679,10 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
   const kazancC = GOREV_GELIR_CARPANI;
-  const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
+  const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const suvariC = SUVARI_BONUS_GOREVLERI.includes(g.id) ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1;
-    const gelir = p * gorevBantOrani(gucPay) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
+    const gelir = p * gorevErOrani(p) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;
@@ -732,7 +732,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
 /**
  * HAZİNE PAYI — vergi KAZANÇ üzerinden alınır. KAZANÇ = oyuncunun ELİNE KALAN yıllık tutar:
  *   ordu neti − subay maaşları − yaşam − kira − evcil hayvan − kredi taksidi + mülk geliri.
- * Ordu netinden (yaşam/subay düşülmeden) ALINMAZ. `vergisizKazanc` bu toplamdır; dönen değer vergidir (kademeli, en çok %25, zararda 0).
+ * Ordu netinden (yaşam/subay düşülmeden) ALINMAZ. `vergisizKazanc` bu toplamdır; dönen değer vergidir (kademeli, en çok %20, zararda 0).
  */
 export function hazinePayiKazanctan(state: CharacterState, enflasyon: number, vergisizKazanc: number): number {
   if (state.meslek !== "Asker") return 0;

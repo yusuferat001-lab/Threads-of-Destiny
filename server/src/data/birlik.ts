@@ -287,13 +287,13 @@ export function agirlikliSec<T extends string>(agirliklar: Partial<Record<T, num
 /**
  * Düşman gücü (v67 sonrası, SADE): E = TABAN(yaş) + DUSMAN_OYUNCU_PAYI × oyuncu gücü; sapma ve zafer serisi hazırlığı çağıranda çarpılır.
  * TABAN yaşla DOĞRUSAL artar: 20 yaşında `taban20`, sonra her yıl `artis` kadar eklenir ve ölene kadar aynı hızla sürer (20 altı sabit; üstel büyüme, 60 yaş dönüm noktası ve tür çarpanı YOK).
- * Üç tür için ayrı başlangıç ve yıllık artış; haydut en kolay, sınır daha güçlü, büyük savaş en güçlü. Oyuncu güçlendikçe düşman da (%30) büyür.
+ * Üç tür için ayrı başlangıç ve yıllık artış: haydut en kolay, sınır daha güçlü, büyük savaş en güçlü; aradaki fark yaşla AÇILIR (artışlar 0,07 < 0,42 < 0,68). Oyuncu güçlendikçe düşman da (%30) büyür.
  */
 export type DusmanTuru = "haydut" | "sinir" | "savas";
 export const DUSMAN_PARAMETRELERI: Record<DusmanTuru, { taban20: number; artis: number }> = {
-  haydut: { taban20: 10.5, artis: 0.33 },
-  sinir: { taban20: 13, artis: 0.42 },
-  savas: { taban20: 11.5, artis: 0.37 },
+  haydut: { taban20: 9.5, artis: 0.07 },
+  sinir: { taban20: 14, artis: 0.42 },
+  savas: { taban20: 15, artis: 0.68 },
 };
 /** Düşman gücüne eklenen oyuncu askerî gücü payı. */
 export const DUSMAN_OYUNCU_PAYI = 0.3;
@@ -454,7 +454,7 @@ export const GANIMET_TABAN_GUC = 30;
 /**
  * Ganimet ve yağma güç bandı (KADEMELİ, vergi dilimi gibi; bileşik DEĞİL): güç dilimlere bölünür ve her dilim kendi katsayısıyla sayılır,
  * toplam "etkin güç" olur. 0–400 ×1, 400–700 ×0,85, 700+ ×0,70. Tavan yok. Önceki dilimler sonraki katsayıdan etkilenmez.
- * Aynı bant GANİMET, YAĞMA ve GÖREV GELİRİ için ortaktır (görevde ortalama verim = etkin güç / güç).
+
  */
 export const GANIMET_BANTLARI: [number, number, number][] = [[0, 400, 1], [400, 700, 0.85], [700, Infinity, 0.7]];
 export function ganimetEtkinGuc(guc: number): number {
@@ -1207,8 +1207,8 @@ export const MAAS_ADLARI: Record<string, DilliMetin> = {
 };
 export const maasAdi = (cag: string, bolge: string): DilliMetin => MAAS_ADLARI[`${cag}|${bolge}`] ?? { tr: "Maaş", en: "Pay" };
 
-// ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %25. Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
-export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 100, 0.1], [100, 250, 0.15], [250, 500, 0.2], [500, Infinity, 0.25]];
+// ── Hazine payı: KAZANÇ (= ELE KALAN: ordu neti − subay − yaşam − kira − hayvan − kredi + mülk; enflasyonsuz yıllık) üzerinden kademeli vergi, en çok %20. Zararda vergi yok. ORDU NETİNDEN DEĞİL, son kazançtan alınır. ──
+export const HAZINE_KADEMELERI: [number, number, number][] = [[0, 50, 0.05], [50, 150, 0.1], [150, 300, 0.15], [300, Infinity, 0.2]];
 export function hazinePayi(reelNet: number): number {
   if (!(reelNet > 0)) return 0;
   let t = 0;
@@ -1236,10 +1236,15 @@ export const ZAFER_SERISI_DUSMAN_ARTISI_2 = 0.5;
 export type ZaferSerisi = { haydut: number; sinir: number; savas: number };
 export const ZAFER_SERISI_BOS: ZaferSerisi = { haydut: 0, sinir: 0, savas: 0 };
 
-// ── Görev gelirinde güç bandı: ganimet ve yağmayla AYNI bant (GANIMET_BANTLARI); ortalama verim = etkin güç / güç ──
-/** Göreve ayrılan güç için gelir çarpanı (ortalama verim): güç ≤ 400 → 1; sonrası ganimetle aynı bantla düşer. Toplam gelir (er × verim) güçle hep artar. */
-export function gorevBantOrani(guc: number): number {
-  return guc > 0 ? ganimetEtkinGuc(guc) / guc : 1;
+// ── Görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7; güç bandına çevrilip geri alındı): ilk 100 er tam verim; sonra doğrusal düşer, en büyük kışla kapasitesinde (500) %75 ──
+export const GOREV_VERIM_TAM_ER = 100;
+export const GOREV_VERIM_KAPASITE_ORANI = 0.75;
+/** Göreve çıkan er sayısı için gelir çarpanı (ortalama verim): er ≤ 100 → 1; 500 erde 0,75; arası doğrusal. Toplam gelir (er × verim) kapasiteye kadar hep artar. */
+export function gorevErOrani(er: number): number {
+  const kap = KISLA_ER_LIMITI[KISLA_ER_LIMITI.length - 1];
+  if (er <= GOREV_VERIM_TAM_ER) return 1;
+  const k = Math.min(er, kap);
+  return 1 - (1 - GOREV_VERIM_KAPASITE_ORANI) * ((k - GOREV_VERIM_TAM_ER) / (kap - GOREV_VERIM_TAM_ER));
 }
 
 // ── Büyük savaş yenilgisinde bozgun firarı (v68): yalnız TÜM ORDU yenilgisi (büyük savaş); karar savaşından sonraki ilk yıl (savaşın 4. yılı) ──

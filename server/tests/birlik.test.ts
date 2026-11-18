@@ -1349,10 +1349,15 @@ describe("v67 Madde 4 — güç formülü", () => {
 });
 
 describe("v67 Madde 5 — düşman gücü", () => {
-  it("formül SADE: düşman = taban(yaş) + oyuncu gücünün %30'u; taban 20 yaşta başlar (10,5 / 13 / 11,5) ve ölene kadar yılda 0,33 / 0,42 / 0,37 doğrusal artar", async () => {
+  it("formül SADE: düşman = taban(yaş) + oyuncu gücünün %30'u; taban 20 yaşta başlar (9,5 / 14 / 15) ve ölene kadar yılda 0,07 / 0,42 / 0,68 doğrusal artar (haydut < sınır < savaş, fark yaşla açılır)", async () => {
     const d = await import("../src/data/birlik");
     expect(d.DUSMAN_OYUNCU_PAYI).toBe(0.3);
-    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 10.5, artis: 0.33 }, sinir: { taban20: 13, artis: 0.42 }, savas: { taban20: 11.5, artis: 0.37 } });
+    expect(d.DUSMAN_PARAMETRELERI).toEqual({ haydut: { taban20: 9.5, artis: 0.07 }, sinir: { taban20: 14, artis: 0.42 }, savas: { taban20: 15, artis: 0.68 } });
+    for (const yas of [20, 30, 45, 60, 80]) {
+      expect(d.dusmanGucuYas(yas, "haydut")).toBeLessThan(d.dusmanGucuYas(yas, "sinir"));
+      expect(d.dusmanGucuYas(yas, "sinir")).toBeLessThan(d.dusmanGucuYas(yas, "savas"));
+    }
+    expect(d.dusmanGucuYas(80, "savas") - d.dusmanGucuYas(80, "haydut")).toBeGreaterThan(d.dusmanGucuYas(20, "savas") - d.dusmanGucuYas(20, "haydut")); // fark yaşla açılır
     for (const t of ["haydut", "sinir", "savas"] as const) {
       const { taban20, artis } = d.DUSMAN_PARAMETRELERI[t];
       expect(d.dusmanGucuYas(15, t)).toBeCloseTo(taban20, 9); // 20 altı sabit

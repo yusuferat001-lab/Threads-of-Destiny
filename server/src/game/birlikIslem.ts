@@ -89,7 +89,7 @@ import {
   doktrinSecenekleri,
   gorevAdi,
   gorevGetir,
-  gorevBantOrani,
+  gorevErOrani,
   gorevRiski,
   kusatmaAdi,
   moralGucEtkisi,
@@ -1056,7 +1056,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         const pay = gp.find((x) => x.gorev.id === g.id);
         const hs = h.gorevler.find((x) => x.id === g.id);
         return {
-          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * gorevBantOrani(pay?.guc ?? gucHesapla(state).guc) * bg.enflasyon),
+          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * GOREV_GELIR_CARPANI * gorevErOrani(pay?.er ?? erSayisi(state)) * bg.enflasyon),
           risk: gorevRiski(g), yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
           erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0), bonuslar: gorevBonuslari(g),
         };
