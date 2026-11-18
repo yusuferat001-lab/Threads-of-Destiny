@@ -100,6 +100,7 @@ Tüm endpoint'ler `{hata: string}` + uygun HTTP status ile hata döner. `POST /:
 
 
 ## v67 notları (Asker API değişiklikleri)
+- `POST /:id/isletme/karar` Din Adamı gövdesi `{hatlar, cemaat:{bagis?, kitle?, yardim?, ton?, ayin?, hizmet?}}` (`ayin`: yok/olcul/buyuk; `hizmet`: görev id ya da `"yok"`, bkz. 11 §45 v14). `POST /:id/isletme/munazara {secim:"ilim"|"halk"|"cekil"}` bekleyen münazarayı sonuçlandırır (turu tüketmez; yanıt `{state, sonuc, durum}`).
 - `POST /:id/isletme/karar` Asker gövdesi `{gorevler?, ganimet_payi?, talim?}`; **`ton` (komuta tonu) kaldırıldı**, gönderilirse yok sayılır.
 - `GET /:id/isletme` → `birlik` (BirlikGorunumu) yeni alanları: `rutbe {gucSarti, yillikKariyerPuani}`, `moral.gelecek`, `talim.gelecek/limit/alanKademe`, `gorevler.katalog[].bonuslar[{kod,yon}]`; **kalkanlar:** `pay`, `rakipler`, `politikalar.ton`, politika `tavan`.
 - Yeni Asker yatırımı `talim` (Talim Alanı) `POST /:id/isletme/yatirim` ile alınır (diğer yatırımlarla aynı uç).

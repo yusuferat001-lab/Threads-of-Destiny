@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { yeniOyun, mesleğiAta, stateGetir, isletmeKararVer } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, stateGetir, isletmeKararVer, isletmeMunazaraVer, senaryoUret } from "../src/game/gameEngine";
 import { isletmeBaglami } from "../src/game/stateManager";
 import { adaylariYenile, ekipBonuslari } from "../src/game/isletme";
-import { cemaatHesapla, cemaatEtkenleri, cemaatYilIsle, ayinKilitNedeni, hizmetKilitNedeni, hizmetBasariSansi, kadroEtkisi, ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
+import { cemaatHesapla, cemaatEtkenleri, cemaatYilIsle, ayinKilitNedeni, hizmetKilitNedeni, hizmetBasariSansi, kadroEtkisi, munazaraBekliyorMu, munazaraDurumu, munazaraVer, ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import type { CharacterState } from "../src/types";
 
@@ -199,5 +199,104 @@ describe("Kadro (Âlim ve Haberci)", () => {
     }
     expect(roller.has("savunma")).toBe(true);
     expect(roller.has("kesif")).toBe(true);
+  });
+});
+
+describe("Münazara", () => {
+  const kur = (s: CharacterState, ek: Partial<NonNullable<CharacterState["isletme"]>["cemaat"] extends infer C ? (C extends { munazara_bekleyen: infer M } ? NonNullable<M> : never) : never> = {}) => {
+    const rakip = s.rakipler?.[0]?.ad ?? s.rakip_adi ?? "Rakip";
+    s.isletme!.cemaat!.munazara_bekleyen = { yil: s.yil, saldiri: "bidat", rakip, kademe: 2, carpan: 1, rakipGuc: 60, rakipTaban: 60, hazirlik: 1, ...ek } as never;
+  };
+
+  it("rakip saldırısı bid'at/mürit çalma/aforoz ise münazara kurulur ve hasar uygulanmaz", async () => {
+    const s = await din();
+    const cm = s.isletme!.cemaat!;
+    let kuruldu = 0;
+    for (let i = 0; i < 300 && kuruldu < 3; i++) {
+      cm.munazara_bekleyen = null;
+      s.isletme!.baslangic_yili = s.yil - 30;
+      s.rakip_sonraki_saldiri_yili = s.yil;
+      const sonuc = cemaatYilIsle(s, isletmeBaglami(s));
+      if (cm.munazara_bekleyen) {
+        kuruldu++;
+        expect(["bidat", "muridcalma", "aforoz"]).toContain(cm.munazara_bekleyen.saldiri);
+        expect(sonuc.dokum.uyarilar!.some((u) => u.kod === "rakip_saldiri" && u.sonuc === cm.munazara_bekleyen!.saldiri)).toBe(false);
+      }
+    }
+    expect(kuruldu).toBeGreaterThan(0);
+  });
+
+  it("zafer serisi ≥ eşik: rakip hazırlıklı gelir", async () => {
+    const s = await din();
+    const cm = s.isletme!.cemaat!;
+    cm.munazara_seri = 4;
+    let hazir = 0;
+    for (let i = 0; i < 300 && !hazir; i++) {
+      cm.munazara_bekleyen = null;
+      s.isletme!.baslangic_yili = s.yil - 30;
+      s.rakip_sonraki_saldiri_yili = s.yil;
+      cemaatYilIsle(s, isletmeBaglami(s));
+      if (cm.munazara_bekleyen) {
+        expect(cm.munazara_bekleyen.hazirlik).toBeGreaterThan(1);
+        hazir = 1;
+      }
+    }
+    expect(hazir).toBe(1);
+  });
+
+  it("bekleyen münazara varken senaryo üretilemez; cevap verilince devam eder", async () => {
+    const s = await din();
+    kur(s);
+    expect(munazaraBekliyorMu(s)).toBe(true);
+    await expect(senaryoUret(s.id)).rejects.toThrow("münazara");
+    await isletmeMunazaraVer(s.id, "cekil");
+    expect(munazaraBekliyorMu(s)).toBe(false);
+    await expect(isletmeMunazaraVer(s.id, "cekil")).rejects.toThrow("bekleyen");
+  });
+
+  it("zafer: rakipten inanan geçer, şöhret artar, seri artar, hasar yok", async () => {
+    const s = await din();
+    kur(s, { rakipGuc: 1 });
+    const cm = s.isletme!.cemaat!;
+    const sonuc = munazaraVer(s, "halk");
+    expect(sonuc.zafer).toBe(true);
+    expect(sonuc.musteriDegisim).toBeGreaterThanOrEqual(0);
+    expect(sonuc.sohretDegisim).toBeGreaterThan(0);
+    expect(cm.munazara_seri).toBe(1);
+    expect(cm.munazara_bekleyen).toBeNull();
+  });
+
+  it("yenilgi: hasar uygulanır, seri sıfırlanır; çekilmek hasarın yarısı", async () => {
+    const s = await din();
+    const cm = s.isletme!.cemaat!;
+    cm.munazara_seri = 3;
+    kur(s, { rakipGuc: 9999, saldiri: "muridcalma", kademe: 3 });
+    const kayip = munazaraVer(s, "ilim");
+    expect(kayip.zafer).toBe(false);
+    expect(kayip.musteriDegisim).toBeLessThan(0);
+    expect(cm.munazara_seri).toBe(0);
+    kur(s, { rakipGuc: 9999, saldiri: "muridcalma", kademe: 3 });
+    const cekil = munazaraVer(s, "cekil");
+    expect(cekil.zafer).toBeNull();
+    expect(cekil.musteriDegisim).toBeLessThan(0);
+    expect(Math.abs(cekil.musteriDegisim)).toBeLessThan(Math.abs(kayip.musteriDegisim) * 1.01 + 1);
+  });
+
+  it("geçersiz seçim reddedilir; yaklaşım fanatikliği etkiler", async () => {
+    const s = await din();
+    kur(s, { rakipGuc: 1 });
+    expect(() => munazaraVer(s, "xxx")).toThrow("Geçersiz");
+    const f = s.isletme!.cemaat!.fanatiklik;
+    munazaraVer(s, "halk");
+    expect(s.isletme!.cemaat!.fanatiklik).toBeGreaterThan(f);
+  });
+
+  it("Haberci tahmin aralığını daraltır", async () => {
+    const s = await din();
+    kur(s, { rakipGuc: 66, rakipTaban: 60 });
+    const a = munazaraDurumu(s)!.rakipAralik;
+    s.ekip = [{ id: "h", isim: "x", rol_turu: "kesif", gercekKalite: 100, sadakat: 50, maas: 1, maas_taban: 1 }] as never;
+    const b = munazaraDurumu(s)!.rakipAralik;
+    expect(b[1] - b[0]).toBeLessThan(a[1] - a[0]);
   });
 });

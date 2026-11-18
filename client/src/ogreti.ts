@@ -12,6 +12,12 @@ export function ogretiBekliyor(k: CharacterState | null): boolean {
   return !!cm && (cm.ogretiler?.length ?? 0) < (k.rutbe_seviye ?? 1);
 }
 
+/** Din Adamı'nın cevap bekleyen bir münazarası var mı? (sunucudaki munazaraBekliyorMu'nun aynası) */
+export function munazaraBekliyor(k: CharacterState | null): boolean {
+  if (!k || !k.aktif || k.meslek !== 'Din Adamı') return false;
+  return !!(k.isletme as { cemaat?: { munazara_bekleyen?: unknown } } | null)?.cemaat?.munazara_bekleyen;
+}
+
 /** Asker'in seçilmeyi bekleyen bir doktrini var mı? (sunucudaki doktrinBekliyorMu'nun aynası) */
 export function doktrinBekliyor(k: CharacterState | null): boolean {
   if (!k || !k.aktif || k.meslek !== 'Asker') return false;

@@ -1,4 +1,4 @@
-import type { CharacterState, CemaatAyin, CemaatDurumu, IsletmeDokum, IsletmeHat, IsletmeUyari } from "../types";
+import type { CharacterState, CemaatAyin, CemaatDurumu, CemaatMunazara, IsletmeDokum, IsletmeHat, IsletmeUyari } from "../types";
 import { isletmeProfiliGetir, rolAdiGetir } from "../data/meslekProfilleri";
 import {
   AHLAK_BANTLARI,
@@ -32,6 +32,15 @@ import {
   GELME_ARALIKLARI,
   KITLE_POLITIKASI,
   MEZUN_ADAY_SANSI,
+  MUNAZARA_CEKIL_HASAR,
+  MUNAZARA_FANATIKLIK,
+  MUNAZARA_SALDIRILARI,
+  MUNAZARA_SAPMA,
+  MUNAZARA_SERI_KADEMELERI,
+  MUNAZARA_TAHMIN_TABAN,
+  MUNAZARA_TUR_CARPANI,
+  MUNAZARA_ZAFER,
+  MUNAZARA_ZAR_YUZDE,
   MEZUN_PAZAR_ARALIK,
   OKUL_MEZUN_SANSI,
   OKUL_YETENEK_KADEME,
@@ -43,6 +52,7 @@ import {
   type CemaatDonemEtkisi,
   type DiniSaldiri,
   type GelmeKaynagi,
+  type MunazaraSecim,
 } from "../data/cemaat";
 import { ogretiGetir, ogretiSecenekleri, ogretiToplami, type FaaliyetId, type OgretiToplami } from "../data/ogretiler";
 import {
@@ -105,6 +115,8 @@ export function cemaatVarsayilan(): CemaatDurumu {
     ayin: "yok",
     ayin_son_yil: null,
     hizmet: null,
+    munazara_bekleyen: null,
+    munazara_seri: 0,
     fanatiklik: 0,
     ogretiler: [],
     bekleyen_ogreti: 1,
@@ -172,6 +184,8 @@ export function cemaatHazirla(state: CharacterState): void {
   if (!c.ayin) c.ayin = "yok";
   if (c.ayin_son_yil === undefined) c.ayin_son_yil = null;
   if (c.hizmet === undefined) c.hizmet = null;
+  if (c.munazara_bekleyen === undefined) c.munazara_bekleyen = null;
+  if (typeof c.munazara_seri !== "number") c.munazara_seri = 0;
   if (typeof c.fanatiklik !== "number") c.fanatiklik = 0;
   ogretiBekleyenSeviye(state);
   if (is.adaylar.length === 0) adaylariYenile(state);
@@ -525,6 +539,138 @@ function diniSaldiriSec(kademe: 1 | 2 | 3, state: CharacterState, fanatiklik: nu
   return turler[0];
 }
 
+/** Saldırının inanan/şöhret/ahlak/otorite hasarı (nakit hariç); `uyari` alanlarını doldurur. Yıl işleme ve münazara kaybı ortak kullanır. */
+function diniSaldiriEtkisiUygula(state: CharacterState, tur: DiniSaldiri, saldiranAd: string, kademe: 1 | 2 | 3, carpan: number, uyari: IsletmeUyari): void {
+  const i = kademe - 1;
+  const hasar = DINI_SALDIRI_HASARLARI[tur] as Partial<Record<"inanan" | "sohret" | "ahlak" | "otorite", readonly number[]>>;
+  const korunuyor = (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI;
+  let inananYuzde = hasar.inanan ? hasar.inanan[i] * carpan : 0;
+  if (tur === "aforoz" && korunuyor) inananYuzde *= 0.5;
+  if (inananYuzde > 0) {
+    const kayip = musteriAktar(state, "oyuncu", rakipGrubu(saldiranAd), state.meslek_musteri * (inananYuzde / 100));
+    uyari.musteriKaybi = Math.round(kayip * 10) / 10;
+  }
+  if (hasar.sohret && hasar.sohret[i] > 0) {
+    const k = hasar.sohret[i] * carpan;
+    state.un = Math.max(0, state.un - k);
+    uyari.sohretKaybi = Math.round(k * 10) / 10;
+  }
+  if (hasar.ahlak && hasar.ahlak[i] > 0) {
+    const k = hasar.ahlak[i] * carpan;
+    state.ahlak = Math.max(0, state.ahlak - k);
+    uyari.ahlakKaybi = Math.round(k * 10) / 10;
+  }
+  if (hasar.otorite && hasar.otorite[i] > 0) {
+    let k = hasar.otorite[i] * carpan;
+    if (tur === "aforoz" && korunuyor) k *= 0.5;
+    state.yonetim_iliski = Math.max(0, (state.yonetim_iliski ?? 0) - k);
+    uyari.otoriteKaybi = Math.round(k * 10) / 10;
+  }
+}
+
+// ── Münazara ────────────────────────────────────────────────────────────────
+export function munazaraBekliyorMu(state: CharacterState): boolean {
+  return state.meslek === "Din Adamı" && !!state.isletme?.cemaat?.munazara_bekleyen;
+}
+
+/** Senin iki yaklaşımının gücü: "ilim" (delil: ahlak, okul, Âlim) ve "halk" (seslenme: şöhret, ahlak, cemaat payı). */
+export function munazaraGuclari(state: CharacterState): { ilim: number; halk: number } {
+  const k = kadroEtkisi(state);
+  return {
+    ilim: 40 + 0.35 * state.ahlak + 4 * okulKademesi(state) + 60 * k.alim,
+    halk: 40 + 0.3 * state.un + 0.15 * state.ahlak + 25 * pazarPayiHesapla(state),
+  };
+}
+
+function munazaraRakipTaban(state: CharacterState, rakipAd: string, kademe: number): number {
+  const rakip = aktifRakipler(state).find((r) => r.ad === rakipAd);
+  const pay = rakip ? rakip.musteri / Math.max(1, state.pazar_musteri) : 0;
+  return (45 + 40 * pay) * (0.9 + 0.1 * kademe);
+}
+
+function munazaraHazirlik(seri: number): number {
+  let c = 1;
+  for (const [esik, carpan] of MUNAZARA_SERI_KADEMELERI) if (seri >= esik) c = carpan;
+  return c;
+}
+
+function munazaraKur(state: CharacterState, cm: CemaatDurumu, saldiran: { ad: string }, saldiri: CemaatMunazara["saldiri"], kademe: 1 | 2 | 3, carpan: number): void {
+  const taban = munazaraRakipTaban(state, saldiran.ad, kademe);
+  const hazirlik = munazaraHazirlik(cm.munazara_seri ?? 0);
+  cm.munazara_bekleyen = {
+    yil: state.yil, saldiri, rakip: saldiran.ad, kademe, carpan,
+    rakipTaban: taban, hazirlik, rakipGuc: taban * hazirlik * rnd(MUNAZARA_SAPMA[0], MUNAZARA_SAPMA[1]),
+  };
+}
+
+/** Pencere verisi: senin yaklaşımların (saldırı türüne göre), rakibin tahmin aralığı (Haberci daraltır ve gerçeğe yaklaştırır). */
+export function munazaraDurumu(state: CharacterState) {
+  const m = state.isletme?.cemaat?.munazara_bekleyen;
+  if (!m) return null;
+  const g = munazaraGuclari(state);
+  const tc = MUNAZARA_TUR_CARPANI[m.saldiri];
+  const okuma = clamp(kadroEtkisi(state).okuma / 0.3, 0, 1);
+  const merkez = m.rakipTaban * m.hazirlik + (m.rakipGuc - m.rakipTaban * m.hazirlik) * okuma;
+  const genislik = MUNAZARA_TAHMIN_TABAN * (1 - 0.6 * okuma);
+  return {
+    saldiri: m.saldiri, rakip: m.rakip, hazirlikli: m.hazirlik > 1,
+    oyuncu: { ilim: Math.round(g.ilim * tc.ilim), halk: Math.round(g.halk * tc.halk) },
+    rakipAralik: [Math.round(merkez * (1 - genislik)), Math.round(merkez * (1 + genislik))] as [number, number],
+    seri: state.isletme!.cemaat!.munazara_seri ?? 0,
+  };
+}
+
+export interface MunazaraSonucu {
+  secim: MunazaraSecim;
+  saldiri: CemaatMunazara["saldiri"];
+  rakip: string;
+  /** Çekildiysen null; yoksa kazanıp kazanmadığın. */
+  zafer: boolean | null;
+  musteriDegisim: number;
+  sohretDegisim: number;
+  ahlakDegisim: number;
+  otoriteDegisim: number;
+}
+
+/** Münazarayı sonuçlandırır: ilim/halk = zarlı karşılaşma, çekil = hasarın bir kısmı. */
+export function munazaraVer(state: CharacterState, secim: string): MunazaraSonucu {
+  const cm = state.isletme?.cemaat;
+  const m = cm?.munazara_bekleyen;
+  if (!cm || !m) throw new Error("Şu an bekleyen bir münazara yok.");
+  if (secim !== "ilim" && secim !== "halk" && secim !== "cekil") throw new Error("Geçersiz münazara seçimi.");
+  const once = { musteri: state.meslek_musteri, un: state.un, ahlak: state.ahlak, otorite: state.yonetim_iliski ?? 0 };
+  const uyari: IsletmeUyari = { kod: "rakip_saldiri", sonuc: m.saldiri, rakip: m.rakip };
+  let zafer: boolean | null = null;
+  if (secim === "cekil") {
+    diniSaldiriEtkisiUygula(state, m.saldiri, m.rakip, m.kademe, m.carpan * MUNAZARA_CEKIL_HASAR, uyari);
+    cm.munazara_seri = 0;
+  } else {
+    const zar = () => 1 + ((Math.floor(Math.random() * 20) + 1 - 10.5) / 9.5) * MUNAZARA_ZAR_YUZDE;
+    const sen = munazaraGuclari(state)[secim] * MUNAZARA_TUR_CARPANI[m.saldiri][secim] * zar();
+    zafer = sen >= m.rakipGuc * zar();
+    cm.fanatiklik = clamp(cm.fanatiklik + MUNAZARA_FANATIKLIK[secim], 0, 100);
+    if (zafer) {
+      cm.munazara_seri += 1;
+      const kazanc = state.meslek_musteri * MUNAZARA_ZAFER.inanan * (secim === "halk" ? MUNAZARA_ZAFER.halkCarpan : 1);
+      musteriAktar(state, rakipGrubu(m.rakip), "oyuncu", kazanc);
+      state.un = clamp(state.un + MUNAZARA_ZAFER.sohret, 0, 100);
+      if (secim === "ilim") state.ahlak = clamp(state.ahlak + MUNAZARA_ZAFER.ahlak, 0, 100);
+    } else {
+      cm.munazara_seri = 0;
+      diniSaldiriEtkisiUygula(state, m.saldiri, m.rakip, m.kademe, m.carpan, uyari);
+    }
+  }
+  cm.munazara_bekleyen = null;
+  const yuvarla = (x: number) => Math.round(x * 10) / 10;
+  return {
+    secim, saldiri: m.saldiri, rakip: m.rakip, zafer,
+    musteriDegisim: yuvarla(state.meslek_musteri - once.musteri),
+    sohretDegisim: yuvarla(state.un - once.un),
+    ahlakDegisim: yuvarla(state.ahlak - once.ahlak),
+    otoriteDegisim: yuvarla((state.yonetim_iliski ?? 0) - once.otorite),
+  };
+}
+
 // ── Yıllık işleme ───────────────────────────────────────────────────────────
 export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): IsletmeYilSonucu {
   const is = state.isletme!;
@@ -579,13 +725,18 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
       const carpan = (saldiran === rakip ? 1 : RAKIP_IKINCI_HASAR_CARPANI) * (sizan ? SIZMA_HASAR_CARPANI : 1) * o.saldiriHasari;
       const uyari: IsletmeUyari = { kod: "rakip_saldiri", sonuc: tur, rakip: saldiran.ad, ...(sizan ? { sizma: true, isim: sizan.isim } : {}) };
       const engel = clamp(korumaHesapla(state).toplam + o.koruma, 0, 0.9);
+      let munazaraKuruldu = false;
       if (DINI_FIZIKSEL.includes(tur) && !sizan && Math.random() < engel) {
         uyari.engellendi = true;
+      } else if (MUNAZARA_SALDIRILARI.includes(tur)) {
+        // Hasar şimdi uygulanmaz: oyuncu münazarada cevap verir (çözüm `munazaraVer`).
+        if (sizan) sizan.sadakat = Math.max(0, sizan.sadakat - SIZMA_SADAKAT_KAYBI);
+        munazaraKur(state, cm, saldiran, tur as CemaatMunazara["saldiri"], kademe, carpan);
+        munazaraKuruldu = true;
       } else {
         const i = kademe - 1;
         if (sizan) sizan.sadakat = Math.max(0, sizan.sadakat - SIZMA_SADAKAT_KAYBI);
         const hasar = DINI_SALDIRI_HASARLARI[tur] as Partial<Record<"nakit" | "inanan" | "sohret" | "ahlak" | "otorite", readonly number[]>>;
-        const grup = rakipGrubu(saldiran.ad);
         if (hasar.nakit && hasar.nakit[i] > 0) {
           const yuzde = hasar.nakit[i] * carpan;
           const tutar = r2(gelirTaban * (yuzde / 100));
@@ -593,30 +744,9 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
           uyari.nakitYuzde = Math.round(yuzde);
           uyari.tutar = tutar;
         }
-        let inananYuzde = hasar.inanan ? hasar.inanan[i] * carpan : 0;
-        if (tur === "aforoz" && (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI) inananYuzde *= 0.5;
-        if (inananYuzde > 0) {
-          const kayip = musteriAktar(state, "oyuncu", grup, state.meslek_musteri * (inananYuzde / 100));
-          uyari.musteriKaybi = Math.round(kayip * 10) / 10;
-        }
-        if (hasar.sohret && hasar.sohret[i] > 0) {
-          const k = hasar.sohret[i] * carpan;
-          state.un = Math.max(0, state.un - k);
-          uyari.sohretKaybi = Math.round(k * 10) / 10;
-        }
-        if (hasar.ahlak && hasar.ahlak[i] > 0) {
-          const k = hasar.ahlak[i] * carpan;
-          state.ahlak = Math.max(0, state.ahlak - k);
-          uyari.ahlakKaybi = Math.round(k * 10) / 10;
-        }
-        if (hasar.otorite && hasar.otorite[i] > 0) {
-          let k = hasar.otorite[i] * carpan;
-          if (tur === "aforoz" && (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI) k *= 0.5;
-          state.yonetim_iliski = Math.max(0, (state.yonetim_iliski ?? 0) - k);
-          uyari.otoriteKaybi = Math.round(k * 10) / 10;
-        }
+        diniSaldiriEtkisiUygula(state, tur, saldiran.ad, kademe, carpan, uyari);
       }
-      uyarilar.push(uyari);
+      if (!munazaraKuruldu) uyarilar.push(uyari);
     }
   }
 

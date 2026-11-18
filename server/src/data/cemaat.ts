@@ -379,6 +379,29 @@ export const DINI_SALDIRI_AGIRLIKLARI: Record<1 | 2 | 3, Partial<Record<DiniSald
 };
 export const DINI_FIZIKSEL: DiniSaldiri[] = ["kumbara", "yangin"];
 export const ENGIZISYON_AHLAK_ESIGI = 45;
+/** Münazaraya dönüşen saldırılar (kumbara/yangın/engizisyon eskisi gibi otomatik çözülür). */
+export const MUNAZARA_SALDIRILARI: DiniSaldiri[] = ["bidat", "muridcalma", "aforoz"];
+export type MunazaraSecim = "ilim" | "halk" | "cekil";
+/** Saldırı türüne göre yaklaşım çarpanı: doktrin tartışmasında delil, mürit çekişmesinde halk daha etkili. */
+export const MUNAZARA_TUR_CARPANI: Record<"bidat" | "muridcalma" | "aforoz", { ilim: number; halk: number }> = {
+  bidat: { ilim: 1.1, halk: 0.95 },
+  muridcalma: { ilim: 0.95, halk: 1.1 },
+  aforoz: { ilim: 1, halk: 1 },
+};
+/** Art arda kazanılan münazara sayısı → rakip hazırlığı [eşik, çarpan] (en yüksek geçerli olan). */
+export const MUNAZARA_SERI_KADEMELERI: [number, number][] = [[2, 1.1], [4, 1.2]];
+/** Gerçek rakip gücü tabana göre bu bantta sapar; gösterilen tahmin aralığı bu genişlikte, Haberci daraltır. */
+export const MUNAZARA_SAPMA: [number, number] = [0.95, 1.05];
+export const MUNAZARA_TAHMIN_TABAN = 0.065;
+/** İki taraf da gücünü 1 + (d20 − 10,5)/9,5 × bu oranla çarpar. */
+export const MUNAZARA_ZAR_YUZDE = 0.04;
+/** "Çekil": saldırı hasarının bu kadarı uygulanır. */
+export const MUNAZARA_CEKIL_HASAR = 0.5;
+/** Zafer ödülü: rakipten geçen inanan (kendi inananının kesri; "halk" yaklaşımında ×halkCarpan), şöhret, ahlak (ilim). */
+export const MUNAZARA_ZAFER = { inanan: 0.03, halkCarpan: 1.3, sohret: 2, ahlak: 0.5 };
+/** Yaklaşımın fanatiklik etkisi. */
+export const MUNAZARA_FANATIKLIK: Record<"ilim" | "halk", number> = { ilim: -0.5, halk: 1.5 };
+
 /** Hasarlar [k1,k2,k3]. nakit: önceki brüt kârın %'si; inanan: kendi inananının %'si; sohret/ahlak/otorite: puan. */
 export const DINI_SALDIRI_HASARLARI = {
   kumbara: { nakit: [6, 10, 14] },

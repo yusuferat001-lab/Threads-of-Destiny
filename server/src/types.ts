@@ -1129,6 +1129,19 @@ export type CemaatTon = "ilimli" | "dengeli" | "atesli";
 /** Büyük Ayin: yalnız seçildiği yıl etkili, sonra "yok"a döner; bekleme süreli. */
 export type CemaatAyin = "yok" | "olcul" | "buyuk";
 
+export interface CemaatMunazara {
+  yil: number;
+  saldiri: "bidat" | "muridcalma" | "aforoz";
+  rakip: string;
+  kademe: 1 | 2 | 3;
+  /** Saldırı hasarının çarpanı (rakip büyüklüğü, içeriden sızma, öğreti). */
+  carpan: number;
+  /** Kurulurken sabitlenen gerçek rakip gücü, hazırlık çarpanı (≥1; seri). */
+  rakipGuc: number;
+  rakipTaban: number;
+  hazirlik: number;
+}
+
 export interface CemaatDurumu {
   bagis: CemaatBagis;
   kitle: CemaatKitle;
@@ -1139,6 +1152,10 @@ export interface CemaatDurumu {
   ayin_son_yil: number | null;
   /** Yürüyen hizmet görevi (aynı anda tek); yoksa null. `gecen` = tamamlanan yıl. */
   hizmet: { id: string; kalan: number; gecen: number } | null;
+  /** Cevap bekleyen münazara (rakip bid'at/mürit çalma/aforoz saldırısı); doluysa oyun devam etmez. */
+  munazara_bekleyen: CemaatMunazara | null;
+  /** Art arda kazanılan münazara sayısı (≥eşikte rakip hazırlıklı gelir). */
+  munazara_seri: number;
   /** 0-100: yavaş artar, bağış oranını yükseltir ama inanan kaçışı, otorite kaybı ve aşırılık riski getirir. */
   fanatiklik: number;
   /** Seçilen öğreti id'leri (rütbe seviyesi başına bir). */

@@ -1,5 +1,6 @@
 import type {
   IsletmeGorunumu,
+  MunazaraSonucu,
   IsletmeKararGirdisi,
   CemaatKararGirdisi,
   BirlikKararGirdisi,
@@ -335,6 +336,13 @@ export function isletmeOgretiSec(stateId: string, ogretiId: string) {
   return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/ogreti`, {
     method: 'POST',
     body: JSON.stringify({ ogretiId }),
+  });
+}
+
+export function isletmeMunazaraVer(stateId: string, secim: string) {
+  return istek<{ state: CharacterState; sonuc: MunazaraSonucu; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/munazara`, {
+    method: 'POST',
+    body: JSON.stringify({ secim }),
   });
 }
 

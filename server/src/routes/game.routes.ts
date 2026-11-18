@@ -59,6 +59,7 @@ import {
   isletmeDurumGetir,
   isletmeKararVer,
   isletmeOgretiSec,
+  isletmeMunazaraVer,
   birlikDoktrinSec,
   birlikTechizatSec,
   birlikBirlikSec,
@@ -364,6 +365,16 @@ gameRouter.post("/:id/isletme/ogreti", async (req, res) => {
   if (typeof ogretiId !== "string") return res.status(400).json({ hata: "Geçersiz öğreti." });
   try {
     res.json(await isletmeOgretiSec(req.params.id, ogretiId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/munazara", async (req, res) => {
+  const { secim } = req.body ?? {};
+  if (typeof secim !== "string") return res.status(400).json({ hata: "Geçersiz münazara seçimi." });
+  try {
+    res.json(await isletmeMunazaraVer(req.params.id, secim));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

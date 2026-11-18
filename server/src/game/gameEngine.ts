@@ -209,6 +209,9 @@ import {
   gelmeAraligi,
   gelmeKaynagiBul,
   hizmetKilitNedeni,
+  munazaraBekliyorMu,
+  munazaraDurumu,
+  munazaraVer,
   okulKademesi,
   ogretiBekleyenSeviye,
   ogretiBekliyorMu,
@@ -1316,6 +1319,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     throw new Error("Şu an çözülecek bir olay yok; yıl ilerletmelisin.");
   }
   if (ogretiBekliyorMu(oturum.state)) throw new Error("Önce öğretini seçmelisin.");
+  if (munazaraBekliyorMu(oturum.state)) throw new Error("Önce münazaraya cevap vermelisin.");
   if (doktrinBekliyorMu(oturum.state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(oturum.state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(oturum.state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
@@ -1845,6 +1849,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
+  if (munazaraBekliyorMu(state)) throw new Error("Önce münazaraya cevap vermelisin.");
   if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
@@ -1957,6 +1962,7 @@ export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: 
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (state.zaman_modeli !== "ilerle") throw new Error("Bu oyun yıl geçirme modunda değil.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
+  if (munazaraBekliyorMu(state)) throw new Error("Önce münazaraya cevap vermelisin.");
   if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
@@ -5048,6 +5054,8 @@ export interface CemaatGorunumu {
   giderler: { faaliyet: number; hizmet: number; ayin: number; bina: number; yardim: number; aidat: number; vergi: number };
   /** Hizmet görevi: yürüyen görev (kalan/geçen yıl) ve alınabilecek görevler. */
   hizmet: { aktif: { id: string; kalan: number; gecen: number } | null; secenekler: CemaatHizmetGorunumu[] };
+  /** Cevap bekleyen münazara (doluysa oyun devam etmez). */
+  munazara: ReturnType<typeof munazaraDurumu>;
   beklenenBrut: number;
   beklenenNet: number;
   bagisOrani: number;
@@ -5173,6 +5181,7 @@ function cemaatGorunumuHesapla(state: CharacterState, b: IsletmeBaglami): Cemaat
     faaliyetGelir: paraYuvarla(h.faaliyetGelir),
     toplamGelir: paraYuvarla(h.toplamGelir),
     hizmetGelir: paraYuvarla(h.hizmetGelir),
+    munazara: munazaraDurumu(state),
     hizmet: {
       aktif: cm.hizmet ? { id: cm.hizmet.id, kalan: cm.hizmet.kalan, gecen: cm.hizmet.gecen } : null,
       secenekler: HIZMET_GOREVLERI.map((t) => ({
@@ -5622,6 +5631,20 @@ export async function isletmeOgretiSec(
     mesaj: T(state.dil, "{0} öğretisini benimsedin.", [ikiDil(state.dil, t.ad.tr, t.ad.en)]),
     durum: isletmeGorunumuHesapla(state),
   };
+}
+
+/** Din Adamı: bekleyen münazaraya cevap ("ilim" | "halk" | "cekil"). Turu tüketmez. */
+export async function isletmeMunazaraVer(
+  id: string,
+  secim: string
+): Promise<{ state: CharacterState; sonuc: ReturnType<typeof munazaraVer>; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.meslek !== "Din Adamı" || !state.isletme?.cemaat) throw new Error("Bu mesleğin bir cemaati yok.");
+  const sonuc = munazaraVer(state, secim);
+  await oturumKaydet(state);
+  return { state, sonuc, durum: isletmeGorunumuHesapla(state) };
 }
 
 /** v11: oyun başında Tüccar/Zanaatkâr'ın 3 ürün arasından birini seçmesi. Turu tüketmez. */

@@ -1019,6 +1019,25 @@ export interface CemaatHizmetGorunumu {
   yalnizVeba: boolean;
   kilit: 'rutbe' | 'savas' | 'veba' | 'hapis' | null;
 }
+export interface CemaatMunazaraGorunumu {
+  saldiri: 'bidat' | 'muridcalma' | 'aforoz';
+  rakip: string;
+  hazirlikli: boolean;
+  oyuncu: { ilim: number; halk: number };
+  rakipAralik: [number, number];
+  seri: number;
+}
+export interface MunazaraSonucu {
+  secim: 'ilim' | 'halk' | 'cekil';
+  saldiri: 'bidat' | 'muridcalma' | 'aforoz';
+  rakip: string;
+  /** Çekildiysen null; yoksa kazanıp kazanmadığın. */
+  zafer: boolean | null;
+  musteriDegisim: number;
+  sohretDegisim: number;
+  ahlakDegisim: number;
+  otoriteDegisim: number;
+}
 export interface CemaatPolitikaGorunumu {
   secili: string;
   secenekler: CemaatPolitikaSecenegi[];
@@ -1066,6 +1085,8 @@ export interface CemaatGorunumu {
   faaliyetGelir: number;
   toplamGelir: number;
   hizmetGelir: number;
+  /** Cevap bekleyen münazara (doluysa oyun devam etmez). */
+  munazara: CemaatMunazaraGorunumu | null;
   hizmet: { aktif: { id: string; kalan: number; gecen: number } | null; secenekler: CemaatHizmetGorunumu[] };
   giderler: { faaliyet: number; hizmet: number; ayin: number; bina: number; yardim: number; aidat: number; vergi: number };
   beklenenBrut: number;
