@@ -506,7 +506,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
   const kes = kesimEtkisi(state, tanim.kesim);
   const pol = FIYAT_POLITIKASI[hat.fiyat] ?? FIYAT_POLITIKASI.normal;
   const politikaTalep = fiyatTalepCarpani(pol, krizliMi(state));
-  const ub = anaUrunBonusu(state, hat.id);
+  const ub = hatBonusu(state, hat.id);
   // Savaş talep bonusu %10 kısık uygulanır (Asker birlik modu dengesi).
   const savasTalep = tanim.savasTalep && state.ulke.savasta ? 1 + (tanim.savasTalep + (ub?.savasTalepEki ?? 0) - 1) * 0.9 : 1;
   const sicak = sicakUrunHatId(state, profil) === hat.id;
@@ -565,6 +565,25 @@ export function anaUrunBonusu(state: CharacterState, hatId: string): UrunBonusu 
   if (!is || is.ana_urun !== hatId) return null;
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
   return profil?.baslangicUrunleri?.find((u) => u.hat === hatId)?.bonus ?? null;
+}
+
+/** Bonus kaynaklarını birleştirir: çarpanlar çarpılır, savaş talebi eki toplanır. Hepsi boşsa null. */
+export function bonuslariBirlestir(kaynaklar: (UrunBonusu | null | undefined)[]): UrunBonusu | null {
+  const mevcut = kaynaklar.filter((k): k is UrunBonusu => !!k);
+  if (mevcut.length === 0) return null;
+  const sonuc: UrunBonusu = {};
+  for (const k of mevcut) {
+    for (const alan of ["alisCarpani", "satisCarpani", "talepCarpani", "curumeCarpani"] as const) {
+      if (k[alan] !== undefined) sonuc[alan] = (sonuc[alan] ?? 1) * k[alan]!;
+    }
+    if (k.savasTalepEki !== undefined) sonuc.savasTalepEki = (sonuc.savasTalepEki ?? 0) + k.savasTalepEki;
+  }
+  return sonuc;
+}
+
+/** Bir hattın tüm bonusları (ana ürün; ileride geliştirme/kalite/sefer kaynakları buraya eklenir). `hatHesapla` ve çürüme bunu okur. */
+export function hatBonusu(state: CharacterState, hatId: string): UrunBonusu | null {
+  return bonuslariBirlestir([anaUrunBonusu(state, hatId)]);
 }
 
 /** Oyuncunun henüz seçmediği başlangıç ürünü var mı? (yalnız API "ilerle" oyunları) */
@@ -884,7 +903,7 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
     satis += talep * h.birimFiyat;
     // Çürüme gerçek yıl işlemedeki gibi SATIŞTAN SONRA kalan stoğa (ana ürün çürüme bonusuyla) uygulanır; alım = satılan + çürüyen.
     const kalan = Math.max(0, hat.stok - talep);
-    const kayip = kalan * curume * (anaUrunBonusu(state, hat.id)?.curumeCarpani ?? 1) * h.birimMaliyet;
+    const kayip = kalan * curume * (hatBonusu(state, hat.id)?.curumeCarpani ?? 1) * h.birimMaliyet;
     curumeKaybi += kayip;
     alim += talep * h.birimMaliyet + kayip;
   }
@@ -1383,7 +1402,7 @@ function isletmeYilIsleIc(state: CharacterState, b: IsletmeBaglami): IsletmeYilS
     const tanim = hatTanimiGetir(profil, hat.id);
     if (!tanim) continue;
     const once = hat.stok;
-    hat.stok = Math.round(hat.stok * (1 - curume * (anaUrunBonusu(state, hat.id)?.curumeCarpani ?? 1)));
+    hat.stok = Math.round(hat.stok * (1 - curume * (hatBonusu(state, hat.id)?.curumeCarpani ?? 1)));
     const plan = planlar.find((p) => p.hat.id === hat.id);
     curumeKaybi += (once - hat.stok) * (plan ? plan.hs.birimMaliyet : tanim.birimMaliyet * b.giderEnflasyon);
     if (hat.stok > 0 && !hat.acik && hat.stok >= 20) uyarilar.push({ kod: "fazla_stok", hat: hat.id });
