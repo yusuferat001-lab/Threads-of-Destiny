@@ -817,6 +817,10 @@ export interface IsletmeUyari {
   urunYuzde?: number;
   nakitYuzde?: number;
   tutar?: number;
+  /** `savas_ganimet`: toplam (brüt) ganimet, askerlere pay ve oranı (%); `tutar` = size kalan. */
+  brut?: number;
+  erPayi?: number;
+  oran?: number;
   /** Rakip saldırısı: saldıran, güvenlik engelledi mi, içerden sızma, kaybedilen müşteri (ondalık), şöhret kaybı. */
   rakip?: string;
   engellendi?: boolean;
@@ -1093,6 +1097,10 @@ export interface IsletmeButcesi {
   /** Hazine payı (yalnız Asker): KAZANÇ üzerinden alınan vergi; `kazanc` vergi sonrasıdır. */
   hazinePayi?: number;
   kazanc: number;
+  /** İki sütunlu bütçe (v67 Madde 8): sol sütun gelir, sağ sütun gider; Σgelir − Σgider = kazanç. */
+  kalemler: ButceKalemleri;
+  /** Bu yıl çözülen çatışmaların ganimeti (asker payı düşülmüş); yıl sonunda Kazanç'a eklenir ve vergilenir. */
+  ganimetBirikimi?: number;
   /** Meslek geliri ve net'in ± aralığı (yıllık rastgelelik payı). */
   gelir: number;
   netAlt: number;
@@ -1107,6 +1115,10 @@ export type BirlikTalim = 'hafif' | 'orta' | 'agir';
 export type BirlikArazi = 'ova' | 'dag' | 'orman';
 export type BirlikSeferberlik = 'genel' | 'secme';
 interface DilMetni { tr: string; en: string }
+
+/** Bütçe satırı (v67 Madde 8): sol sütun gelir, sağ sütun gider; tutarlar pozitif. */
+export interface ButceKalemi { kod: string; ad: DilMetni; tutar: number; not?: DilMetni }
+export interface ButceKalemleri { gelir: ButceKalemi[]; gider: ButceKalemi[] }
 
 export interface BirlikKararGirdisi {
   gorevler?: string[];
@@ -1241,6 +1253,9 @@ export interface BirlikGorunumu {
     toplamGider: number;
     net: number;
     barisGanimetTahmini: number;
+    barisGanimetBrut: number;
+    barisGanimetErPayi: number;
+    barisGanimetPayOrani: number;
   };
   yol: string | null;
 }
@@ -1292,7 +1307,11 @@ export interface CatismaSonucuGorunum {
   firar: number;
   kalanEr: number;
   dusmanOlu: number;
+  /** Size kalan ganimet (asker payı düşülmüş net + esir parası); yıl sonunda Kazanç'a eklenir ve vergilenir. */
   ganimet: number;
+  ganimetBrut: number;
+  ganimetErPayi: number;
+  ganimetPayOrani: number;
   esir: number;
   nakitHasar: number;
   talim: number;
@@ -1324,6 +1343,9 @@ export interface SavasGunuSonucu {
   kalanEr: number;
   dusmanOlu: number;
   ganimetTahmini: number;
+  ganimetBrutTahmini: number;
+  ganimetErPayiTahmini: number;
+  ganimetPayOrani: number;
   esirTahmini: number;
   talim: number;
 }
@@ -1614,6 +1636,8 @@ export interface FinansOzeti {
   isletmeCalisanMaasi: number;
   /** "Kazanç" tek kaynak: bu yılın beklenen, her şey dahil durumu (gelir, gider, net ve net'in aralığı). */
   kazanc: { gelir: number; gider: number; net: number; alt: number; ust: number };
+  /** İki sütunlu bütçe kalemleri (aynı kaynak: IsletmeGorunumu.butce.kalemler); işletme yoksa null. */
+  kalemler: ButceKalemleri | null;
   /** Hazine payı (yalnız Asker): KAZANÇ üzerinden alınan vergi; `kazanc.net` vergi sonrasıdır. */
   hazinePayi?: number;
   netYillik: number;

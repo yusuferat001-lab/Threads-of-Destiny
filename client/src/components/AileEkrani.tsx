@@ -275,7 +275,7 @@ export function AileEkrani({
   const yasayanCocukVar = (durum?.cocuklar ?? []).some((c) => c.yasiyor);
 
   return (
-    <div className="ekran ekran-tam-sayfa ekran-aile">
+    <div className="ekran ekran-tam-sayfa ekran-yan ekran-aile">
       <AileArkaplan />
       <h2>{m.aeBaslikTam}</h2>
 

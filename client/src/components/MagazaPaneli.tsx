@@ -5,6 +5,7 @@ import { bic } from '../i18n';
 import { useDil } from '../DilContext';
 import { useMobilEkran } from '../hooks';
 import { EnvanterPaneli } from './EnvanterPaneli';
+import { KararOnay, KararSatiri } from './KararKabuk';
 
 /** Şifa/Lüks sekmelerinin yanına, SADECE mobilde eklenen 3. sekme — sol panel
  * kaldırılınca EnvanterPaneli'nin (envanter/hediye) yeni evi (§4). Masaüstünde
@@ -56,10 +57,14 @@ export function MagazaPaneli({
   const { m, kt, dil } = useDil();
   const mobil = useMobilEkran();
   const [sekme, setSekme] = useState<MagazaSekme>('sifa');
+  const [secim, setSecim] = useState<string | null>(null);
   const envanterSekmesiVar = mobil && !!envanterMagazaEnvanteri;
+  // Sanat ve Binek artık "Lüks Tüketim" sekmesinin içinde (v70): aynı anda en çok 5 ürün, 3 yılda bir değişir.
+  const LUKS_GRUBU: MagazaEsyaKategori[] = ['luks', 'sanat', 'binek'];
   const gosterilenler =
-    sekme === 'envanter' ? [] : katalog.filter((esya) => esya.kategori === sekme);
+    sekme === 'envanter' ? [] : katalog.filter((esya) => (sekme === 'luks' ? LUKS_GRUBU.includes(esya.kategori) : esya.kategori === sekme));
   const kilitAciklamasi = gosterilenler.find((e) => e.kilitli)?.kilitAciklamasi;
+  const seciliEsya = gosterilenler.find((e) => e.id === secim) ?? null;
 
   const SEKME_BASLIK: Record<MagazaSekme, string> = {
     sifa: m.mpSekmeSifa,
@@ -76,27 +81,28 @@ export function MagazaPaneli({
     binek: m.mpBinekAciklama,
     envanter: '',
   };
-  const sekmeBaslik = (kat: MagazaSekme) => SEKME_BASLIK[kat];
   const sekmeAciklama = SEKME_ACIKLAMA[sekme];
+  const sekmeDegistir = (k: MagazaSekme) => {
+    setSekme(k);
+    setSecim(null);
+  };
 
   return (
-    <div className="ekran ekran-tam-sayfa ekran-magaza">
+    <div className="ekran ekran-tam-sayfa ekran-yan ekran-magaza">
       <h2>{m.mpBaslikTam}</h2>
       <p className="giris-aciklama">{bic(m.mpAciklama, formatPara(para), paraBirimi)}</p>
 
       <div className="magaza-sekmeleri">
-        {(['sifa', 'luks', 'sanat', 'binek', ...(envanterSekmesiVar ? (['envanter'] as const) : [])] as MagazaSekme[]).map(
-          (kategori) => (
-            <button
-              key={kategori}
-              className={`magaza-sekme${sekme === kategori ? ' magaza-sekme-aktif' : ''}`}
-              disabled={yukleniyor}
-              onClick={() => setSekme(kategori)}
-            >
-              {SEKME_SIMGE[kategori]} {sekmeBaslik(kategori)}
-            </button>
-          ),
-        )}
+        {(['sifa', 'luks', ...(envanterSekmesiVar ? (['envanter'] as const) : [])] as MagazaSekme[]).map((kategori) => (
+          <button
+            key={kategori}
+            className={`magaza-sekme${sekme === kategori ? ' magaza-sekme-aktif' : ''}`}
+            disabled={yukleniyor}
+            onClick={() => sekmeDegistir(kategori)}
+          >
+            {SEKME_SIMGE[kategori]} {SEKME_BASLIK[kategori]}
+          </button>
+        ))}
       </div>
       {sekme !== 'envanter' && (
         <p className="giris-aciklama magaza-sekme-aciklama tam-yardimci-metin">{sekmeAciklama}</p>
@@ -126,45 +132,47 @@ export function MagazaPaneli({
           />
         </div>
       ) : (
-      <div className="tam-kaydirilan">
-        <div className="yatirim-kartlari yatirim-mulk-kartlari">
-          {gosterilenler.map((esya) => {
-            const satinAlinamaz = esya.kilitli || esya.sahipMi;
-            return (
-              <button
-                key={esya.id}
-                className={`yatirim-kart magaza-kart${esya.sahipMi ? ' mulk-kart-sahip' : ''}`}
-                disabled={yukleniyor || satinAlinamaz || para < esya.fiyat}
-                onClick={() => onSatinAl(esya.id)}
-                title={`${kt(esya.aciklama)}${
-                  esya.sifaFaydaAralik
-                    ? `\n${bic(m.mpSifaSans, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)}`
-                    : ''
-                }`}
-              >
-                <span className="meslek-simge">{esya.simge}</span>
-                <strong>
-                  {kt(esya.ad)} {esya.sahipMi && m.mpSahipsinTam}
-                </strong>
-                <span className="meslek-aciklama magaza-etki-satiri">
-                  {esya.saglikEtkisi ? <><span aria-hidden>❤️</span> <span className="s-arti">+{esya.saglikEtkisi}</span>{' '}</> : null}
-                  {esya.mutlulukEtkisi ? <><span aria-hidden>😊</span> <span className="s-arti">+{esya.mutlulukEtkisi}</span>{' '}</> : null}
-                  {esya.unEtkisi ? <><span aria-hidden>⭐</span> <span className="s-arti">+{esya.unEtkisi}</span>{' '}</> : null}
-                  {esya.sifaFaydaAralik
-                    ? `· ${formatYuzdeAralik(dil, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)} ${m.mpFayda}`
-                    : ''}
-                  {esya.omurYil && !esya.sahipMi ? ` · ${bic(m.mpRafKisa, esya.omurYil)}` : ''}
-                </span>
-                {!esya.sahipMi && (
-                  <span className="magaza-fiyat">
-                    {formatPara(esya.fiyat)} {paraBirimi}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+        <div className="tam-kaydirilan">
+          <div className="kk-liste kk-ikili">
+            {gosterilenler.map((esya) => {
+              const satinAlinamaz = esya.kilitli || esya.sahipMi;
+              const dalAdi = esya.sahipMi ? m.mpSahipsinTam.replace(/[()·]/g, '').trim() : esya.kategori === 'sifa' ? m.mpSekmeSifa.split(' & ')[0] : SEKME_BASLIK[esya.kategori];
+              return (
+                <KararSatiri
+                  key={esya.id}
+                  kol={esya.kategori === 'sifa' ? 'evrensel' : 'sadik'}
+                  simge={esya.simge}
+                  dal={dalAdi}
+                  ad={kt(esya.ad)}
+                  cipler={
+                    <>
+                      {esya.saglikEtkisi ? <span className="kk-cip s-arti">❤️ +{esya.saglikEtkisi}</span> : null}
+                      {esya.mutlulukEtkisi ? <span className="kk-cip s-arti">😊 +{esya.mutlulukEtkisi}</span> : null}
+                      {esya.unEtkisi ? <span className="kk-cip s-arti">⭐ +{esya.unEtkisi}</span> : null}
+                      {esya.sifaFaydaAralik ? <span className="kk-cip">{formatYuzdeAralik(dil, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)} {m.mpFayda}</span> : null}
+                      {esya.omurYil && !esya.sahipMi ? <span className="kk-cip">{bic(m.mpRafKisa, esya.omurYil)}</span> : null}
+                      {!esya.sahipMi && <span className="kk-cip s-gider">{formatPara(esya.fiyat)} {paraBirimi}</span>}
+                    </>
+                  }
+                  detay={kt(esya.aciklama)}
+                  secili={secim === esya.id}
+                  disabled={yukleniyor || satinAlinamaz || para < esya.fiyat}
+                  onClick={() => setSecim(esya.id)}
+                />
+              );
+            })}
+          </div>
+          <KararOnay
+            not={seciliEsya ? (seciliEsya.sifaFaydaAralik ? bic(m.mpSifaSans, seciliEsya.sifaFaydaAralik.min, seciliEsya.sifaFaydaAralik.max) : '') : dil === 'en' ? 'Pick an item.' : 'Bir ürün seç.'}
+            etiket={dil === 'en' ? 'Buy' : 'Satın al'}
+            disabled={yukleniyor || !seciliEsya}
+            onClick={() => {
+              if (!seciliEsya) return;
+              onSatinAl(seciliEsya.id);
+              setSecim(null);
+            }}
+          />
         </div>
-      </div>
       )}
 
       <button className="ikincil tam-geri-buton" disabled={yukleniyor} onClick={onGeriDon}>

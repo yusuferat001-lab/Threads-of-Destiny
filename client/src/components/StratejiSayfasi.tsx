@@ -3,6 +3,7 @@ import { PiyasaHaberleri } from './PiyasaHaberleri';
 import type { KrediConfig, FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, BirlikKararGirdisi, BirlikTur, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { useEscKapat } from '../hooks';
+import { KapatX } from './KararKabuk';
 import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi, kitleSozlugu } from '../format';
 import { bic } from '../i18n';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
@@ -949,6 +950,7 @@ export function StratejiSayfasi({
       {modalMesaj && (
         <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" onClick={() => setModalMesaj(null)}>
           <div className="kariyer-sonuc-modal" role="alertdialog" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setModalMesaj(null)} />
             <p>{modalMesaj}</p>
             <button onClick={() => setModalMesaj(null)}>{en ? 'OK' : 'Tamam'}</button>
           </div>

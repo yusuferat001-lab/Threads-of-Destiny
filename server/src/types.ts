@@ -1006,6 +1006,10 @@ export interface IsletmeUyari {
   urunYuzde?: number;
   nakitYuzde?: number;
   tutar?: number;
+  /** `savas_ganimet`: toplam (brüt) ganimet, askerlere pay ve oranı (%). `tutar` = size kalan. */
+  brut?: number;
+  erPayi?: number;
+  oran?: number;
   /** Birlik (Asker) uyarıları: sayı (firar eden/ölen/terhis olan er, esir) ve savaş sonucu ("zafer" | "yenilgi"). */
   sayi?: number;
   /** savas_kayip: aynı olayda yaralanan er sayısı. */
@@ -1221,7 +1225,12 @@ export interface CatismaSonucuGorunum {
   firar: number;
   kalanEr: number;
   dusmanOlu: number;
+  /** Size kalan ganimet (asker payı düşülmüş net + esir parası); yıl sonunda Kazanç'a eklenir ve vergilenir. */
   ganimet: number;
+  /** Ganimetin toplamı (brüt), askerlere giden pay ve oranı (%). `ganimetBrut = ganimetErPayi + net`. */
+  ganimetBrut: number;
+  ganimetErPayi: number;
+  ganimetPayOrani: number;
   esir: number;
   nakitHasar: number;
   talim: number;
@@ -1258,6 +1267,9 @@ export interface SavasGunuSonucu {
   dusmanOlu: number;
   /** Zaferde savaş sonunda tek seferde gelecek net ganimet tahmini ve beklenen esir (yenilgide 0). */
   ganimetTahmini: number;
+  ganimetBrutTahmini: number;
+  ganimetErPayiTahmini: number;
+  ganimetPayOrani: number;
   esirTahmini: number;
   /** Talim değişimi (yıl sonunda işlenir). */
   talim: number;
@@ -1360,6 +1372,8 @@ export interface BirlikDurumu {
   ganimet_payi: BirlikGanimetPayi;
   /** Ganimet payı en erken bu oyun yılında yeniden değiştirilebilir (5 yılda bir); yoksa/null = serbest. */
   ganimet_kilit_bitis?: number | null;
+  /** Çatışma ganimeti (asker payı düşülmüş net + esir parası): olay anında cebe yazılmaz, o yılın Kazanç'ına eklenir ve hazine payına tabi olur (v67 Madde 8). */
+  ganimet_birikimi?: number;
   moral: number;
   sertlik: number;
   /** Açık görev id'leri (slot sayısı rütbeyle). */
@@ -1385,8 +1399,6 @@ export interface BirlikDurumu {
   erzak_oran: number;
   /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
   baris_bekleme?: number;
-  /** Haydut/sınır çatışması ganimeti (net) + esir geliri: sonraki yıl işlemede ordu gelirine (dolayısıyla Kazanç ve hazine payına) yazılır; çözülür çözülmez kasaya girmez. */
-  catisma_geliri?: number;
   /** Her tür için (haydut, sınır, büyük savaş) arka arkaya zafer sayısı; yenilgide sıfırlanır; ≥3 iken düşman +%10–15 güçlenir. */
   zafer_serisi?: { haydut: number; sinir: number; savas: number };
   /** Ömür boyu toplam zafer sayıları (seri sıfırlansa da kalır; 'Fatih' hayat amacı için, v67 Madde 7). */
@@ -1721,4 +1733,18 @@ export interface AranmaDurumu {
   bekleyenBaskin: boolean;
   /** Aranmanın mesleğe etkisini anlatan hazır cümle (sunucu dilinde): müşteri/inanan kaybı ya da Asker'de firar. */
   debuffEtiketi: string;
+}
+
+
+/** Bütçe satırı (iki sütunlu bütçe ekranı; v67 Madde 8): sol sütun gelir, sağ sütun gider; tutarlar pozitif. */
+export interface ButceKalemi {
+  kod: string;
+  ad: { tr: string; en: string };
+  tutar: number;
+  /** "!" bilgi notu (isteğe bağlı). */
+  not?: { tr: string; en: string };
+}
+export interface ButceKalemleri {
+  gelir: ButceKalemi[];
+  gider: ButceKalemi[];
 }

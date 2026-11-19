@@ -1,6 +1,6 @@
 import type { SavasGunuSonucu } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara } from '../format';
+import { GanimetDokumu } from './GanimetDokumu';
 
 const ARAZI: Record<string, { tr: string; en: string }> = {
   ova: { tr: 'Açık ova', en: 'Open plain' },
@@ -75,10 +75,20 @@ export function SavasSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: SavasGunuSo
         <div className="savas-kiyas">
           <strong>{t('ganimet')}</strong>
           {kazandi ? (
-            <div>
-              <span className="s-arti">+{formatPara(sonuc.ganimetTahmini)} {paraBirimi}</span>
-              {sonuc.esirTahmini > 0 && <> · ~{sonuc.esirTahmini} {t('esir')}</>}
-            </div>
+            <>
+              <GanimetDokumu
+                brut={sonuc.ganimetBrutTahmini}
+                erPayi={sonuc.ganimetErPayiTahmini}
+                oran={sonuc.ganimetPayOrani}
+                net={sonuc.ganimetTahmini}
+                paraBirimi={paraBirimi}
+              />
+              {sonuc.esirTahmini > 0 && (
+                <div>
+                  ~{sonuc.esirTahmini} {t('esir')}
+                </div>
+              )}
+            </>
           ) : (
             <div>{t('ganimetYok')}</div>
           )}

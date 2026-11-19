@@ -1,6 +1,7 @@
 import type { IsletmeGorunumu, IsletmeUyari } from '../types';
 import { useDil } from '../DilContext';
 import { useEscKapat } from '../hooks';
+import { KapatX } from './KararKabuk';
 import { gecenYilBaslik } from '../isletmeAdi';
 import { isletmeUyariMetni } from './IsletmePaneli';
 
@@ -52,6 +53,7 @@ export function IsletmeBildirimModal({ durum, uyarilar, onKapat }: Props) {
   return (
     <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" aria-modal="true">
       <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
+        <KapatX onClick={onKapat} />
         <h4>{durum.birlik ? (tr ? '⚔️ Savaş Haberi' : '⚔️ War News') : gecenYilBaslik(durum.cemaat ? 'Din Adamı' : durum.uretim ? 'Zanaatkâr' : 'Tüccar', tr ? 'tr' : 'en')}</h4>
         {uyarilar.map((u, i) => (
           <p key={i}>{isletmeUyariMetni(u, durum, dil === 'en' ? 'en' : 'tr')}</p>

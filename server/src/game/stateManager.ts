@@ -92,7 +92,8 @@ import {
   MagazaEsyasiTanimi,
   magazaEsyasiTanimiGetir,
   MAGAZA_ESYALARI,
-  MAGAZA_VITRIN_ADET,
+  MAGAZA_VITRIN_TOPLAM,
+  MAGAZA_VITRIN_DAGILIMI,
   MAGAZA_VITRIN_YENILEME_YIL,
   koleksiyonKategorisiMi,
 } from "../data/magazaEsyalari";
@@ -4255,19 +4256,26 @@ function vitrinCaginaUygunAdaylar(state: CharacterState, kategori: string): Maga
 
 function vitrinKur(state: CharacterState): string[] {
   const idler: string[] = [];
-  for (const [kategori, adet] of Object.entries(MAGAZA_VITRIN_ADET)) {
-    const adaylar = vitrinCaginaUygunAdaylar(state, kategori);
-    // Sahip olunanlar vitrine girip yer kaplamasın; yetmezse onlar da düşer (zaten satın alınamaz).
-    const sahipOlmayanlar = adaylar.filter((e) => !state.magaza_envanteri.some((x) => x.katalogId === e.id));
-    const havuz = [...sahipOlmayanlar].sort(() => Math.random() - 0.5);
+  const karisik = (l: MagazaEsyasiTanimi[]) => [...l].sort(() => Math.random() - 0.5);
+  const kalanlar: MagazaEsyasiTanimi[] = [];
+  for (const [kategori, adet] of Object.entries(MAGAZA_VITRIN_DAGILIMI)) {
+    // Sahip olunanlar vitrine girip yer kaplamasın (zaten satın alınamaz).
+    const sahipOlmayanlar = vitrinCaginaUygunAdaylar(state, kategori).filter((e) => !state.magaza_envanteri.some((x) => x.katalogId === e.id));
+    const havuz = karisik(sahipOlmayanlar);
     idler.push(...havuz.slice(0, adet ?? 0).map((e) => e.id));
+    kalanlar.push(...havuz.slice(adet ?? 0));
   }
-  return idler;
+  // Bir kategori hedefini dolduramadıysa eksik, kalan eşyalardan tamamlanır; toplam MAGAZA_VITRIN_TOPLAM'ı aşmaz.
+  for (const e of karisik(kalanlar)) {
+    if (idler.length >= MAGAZA_VITRIN_TOPLAM) break;
+    idler.push(e.id);
+  }
+  return idler.slice(0, MAGAZA_VITRIN_TOPLAM);
 }
 
 /**
  * Mağaza vitrinini gerekirse yeniler (ilk kurulum, süre dolumu ya da geçersiz id): koleksiyon kategorilerinden
- * (lüks/sanat/binek) her seferinde sınırlı sayıda eşya görünür, MAGAZA_VITRIN_YENILEME_YIL (3-4) yılda bir değişir.
+ * (lüks/sanat/binek) aynı anda en çok MAGAZA_VITRIN_TOPLAM (5) eşya görünür, 3 yılda bir değişir.
  * Değişti mi (state'in kaydedilmesi gerekir) bilgisini döner.
  */
 export function magazaVitriniYenile(state: CharacterState): boolean {

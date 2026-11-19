@@ -13,10 +13,12 @@ interface AltGezinmeProps {
   onSosyallesme: () => void;
   onMagaza: () => void;
   onAile: () => void;
+  /** Mülkler (gayrimenkul yatırımı) — mobilde de alt çubukta (v70). */
+  onMulk: () => void;
 }
 
 /**
- * Mobil sabit alt gezinme çubuğu: Evin · Sosyalleş · İlişkiler · Mağaza.
+ * Mobil sabit alt gezinme çubuğu: Evin · Mülkler · Sosyalleş · İlişkiler · Mağaza.
  * Kariyer/Yatırım ana ekrandaki meslek tuşlarından açılır; Kişilik (avatar/isim), Canlı Skor
  * (üst şerit rozeti) ve Ayarlar (⚙️) başka yerlerde olduğundan "Diğer" menüsü yok.
  * Oyun/Sonuç ekranına dönüş burada YOK — her alt ekranın kendi "Geri Dön" butonu
@@ -32,6 +34,7 @@ export function AltGezinme({
   onSosyallesme,
   onMagaza,
   onAile,
+  onMulk,
 }: AltGezinmeProps) {
   const { m } = useDil();
   const aileBildirimi = aileTalepVar || aileEvlilikRozeti;
@@ -77,6 +80,7 @@ export function AltGezinme({
         </span>
       )}
       {dugme('finans', '🏠', m.shEvinKisa, onEv)}
+      {dugme('yatirim', '🏘️', m.shIsinKisa, onMulk)}
       {dugme('sosyallesme', '🍷', m.shSosyallesme, onSosyallesme)}
       {dugme('aile', '💞', m.agAile, onAile, aileBildirimi)}
       {dugme('magaza', '🛒', m.shMagaza, onMagaza)}

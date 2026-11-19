@@ -887,6 +887,10 @@ export interface BirlikGorunumu {
     net: number;
     /** Bir barış çatışması (haydut/sınır) zaferinde oyuncuya kalacak tahmini ganimet (askerî güçle orantılı). */
     barisGanimetTahmini: number;
+    /** Çatışma zaferinde ganimetin toplamı (brüt), askerlere giden pay (tutar) ve oranı (%) — Ordu bütçesindeki bilgi satırı (v67 Madde 8). */
+    barisGanimetBrut: number;
+    barisGanimetErPayi: number;
+    barisGanimetPayOrani: number;
   };
   yol: string | null;
 }
@@ -1115,6 +1119,9 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim), birlikBakim: r2(h.birlikBakim),
       techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
       barisGanimetTahmini: r2(ganimetBrutTemel(d.guc, BARIS_GANIMET_ORTA) * bg.enflasyon), // haydut/sınırda asker payı yok
+      barisGanimetBrut: r2(ganimetBrutTemel(d.guc, BARIS_GANIMET_ORTA) * bg.enflasyon),
+      barisGanimetErPayi: 0,
+      barisGanimetPayOrani: 0,
     },
     yol,
   };

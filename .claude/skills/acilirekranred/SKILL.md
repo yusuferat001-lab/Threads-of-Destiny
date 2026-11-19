@@ -29,7 +29,16 @@ Oyundaki zorunlu "seç ve onayla" pencerelerinin ortak görünümü. **Yeni penc
 5. Kapatılamaz pencere ise App.tsx'te mevcut desen gibi koşullu render et (bkz. `DoktrinSecimi`/`TerfiPenceresi`). Zorunlu pencerelerde sunucu, karar gelmeden zamanı ilerletmez.
 6. Satır listesi bir sayfanın içindeyse (Ordu/Cemaat/Kişilik) `<div className="kk-liste kk-kucuk">` ve `KararSatiri`'ni `onClick`siz kullan.
 
+## v70 eklentileri
+
+- **Adım adım pencere:** `<KararKatman sabit>` çerçeve boyunu sabitler; sorular `SavasKararlari.tsx` gibi tek tek gösterilir (tıkla → sonraki soru, `kk-onay` içinde `.kk-geri-btn`, ESC = geri).
+- **İki sütunlu liste:** `<div className="kk-liste kk-ikili">` (PC'de iki sütun, telefonda tek); satırlar dar düzene geçer.
+- **Yan ekran sayfası:** kökte `ekran ekran-tam-sayfa ekran-yan` (latte yüzeyler, PC büyütme, sticky onay çubuğu).
+- **✕ sağ üst:** kapatılabilir her pencerede `<KapatX onClick={...} />`; ESC `App.tsx ekranGeri` ile genel.
+
 ## Kurallar ve tuzaklar
+
+- **KESİN KURAL: kahve üstüne kahve yok** (CLAUDE.md). Koyu kahve çerçeve üstünde krem/latte yüzey, bordo, altın.
 
 - **Renk uydurma.** Sayılar: yeşil artı, kırmızı eksi, lacivert durum, eflatun şart (`docs/referans/14-renk-paleti.md`). Kol renkleri yalnız kol kimliği içindir.
 - **Oyuncuya "sold" yazma:** asker ödemesinin yerel adı (`MAAS_ADLARI`: Ulûfe, Löhnung…) kullanılır; `tests/askerOdemeAdi.test.ts` Türkçe metinleri tarar.

@@ -811,13 +811,13 @@ describe("v51 çatışma kayıpları: B paketi, seçim etkisi, kayıp tabanı", 
     expect(r.zafer).toBe(true);
     expect(r.ganimet).toBeGreaterThan(0);
     expect(s.para).toBeCloseTo(0, 6); // hemen kasaya girmedi
-    expect(b.catisma_geliri).toBeGreaterThanOrEqual(r.ganimet - 1e-6);
-    const bekleyen = b.catisma_geliri!;
+    expect(b.ganimet_birikimi).toBeGreaterThanOrEqual(r.ganimet - 1e-6);
+    const bekleyen = b.ganimet_birikimi!;
     const sonuc = birlikYilIsle(s, bg(s));
     rnd.mockRestore();
     expect(sonuc.dokum.birlik!.catismaGanimeti).toBeCloseTo(bekleyen, 6); // döküme yazıldı
     expect(sonuc.dokum.satis).toBeGreaterThanOrEqual(bekleyen); // gelire dahil → Kazanç ve hazine payı bu net üzerinden
-    expect(b.catisma_geliri).toBe(0);
+    expect(b.ganimet_birikimi).toBe(0);
   });
   it("büyük savaşta düşmanın zayıf tarafı güçlü tarafının en az %60'ı; ortalama korunur", async () => {
     const { dusmanSavasTaraflari, DUSMAN_TARAF_MIN_ORAN, dusmanSaldiriSavunma, dusmanAraziCarpani } = await import("../src/data/birlik");

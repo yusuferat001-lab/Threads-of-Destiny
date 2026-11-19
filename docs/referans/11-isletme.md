@@ -157,3 +157,5 @@ Bu blok §45 v8–v12 ve §13/§27'nin üzerine yazar (çelişkide bu geçerli).
 
 ## v67 notu (Asker yatırımı)
 Asker (birlik modu) yatırımları: `kisla`, `revir`, `devsirme` ve yeni **`talim` (Talim Alanı, 🎯, `YatirimEtkisi "talim"`, fiyat 18/32/50/75)**; etki metni `yatirimEtkiMetni("talim")`. Asker için pazar payı eşiği çarpanı (`PAY_ESIGI_CARPANI`) ve pazar payı artık kullanılmaz (rütbe güce bağlı). Ayrıntı: `15` §54 "v67 — Madde 6/7".
+
+**v67 Madde 8 — bütçe kalemleri:** `butceKalemleriHesapla` (gameEngine.ts) dört mesleğin gelir/gider satırlarını tek yerden üretir (`IsletmeGorunumu.butce.kalemler`, `FinansOzeti.kalemler`); Σgelir − Σgider = Kazanç. Ekranda hep "Kazanç" (eski "Cebine kalan" yok), iki sütun (`ButceIkiSutun`). Ayrıntı: `15` "v67 — Madde 8".

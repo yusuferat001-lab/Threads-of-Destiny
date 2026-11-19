@@ -1,6 +1,7 @@
 import type { CatismaKarariDurumu, CatismaSonucuGorunum } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara } from '../format';
+import { GanimetDokumu } from './GanimetDokumu';
 import { GucKarsilastirma } from './KararKabuk';
 
 const DUSMAN_TUR: Record<string, { tr: string; en: string }> = {
@@ -154,17 +155,21 @@ export function CatismaSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: CatismaSo
         <div className="savas-kiyas">
           <strong>{t('ganimet')}</strong>
           {sonuc.zafer ? (
-            <div>
-              <span className="s-arti">
-                +{formatPara(sonuc.ganimet)} {paraBirimi}
-              </span>
+            <>
+              <GanimetDokumu
+                brut={sonuc.ganimetBrut}
+                erPayi={sonuc.ganimetErPayi}
+                oran={sonuc.ganimetPayOrani}
+                net={sonuc.ganimetBrut - sonuc.ganimetErPayi}
+                esirPara={Math.max(0, sonuc.ganimet - (sonuc.ganimetBrut - sonuc.ganimetErPayi))}
+                paraBirimi={paraBirimi}
+              />
               {sonuc.esir > 0 && (
-                <>
-                  {' '}
-                  · ~{sonuc.esir} {t('esir')}
-                </>
+                <div>
+                  ~{sonuc.esir} {t('esir')}
+                </div>
               )}
-            </div>
+            </>
           ) : (
             <div>{t('ganimetYok')}</div>
           )}

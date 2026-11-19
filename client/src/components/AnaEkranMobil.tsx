@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDil } from '../DilContext';
 import { useEscKapat } from '../hooks';
+import { KapatX } from './KararKabuk';
 import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
 import { talepBekliyor } from '../ogreti';
@@ -101,11 +102,15 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
-  // "Kazanç": sunucudaki tek kaynak (finans.kazanc) — her şey dahil (maaş, kredi, yaşam, kira…). Henüz yüklenmediyse eski tahmine düşer.
+  // "Kazanç": sunucudaki tek kaynak. İşletmeli mesleklerde (dördü de) her eylemden sonra yenilenen taze `isletme.butce`'tan okunur
+  // (finans.kazanc ile AYNI kaynak, ama subay/çalışan alma, görev, yatırım gibi eylemlerden sonra hemen güncellenir); finans yalnız yedek.
   const kz = finans?.kazanc ?? null;
-  const tumGelir = kz ? kz.gelir : isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
-  const eldeKalan = kz ? kz.net : isletme ? isletme.butce.kazanc : (finans?.netYillik ?? 0);
-  const tumGider = kz ? kz.gider : Math.max(0, tumGelir - eldeKalan);
+  const taze = isletme?.butce ?? null;
+  const tumGelir = taze
+    ? taze.kalemler.gelir.reduce((t, x) => t + x.tutar, 0)
+    : kz ? kz.gelir : karakter.maas_yillik;
+  const eldeKalan = taze ? taze.kazanc : kz ? kz.net : (finans?.netYillik ?? 0);
+  const tumGider = taze ? taze.kalemler.gider.reduce((t, x) => t + x.tutar, 0) : kz ? kz.gider : Math.max(0, tumGelir - eldeKalan);
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
   const donem = donemAnahtar ? DONEM_ADLARI[donemAnahtar] : null;
@@ -247,6 +252,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         return (
           <div className="kariyer-sonuc-katman" onClick={() => setSavasAcik(false)}>
             <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <KapatX onClick={() => setSavasAcik(false)} />
               <h3>⚔️ {tr ? 'Savaş' : 'War'} {p.yil}/{p.toplamYil}</h3>
               <ul className="ana-donem-liste">
                 {p.seferberlik && (
@@ -319,6 +325,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
       {rakipAcik && isletme?.birlik && (
         <div className="kariyer-sonuc-katman" onClick={() => setRakipAcik(false)}>
           <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setRakipAcik(false)} />
             <h3>⚔️ {tr ? 'Askerî Güç' : 'Military Strength'}</h3>
             <ul className="ana-donem-liste">
               <li>
@@ -338,6 +345,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
       {donemAcik && (
         <div className="kariyer-sonuc-katman" onClick={() => setDonemAcik(false)}>
           <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <KapatX onClick={() => setDonemAcik(false)} />
             <h3>
               {donem ? `${donem.ikon} ${tr ? donem.tr : donem.en}` : tr ? 'Dönem' : 'Era'}
             </h3>

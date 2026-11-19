@@ -104,3 +104,5 @@ Tüm endpoint'ler `{hata: string}` + uygun HTTP status ile hata döner. `POST /:
 - `GET /:id/isletme` → `birlik` (BirlikGorunumu) yeni alanları: `rutbe {gucSarti, yillikKariyerPuani}`, `moral.gelecek`, `talim.gelecek/limit/alanKademe`, `gorevler.katalog[].bonuslar[{kod,yon}]`; **kalkanlar:** `pay`, `rakipler`, `politikalar.ton`, politika `tavan`.
 - Yeni Asker yatırımı `talim` (Talim Alanı) `POST /:id/isletme/yatirim` ile alınır (diğer yatırımlarla aynı uç).
 - Ayrıntı: `15-asker-denge-ozeti-v50-v66.md` "v67 — Madde 6/7".
+
+**v67 Madde 8 (API alanları):** `GET /:id/isletme` → `butce.kalemler {gelir[], gider[]}` (+ `butce.ganimetBirikimi`), `GET /:id/finans`/`finansGetir` → `kalemler` (aynı kaynak, Σgelir−Σgider = Kazanç). Çatışma sonucu (`POST /:id/birlik/catisma`) ve savaş günü sonucu `ganimetBrut/ganimetErPayi/ganimetPayOrani` (`*Tahmini` varyantı) taşır; `savas_ganimet` uyarısı `brut, erPayi, oran`; `birlik.hesap` → `barisGanimetBrut/ErPayi/PayOrani`. `BirlikDurumu.ganimet_birikimi` yıl sonunda Kazanç'a katılır.
