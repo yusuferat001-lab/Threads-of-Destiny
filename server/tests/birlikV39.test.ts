@@ -375,7 +375,7 @@ describe("v40 görev geliri ve birim küçük artıları", () => {
     const v = GOREVLER.map((g) => g.erBasi);
     expect(Math.min(...v)).toBeCloseTo(0.59, 6);
     expect(Math.max(...v)).toBeCloseTo(0.7, 6);
-    for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThanOrEqual(v[i - 1]); // devriye ve eskort 0,59'da eşit
+    for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]); // her görev farklı getiri verir
     // her görev farklı bir karışımla şöhret/moral/otorite/ahlak etkiler; sıfır olmayan her etki en az 0,2
     for (const g of GOREVLER) {
       const etkiler = [g.sohret, g.moral, g.otorite, g.ahlak].filter((x): x is number => typeof x === "number" && x !== 0);

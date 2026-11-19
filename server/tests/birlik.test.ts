@@ -1240,7 +1240,8 @@ describe("v67 Madde 3 — ekonomi sabitleri", () => {
   it("görev asgari güçleri 10/40/80/145/250; er başı katsayı en az 0,59, en çok 0,70", () => {
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
-    expect(sira.map((g) => g.erBasi)).toEqual([0.59, 0.59, 0.625, 0.6625, 0.7]); // en düşük görev bile en az 0,59
+    expect(sira.map((g) => g.erBasi)).toEqual([0.59, 0.6, 0.625, 0.6625, 0.7]); // en düşük görev en az 0,59; hiçbir iki görev aynı getiriyi vermez
+    expect(new Set(GOREVLER.map((g) => g.erBasi)).size).toBe(GOREVLER.length);
     expect(Math.min(...GOREVLER.map((g) => g.erBasi))).toBeGreaterThanOrEqual(0.59);
   });
 

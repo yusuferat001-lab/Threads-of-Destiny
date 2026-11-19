@@ -469,7 +469,7 @@ describe("görev geliri ve erzak tabloları", () => {
       expect("masraf" in g).toBe(false);
       expect(g.erBasi).toBeGreaterThanOrEqual(0.59 - 1e-6);
       expect(g.erBasi).toBeLessThanOrEqual(0.7 + 1e-6);
-      expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
+      expect(g.erBasi).toBeGreaterThan(onceki); // kesin artan: hiçbir iki görev aynı getiriyi vermez
       onceki = g.erBasi;
     }
     expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
