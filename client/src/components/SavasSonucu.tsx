@@ -13,6 +13,7 @@ const M = {
   baslik: { tr: 'Savaş Sonucu', en: 'Battle Result' },
   saldiri: { tr: 'Saldırıdaydın', en: 'You attacked' },
   savunma: { tr: 'Savunmadaydın', en: 'You defended' },
+  baskin: { tr: 'Düşman baskın yaptı: savunmaya zorlandın.', en: 'The enemy ambushed you: you were forced to defend.' },
   guclerin: { tr: 'Güçler', en: 'Forces' },
   sen: { tr: 'Sen', en: 'You' },
   dusman: { tr: 'Düşman', en: 'Enemy' },
@@ -44,6 +45,7 @@ export function SavasSonucu({ sonuc, paraBirimi, onKapat }: { sonuc: SavasGunuSo
         <small>
           {ARAZI[sonuc.arazi]?.[dil] ?? sonuc.arazi} · {sonuc.inisiyatif === 'saldiri' ? t('saldiri') : t('savunma')}
         </small>
+        {sonuc.baskin && <small className="s-eksi">{t('baskin')}</small>}
         <div className="savas-kiyas">
           <strong>{t('guclerin')}</strong>
           <div>

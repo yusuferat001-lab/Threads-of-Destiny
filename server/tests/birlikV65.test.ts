@@ -5,7 +5,7 @@ import { gucHesapla } from "../src/game/birlik";
 import { savasYiliCoz, kayipUygula, barisCatismaCoz, barisCatismaKur, savasBaslat, savasiBitir, seferberlikUygula, sohretSonucuUygula, hazirlikCek, zaferSerisiIsle, saglikBedeliUygula } from "../src/game/birlikYil";
 import { TAHMIN_ARALIGI_TABAN } from "../src/game/subay";
 import { SAVAS_ZAR_YUZDE, gorevErOrani, ZAFER_SERISI_ESIGI, ZAFER_SERISI_ESIGI_2, IKMAL_TANIMLARI, SAVAS_BOZGUN_FIRARI, SAVAS_SONRA_KAYBI, SUVARI_GOREV_GELIRI } from "../src/data/birlik";
-import { KISLA_BAKIM, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../src/data/birlik";
+import { KISLA_BAKIM, KISLA_BAKIM_KAPASITE_ER_BASI, KISLA_ER_LIMITI, SOHRET_SONUCU, GOREV_DONEM_CARPANI, SAVAS_ER_BASI_CARPANI, MORAL_KITLIK_YILLIK, MORAL_BOLLUK_YILLIK } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState } from "../src/types";
 
@@ -25,11 +25,20 @@ function asker(): CharacterState {
 const bg = (s: CharacterState) => isletmeBaglami(s);
 
 describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
-  it("kışla bakımı düşük kademede yumuşak; tam dolu kışlada er başı bakım kademeyle artar", () => {
-    expect(KISLA_BAKIM).toEqual([3, 8, 22, 60, 150]);
-    const erBasi = KISLA_BAKIM.map((x, i) => x / KISLA_ER_LIMITI[i]);
-    for (let i = 1; i < erBasi.length; i++) expect(erBasi[i]).toBeGreaterThan(erBasi[i - 1]);
-    for (let i = 1; i < KISLA_BAKIM.length; i++) expect(KISLA_BAKIM[i]).toBeGreaterThan(KISLA_BAKIM[i - 1]);
+  it("kışla kapasiteleri 40/80/160/300/500; bakım = kapasite × 0,1 = 4/8/16/30/50 (her kademede kapasitedeki er başı 0,1), ordu sayısından bağımsız", () => {
+    expect(KISLA_ER_LIMITI).toEqual([40, 80, 160, 300, 500]);
+    expect(KISLA_BAKIM_KAPASITE_ER_BASI).toBe(0.1);
+    expect(KISLA_BAKIM).toEqual([4, 8, 16, 30, 50]);
+    KISLA_BAKIM.forEach((x, i) => expect(x / KISLA_ER_LIMITI[i]).toBeCloseTo(0.1, 8));
+    const bakim = (kademe: number, er: number) => {
+      const s = asker();
+      s.isletme!.yatirimlar.kisla = kademe;
+      s.meslek_musteri = er;
+      return birlikHesapla(s, bg(s)).kislaBakim / bg(s).giderEnflasyon;
+    };
+    expect(bakim(2, 20)).toBeCloseTo(16, 6);
+    expect(bakim(2, 160)).toBeCloseTo(16, 6); // er sayısı değişse de aynı
+    expect(bakim(4, 100)).toBeCloseTo(50, 6);
   });
 
   it("şöhret aralıkları: haydut < sınır < savaş; yenilgi zaferden az değil (savaşta daha ağır)", () => {
@@ -139,13 +148,12 @@ describe("v65 kışla bakımı ve sonuca göre şöhret", () => {
     expect(catismaKarariDurumu(s, bg(s))!.hazirlikli).toBe(false);
   });
 
-  it("görev gelirinde er sayısına bağlı azalan verim (v67 Madde 7): ilk 100 er ×1, sonra doğrusal; 300 → 0,875, 500 → 0,75; gelir ere göre hep artar", () => {
+  it("görev gelirinde er sayısına bağlı KADEMELİ verim: ilk 200 er ×1, 200'den sonrası ×0,80 (vergi dilimi gibi); 300 → 0,933, 500 → 0,88; gelir ere göre hep artar", () => {
     expect(gorevErOrani(40)).toBe(1);
-    expect(gorevErOrani(100)).toBe(1);
-    expect(gorevErOrani(200)).toBeCloseTo(0.9375, 8);
-    expect(gorevErOrani(300)).toBeCloseTo(0.875, 8);
-    expect(gorevErOrani(500)).toBeCloseTo(0.75, 8);
-    expect(gorevErOrani(800)).toBeCloseTo(0.75, 8); // kapasite üstü sabit
+    expect(gorevErOrani(200)).toBe(1);
+    expect(gorevErOrani(300)).toBeCloseTo((200 + 0.8 * 100) / 300, 8);
+    expect(gorevErOrani(500)).toBeCloseTo((200 + 0.8 * 300) / 500, 8);
+    expect(gorevErOrani(800)).toBeCloseTo((200 + 0.8 * 600) / 800, 8);
     let onceki = 0;
     for (let e = 10; e <= 500; e += 10) {
       expect(e * gorevErOrani(e)).toBeGreaterThan(onceki);
@@ -290,7 +298,7 @@ describe("dönem etkisi: ödeme (sold), erzak ve ana ekran satırı (asker)", ()
     }
   });
 
-  it("savaşta er başı ödeme ×2 (v67 Madde 3); kıtlık morali yılda −1,5; bolluk morali 0", () => {
+  it("savaşta er başı ödeme ×2 (v67; ×1 denemesi geri alındı); kıtlık morali yılda −1,5; bolluk morali 0", () => {
     expect(SAVAS_ER_BASI_CARPANI).toBe(2);
     expect(MORAL_KITLIK_YILLIK).toBe(-1.5);
     expect(MORAL_BOLLUK_YILLIK).toBe(0);

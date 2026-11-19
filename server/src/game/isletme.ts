@@ -47,7 +47,7 @@ import {
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
-import { BARIS_GANIMET_UST, GANIMET_PAYI_TANIMLARI, ganimetBrutTemel } from "../data/birlik";
+import { BARIS_GANIMET_UST, ganimetBrutTemel } from "../data/birlik";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
 import { birlikYilIsle } from "./birlikYil";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
@@ -796,12 +796,12 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
   }
 }
 
-/** Barış çatışması zaferinde olası en yüksek net ganimet (er payı düşülmüş); çatışma vadesi gelmediyse ya da savaştaysa 0. */
+/** Barış çatışması zaferinde olası en yüksek ganimet (haydut/sınırda asker payı yok); çatışma vadesi gelmediyse ya da savaştaysa 0. */
 function barisGanimetiUst(state: CharacterState, b: IsletmeBaglami): number {
   const bd = state.isletme?.birlik;
   if (!bd || state.ulke.savasta || Math.round(bd.baris_bekleme ?? 0) > 0) return 0;
   const brut = ganimetBrutTemel(bd.guc, BARIS_GANIMET_UST) * b.enflasyon;
-  return r2(brut * (1 - GANIMET_PAYI_TANIMLARI[bd.ganimet_payi].oran));
+  return r2(brut);
 }
 
 /** Bu yılın dürüst tahmini bütçesi (ticaret/üretim modu): satış, alım (çürüme dahil), depo, aidat, vergi, borç ödemesi. */

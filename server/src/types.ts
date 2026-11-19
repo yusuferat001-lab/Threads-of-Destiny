@@ -1083,6 +1083,8 @@ export interface IsletmeDokum {
     erBasiGelir: number;
     gorevGeliri: number;
     ganimetPara: number;
+    /** Önceki yıl çözülen haydut/sınır çatışmalarının ganimeti (net; gelire dahildir, hazine payına tabidir). */
+    catismaGanimeti?: number;
     savasOdenegi?: number;
     yagmaPara?: number;
     kiralikMasrafi?: number;
@@ -1165,6 +1167,8 @@ export interface BirlikSavasKarari {
   adim: number;
   /** Zorunlu inisiyatif (oyuncu seçemiyorsa: emir saldırı / düşman saldırısı savunma); seçebiliyorsa null. */
   inisiyatif_zorunlu: "saldiri" | "savunma" | null;
+  /** Düşman baskını: zorunlu savunma düşman saldırı tarafı üstünken geldi (pusu cezası uygulanır). */
+  baskin?: boolean;
   seferberlik: BirlikSeferberlik | null;
   /** İstenen arazi (gerçekleşme ihtimali rütbeye bağlı); null = bölge zarına bırak. */
   arazi: BirlikArazi | null;
@@ -1239,6 +1243,8 @@ export interface CatismaSonucuGorunum {
 /** Savaş Günü sonucu (Savaş Sonucu ekranı): güçler, zarlar, kayıplar, düşman kaybı tahmini, ganimet tahmini. */
 export interface SavasGunuSonucu {
   yil: number;
+  /** Düşman baskın yaptı: savunmaya zorlandın ve pusu cezası aldın. */
+  baskin?: boolean;
   /** Genel savaş sonucu ve cephedeki kanat sonucu. */
   zafer: boolean;
   kanatZafer: boolean;

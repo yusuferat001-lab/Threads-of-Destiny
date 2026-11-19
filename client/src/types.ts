@@ -893,6 +893,7 @@ export interface IsletmeDokum {
     erBasiGelir: number;
     gorevGeliri: number;
     ganimetPara: number;
+    catismaGanimeti?: number;
     savasOdenegi?: number;
     yagmaPara?: number;
     kiralikMasrafi?: number;
@@ -1323,6 +1324,8 @@ export interface CatismaSonucuGorunum {
 /** Savaş Günü sonucu (Savaş Sonucu ekranı). */
 export interface SavasGunuSonucu {
   yil: number;
+  /** Düşman baskın yaptı: savunmaya zorlandın ve pusu cezası aldın. */
+  baskin?: boolean;
   zafer: boolean;
   kanatZafer: boolean;
   arazi: BirlikArazi;

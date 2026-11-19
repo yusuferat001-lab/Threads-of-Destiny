@@ -19,6 +19,7 @@ import {
   ERZAK_BIRIMI,
   ERZAK_DONEM_CARPANI,
   GANIMET_PAYI_TANIMLARI,
+  ganimetEtkinGuc,
   GOREVLER,
   GOREV_DONEM_CARPANI,
   GOREV_SLOTLARI,
@@ -33,7 +34,6 @@ import {
   YAGMA_ESIR,
   YAGMA_YIL,
   SAVAS_KISLA_INDIRIMI,
-  GOREV_GELIR_CARPANI,
   ZIRHLI_OLU_AZALTMA,
   IKMAL_TANIMLARI,
   IKMAL_SIRASI,
@@ -73,7 +73,6 @@ import {
   gorevErOrani,
   SUVARI_GOREV_GELIRI,
   SUVARI_BONUS_GOREVLERI,
-  yagmaEtkinGuc,
   hazinePayi,
   BARIS_CATISMA_ILK_YIL,
   KALE_GELIR,
@@ -678,11 +677,10 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const sold = r2((soldTam + erBasiOdeme) * soldDonemCarpani(state));
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
-  const kazancC = GOREV_GELIR_CARPANI;
-  const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, guc: gucPay, aktif }) => {
+  const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const suvariC = SUVARI_BONUS_GOREVLERI.includes(g.id) ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1;
-    const gelir = p * gorevErOrani(p) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
+    const gelir = p * gorevErOrani(p) * g.erBasi * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;
@@ -693,10 +691,10 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const gorevGeliri = gorevler.reduce((t, x) => t + x.gelir, 0);
   const ganimetBrut = gorevler.reduce((t, x) => t + x.ganimet, 0);
   // Yağma (yalnız savaşta, ikmal kararı): güçle orantılı yıllık ganimet; esir ve yeni er de getirir.
-  // Yağma türü (sert 0,7 / orta 0,5 / yumuşak 0,3 × güç) ikmal kararından gelir; yalnız savaşın ilk YAGMA_YIL yılında.
+  // Yağma türü (sert / orta / yumuşak × güç; oranlar IKMAL_TANIMLARI'nda) ikmal kararından gelir; yalnız savaşın ilk YAGMA_YIL yılında.
   const yagmaTuru = ikmal.yagma;
   const yagma = savasta && b.savas?.sonuc !== "yenilgi" && (sec.savasYili ?? (b.savas?.yil_sayac ?? 0) + 1) <= YAGMA_YIL;
-  const yagmaBrut = yagma ? yagmaEtkinGuc(b.guc) * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
+  const yagmaBrut = yagma ? ganimetEtkinGuc(b.guc) * yagmaTuru.gucOrani * bg.enflasyon * ganimetC : 0;
   const toplamBrut = ganimetBrut + yagmaBrut;
   const devletPayi = 0; // askerde devlet payı/vergi yok
   // Er payı YALNIZ haydut/sınır çatışması ve savaş zaferi ganimetinden düşer (olay anında, birlikYil). Görev ganimeti ve yağma doğrudan hazineye girer.
@@ -732,7 +730,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
 /**
  * HAZİNE PAYI — vergi KAZANÇ üzerinden alınır. KAZANÇ = oyuncunun ELİNE KALAN yıllık tutar:
  *   ordu neti − subay maaşları − yaşam − kira − evcil hayvan − kredi taksidi + mülk geliri.
- * Ordu netinden (yaşam/subay düşülmeden) ALINMAZ. `vergisizKazanc` bu toplamdır; dönen değer vergidir (kademeli, en çok %40, zararda 0).
+ * Ordu netinden (yaşam/subay düşülmeden) ALINMAZ. `vergisizKazanc` bu toplamdır; dönen değer vergidir (kademeli, en çok %20, zararda 0).
  */
 export function hazinePayiKazanctan(state: CharacterState, enflasyon: number, vergisizKazanc: number): number {
   if (state.meslek !== "Asker") return 0;

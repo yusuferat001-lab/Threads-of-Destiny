@@ -5,7 +5,7 @@ import { subayDegeri, subayToplami } from "../src/game/subay";
 import { araziIhtimali } from "../src/game/birlikIslem";
 import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { birlikYilIsle, savasBaslat, savasiBitir, seferberlikUygula, barisCatismaOtomatik, barisCatismaCoz } from "../src/game/birlikYil";
-import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, yagmaEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
+import { BARIS_GANIMET_ARALIK, SAVAS_ZAFER_GANIMET, YARALI_TEDAVI_GIDERI, GANIMET_PAYI_TANIMLARI, IKMAL_TANIMLARI, IKMAL_SIRASI, ERZAK_DONEM_CARPANI, ganimetEtkinGuc, hazinePayi, gorevGucOrani, GANIMET_TABAN_GUC, SAVAS_KISLA_INDIRIMI, KISLA_BAKIM, ganimetBrutTemel, BARIS_YILLIK_ER } from "../src/data/birlik";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -94,9 +94,9 @@ describe("v39 ganimet", () => {
     }
   });
 
-  it("sabitler: haydut 2,2–2,8, sınır 3,2–4,0, savaş zaferi 11–14, yaralı 0,20, ganimet politikası morali −7/0/+4", () => {
-    expect(BARIS_GANIMET_ARALIK).toEqual({ haydut: [2.2, 2.8], sinir: [3.2, 4] }); // tür başı (haydut düşük, sınır yüksek)
-    expect(SAVAS_ZAFER_GANIMET).toEqual([11, 14]);
+  it("sabitler: haydut 1,8–2,1, sınır 2,0–2,3, savaş zaferi 6–8, yaralı 0,20, ganimet politikası morali −7/0/+4", () => {
+    expect(BARIS_GANIMET_ARALIK).toEqual({ haydut: [1.8, 2.1], sinir: [2, 2.3] }); // tür başı (haydut düşük, sınır yüksek)
+    expect(SAVAS_ZAFER_GANIMET).toEqual([6, 8]);
     expect(YARALI_TEDAVI_GIDERI).toBe(0.2);
     expect([GANIMET_PAYI_TANIMLARI.az.moral, GANIMET_PAYI_TANIMLARI.dengeli.moral, GANIMET_PAYI_TANIMLARI.comert.moral]).toEqual([-7, 0, 4]);
   });
@@ -183,23 +183,15 @@ describe("v39 subaylar", () => {
 });
 
 describe("v39 haydut / sınır çatışması", () => {
-  it("düşman tabloları: haydut < sınır < savaş (ilk yıllar); ilk 6 yıl (15–21 yaş) neredeyse düz, sonra artar; tablolar yaşla azalmaz", async () => {
+  it("düşman tabloları: yaşla azalmaz, 20 yaşından itibaren ölene kadar artar; 20 altı sabit; sınır haydutlardan güçlüdür", async () => {
     const { barisDusmanGucuYas, savasDusmanGucuYas, BARIS_DUSMAN_TABLOLARI, SAVAS_DUSMAN_YAS } = await import("../src/data/birlik");
-    for (const yas of [15, 18, 21, 30, 45]) {
-      expect(barisDusmanGucuYas(yas, "haydut")).toBeLessThan(barisDusmanGucuYas(yas, "sinir"));
-      expect(barisDusmanGucuYas(yas, "sinir")).toBeLessThan(savasDusmanGucuYas(yas));
+    for (const yas of [15, 20, 30, 45, 60, 80]) expect(barisDusmanGucuYas(yas, "haydut")).toBeLessThan(barisDusmanGucuYas(yas, "sinir"));
+    expect(savasDusmanGucuYas(15)).toBe(savasDusmanGucuYas(20)); // 20 altı sabit
+    for (let yas = 20; yas < 80; yas++) {
+      expect(savasDusmanGucuYas(yas + 1)).toBeGreaterThan(savasDusmanGucuYas(yas));
+      expect(barisDusmanGucuYas(yas + 1, "haydut")).toBeGreaterThan(barisDusmanGucuYas(yas, "haydut"));
+      expect(barisDusmanGucuYas(yas + 1, "sinir")).toBeGreaterThan(barisDusmanGucuYas(yas, "sinir"));
     }
-    // ilk 6 yılda artış çok küçük (taban 20 yaşta başlar: 15→20 +%15, sonra yıllık oran; üçü de ≤ +%25)
-    expect(barisDusmanGucuYas(21, "haydut") / barisDusmanGucuYas(15, "haydut")).toBeLessThan(1.25);
-    expect(barisDusmanGucuYas(21, "sinir") / barisDusmanGucuYas(15, "sinir")).toBeLessThan(1.25);
-    expect(savasDusmanGucuYas(21) / savasDusmanGucuYas(15)).toBeLessThan(1.25);
-    // sonra hızlı artış
-    expect(barisDusmanGucuYas(65, "haydut")).toBeGreaterThan(90);
-    // haydut ve sınır savaştan daha YAVAŞ artar (40 → 80 yaş büyüme oranı)
-    const buyume = (f: (y: number) => number) => f(80) / f(40);
-    expect(buyume((y) => barisDusmanGucuYas(y, "haydut"))).toBeLessThan(buyume(savasDusmanGucuYas));
-    expect(buyume((y) => barisDusmanGucuYas(y, "sinir"))).toBeLessThan(buyume(savasDusmanGucuYas));
-    expect(savasDusmanGucuYas(80)).toBeGreaterThan(350);
     for (const tablo of [BARIS_DUSMAN_TABLOLARI.haydut, BARIS_DUSMAN_TABLOLARI.sinir, SAVAS_DUSMAN_YAS]) {
       for (let i = 1; i < tablo.length; i++) {
         expect(tablo[i][0]).toBeGreaterThan(tablo[i - 1][0]);
@@ -208,23 +200,12 @@ describe("v39 haydut / sınır çatışması", () => {
     }
   });
 
-  it("düşman gücü SABİT artar: 20–60 arası her yıl aynı yüzde, 60 sonrası hız sabit (70→80 sıçraması yok), türlerin oranı farklı", async () => {
+  it("düşman gücü DOĞRUSAL artar: her yıl aynı mutlak artış (tür başına), 60 yaşında kırılma ve 70→80 hızlanması yok", async () => {
     const { dusmanGucuYas, DUSMAN_PARAMETRELERI } = await import("../src/data/birlik");
-    const turler = ["haydut", "sinir", "savas"] as const;
-    for (const t of turler) {
-      const oran = DUSMAN_PARAMETRELERI[t].oran;
-      for (const yas of [20, 22, 30, 45, 59]) expect(dusmanGucuYas(yas + 1, t) / dusmanGucuYas(yas, t)).toBeCloseTo(1 + oran, 5);
-      // 60 sonrası yıllık mutlak artış sabit
-      const d1 = dusmanGucuYas(71, t) - dusmanGucuYas(70, t);
-      const d2 = dusmanGucuYas(81, t) - dusmanGucuYas(80, t);
-      expect(d2).toBeCloseTo(d1, 5);
-      // 60 yaşındaki bitişte kırılma yok
-      expect(dusmanGucuYas(61, t) - dusmanGucuYas(60, t)).toBeLessThan((dusmanGucuYas(60, t) - dusmanGucuYas(59, t)) * 1.1);
-      // 70→80 artışı, 60→70 artışından en fazla ~%35 büyük (hızlanma yok)
-      expect(dusmanGucuYas(80, t) - dusmanGucuYas(70, t)).toBeLessThan((dusmanGucuYas(70, t) - dusmanGucuYas(60, t)) * 1.5);
+    for (const t of ["haydut", "sinir", "savas"] as const) {
+      const artis = DUSMAN_PARAMETRELERI[t].artis;
+      for (const yas of [20, 22, 30, 45, 59, 60, 70, 79]) expect(dusmanGucuYas(yas + 1, t) - dusmanGucuYas(yas, t)).toBeCloseTo(artis, 9);
     }
-    expect(DUSMAN_PARAMETRELERI.haydut.oran).toBeLessThan(DUSMAN_PARAMETRELERI.sinir.oran);
-    expect(DUSMAN_PARAMETRELERI.sinir.oran).toBeLessThan(DUSMAN_PARAMETRELERI.savas.oran);
   });
 
   it("çatışma baskın/av olabilir; sonuçta düşman kaybı, kayıp (yaralı ≥ ölü) ve ganimet tutarlıdır; yenilgide ganimet yok", () => {
@@ -300,6 +281,52 @@ describe("v39 Savaş Günü hemen çözülür", () => {
     expect(sv2.sonuc).toBe(zaferOnce);
     expect(sv2.olu_toplam).toBe(oluOnce);
   });
+
+  it("düşman inisiyatifi güçlü tarafına göre: saldırı üstünse (süvari) zorunlu savunma = BASKIN, savunma üstünse (mızraklı) düşman bekler, sen saldırırsın", async () => {
+    const { savasKarariHazirla } = await import("../src/game/birlikIslem");
+    const kur = (tur: "suvari" | "mizrakli" | "karma") => {
+      const { s, sv } = karaSavasi();
+      sv.dusman_tur = tur;
+      // sırayla: arazi ihtimali (hayır), oyuncu seçemiyor (≥ 0,4), düşman zarı 0,5
+      vi.spyOn(Math, "random").mockReturnValueOnce(0.99).mockReturnValueOnce(0.99).mockReturnValueOnce(0.5);
+      const k = savasKarariHazirla(s)!;
+      vi.restoreAllMocks();
+      return k;
+    };
+    const suvari = kur("suvari"); // saldırı üstün: P(savunma) = 0,5 + 0,25 = 0,75 > 0,5 → baskın
+    expect(suvari.inisiyatif_zorunlu).toBe("savunma");
+    expect(suvari.baskin).toBe(true);
+    expect(suvari.adimlar).not.toContain("inisiyatif");
+    const mizrakli = kur("mizrakli"); // savunma üstün: P(savunma) = 0,25 < 0,5 → sen saldırırsın
+    expect(mizrakli.inisiyatif_zorunlu).toBe("saldiri");
+    expect(mizrakli.baskin).toBe(false);
+    const karma = kur("karma"); // dengeli: P = 0,5 → 0,5 < 0,5 değil → saldırı; baskın yok
+    expect(karma.baskin).toBe(false);
+  });
+
+  it("baskında savunman BASKIN_PUSU_CEZASI (%10) kadar düşer; baskın değilse ceza yok", async () => {
+    const { savasKarariHazirla, savasKarariVer, savasGunuSonucuAl } = await import("../src/game/birlikIslem");
+    const { BASKIN_PUSU_CEZASI } = await import("../src/data/birlik");
+    const oyuncuGuc = (baskin: boolean) => {
+      const { s, sv } = karaSavasi();
+      sv.dusman_tur = "karma";
+      sv.arazi = "ova";
+      vi.spyOn(Math, "random").mockReturnValue(0.5);
+      const k = savasKarariHazirla(s)!;
+      k.inisiyatif_zorunlu = "savunma";
+      k.baskin = baskin;
+      k.adimlar = k.adimlar.filter((a) => a !== "inisiyatif" && a !== "arazi");
+      for (let i = 0; i < 6 && k.adim < k.adimlar.length; i++) savasKarariVer(s, k.adimlar[k.adim] === "rol" ? "ana" : k.adimlar[k.adim] === "esir" ? "karma" : "yeterli", bg(s));
+      const g = savasGunuSonucuAl(s)!;
+      vi.restoreAllMocks();
+      return { guc: g.oyuncuGuc, baskin: g.baskin };
+    };
+    const normal = oyuncuGuc(false);
+    const baskin = oyuncuGuc(true);
+    expect(normal.baskin).toBeFalsy();
+    expect(baskin.baskin).toBe(true);
+    expect(baskin.guc / normal.guc).toBeCloseTo(1 - BASKIN_PUSU_CEZASI, 1);
+  });
 });
 
 describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
@@ -342,13 +369,14 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("er başı görev geliri 0,55–0,70 arası (×1,05); görev kademesi arttıkça gelir ve etkiler artar", async () => {
-    const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
-    expect(GOREV_GELIR_CARPANI).toBe(1.05);
+  it("er başı görev geliri 0,58–0,70 arası (ek çarpan YOK: tablo değeri = gerçek getiri); görev kademesi arttıkça gelir ve etkiler artar", async () => {
+    const data = await import("../src/data/birlik");
+    const { GOREVLER } = data;
+    expect("GOREV_GELIR_CARPANI" in data).toBe(false); // ×1,05 çarpanı kaldırıldı
     const v = GOREVLER.map((g) => g.erBasi);
-    expect(Math.min(...v)).toBeCloseTo(0.55, 6);
+    expect(Math.min(...v)).toBeCloseTo(0.58, 6);
     expect(Math.max(...v)).toBeCloseTo(0.7, 6);
-    for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]);
+    for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]); // her görev farklı getiri verir
     // her görev farklı bir karışımla şöhret/moral/otorite/ahlak etkiler; sıfır olmayan her etki en az 0,2
     for (const g of GOREVLER) {
       const etkiler = [g.sohret, g.moral, g.otorite, g.ahlak].filter((x): x is number => typeof x === "number" && x !== 0);
@@ -388,7 +416,7 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     return { s, b, sv };
   }
 
-  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,51 / 0,35 / 0,19'u", () => {
+  it("ikmal kararı yalnız üç yağma türüdür; gelir gücün 0,27 / 0,21 / 0,16'sı", () => {
     expect(IKMAL_SIRASI).toEqual(["yagma_sert", "yagma_orta", "yagma_yumusak"]);
     const { s, b, sv } = savasAskeri();
     const brut: Record<string, number> = {};
@@ -398,8 +426,8 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
       const oran = IKMAL_TANIMLARI[id].yagma.gucOrani;
       expect(brut[id] / (b.guc * bg(s).enflasyon)).toBeGreaterThanOrEqual(oran);
     }
-    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.51 / 0.35, 6);
-    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.19 / 0.35, 6);
+    expect(brut.yagma_sert / brut.yagma_orta).toBeCloseTo(0.27 / 0.21, 6);
+    expect(brut.yagma_yumusak / brut.yagma_orta).toBeCloseTo(0.16 / 0.21, 6);
   });
 
   it("sert yağma ahlak ve oyuncu morali düşürür, ordu morali artırır; yumuşak tam tersi", () => {
@@ -421,9 +449,47 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     expect(sonuc.yagma_sert.moral).toBeGreaterThan(sonuc.yagma_yumusak.moral);
   });
 
-  it("yağma türlerinin sertliği farklıdır; erzak gideri yalnız savaşta, türe göre %75/55/35 düşer", () => {
+  it("yağma geliri ganimetle aynı bandı kullanır: 300 güce kadar doğrusal, sonra band katsayısıyla", () => {
+    const { s, b, sv } = savasAskeri();
+    sv.ikmal = "yagma_orta";
+    const yagma = (guc: number) => {
+      b.guc = guc;
+      return birlikHesapla(s, bg(s)).yagmaBrut;
+    };
+    expect(yagma(100)).toBeGreaterThan(0);
+    expect(yagma(200) / yagma(100)).toBeCloseTo(2, 6); // 300'e kadar bantsız
+    expect(yagma(300) / yagma(100)).toBeCloseTo(3, 6);
+    expect(yagma(600) / yagma(100)).toBeCloseTo(ganimetEtkinGuc(600) / 100, 6); // 300'den sonra band katsayısı
+  });
+
+  it("yağma talimi yalnız savaşın ilk yılında, bir kez uygulanır (sert −8 / orta +1 / yumuşak +5); ikinci yılda fark kalmaz", () => {
+    const fark = (yilSayac: number) => {
+      const talim: Record<string, number> = {};
+      for (const id of IKMAL_SIRASI) {
+        const { s, b, sv } = savasAskeri();
+        sv.ikmal = id;
+        sv.yil_sayac = yilSayac;
+        b.moral = 60;
+        b.talim = 50;
+        vi.spyOn(Math, "random").mockReturnValue(0.5);
+        birlikYilIsle(s, bg(s));
+        talim[id] = b.talim;
+        vi.restoreAllMocks();
+      }
+      return talim;
+    };
+    // Kayıp çarpanı (sert ×1,15 / yumuşak ×0,85) acemi er oranını da kıpırdatır; bu fark her iki yılda aynıdır, yağma talimi yalnız ilk yılda eklenir.
+    const ilk = fark(0);
+    const ikinci = fark(1);
+    const yalnizYagma = (id: "yagma_sert" | "yagma_yumusak") => ilk[id] - ilk.yagma_orta - (ikinci[id] - ikinci.yagma_orta);
+    // Kalan <1 puanlık sapma, kayıp çarpanının yıldan yıla farklı acemi seyreltmesinden gelir.
+    expect(Math.abs(yalnizYagma("yagma_sert") - (-8 - 1))).toBeLessThan(1);
+    expect(Math.abs(yalnizYagma("yagma_yumusak") - (5 - 1))).toBeLessThan(1);
+  });
+
+  it("yağma türlerinin sertliği farklıdır; erzak gideri yalnız savaşta, türe göre %50/40/30 düşer", () => {
     expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].sertlik)).toEqual([2.5, 1.5, 0.5]);
-    expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].yagma.erzakIndirimi)).toEqual([0.75, 0.55, 0.35]);
+    expect(IKMAL_SIRASI.map((i) => IKMAL_TANIMLARI[i].yagma.erzakIndirimi)).toEqual([0.5, 0.4, 0.3]);
     const { s, sv } = savasAskeri();
     const savasErzak: Record<string, number> = {};
     for (const id of IKMAL_SIRASI) {
@@ -433,8 +499,8 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
     }
     expect(savasErzak.yagma_sert).toBeLessThan(savasErzak.yagma_orta);
     expect(savasErzak.yagma_orta).toBeLessThan(savasErzak.yagma_yumusak);
-    expect(savasErzak.yagma_sert / savasErzak.yagma_orta).toBeCloseTo(0.25 / 0.45, 6);
-    expect(savasErzak.yagma_yumusak / savasErzak.yagma_orta).toBeCloseTo(0.65 / 0.45, 6);
+    expect(savasErzak.yagma_sert / savasErzak.yagma_orta).toBeCloseTo(0.5 / 0.6, 6);
+    expect(savasErzak.yagma_yumusak / savasErzak.yagma_orta).toBeCloseTo(0.7 / 0.6, 6);
     // barışta indirim yok: seçilen yağma türü erzak giderini değiştirmez
     s.ulke.savasta = false;
     birlikAl(s).savas = null;
@@ -460,14 +526,13 @@ describe("üç yağma türü ve erzak dönem çarpanı", () => {
 });
 
 describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", () => {
-  it("ganimet etkin gücü kademelidir: 40 → 40 · 100 → 88 · 200 → 143 · 350 → 195,5 · 500 → 228,5; güçle hiç azalmaz; tavan 240", () => {
+  it("ganimet etkin gücü KADEMELİ: 0–400 ×1, 400–700 ×0,85, 700+ ×0,70 (vergi dilimi gibi, bileşik değil); tavan yok, güçle hiç azalmaz", () => {
     expect(ganimetEtkinGuc(0)).toBe(0);
-    expect(ganimetEtkinGuc(40)).toBeCloseTo(40, 8);
-    expect(ganimetEtkinGuc(100)).toBeCloseTo(88, 8);
-    expect(ganimetEtkinGuc(200)).toBeCloseTo(143, 8);
-    expect(ganimetEtkinGuc(350)).toBeCloseTo(195.5, 8);
-    expect(ganimetEtkinGuc(500)).toBeCloseTo(228.5, 8);
-    expect(ganimetEtkinGuc(100000)).toBe(240);
+    expect(ganimetEtkinGuc(400)).toBeCloseTo(400, 8);
+    expect(ganimetEtkinGuc(500)).toBeCloseTo(400 + 0.85 * 100, 8);
+    expect(ganimetEtkinGuc(700)).toBeCloseTo(400 + 0.85 * 300, 8);
+    expect(ganimetEtkinGuc(800)).toBeCloseTo(655 + 0.7 * 100, 8);
+    expect(ganimetEtkinGuc(1000)).toBeCloseTo(655 + 0.7 * 300, 8);
     let onceki = 0;
     for (let g = 0; g <= 3000; g += 10) {
       expect(ganimetEtkinGuc(g)).toBeGreaterThanOrEqual(onceki - 1e-9);
@@ -495,10 +560,6 @@ describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", (
     };
     // aynı rastgelelik ve bonuslar: oran etkin güç oranına eşit
     expect(hesap(500) / hesap(100)).toBeCloseTo(ganimetEtkinGuc(500) / ganimetEtkinGuc(100), 1);
-    expect(yagmaEtkinGuc(100)).toBeCloseTo(100, 8);
-    expect(yagmaEtkinGuc(200)).toBeCloseTo(180, 8);
-    expect(yagmaEtkinGuc(1000)).toBeGreaterThan(ganimetEtkinGuc(1000));
-    expect(yagmaEtkinGuc(1000)).toBeGreaterThan(yagmaEtkinGuc(500));
   });
 
   it("görev geliri güçle azalan verimle ödenir: ≤150 güçte ×1, 300 → 0,95, 600 → 0,8125, 1000 → 0,6675; toplam gelir güçle hep artar", () => {
@@ -516,11 +577,13 @@ describe("güç bantlı ganimet, yağma, görev geliri ve hazine payı (v64)", (
     }
   });
 
-  it("hazine payı kademeleri (v67 Madde 8): 0–35 %5 · 35–75 %10 · 75–150 %15 · 150–450 %20 · 450+ %25; zararda yok; ordu hesabına (hesap.net) girmez, KAZANÇ üzerinden alınır", () => {
+  it("hazine payı kademeleri: 0–50 %5 · 50–150 %10 · 150–300 %15 · 300+ %20; zararda yok; ordu hesabına (hesap.net) girmez, KAZANÇ üzerinden alınır", () => {
     expect(hazinePayi(-50)).toBe(0);
-    const beklenen: [number, number][] = [[20, 1], [35, 1.75], [50, 3.25], [75, 5.75], [80, 6.5], [130, 14], [150, 17], [200, 27], [300, 47], [450, 77], [500, 89.5], [700, 139.5], [1900, 439.5]];
-    for (const [kazanc, vergi] of beklenen) expect(hazinePayi(kazanc)).toBeCloseTo(vergi, 8);
-    expect(hazinePayi(100000) / 100000).toBeLessThan(0.25);
+    expect(hazinePayi(50)).toBeCloseTo(2.5, 8);
+    expect(hazinePayi(150)).toBeCloseTo(12.5, 8);
+    expect(hazinePayi(300)).toBeCloseTo(35, 8);
+    expect(hazinePayi(1300)).toBeCloseTo(235, 8);
+    expect(hazinePayi(100000) / 100000).toBeLessThan(0.2);
     const s = asker();
     const h = birlikHesapla(s, bg(s));
     expect(h).not.toHaveProperty("hazinePayi");
@@ -631,17 +694,17 @@ describe("görev geliri güç başına, ganimet tabanı, savaşta kışla indiri
     expect(birlikHesapla(s, bg(s)).gorevGeliri).toBe(0);
   });
 
-  it("ganimet tabanı: askerî gücü 40'ın altındaki ordu da haydut/sınır ve savaş zaferinde 40 güçlük ordunun ganimetini alır", () => {
-    expect(GANIMET_TABAN_GUC).toBe(40);
-    expect(ganimetBrutTemel(10, 2.9)).toBeCloseTo(40 * 2.9, 8); // 10 güç → 40 güç sayılır
-    expect(ganimetBrutTemel(10, 12.5)).toBeCloseTo(40 * 12.5, 8);
-    expect(ganimetBrutTemel(100, 2.9)).toBeCloseTo(88 * 2.9, 8); // taban devreye girmez
+  it("ganimet tabanı: haydut, sınır ve büyük savaş zaferinde askerî gücü 30'un altındaki ordu 30 güçlük ordunun ganimetini alır", () => {
+    expect(GANIMET_TABAN_GUC).toBe(30);
+    expect(ganimetBrutTemel(10, 2.2)).toBeCloseTo(30 * 2.2, 8); // 10 güç → 30 güç sayılır
+    expect(ganimetBrutTemel(10, 7)).toBeCloseTo(30 * 7, 8);
+    expect(ganimetBrutTemel(100, 2.2)).toBeCloseTo(100 * 2.2, 8); // taban devreye girmez, 400'e kadar bantsız
   });
 
   it("savaşta kışla bakımı %25 düşer", () => {
     const { s } = ordu(100);
     const baris = birlikHesapla(s, bg(s)).kislaBakim;
-    expect(baris).toBeCloseTo(KISLA_BAKIM[4] * bg(s).giderEnflasyon, 6);
+    expect(baris).toBeCloseTo(KISLA_BAKIM[4] * bg(s).giderEnflasyon, 6); // kademe başına sabit, ordu sayısından bağımsız
     s.ulke.savasta = true;
     expect(SAVAS_KISLA_INDIRIMI).toBe(0.25);
     expect(birlikHesapla(s, bg(s)).kislaBakim).toBeCloseTo(baris * 0.75, 6);
@@ -710,15 +773,67 @@ describe("v51 çatışma kayıpları: B paketi, seçim etkisi, kayıp tabanı", 
     rnd.mockRestore();
     return r;
   }
-  it("seçilmiş saldırıda ganimet ≈ ×1,3/0,8 = 1,625 kat; baskında seçim yok (çarpan uygulanmaz)", () => {
+  it("seçilmiş saldırıda ganimet ≈ ×1,3/0,9 = 1,44 kat; baskında seçim yok (çarpan uygulanmaz)", () => {
     const sal = coz("saldiri", false);
     const sav = coz("savunma", false);
     expect(sal.zafer && sav.zafer).toBe(true);
-    expect(sal.ganimet / sav.ganimet).toBeGreaterThan(1.5);
-    expect(sal.ganimet / sav.ganimet).toBeLessThan(1.75);
+    expect(sal.ganimet / sav.ganimet).toBeGreaterThan(1.35);
+    expect(sal.ganimet / sav.ganimet).toBeLessThan(1.55);
     const baskin = coz("saldiri", true);
     expect(baskin.inisiyatif).toBe("savunma");
-    expect(baskin.ganimet / sav.ganimet).toBeGreaterThan(1.15); // 1 / 0,8 = 1,25 (baskında ×1)
+    expect(baskin.ganimet / sav.ganimet).toBeGreaterThan(1.05); // 1 / 0,9 = 1,11 (baskında ×1)
+  });
+  it("haydut/sınır ganimetinden asker payı DÜŞÜLMEZ: ganimet payı politikası (az/dengeli/cömert) çatışma ganimetini değiştirmez", () => {
+    const ganimet = (pay: "az" | "dengeli" | "comert") => {
+      const s = hazir();
+      const b = birlikAl(s);
+      b.ganimet_payi = pay;
+      b.catisma_bekleyen = { yil: s.yil, tur: "sinir", baskin: false, dusmanTur: "karma", dusmanGuc: 5 };
+      s.para = 0;
+      const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+      const r = barisCatismaCoz(s, b, bg(s), "saldiri");
+      rnd.mockRestore();
+      expect(r.zafer).toBe(true);
+      return r.ganimet;
+    };
+    const az = ganimet("az");
+    expect(az).toBeGreaterThan(0);
+    expect(ganimet("dengeli")).toBeCloseTo(az, 6);
+    expect(ganimet("comert")).toBeCloseTo(az, 6);
+  });
+  it("haydut/sınır ganimeti kasaya HEMEN girmez: gelire (Kazanç, hazine payı) sonraki yıl işlemede yazılır", () => {
+    const s = hazir();
+    const b = birlikAl(s);
+    b.catisma_bekleyen = { yil: s.yil, tur: "haydut", baskin: false, dusmanTur: "karma", dusmanGuc: 5 };
+    s.para = 0;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const r = barisCatismaCoz(s, b, bg(s), "saldiri");
+    expect(r.zafer).toBe(true);
+    expect(r.ganimet).toBeGreaterThan(0);
+    expect(s.para).toBeCloseTo(0, 6); // hemen kasaya girmedi
+    expect(b.ganimet_birikimi).toBeGreaterThanOrEqual(r.ganimet - 1e-6);
+    const bekleyen = b.ganimet_birikimi!;
+    const sonuc = birlikYilIsle(s, bg(s));
+    rnd.mockRestore();
+    expect(sonuc.dokum.birlik!.catismaGanimeti).toBeCloseTo(bekleyen, 6); // döküme yazıldı
+    expect(sonuc.dokum.satis).toBeGreaterThanOrEqual(bekleyen); // gelire dahil → Kazanç ve hazine payı bu net üzerinden
+    expect(b.ganimet_birikimi).toBe(0);
+  });
+  it("büyük savaşta düşmanın zayıf tarafı güçlü tarafının en az %60'ı; ortalama korunur", async () => {
+    const { dusmanSavasTaraflari, DUSMAN_TARAF_MIN_ORAN, dusmanSaldiriSavunma, dusmanAraziCarpani } = await import("../src/data/birlik");
+    expect(DUSMAN_TARAF_MIN_ORAN).toBe(0.6);
+    for (const tur of ["okcu", "suvari", "mizrakli", "zirhli", "karma"] as const) {
+      for (const arazi of [null, "ova", "dag", "orman"] as const) {
+        const r = dusmanSavasTaraflari(tur, arazi);
+        const yuksek = Math.max(r.saldiri, r.savunma);
+        expect(Math.min(r.saldiri, r.savunma) / yuksek).toBeGreaterThanOrEqual(0.6 - 1e-9);
+        const d = dusmanSaldiriSavunma(tur);
+        const ham = [d.saldiri * (arazi ? dusmanAraziCarpani(arazi, tur, "saldiri") : 1), d.savunma * (arazi ? dusmanAraziCarpani(arazi, tur, "savunma") : 1)];
+        expect((r.saldiri + r.savunma) / 2).toBeCloseTo((ham[0] + ham[1]) / 2, 8);
+      }
+    }
+    const suvariOva = dusmanSavasTaraflari("suvari", "ova");
+    expect(suvariOva.savunma / suvariOva.saldiri).toBeCloseTo(0.6, 8); // ham oran ~0,1: 100'e 60'a çekilir
   });
   it("kayıp çarpanı tam yatırımla bile 0,5 altına inmez", async () => {
     const { kayipCarpani } = await import("../src/game/birlik");
@@ -812,12 +927,15 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     seferberlikUygula(s, "genel", bg(s));
     const sef = birlikHesapla(s, bg(s));
     expect(sef.sold).toBeCloseTo(yalin.sold, 6);
-    expect(yalin.sold).toBeCloseTo(8.5 * e + 100 * 0.3 * e, 3);
+    expect(yalin.sold).toBeCloseTo(10 * e + 100 * 0.17 * 2 * e, 3);
   });
   it("çatışma ve savaş morali türe göre farklı: ordu ve kişi", async () => {
     const { CATISMA_ORDU_MORALI, CATISMA_KISI_MORALI, SAVAS_KISI_MORALI } = await import("../src/data/birlik");
-    expect(CATISMA_ORDU_MORALI.haydut).toEqual({ zafer: 2, yenilgi: -3 });
-    expect(CATISMA_ORDU_MORALI.sinir).toEqual({ zafer: 3, yenilgi: -5 });
+    expect(CATISMA_ORDU_MORALI.haydut).toEqual({ zafer: 4, yenilgi: -3 });
+    expect(CATISMA_ORDU_MORALI.sinir).toEqual({ zafer: 6, yenilgi: -5 });
+    expect(CATISMA_KISI_MORALI.haydut.zafer).toBe(2);
+    expect(CATISMA_KISI_MORALI.sinir.zafer).toBe(4);
+    expect(SAVAS_KISI_MORALI.zafer).toBe(8);
     expect(CATISMA_KISI_MORALI.sinir.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.haydut.yenilgi);
     expect(SAVAS_KISI_MORALI.yenilgi).toBeLessThan(CATISMA_KISI_MORALI.sinir.yenilgi);
     const s = asker();
@@ -828,8 +946,8 @@ describe("v54 paralı asker, seferberlik penceresi, moral ve savaş ödemesi", (
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
     barisCatismaCoz(s, b, bg(s), "saldiri");
     rnd.mockRestore();
-    expect(b.moral).toBeGreaterThanOrEqual(54); // +4 sınır zaferi (+ ilk zaferde madalya morali)
-    expect(s.mutluluk).toBe(52);
+    expect(b.moral).toBeGreaterThanOrEqual(56); // +6 sınır zaferi (+ ilk zaferde madalya morali)
+    expect(s.mutluluk).toBe(54); // +4 sınır zaferi
   });
 });
 
@@ -881,9 +999,9 @@ describe("v55 moral/talim 50, etkin talim, paralı kaybı, borç eşikleri, yara
     expect(b.moral).toBeGreaterThanOrEqual(10 - 16 + 2 > 0 ? 0 : 0);
     expect(b.moral).toBeGreaterThan(0);
   });
-  it("savaş morali: ordu zafer +6 / yenilgi −17; kanat bozgunu −9", async () => {
+  it("savaş morali: ordu zafer +10 / yenilgi −17; kanat bozgunu −9", async () => {
     const { MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN } = await import("../src/data/birlik");
-    expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([6, -17, -9]);
+    expect([MORAL_ZAFER, MORAL_YENILGI, MORAL_KANAT_BOZGUN]).toEqual([10, -17, -9]);
   });
   it("etkin talim: seferberlerin sabit giriş talimi (Gazi 55, Tüm Erkekler 10) ordunun talimini er sayısına göre seyreltir; ordunun gerçek talimi bozulmaz; savaş sonu katılan kadroya işler", async () => {
     const { etkinTalim } = await import("../src/game/birlik");

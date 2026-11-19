@@ -762,10 +762,11 @@ export function createCharacter(
     // 2026-09 denge turu: taban 12→10, aile etkisi artık dar bir ~±20
     // bandında (eskiden +80/-25 gibi aşırı uçlar vardı); sonuç yine de
     // [5, 54]'a kırpılır — en zengin/fakir aile+yerleşim kombinasyonu bile
-    // bu aralığın dışına taşmaz. Taban 5'te tutuldu (0 değil): oyuncu en
+    // bu aralığın dışına taşmaz. Taban 20'de tutuldu (0 değil): oyuncu en
     // fakir kökende bile temel bir aksiyonu (sosyalleşme giriş ücreti vb.)
-    // karşılayabilecek kadar parayla başlamalı.
-    para: Math.max(5, Math.min(54, 24 + (aile.para ?? 0) + (yerlesim.para ?? 0) + (bolgeOzellik?.para ?? 0))),
+    // karşılayabilecek kadar parayla başlamalı. v67 sonrası: dört mesleğin hepsi için alt sınır 20
+    // (para meslek seçiminden ÖNCE bir kez, bu satırda belirlenir; meslek parayı değiştirmez).
+    para: Math.max(20, Math.min(54, 24 + (aile.para ?? 0) + (yerlesim.para ?? 0) + (bolgeOzellik?.para ?? 0))),
     para_birimi: paraBirimiGetir(cag, bolge),
     maas_yillik: 0,
     // v10: şöhret 20 + aile (±15) + bölge (±5) → 0..40
