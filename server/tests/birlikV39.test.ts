@@ -369,9 +369,10 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("er başı görev geliri 0,58–0,70 arası (×1,05); görev kademesi arttıkça gelir ve etkiler artar", async () => {
-    const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
-    expect(GOREV_GELIR_CARPANI).toBe(1.05);
+  it("er başı görev geliri 0,58–0,70 arası (ek çarpan YOK: tablo değeri = gerçek getiri); görev kademesi arttıkça gelir ve etkiler artar", async () => {
+    const data = await import("../src/data/birlik");
+    const { GOREVLER } = data;
+    expect("GOREV_GELIR_CARPANI" in data).toBe(false); // ×1,05 çarpanı kaldırıldı
     const v = GOREVLER.map((g) => g.erBasi);
     expect(Math.min(...v)).toBeCloseTo(0.58, 6);
     expect(Math.max(...v)).toBeCloseTo(0.7, 6);

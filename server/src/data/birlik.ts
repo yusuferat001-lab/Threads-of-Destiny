@@ -432,8 +432,6 @@ export const MORAL_SERBEST = 3;
 export const SOLD = [10, 10, 10, 10, 10];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir); yalnız ana kadro içindir, seferber ve kiralık erler ödeme almaz. */
 export const ER_BASI_GELIR = 0.17;
-/** Görev geliri ek çarpanı (1 = yok). Teçhizat çarpanı 0,75/1/1,25'e inince güç ≈×0,75 oldu; güçle orantılı gelirler (görev, yağma, ganimet) ×1,33 ile yeniden dengelendi (1,11 × 1,333). */
-export const GOREV_GELIR_CARPANI = 1.05; // v67: görev geliri +%5
 /** Her rütbede sabit yıllık gönüllü er (savaşta ayrıca çarpılmaz; vebada kısılır, kışla limitine takılır). */
 export const BARIS_YILLIK_ER = 0; // v67: yıllık sabit gönüllü er kalktı (büyüme yalnız devşirme subayı, büro, şöhret, doktrin, yatkınlık)
 /** Birim küçük artıları (pay %20 doluyken tam; pay azsa orantılı): mızraklı yaralıyı, zırhlı ölüyü azaltır; okçu baskın pusu cezasını azaltır; süvari haraç ve vergi tahsilatı görev gelirini artırır. */

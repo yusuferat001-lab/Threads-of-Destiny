@@ -34,7 +34,6 @@ import {
   YAGMA_ESIR,
   YAGMA_YIL,
   SAVAS_KISLA_INDIRIMI,
-  GOREV_GELIR_CARPANI,
   ZIRHLI_OLU_AZALTMA,
   IKMAL_TANIMLARI,
   IKMAL_SIRASI,
@@ -678,11 +677,10 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const sold = r2((soldTam + erBasiOdeme) * soldDonemCarpani(state));
   const savasOdenegi = savasta ? sold : 0;
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
-  const kazancC = GOREV_GELIR_CARPANI;
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const suvariC = SUVARI_BONUS_GOREVLERI.includes(g.id) ? 1 + SUVARI_GOREV_GELIRI * turOrani(b, "suvari") : 1;
-    const gelir = p * gorevErOrani(p) * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
+    const gelir = p * gorevErOrani(p) * g.erBasi * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * suvariC;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     // Görev ganimeti yalnız savaş dışı yıllarda (savaşta büyük zafer ganimeti ve yağma var).
     const ganCarpan = savasta ? 0 : 0.3;

@@ -8,6 +8,7 @@ Türkçe, metin tabanlı, tarihi hayat simülasyonu (Orta Çağ / Sanayi Devrimi
 
 - **Bu dosya kasıtlı olarak kısa.** Ayrıntılı oyun kuralları, formüller ve API tabloları `docs/referans/*.md` altında (aşağıdaki indeks). Hepsini okuma: önce `grep -n "anahtar kelime" docs/referans/*.md` ya da `grep -n "^## " docs/referans/<dosya>` ile bölümü bul, sonra `Read` ile yalnız o aralığı (`offset`/`limit`) oku.
 - **Olay verisini (`server/src/data/olaylar/*.ts`, ~48.000 satır) ve `stateManager.ts`/`gameEngine.ts`'i baştan sona okuma.** Belirli bir olay için `grep -n 'id: "<olay_id>"' server/src/data/olaylar/*.ts`.
+- **Asker v67 sonrası ayarlar (Yedinci–Onuncu ayar, `docs/referans/15` sonu):** teçhizat/kışla bakımı (kışla = kapasite×0,1), kademeli ganimet/yağma bantları, düşman taban+artış (`DUSMAN_PARAMETRELERI`), barışta nadir firar, görev er başı 0,58–0,70 (**`GOREV_GELIR_CARPANI` kaldırıldı — geri ekleme**), başlangıç parası min 20. Güncel sayı için önce koddaki sabite (`data/birlik.ts`) bak.
 - **Asker (v67 Madde 1–7, `main`'de):** Asker'de **pazar payı, pazar rakibi, `pazar_musteri` ve komuta tonu YOK**; rütbe = kariyer puanı 55/115/210/340 + şöhret + askerî güç. Denge sayıları ve nedenleri: `docs/referans/15-asker-denge-ozeti-v50-v66.md` (üstteki özet kutusu). Çakışan sürümlerde (v69 ↔ v67) **v67 değerleri** geçerlidir (savaşta er başı ödeme ×2, kıtlık morali −1,5, bolluk 0). Asker balans değiştirince `simulateBirlik.ts` ile (N=60) bilgi amaçlı ölç; **kullanıcı vermediği hedef yüzde uydurma**.
 - **Ordu sayfası/arayüz:** uzun not yerine `client/src/components/BilgiNotu.tsx` ("!" düğmesi; mobilde satır içi açılır) kullan; notlara mekanik sayı yazma. Moral/talimde "gelecek yıl" değişimi yıl işlemeyle **aynı fonksiyonlardan** (`birlikYil.ts gelecekYilDegisimi`) gelir — kopya formül yazma.
 - **Bekleyen işler (yapılmadı):** Madde 8 bütçe iki sütun + "Kazanç (sonraki yıl)" etiketi + ana ekran bayat Kazanç + ganimet brüt/asker payı/size kalan · Madde 9 mobil Mülkler sekmesi · Madde 10 ekstra vergi tutarsızlığı (hepsi `docs/referans/15` sonunda).
@@ -67,7 +68,7 @@ Git deposudur; geliştirme dalı ve push kuralları oturum talimatında verilir.
 |---|---|---|
 | `npm run dev` | server/ | `tsx watch src/server.ts` — API sunucusu (varsayılan :3001) |
 | `npm run dev` | client/ | Vite dev server (varsayılan :5180, README'de belirtilen) |
-| `npm test` | server/ | `vitest run` — 80 test dosyası, ~1177 test (bkz. §22) |
+| `npm test` | server/ | `vitest run` — 81 test dosyası, ~1190 test (bkz. §22) |
 | `npm test` | e2e/ | **Playwright duman testleri (mobil 390×844 + PC 1440×900)**: önce `cd client && npm run build` (server/public'e), sonra `cd e2e && npm install && npx playwright install chromium && npm test` — bellek-içi sunucuyu kendisi başlatır; CI'da ayrı "E2E" işi. Ayrıntı: docs/05 §22 |
 | `npm run build` / `start` | server/ | `tsc` derleme / `node dist/server.js` |
 | `npm run simulate` | server/ | `scripts/simulateEconomy.ts` — ekonomiyi bin ömür simüle eder |

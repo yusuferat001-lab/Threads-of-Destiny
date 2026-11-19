@@ -420,10 +420,12 @@ describe("limit aşımı", () => {
 
   it("devşirme limitte durur (limit dolunca yıllık artış 0)", () => {
     const s = asker();
-    ordu(s, 30, 0);
+    const limit = KISLA_ER_LIMITI[0];
+    ordu(s, limit, 0);
     birlikAl(s).zar_bonusu = 0;
+    vi.spyOn(Math, "random").mockReturnValue(0.99); // rastgele olay/çatışma sonucu limiti etkilemesin
     for (let i = 0; i < 5; i++) birlikYilKos(s);
-    expect(erSayisi(s)).toBeLessThanOrEqual(30);
+    expect(erSayisi(s)).toBeLessThanOrEqual(limit);
   });
 });
 
