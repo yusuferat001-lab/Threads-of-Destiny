@@ -666,25 +666,25 @@ export interface GorevTanimi {
 }
 export const GOREVLER: GorevTanimi[] = [
   {
-    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 10, erBasi: 0.59, moral: 0.2, yalnizSavas: false, ganimet: 0,
+    id: "devriye", tur: "devriye", simge: "🏮", minGuc: 10, erBasi: 0.58, moral: 0.2, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.003, olu: 0.0003, firar: 0.0005 }, sertlik: 0, savasCarpani: 1.1, senaryo: null,
     ad: { orta: { tr: "Nöbet ve Devriye", en: "Watch & Patrol" }, sanayi: { tr: "Asayiş ve Devriye", en: "Policing & Patrol" } },
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 40, erBasi: 0.6, sohret: 0.3, otorite: 0.3, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minGuc: 40, erBasi: 0.61, sohret: 0.3, otorite: 0.3, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.006, olu: 0.0006, firar: 0.001 }, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
   },
   {
-    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 80, erBasi: 0.625, otorite: 0.4, sohret: -0.3, yalnizSavas: false, ganimet: 0,
+    id: "tahsilat", tur: "tahsilat", simge: "💰", minGuc: 80, erBasi: 0.64, otorite: 0.4, sohret: -0.3, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.01, olu: 0.001, firar: 0.002 }, sertlik: 1.2, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Haraç ve Vergi Tahsilatı", en: "Tribute & Tax Collection" }, sanayi: { tr: "Jandarma ve Vergi Tahsilatı", en: "Gendarmerie & Tax Collection" } },
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 145, erBasi: 0.6625, moral: 0.3, otorite: 0.5, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minGuc: 145, erBasi: 0.67, moral: 0.3, otorite: 0.5, yalnizSavas: false, ganimet: 0,
     kayip: { yarali: 0.015, olu: 0.0017, firar: 0.003 }, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "İstikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Steady income; archers and spearmen shine in border clashes." },

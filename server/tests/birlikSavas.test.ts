@@ -461,19 +461,19 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("5 görev: er başı kazanç 0,59–0,70 arası, açılış eşiği (askeri güç) 10–250; kazandıran görev daha çok yaralı/ölü/firar verdirir; masraf alanı yok", () => {
+  it("5 görev: er başı kazanç 0,58–0,70 arası, açılış eşiği (askeri güç) 10–250; kazandıran görev daha çok yaralı/ölü/firar verdirir; masraf alanı yok", () => {
     expect(GOREVLER).toHaveLength(5);
     const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
-      expect(g.erBasi).toBeGreaterThanOrEqual(0.59 - 1e-6);
+      expect(g.erBasi).toBeGreaterThanOrEqual(0.58 - 1e-6);
       expect(g.erBasi).toBeLessThanOrEqual(0.7 + 1e-6);
       expect(g.erBasi).toBeGreaterThan(onceki); // kesin artan: hiçbir iki görev aynı getiriyi vermez
       onceki = g.erBasi;
     }
     expect(sira.map((g) => g.minGuc)).toEqual([10, 40, 80, 145, 250]);
-    expect(sira[0].erBasi).toBe(0.59);
+    expect(sira[0].erBasi).toBe(0.58);
     expect(sira[sira.length - 1].erBasi).toBe(0.7);
     // kayıp: çoğunlukla yaralı, az ölü, ara sıra firar; kazandıran görevde artar
     for (let i = 0; i < sira.length; i++) {

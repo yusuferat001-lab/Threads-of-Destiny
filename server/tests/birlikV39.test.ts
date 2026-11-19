@@ -369,11 +369,11 @@ describe("v39 savaş boyu pencere sayısı (ikmal her yıl sorulmaz)", () => {
 });
 
 describe("v40 görev geliri ve birim küçük artıları", () => {
-  it("er başı görev geliri 0,59–0,70 arası (×1,05); görev kademesi arttıkça gelir ve etkiler artar", async () => {
+  it("er başı görev geliri 0,58–0,70 arası (×1,05); görev kademesi arttıkça gelir ve etkiler artar", async () => {
     const { GOREVLER, GOREV_GELIR_CARPANI } = await import("../src/data/birlik");
     expect(GOREV_GELIR_CARPANI).toBe(1.05);
     const v = GOREVLER.map((g) => g.erBasi);
-    expect(Math.min(...v)).toBeCloseTo(0.59, 6);
+    expect(Math.min(...v)).toBeCloseTo(0.58, 6);
     expect(Math.max(...v)).toBeCloseTo(0.7, 6);
     for (let i = 1; i < v.length; i++) expect(v[i]).toBeGreaterThan(v[i - 1]); // her görev farklı getiri verir
     // her görev farklı bir karışımla şöhret/moral/otorite/ahlak etkiler; sıfır olmayan her etki en az 0,2
