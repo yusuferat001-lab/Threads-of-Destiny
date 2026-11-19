@@ -347,10 +347,10 @@ export function isletmeMunazaraVer(stateId: string, secim: string) {
   });
 }
 
-export function isletmeProjeBaslat(stateId: string, projeId: string, hat?: string | null) {
+export function isletmeProjeBaslat(stateId: string, projeId: string, hat?: string | null, eskort?: string | null) {
   return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/proje`, {
     method: 'POST',
-    body: JSON.stringify({ projeId, hat: hat ?? null }),
+    body: JSON.stringify({ projeId, hat: hat ?? null, eskort: eskort ?? null }),
   });
 }
 

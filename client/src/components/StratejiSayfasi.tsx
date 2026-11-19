@@ -84,7 +84,7 @@ interface StratejiSayfasiProps {
   onBirlikKiralik?: (seviye: 'kucuk' | 'buyuk') => void;
   onBirlikIkmal?: (id: string) => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
-  onProjeBaslat?: (projeId: string, hat: string | null) => void;
+  onProjeBaslat?: (projeId: string, hat: string | null, eskort?: string | null) => void;
   onProjeBirak?: () => void;
   onIsletmeYatirimDusur?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;

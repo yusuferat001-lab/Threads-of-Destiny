@@ -12,7 +12,7 @@ import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { BilgiNotu } from './BilgiNotu';
-import { IcatPaneli } from './IcatPaneli';
+import { ProjePaneli } from './ProjePaneli';
 import { IsletmeOrtak } from './IsletmeOrtak';
 import { cemaatUyariMetni } from './CemaatPaneli';
 import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
@@ -34,7 +34,7 @@ interface Props {
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
   /** Zanaatkâr atölye projeleri (yoksa panel çizilmez). */
-  onProjeBaslat?: (projeId: string, hat: string | null) => void;
+  onProjeBaslat?: (projeId: string, hat: string | null, eskort?: string | null) => void;
   onProjeBirak?: () => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
   bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
@@ -690,7 +690,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
       )}
 
       {durum.proje && onProjeBaslat && onProjeBirak && (bolum === 'hepsi' || bolum === 'isletme') && (
-        <IcatPaneli proje={durum.proje} paraBirimi={pb} yukleniyor={yukleniyor} onBaslat={onProjeBaslat} onBirak={onProjeBirak} />
+        <ProjePaneli proje={durum.proje} paraBirimi={pb} yukleniyor={yukleniyor} onBaslat={onProjeBaslat} onBirak={onProjeBirak} />
       )}
 
       <IsletmeOrtak

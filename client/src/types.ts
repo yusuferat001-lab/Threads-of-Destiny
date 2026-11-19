@@ -1049,21 +1049,34 @@ export interface ProjeSecenegiGorunumu {
   hatlar: { id: string; ad: DilliMetin }[];
   kilit: 'rutbe' | 'hat' | 'tezgah' | 'proje' | null;
   masraf: number;
+  /** Yalnız sefer: yolun tehlikesi. */
+  risk: 'dusuk' | 'orta' | 'yuksek' | null;
+}
+export interface ProjeKarariGorunumu {
+  simge: string;
+  baslik: DilliMetin;
+  metin: DilliMetin;
+  secenekler: { id: string; simge: string; ad: DilliMetin; aciklama: DilliMetin; sans: 'iyi' | 'belirsiz' | 'zor' | null }[];
 }
 export interface ProjeGorunumu {
-  aktif: { id: string; hat: string | null; kalan: number; gecen: number; uzatildi: boolean } | null;
-  karar: { bekliyor: boolean; sans: 'iyi' | 'belirsiz' | 'zor'; uzatabilir: boolean } | null;
+  /** 'atolye': Zanaatkâr ürün geliştirme/icat; 'sefer': Tüccar ticaret seferi. */
+  aile: 'atolye' | 'sefer';
+  aktif: { id: string; hat: string | null; kalan: number; gecen: number; uzatildi: boolean; eskort: string | null } | null;
+  karar: ProjeKarariGorunumu | null;
   secenekler: ProjeSecenegiGorunumu[];
+  eskortlar: { id: string; ad: DilliMetin; aciklama: DilliMetin; masraf: number }[];
   gelistirmeler: {
     verim: { hat: string; ad: DilliMetin; kademe: number }[];
     model: { hat: string; ad: DilliMetin; kademe: number }[];
     tezgah: number;
     acilanHatlar: { hat: string; ad: DilliMetin }[];
   };
+  seferEtkileri: { hat: string; ad: DilliMetin; rota: DilliMetin; satisYuzde: number; alisYuzde: number; kalanYil: number }[];
 }
 export interface ProjeSonucu {
   id: string;
   hat: string | null;
+  aile: 'atolye' | 'sefer';
   sonuc: 'basari' | 'basarisiz' | 'uzatildi' | 'vazgecti';
 }
 export interface CemaatPolitikaGorunumu {

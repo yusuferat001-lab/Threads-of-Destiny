@@ -1782,14 +1782,14 @@ function App() {
     }
   }
 
-  /** Zanaatkâr: atölye projesi başlat / bırak (tur harcamaz). */
-  async function projeBaslatHandler(projeId: string, hat: string | null) {
+  /** Zanaatkâr atölye projesi / Tüccar seferi: başlat / bırak (tur harcamaz). */
+  async function projeBaslatHandler(projeId: string, hat: string | null, eskort?: string | null) {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const sonuc = await isletmeProjeBaslat(karakter.id, projeId, hat);
+      const sonuc = await isletmeProjeBaslat(karakter.id, projeId, hat, eskort);
       setKarakter(sonuc.state);
       setIsletme(sonuc.durum);
     } catch (err) {
@@ -1815,8 +1815,8 @@ function App() {
     }
   }
 
-  /** Zanaatkâr: süresi dolan projeye karar; sonuç penceresi kapanınca (projeKapat) oyun devam eder. */
-  async function projeKararHandler(secim: 'sur' | 'uzat' | 'vazgec') {
+  /** Süresi dolan projeye / seferin yol olayına karar; sonuç penceresi kapanınca (projeKapat) oyun devam eder. */
+  async function projeKararHandler(secim: string) {
     if (!karakter) return;
     setHata(null);
     setYukleniyor(true);

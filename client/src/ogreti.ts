@@ -18,9 +18,9 @@ export function munazaraBekliyor(k: CharacterState | null): boolean {
   return !!(k.isletme as { cemaat?: { munazara_bekleyen?: unknown } } | null)?.cemaat?.munazara_bekleyen;
 }
 
-/** Zanaatkâr'ın süresi dolmuş, karar bekleyen bir atölye projesi var mı? (sunucudaki projeBekliyorMu'nun aynası) */
+/** Zanaatkâr atölye projesi ya da Tüccar seferi süresi dolmuş, karar bekliyor mu? (sunucudaki projeBekliyorMu'nun aynası) */
 export function projeBekliyor(k: CharacterState | null): boolean {
-  if (!k || !k.aktif || k.meslek !== 'Zanaatkâr') return false;
+  if (!k || !k.aktif || (k.meslek !== 'Zanaatkâr' && k.meslek !== 'Tüccar')) return false;
   return !!(k.isletme as { proje?: { karar_bekliyor?: boolean } | null } | null)?.proje?.karar_bekliyor;
 }
 
