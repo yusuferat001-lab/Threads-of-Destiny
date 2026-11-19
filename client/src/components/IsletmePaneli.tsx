@@ -12,6 +12,7 @@ import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { BilgiNotu } from './BilgiNotu';
+import { IcatPaneli } from './IcatPaneli';
 import { IsletmeOrtak } from './IsletmeOrtak';
 import { cemaatUyariMetni } from './CemaatPaneli';
 import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
@@ -32,6 +33,9 @@ interface Props {
   onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
+  /** Zanaatkâr atölye projeleri (yoksa panel çizilmez). */
+  onProjeBaslat?: (projeId: string, hat: string | null) => void;
+  onProjeBirak?: () => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
   bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
   /** Dükkân sayfasında "durum" hücresinin üstüne konan blok (rütbe kademesi + ilerleme). */
@@ -393,7 +397,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     }
   }
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi', ustBlok }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, onProjeBaslat, onProjeBirak, bolum = 'hepsi', ustBlok }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -683,6 +687,10 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
       </div>
 
         </>
+      )}
+
+      {durum.proje && onProjeBaslat && onProjeBirak && (bolum === 'hepsi' || bolum === 'isletme') && (
+        <IcatPaneli proje={durum.proje} paraBirimi={pb} yukleniyor={yukleniyor} onBaslat={onProjeBaslat} onBirak={onProjeBirak} />
       )}
 
       <IsletmeOrtak

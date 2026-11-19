@@ -1038,6 +1038,34 @@ export interface MunazaraSonucu {
   ahlakDegisim: number;
   otoriteDegisim: number;
 }
+export interface ProjeSecenegiGorunumu {
+  id: string;
+  simge: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+  minRutbe: number;
+  sure: number;
+  hatGerekli: boolean;
+  hatlar: { id: string; ad: DilliMetin }[];
+  kilit: 'rutbe' | 'hat' | 'tezgah' | 'proje' | null;
+  masraf: number;
+}
+export interface ProjeGorunumu {
+  aktif: { id: string; hat: string | null; kalan: number; gecen: number; uzatildi: boolean } | null;
+  karar: { bekliyor: boolean; sans: 'iyi' | 'belirsiz' | 'zor'; uzatabilir: boolean } | null;
+  secenekler: ProjeSecenegiGorunumu[];
+  gelistirmeler: {
+    verim: { hat: string; ad: DilliMetin; kademe: number }[];
+    model: { hat: string; ad: DilliMetin; kademe: number }[];
+    tezgah: number;
+    acilanHatlar: { hat: string; ad: DilliMetin }[];
+  };
+}
+export interface ProjeSonucu {
+  id: string;
+  hat: string | null;
+  sonuc: 'basari' | 'basarisiz' | 'uzatildi' | 'vazgecti';
+}
 export interface CemaatPolitikaGorunumu {
   secili: string;
   secenekler: CemaatPolitikaSecenegi[];
@@ -1407,6 +1435,8 @@ export interface IsletmeGorunumu {
   uretim: { tavan: number } | null;
   /** Tüccar Güven / Zanaatkâr Ustalık: değer, üst sınır, tahmini gelecek yıl değişimi; diğer mesleklerde null. */
   itibar: { ad: DilliMetin; deger: number; limit: number; gelecek: number } | null;
+  /** Zanaatkâr atölye projeleri (ürün geliştirme/icat); diğer mesleklerde null. */
+  proje: ProjeGorunumu | null;
   urunSecimi: {
     bekliyor: boolean;
     secilen: string | null;

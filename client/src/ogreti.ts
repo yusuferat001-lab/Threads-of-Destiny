@@ -18,6 +18,12 @@ export function munazaraBekliyor(k: CharacterState | null): boolean {
   return !!(k.isletme as { cemaat?: { munazara_bekleyen?: unknown } } | null)?.cemaat?.munazara_bekleyen;
 }
 
+/** Zanaatkâr'ın süresi dolmuş, karar bekleyen bir atölye projesi var mı? (sunucudaki projeBekliyorMu'nun aynası) */
+export function projeBekliyor(k: CharacterState | null): boolean {
+  if (!k || !k.aktif || k.meslek !== 'Zanaatkâr') return false;
+  return !!(k.isletme as { proje?: { karar_bekliyor?: boolean } | null } | null)?.proje?.karar_bekliyor;
+}
+
 /** Asker'in seçilmeyi bekleyen bir doktrini var mı? (sunucudaki doktrinBekliyorMu'nun aynası) */
 export function doktrinBekliyor(k: CharacterState | null): boolean {
   if (!k || !k.aktif || k.meslek !== 'Asker') return false;

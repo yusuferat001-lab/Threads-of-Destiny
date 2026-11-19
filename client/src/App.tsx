@@ -28,6 +28,7 @@ import type {
   BirlikTur,
   SavasKarariDurumu,
   MunazaraSonucu,
+  ProjeSonucu,
   CatismaKarariDurumu,
   CatismaSonucuGorunum,
   SavasGunuSonucu,
@@ -96,6 +97,9 @@ import {
   isletmeKararVer,
   isletmeOgretiSec,
   isletmeMunazaraVer,
+  isletmeProjeBaslat,
+  isletmeProjeBirak,
+  isletmeProjeKarar,
   birlikDoktrinSec,
   birlikTechizatSec,
   birlikBirlikSec,
@@ -151,9 +155,10 @@ import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi, Tan
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
-import { ogretiBekliyor, talepBekliyor, doktrinBekliyor, savasKarariOlasi, catismaBekliyor, munazaraBekliyor } from './ogreti';
+import { ogretiBekliyor, talepBekliyor, doktrinBekliyor, savasKarariOlasi, catismaBekliyor, munazaraBekliyor, projeBekliyor } from './ogreti';
 import { OgretiSecimi } from './components/OgretiSecimi';
 import { Munazara } from './components/Munazara';
+import { ProjeKarari } from './components/ProjeKarari';
 import { DoktrinSecimi } from './components/DoktrinSecimi';
 import { TerfiPenceresi } from './components/TerfiPenceresi';
 import { SavasKararlari } from './components/SavasKararlari';
@@ -383,6 +388,7 @@ function App() {
   /** Asker savaş yılında sıradaki zorunlu karar adımı (yoksa null). */
   const [savasKarari, setSavasKarari] = useState<SavasKarariDurumu | null>(null);
   const [munazaraSonucu, setMunazaraSonucu] = useState<MunazaraSonucu | null>(null);
+  const [projeSonucu, setProjeSonucu] = useState<ProjeSonucu | null>(null);
   const [catismaKarari, setCatismaKarari] = useState<CatismaKarariDurumu | null>(null);
   const [catismaSonucu, setCatismaSonucu] = useState<CatismaSonucuGorunum | null>(null);
   const [savasGunuSonucu, setSavasGunuSonucu] = useState<SavasGunuSonucu | null>(null);
@@ -902,7 +908,7 @@ function App() {
           return;
         }
       }
-      if (ogretiBekliyor(karakter) || doktrinBekliyor(karakter) || munazaraBekliyor(karakter)) {
+      if (ogretiBekliyor(karakter) || doktrinBekliyor(karakter) || munazaraBekliyor(karakter) || projeBekliyor(karakter)) {
         // Terfi sonrası zorunlu öğreti / doktrin seçimi (üstteki OgretiSecimi penceresi); seçilince senaryo çekilir.
         setSenaryo(null);
         setTepkiModu(false);
@@ -925,7 +931,7 @@ function App() {
    * modunda henüz olay çıkmadıysa (ana ekran gösterilir) null döner.
    */
   async function senaryoGerekirseCek(state: CharacterState): Promise<SenaryoResponse | null> {
-    if (ogretiBekliyor(state) || doktrinBekliyor(state) || munazaraBekliyor(state) || state.urun_secim_bekliyor || talepBekliyor(state)) return null;
+    if (ogretiBekliyor(state) || doktrinBekliyor(state) || munazaraBekliyor(state) || projeBekliyor(state) || state.urun_secim_bekliyor || talepBekliyor(state)) return null;
     if (catismaBekliyor(state)) {
       const { karar } = await birlikCatismaGetir(state.id);
       if (karar) {
@@ -1776,6 +1782,71 @@ function App() {
     }
   }
 
+  /** Zanaatkâr: atölye projesi başlat / bırak (tur harcamaz). */
+  async function projeBaslatHandler(projeId: string, hat: string | null) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeProjeBaslat(karakter.id, projeId, hat);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function projeBirakHandler() {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeProjeBirak(karakter.id);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  /** Zanaatkâr: süresi dolan projeye karar; sonuç penceresi kapanınca (projeKapat) oyun devam eder. */
+  async function projeKararHandler(secim: 'sur' | 'uzat' | 'vazgec') {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeProjeKarar(karakter.id, secim);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      setProjeSonucu(sonuc.sonuc);
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function projeKapat() {
+    setProjeSonucu(null);
+    if (!karakter || senaryo) return;
+    try {
+      const sonraki = await senaryoGerekirseCek(karakter);
+      if (sonraki) {
+        setSenaryo(sonraki);
+        setTepkiModu(false);
+        setEkran('oyun');
+      }
+    } catch (err) {
+      setHata(temizHata(err));
+    }
+  }
+
   /** Asker: doktrin seçimi (rütbeyle gelir; seçilmeden oyun devam etmez). */
   async function doktrinSecHandler(doktrinId: string) {
     if (!karakter) return;
@@ -2047,6 +2118,8 @@ function App() {
     !doktrinBekliyor(karakter) &&
     !munazaraBekliyor(karakter) &&
     !munazaraSonucu &&
+    !projeBekliyor(karakter) &&
+    !projeSonucu &&
     !savasKarari &&
     !catismaKarari;
   // Asker savaş yılında karar zinciri bekliyorsa pencere açılır (sunucu karar bitmeden zamanı ilerletmez).
@@ -2237,6 +2310,8 @@ function App() {
         onBirlikKiralik={birlikKiralikHandler}
         onBirlikIkmal={birlikIkmalHandler}
         onIsletmeYatirim={isletmeYatirimHandler}
+        onProjeBaslat={projeBaslatHandler}
+        onProjeBirak={projeBirakHandler}
         onIsletmeYatirimDusur={isletmeYatirimDusurHandler}
         onIsletmeCalisanAl={isletmeCalisanAlHandler}
         sayfa={stratejiSayfa}
@@ -2367,6 +2442,10 @@ function App() {
 
       {karakter && !ogretiBekliyor(karakter) && (munazaraBekliyor(karakter) || munazaraSonucu) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <Munazara stateId={karakter.id} sonuc={munazaraSonucu} yukleniyor={yukleniyor} onVer={munazaraVerHandler} onKapat={munazaraKapat} />
+      )}
+
+      {karakter && !ogretiBekliyor(karakter) && !munazaraBekliyor(karakter) && (projeBekliyor(karakter) || projeSonucu) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <ProjeKarari stateId={karakter.id} sonuc={projeSonucu} yukleniyor={yukleniyor} onVer={projeKararHandler} onKapat={projeKapat} />
       )}
 
       {karakter && terfiPenceresi && karakter.aktif && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
