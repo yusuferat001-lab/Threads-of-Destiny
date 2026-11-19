@@ -49,6 +49,7 @@ import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } 
 import { itibarBonusu, itibarYilSonu } from "./itibar";
 import { atolyeBonusu, atolyeHatAcikMi, atolyeTavanCarpani } from "./atolye";
 import { projeMasrafi, projeTavanCarpani, projeYilIsle } from "./proje";
+import { seferBonusu, seferEtkileriniTemizle } from "./ticaret";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
 import { BARIS_GANIMET_UST, GANIMET_PAYI_TANIMLARI, ganimetBrutTemel } from "../data/birlik";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
@@ -587,7 +588,7 @@ export function bonuslariBirlestir(kaynaklar: (UrunBonusu | null | undefined)[])
 
 /** Bir hattın tüm bonusları (ana ürün, itibar, atölye geliştirmeleri; ileride kalite/sefer kaynakları buraya eklenir). `hatHesapla` ve çürüme bunu okur. */
 export function hatBonusu(state: CharacterState, hatId: string): UrunBonusu | null {
-  return bonuslariBirlestir([anaUrunBonusu(state, hatId), itibarBonusu(state), atolyeBonusu(state, hatId)]);
+  return bonuslariBirlestir([anaUrunBonusu(state, hatId), itibarBonusu(state), atolyeBonusu(state, hatId), seferBonusu(state, hatId)]);
 }
 
 /** Oyuncunun henüz seçmediği başlangıç ürünü var mı? (yalnız API "ilerle" oyunları) */
@@ -1454,6 +1455,7 @@ function isletmeYilIsleIc(state: CharacterState, b: IsletmeBaglami): IsletmeYilS
     state.ahlak = Math.max(0, state.ahlak - aranmaAhlakKaybi(state.suc_seviyesi));
   }
 
+  seferEtkileriniTemizle(state);
   projeYilIsle(state); // proje süresi ilerler (masraf yukarıda depoMasrafi'na işlendi)
 
   // 8. Brüt kâr, vergi, borç.

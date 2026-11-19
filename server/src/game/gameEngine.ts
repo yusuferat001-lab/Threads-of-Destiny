@@ -218,7 +218,9 @@ import {
   ogretiSec,
   faaliyetTahmini,
 } from "./cemaat";
-import { projeBaslat, projeBasariSansi, projeBekliyorMu, projeBirak, projeDurumu, projeHatAdaylari, projeKararVer, projeKatalogu, projeKilitNedeni, projeSansEtiketi, projeTanimiGetir } from "./proje";
+import { projeBaslat, projeBekliyorMu, projeBirak, projeDurumu, projeHatAdaylari, projeKararVer, projeKarariGorunumu, projeKatalogu, projeKilitNedeni, type ProjeKararGorunumu } from "./proje";
+import { ESKORTLAR, seferGetir } from "../data/ticaret";
+import { atolyeProjesiGetir } from "../data/atolye";
 import { ITIBAR_ADI, ITIBAR_KOTU_IS, itibarDegeri, itibarEkle, itibarUstLimit, itibarVarMi, itibarYillikDegisim } from "./itibar";
 import {
   AHLAK_BANTLARI,
@@ -5096,20 +5098,28 @@ export interface ProjeSecenegiGorunumu {
   aciklama: IkiDilMetin;
   minRutbe: number;
   sure: number;
-  /** Hedef hat gerekir mi ve seçilebilecek hatlar. */
+  /** Hedef hat gerekir mi (atölyede geliştirilecek ürün, seferde taşınacak yük) ve seçilebilecek hatlar. */
   hatGerekli: boolean;
   hatlar: { id: string; ad: IkiDilMetin }[];
   kilit: "rutbe" | "hat" | "tezgah" | "proje" | null;
   /** Yıllık masraf (gider enflasyonlu). */
   masraf: number;
+  /** Yalnız sefer: yolun tehlikesi. */
+  risk: "dusuk" | "orta" | "yuksek" | null;
 }
 export interface ProjeGorunumu {
-  aktif: { id: string; hat: string | null; kalan: number; gecen: number; uzatildi: boolean } | null;
+  /** "atolye": Zanaatkâr ürün geliştirme/icat; "sefer": Tüccar ticaret seferi. */
+  aile: "atolye" | "sefer";
+  aktif: { id: string; hat: string | null; kalan: number; gecen: number; uzatildi: boolean; eskort: string | null } | null;
   /** Süre doldu: oyuncu karar verene dek oyun devam etmez. */
-  karar: { bekliyor: boolean; sans: "iyi" | "belirsiz" | "zor"; uzatabilir: boolean } | null;
+  karar: ProjeKararGorunumu | null;
   secenekler: ProjeSecenegiGorunumu[];
-  /** Tamamlanan geliştirmeler (hat adlarıyla). */
+  /** Yalnız sefer: eskort seçenekleri (id, ad, açıklama, yıllık masraf). */
+  eskortlar: { id: string; ad: IkiDilMetin; aciklama: IkiDilMetin; masraf: number }[];
+  /** Zanaatkâr: tamamlanan geliştirmeler (hat adlarıyla). */
   gelistirmeler: { verim: { hat: string; ad: IkiDilMetin; kademe: number }[]; model: { hat: string; ad: IkiDilMetin; kademe: number }[]; tezgah: number; acilanHatlar: { hat: string; ad: IkiDilMetin }[] };
+  /** Tüccar: başarıyla dönen seferlerin süren etkileri (yüzde). */
+  seferEtkileri: { hat: string; ad: IkiDilMetin; rota: IkiDilMetin; satisYuzde: number; alisYuzde: number; kalanYil: number }[];
 }
 
 export interface IsletmeGorunumu {
@@ -5175,29 +5185,44 @@ function projeGorunumuHesapla(state: CharacterState, genf: number): ProjeGorunum
   const is = state.isletme;
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
   if (katalog.length === 0 || !is || !profil) return null;
+  const sefer = state.meslek === "Tüccar";
   const hatAdi = (id: string): IkiDilMetin => {
     const h = profil.hatlar.find((x) => x.id === id);
     return { tr: h?.ad.tr ?? id, en: h?.ad.en ?? id };
   };
+  const meta = (id: string) => (sefer ? seferGetir(id) : atolyeProjesiGetir(id));
+  const riskEtiketi = (r: number): "dusuk" | "orta" | "yuksek" => (r < 0.12 ? "dusuk" : r < 0.22 ? "orta" : "yuksek");
   const p = projeDurumu(state);
-  const t = p ? projeTanimiGetir(p.id) : undefined;
   const a = is.atolye;
   return {
-    aktif: p ? { id: p.id, hat: p.hat, kalan: p.kalan, gecen: p.gecen, uzatildi: p.uzatildi } : null,
-    karar: p && t && p.karar_bekliyor ? { bekliyor: true, sans: projeSansEtiketi(projeBasariSansi(state, t, p.uzatildi)), uzatabilir: !p.uzatildi } : null,
-    secenekler: katalog.map((k) => ({
-      id: k.id, simge: k.simge, minRutbe: k.minRutbe, sure: k.sure, hatGerekli: !!k.hat,
-      ad: { tr: k.ad.tr, en: k.ad.en }, aciklama: { tr: k.aciklama.tr, en: k.aciklama.en },
-      hatlar: projeHatAdaylari(state, k).map((id) => ({ id, ad: hatAdi(id) })),
-      kilit: projeKilitNedeni(state, k),
-      masraf: paraYuvarla(k.masraf * genf),
-    })),
+    aile: sefer ? "sefer" : "atolye",
+    aktif: p ? { id: p.id, hat: p.hat, kalan: p.kalan, gecen: p.gecen, uzatildi: p.uzatildi, eskort: p.secim } : null,
+    karar: projeKarariGorunumu(state),
+    secenekler: katalog.flatMap((k) => {
+      const m = meta(k.id);
+      if (!m) return [];
+      return [{
+        id: k.id, simge: m.simge, minRutbe: k.minRutbe, sure: k.sure, hatGerekli: !!k.hat,
+        ad: { tr: m.ad.tr, en: m.ad.en }, aciklama: { tr: m.aciklama.tr, en: m.aciklama.en },
+        hatlar: projeHatAdaylari(state, k).map((hid) => ({ id: hid, ad: hatAdi(hid) })),
+        kilit: projeKilitNedeni(state, k),
+        masraf: paraYuvarla(k.masraf * genf),
+        risk: sefer ? riskEtiketi(k.zorluk) : null,
+      }];
+    }),
+    eskortlar: sefer ? ESKORTLAR.map((e) => ({ id: e.id, ad: { tr: e.ad.tr, en: e.ad.en }, aciklama: { tr: e.aciklama.tr, en: e.aciklama.en }, masraf: paraYuvarla(e.masraf * genf) })) : [],
     gelistirmeler: {
       verim: Object.entries(a?.verim ?? {}).filter(([, v]) => v > 0).map(([hat, kademe]) => ({ hat, ad: hatAdi(hat), kademe })),
       model: Object.entries(a?.model ?? {}).filter(([, v]) => v > 0).map(([hat, kademe]) => ({ hat, ad: hatAdi(hat), kademe })),
       tezgah: a?.tezgah ?? 0,
       acilanHatlar: (a?.acilan_hatlar ?? []).map((hat) => ({ hat, ad: hatAdi(hat) })),
     },
+    seferEtkileri: (is.sefer_etkileri ?? [])
+      .filter((e) => e.bitis_yili >= state.yil)
+      .map((e) => {
+        const r = seferGetir(e.rota);
+        return { hat: e.hat, ad: hatAdi(e.hat), rota: { tr: r?.ad.tr ?? e.rota, en: r?.ad.en ?? e.rota }, satisYuzde: Math.round(e.satis * 100), alisYuzde: Math.round(e.alis * 100), kalanYil: e.bitis_yili - state.yil + 1 };
+      }),
   };
 }
 
@@ -5712,14 +5737,14 @@ async function projeEylemi<T extends object>(id: string, uygula: (state: Charact
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
-  if (!state.isletme || projeKatalogu(state).length === 0) throw new Error("Bu mesleğin bir atölye projesi yok.");
+  if (!state.isletme || projeKatalogu(state).length === 0) throw new Error("Bu mesleğin bir proje yuvası yok.");
   const sonuc = uygula(state);
   await oturumKaydet(state);
   return { ...sonuc, state, durum: isletmeGorunumuHesapla(state) };
 }
-export const isletmeProjeBaslat = (id: string, projeId: string, hat?: string | null) =>
+export const isletmeProjeBaslat = (id: string, projeId: string, hat?: string | null, eskort?: string | null) =>
   projeEylemi(id, (state) => {
-    projeBaslat(state, projeId, hat);
+    projeBaslat(state, projeId, hat, eskort);
     return {};
   });
 export const isletmeProjeBirak = (id: string) =>
@@ -5727,7 +5752,7 @@ export const isletmeProjeBirak = (id: string) =>
     projeBirak(state);
     return {};
   });
-export const isletmeProjeKarar = (id: string, secim: string) => projeEylemi(id, (state) => ({ sonuc: projeKararVer(state, secim) }));
+export const isletmeProjeKarar = (id: string, secim: string) => projeEylemi(id, (state) => ({ sonuc: projeKararVer(state, secim, isletmeBaglami(state).giderEnflasyon) }));
 
 /** Din Adamı: bekleyen münazaraya cevap ("ilim" | "halk" | "cekil"). Turu tüketmez. */
 export async function isletmeMunazaraVer(

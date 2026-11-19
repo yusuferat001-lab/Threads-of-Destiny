@@ -76,3 +76,14 @@ export const PROJE_SANS_TABAN = 0.78;
 /** Üretici (ana rol) çalışanların bonusunun şansa katkı oranı ve tavanı. */
 export const PROJE_USTA_KATKI = 0.3;
 export const PROJE_USTA_TAVAN = 0.15;
+
+/** Süre dolunca karar penceresi: başlık, açıklama ve seçenek metinleri. */
+export const ATOLYE_KARAR_BASLIK: { baslik: DilliMetin; metin: DilliMetin } = {
+  baslik: { tr: "Proje Tamamlandı mı?", en: "Is the Project Done?" },
+  metin: { tr: "Süre doldu. Sonuca bağlayabilir, bir yıl daha çalışabilir ya da vazgeçebilirsin. Karar vermeden hayat devam etmez.", en: "Time is up. You can put it to the test, work one more year, or give up. Life waits for your decision." },
+};
+export const ATOLYE_KARARLARI: Record<"sur" | "uzat" | "vazgec", { simge: string; ad: DilliMetin; aciklama: DilliMetin }> = {
+  sur: { simge: "🎯", ad: { tr: "Sonuca bağla", en: "Put it to the test" }, aciklama: { tr: "Şimdi denersin; başarırsan etkisi kalıcıdır, başarısız olursan masraf boşa gider ve itibarın zedelenir.", en: "You try it now; success is permanent, failure wastes the cost and dents your standing." } },
+  uzat: { simge: "⏳", ad: { tr: "Bir yıl daha geliştir", en: "Work one more year" }, aciklama: { tr: "Bir yıl daha masraf ve atölye zamanı harcarsın; ikinci denemede başarı ihtimali artar. Yalnız bir kez uzatılır.", en: "You spend another year of cost and workshop time; the second try is likelier to succeed. Only once." } },
+  vazgec: { simge: "🕊️", ad: { tr: "Vazgeç", en: "Give up" }, aciklama: { tr: "Projeyi bırakırsın; harcanan masraf geri gelmez ve itibarın biraz düşer.", en: "You drop the project; the money spent is gone and your standing dips a little." } },
+};

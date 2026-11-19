@@ -1436,6 +1436,20 @@ export interface ProjeDurumu {
   /** Bir kez uzatıldı mı (ikinci kez uzatılamaz, ikinci denemede başarı şansı artar). */
   uzatildi: boolean;
   karar_bekliyor: boolean;
+  /** Tüccar seferi: eskort seviyesi (ESKORTLAR id). */
+  secim: string | null;
+  /** Tüccar seferi: süre dolunca yolda çıkan olay (YOL_OLAYLARI id). */
+  olay: string | null;
+}
+
+/** Başarılı seferin bir ürün hattına süreli etkisi (satış fiyatı primi, alış indirimi; kesir). */
+export interface SeferEtkisi {
+  hat: string;
+  rota: string;
+  satis: number;
+  alis: number;
+  /** Bu oyun yılı dahil etkili. */
+  bitis_yili: number;
 }
 
 /** Zanaatkâr geliştirmeleri: hat başına verim/model kademesi, tezgâh icadı, projeyle erken açılan hatlar. */
@@ -1495,6 +1509,8 @@ export interface IsletmeDurumu {
   proje?: ProjeDurumu | null;
   /** Zanaatkâr: tamamlanan geliştirmelerin kalıcı etkileri. game/atolye.ts */
   atolye?: AtolyeDurumu;
+  /** Tüccar: başarıyla dönen seferlerin süreli satış/alış etkileri. game/ticaret.ts */
+  sefer_etkileri?: SeferEtkisi[];
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
   tekel_hat?: string | null;
   /** Yalnız Din Adamı (cemaat modu). */

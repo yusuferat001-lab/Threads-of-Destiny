@@ -21,7 +21,7 @@ const yilIsle = (s: CharacterState) => isletmeYilIsle(s, isletmeBaglami(s));
 const acikHat = (s: CharacterState) => isletmeProfiliGetir(s.meslek, s.cag)!.hatlar.find((h) => hatKilitNedeni(s, h) === null)!.id;
 
 describe("Zanaatkâr atölye projeleri", () => {
-  it("katalog yalnız Zanaatkâr'da; kilit nedenleri", async () => {
+  it("katalog Zanaatkâr'da atölye projeleri, Asker'de yok; kilit nedenleri", async () => {
     const s = await zanaat(1);
     expect(projeKatalogu(s).length).toBeGreaterThan(0);
     expect(projeKilitNedeni(s, atolyeProjesiGetir("verimli_yontem")!)).toBe("rutbe");
@@ -31,7 +31,7 @@ describe("Zanaatkâr atölye projeleri", () => {
     projeBaslat(s, "verimli_yontem", acikHat(s));
     expect(projeKilitNedeni(s, atolyeProjesiGetir("yeni_model")!)).toBe("proje");
     const t = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-    await mesleğiAta(t.id, "Tüccar");
+    await mesleğiAta(t.id, "Asker");
     expect(projeKatalogu(await stateGetir(t.id))).toEqual([]);
     expect((await isletmeDurumGetir(t.id)).proje).toBeNull();
   });
@@ -138,7 +138,8 @@ describe("Zanaatkâr atölye projeleri", () => {
     await isletmeProjeBaslat(s.id, "yeni_model", acikHat(s));
     s.isletme!.proje!.karar_bekliyor = true;
     const g = await isletmeDurumGetir(s.id);
-    expect(g.proje!.karar).toMatchObject({ bekliyor: true, uzatabilir: true });
+    expect(g.proje!.karar!.secenekler.map((x) => x.id)).toEqual(["sur", "uzat", "vazgec"]);
+    expect(g.proje!.karar!.secenekler[0].sans).not.toBeNull();
     const r = await isletmeProjeKarar(s.id, "vazgec");
     expect(r.sonuc.sonuc).toBe("vazgecti");
     expect(r.durum.proje!.karar).toBeNull();

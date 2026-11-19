@@ -374,10 +374,10 @@ gameRouter.post("/:id/isletme/ogreti", async (req, res) => {
 });
 
 gameRouter.post("/:id/isletme/proje", async (req, res) => {
-  const { projeId, hat } = req.body ?? {};
+  const { projeId, hat, eskort } = req.body ?? {};
   if (typeof projeId !== "string") return res.status(400).json({ hata: "Geçersiz proje." });
   try {
-    res.json(await isletmeProjeBaslat(req.params.id, projeId, typeof hat === "string" ? hat : null));
+    res.json(await isletmeProjeBaslat(req.params.id, projeId, typeof hat === "string" ? hat : null, typeof eskort === "string" ? eskort : null));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
