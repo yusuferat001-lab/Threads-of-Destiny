@@ -47,6 +47,8 @@ import {
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { itibarBonusu, itibarYilSonu } from "./itibar";
+import { atolyeBonusu, atolyeHatAcikMi, atolyeTavanCarpani } from "./atolye";
+import { projeMasrafi, projeTavanCarpani, projeYilIsle } from "./proje";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
 import { BARIS_GANIMET_UST, GANIMET_PAYI_TANIMLARI, ganimetBrutTemel } from "../data/birlik";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
@@ -248,7 +250,7 @@ export function depoBakimMasrafi(is: IsletmeDurumu, enflasyon: number): number {
 export function dukkanGideri(state: CharacterState, giderEnflasyon: number): number {
   const is = state.isletme;
   if (!is) return 0;
-  return r2(depoBakimMasrafi(is, giderEnflasyon) + yatirimYillikMasrafi(state, giderEnflasyon));
+  return r2(depoBakimMasrafi(is, giderEnflasyon) + yatirimYillikMasrafi(state, giderEnflasyon) + projeMasrafi(state, giderEnflasyon));
 }
 export function toplamStok(is: IsletmeDurumu): number {
   return is.hatlar.reduce((t, h) => t + h.stok, 0);
@@ -465,7 +467,7 @@ export function uretimTavani(state: CharacterState): number | null {
   const tezgah = clamp(is.yatirimlar.tezgah ?? 0, 0, 4) * TEZGAH_URETIM_KADEME;
   const ruhsat = imtiyazAktifMi(state, "atolye_ruhsati") ? 0.1 : 0;
   const taban = URETIM_TABAN + Math.max(0, state.uretim_kapasitesi ?? 0) * URETIM_METRIK_CARPANI;
-  return Math.floor(taban * (1 + bon.ana + tezgah + ruhsat));
+  return Math.floor(taban * (1 + bon.ana + tezgah + ruhsat) * atolyeTavanCarpani(state) * projeTavanCarpani(state));
 }
 
 export function yatirimKademesi(state: CharacterState, etki: YatirimEtkisi): number {
@@ -557,6 +559,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
 export function hatKilitNedeni(state: CharacterState, tanim: HatTanimi): "rutbe" | null {
   // v11: oyun başında seçilen ana ürünün rütbe kilidi yoktur.
   if (state.isletme?.ana_urun === tanim.id) return null;
+  if (atolyeHatAcikMi(state, tanim.id)) return null; // Zanaatkâr: Yeni ürün hattı projesiyle açıldı
   return state.rutbe_seviye < tanim.minRutbe ? "rutbe" : null;
 }
 
@@ -582,9 +585,9 @@ export function bonuslariBirlestir(kaynaklar: (UrunBonusu | null | undefined)[])
   return sonuc;
 }
 
-/** Bir hattın tüm bonusları (ana ürün, itibar; ileride geliştirme/kalite/sefer kaynakları buraya eklenir). `hatHesapla` ve çürüme bunu okur. */
+/** Bir hattın tüm bonusları (ana ürün, itibar, atölye geliştirmeleri; ileride kalite/sefer kaynakları buraya eklenir). `hatHesapla` ve çürüme bunu okur. */
 export function hatBonusu(state: CharacterState, hatId: string): UrunBonusu | null {
-  return bonuslariBirlestir([anaUrunBonusu(state, hatId), itibarBonusu(state)]);
+  return bonuslariBirlestir([anaUrunBonusu(state, hatId), itibarBonusu(state), atolyeBonusu(state, hatId)]);
 }
 
 /** Oyuncunun henüz seçmediği başlangıç ürünü var mı? (yalnız API "ilerle" oyunları) */
@@ -1396,7 +1399,8 @@ function isletmeYilIsleIc(state: CharacterState, b: IsletmeBaglami): IsletmeYilS
 
   // 6. Depo: çürüme (kademeye göre, kapalı hatlar dahil) + yalnız kademeye bağlı sabit bakım.
   const yatirimMasrafi = yatirimYillikMasrafi(state, b.giderEnflasyon);
-  const depoMasrafi = r2(depoBakimMasrafi(is, b.giderEnflasyon) + yatirimMasrafi); // dükkân gideri
+  const projeGideri = projeMasrafi(state, b.giderEnflasyon);
+  const depoMasrafi = r2(depoBakimMasrafi(is, b.giderEnflasyon) + yatirimMasrafi + projeGideri); // dükkân gideri (proje masrafı dahil)
   const curume = curumeOrani(is);
   let curumeKaybi = 0;
   for (const hat of is.hatlar) {
@@ -1450,6 +1454,8 @@ function isletmeYilIsleIc(state: CharacterState, b: IsletmeBaglami): IsletmeYilS
     state.ahlak = Math.max(0, state.ahlak - aranmaAhlakKaybi(state.suc_seviyesi));
   }
 
+  projeYilIsle(state); // proje süresi ilerler (masraf yukarıda depoMasrafi'na işlendi)
+
   // 8. Brüt kâr, vergi, borç.
   const loncaAidati = r2(satis * loncaAidatiOrani(pazarPayiHesapla(state)));
   const brutKar = r2(satis - alim - depoMasrafi - loncaAidati);
@@ -1475,6 +1481,7 @@ function isletmeYilIsleIc(state: CharacterState, b: IsletmeBaglami): IsletmeYilS
     alim: r2(alim),
     depoMasrafi: r2(depoMasrafi),
     yatirimMasrafi,
+    ...(projeGideri > 0 ? { projeMasrafi: projeGideri } : {}),
     loncaAidati,
     calisanMaasi,
     nakitHasar: r2(nakitHasar),

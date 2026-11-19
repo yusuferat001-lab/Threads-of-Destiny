@@ -1,5 +1,6 @@
 import type { CharacterState } from "../src/types";
 import { munazaraBekliyorMu, munazaraVer, ogretiBekleyenSeviye, ogretiSec } from "../src/game/cemaat";
+import { projeBekliyorMu, projeKararVer } from "../src/game/proje";
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import { talepBekliyorMu } from "../src/data/ekstraVergi";
 import { senaryoUret, stateGetir, yonetimTalebiKararlastir } from "../src/game/gameEngine";
@@ -19,6 +20,7 @@ export function ogretileriTamamla(state: CharacterState): void {
   doktrinleriTamamla(state);
   savasKararlariniVer(state);
   if (munazaraBekliyorMu(state)) munazaraVer(state, "cekil"); // Din Adamı: bekleyen münazara (varsa) geri çekilerek geçilir
+  if (projeBekliyorMu(state)) projeKararVer(state, "vazgec"); // Zanaatkâr: süresi dolan proje (varsa) bırakılır
 }
 
 /** Asker testleri: bekleyen tüm rütbe doktrinlerini seçer (yoksa hiçbir şey yapmaz). */

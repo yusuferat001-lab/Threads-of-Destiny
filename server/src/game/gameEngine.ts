@@ -218,6 +218,7 @@ import {
   ogretiSec,
   faaliyetTahmini,
 } from "./cemaat";
+import { projeBaslat, projeBasariSansi, projeBekliyorMu, projeBirak, projeDurumu, projeHatAdaylari, projeKararVer, projeKatalogu, projeKilitNedeni, projeSansEtiketi, projeTanimiGetir } from "./proje";
 import { ITIBAR_ADI, ITIBAR_KOTU_IS, itibarDegeri, itibarEkle, itibarUstLimit, itibarVarMi, itibarYillikDegisim } from "./itibar";
 import {
   AHLAK_BANTLARI,
@@ -1321,6 +1322,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   }
   if (ogretiBekliyorMu(oturum.state)) throw new Error("Önce öğretini seçmelisin.");
   if (munazaraBekliyorMu(oturum.state)) throw new Error("Önce münazaraya cevap vermelisin.");
+  if (projeBekliyorMu(oturum.state)) throw new Error("Önce proje kararını vermelisin.");
   if (doktrinBekliyorMu(oturum.state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(oturum.state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(oturum.state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
@@ -1851,6 +1853,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
   if (munazaraBekliyorMu(state)) throw new Error("Önce münazaraya cevap vermelisin.");
+  if (projeBekliyorMu(state)) throw new Error("Önce proje kararını vermelisin.");
   if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
@@ -1964,6 +1967,7 @@ export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: 
   if (state.zaman_modeli !== "ilerle") throw new Error("Bu oyun yıl geçirme modunda değil.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
   if (munazaraBekliyorMu(state)) throw new Error("Önce münazaraya cevap vermelisin.");
+  if (projeBekliyorMu(state)) throw new Error("Önce proje kararını vermelisin.");
   if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
   if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
@@ -5085,6 +5089,29 @@ export interface CemaatGorunumu {
   };
 }
 
+export interface ProjeSecenegiGorunumu {
+  id: string;
+  simge: string;
+  ad: IkiDilMetin;
+  aciklama: IkiDilMetin;
+  minRutbe: number;
+  sure: number;
+  /** Hedef hat gerekir mi ve seçilebilecek hatlar. */
+  hatGerekli: boolean;
+  hatlar: { id: string; ad: IkiDilMetin }[];
+  kilit: "rutbe" | "hat" | "tezgah" | "proje" | null;
+  /** Yıllık masraf (gider enflasyonlu). */
+  masraf: number;
+}
+export interface ProjeGorunumu {
+  aktif: { id: string; hat: string | null; kalan: number; gecen: number; uzatildi: boolean } | null;
+  /** Süre doldu: oyuncu karar verene dek oyun devam etmez. */
+  karar: { bekliyor: boolean; sans: "iyi" | "belirsiz" | "zor"; uzatabilir: boolean } | null;
+  secenekler: ProjeSecenegiGorunumu[];
+  /** Tamamlanan geliştirmeler (hat adlarıyla). */
+  gelistirmeler: { verim: { hat: string; ad: IkiDilMetin; kademe: number }[]; model: { hat: string; ad: IkiDilMetin; kademe: number }[]; tezgah: number; acilanHatlar: { hat: string; ad: IkiDilMetin }[] };
+}
+
 export interface IsletmeGorunumu {
   aktif: boolean;
   /** Asker'de birlik görünümü (güç dökümü, kalite, birlik, talim, görevler, doktrin, savaş); diğer mesleklerde null. */
@@ -5103,6 +5130,8 @@ export interface IsletmeGorunumu {
   uretim: { tavan: number } | null;
   /** Tüccar Güven / Zanaatkâr Ustalık: değer, üst sınır, tahmini gelecek yıl değişimi; diğer mesleklerde null. */
   itibar: { ad: IkiDilMetin; deger: number; limit: number; gelecek: number } | null;
+  /** Zanaatkâr atölye projeleri (ürün geliştirme/icat); diğer mesleklerde null. */
+  proje: ProjeGorunumu | null;
   /** v11: başlangıç ürünü seçimi (yalnız Tüccar/Zanaatkâr); `bekliyor` iken oyun devam etmez. */
   urunSecimi: { bekliyor: boolean; secilen: string | null; secenekler: { id: string; simge: string; ad: IkiDilMetin; kesim: "temel" | "savas" | "luks"; ozet: IkiDilMetin }[] };
   hatlar: IsletmeHatGorunumu[];
@@ -5139,6 +5168,37 @@ function subayEtkisi(profilMod: string | undefined, etki: { tur: IsletmeRolTuru;
 function rolAciklamasi(_state: CharacterState, profilMod: string | undefined, tur: IsletmeRolTuru): IkiDilMetin {
   const m = ROL_ACIKLAMALARI[profilMod === "uretim" ? "uretim" : profilMod === "cemaat" ? "cemaat" : profilMod === "birlik" ? "birlik" : "ticaret"][tur];
   return { tr: m.tr, en: m.en };
+}
+
+function projeGorunumuHesapla(state: CharacterState, genf: number): ProjeGorunumu | null {
+  const katalog = projeKatalogu(state);
+  const is = state.isletme;
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (katalog.length === 0 || !is || !profil) return null;
+  const hatAdi = (id: string): IkiDilMetin => {
+    const h = profil.hatlar.find((x) => x.id === id);
+    return { tr: h?.ad.tr ?? id, en: h?.ad.en ?? id };
+  };
+  const p = projeDurumu(state);
+  const t = p ? projeTanimiGetir(p.id) : undefined;
+  const a = is.atolye;
+  return {
+    aktif: p ? { id: p.id, hat: p.hat, kalan: p.kalan, gecen: p.gecen, uzatildi: p.uzatildi } : null,
+    karar: p && t && p.karar_bekliyor ? { bekliyor: true, sans: projeSansEtiketi(projeBasariSansi(state, t, p.uzatildi)), uzatabilir: !p.uzatildi } : null,
+    secenekler: katalog.map((k) => ({
+      id: k.id, simge: k.simge, minRutbe: k.minRutbe, sure: k.sure, hatGerekli: !!k.hat,
+      ad: { tr: k.ad.tr, en: k.ad.en }, aciklama: { tr: k.aciklama.tr, en: k.aciklama.en },
+      hatlar: projeHatAdaylari(state, k).map((id) => ({ id, ad: hatAdi(id) })),
+      kilit: projeKilitNedeni(state, k),
+      masraf: paraYuvarla(k.masraf * genf),
+    })),
+    gelistirmeler: {
+      verim: Object.entries(a?.verim ?? {}).filter(([, v]) => v > 0).map(([hat, kademe]) => ({ hat, ad: hatAdi(hat), kademe })),
+      model: Object.entries(a?.model ?? {}).filter(([, v]) => v > 0).map(([hat, kademe]) => ({ hat, ad: hatAdi(hat), kademe })),
+      tezgah: a?.tezgah ?? 0,
+      acilanHatlar: (a?.acilan_hatlar ?? []).map((hat) => ({ hat, ad: hatAdi(hat) })),
+    },
+  };
 }
 
 function cemaatGorunumuHesapla(state: CharacterState, b: IsletmeBaglami): CemaatGorunumu {
@@ -5247,7 +5307,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   if (!profil || !is) {
     return {
       aktif: false, birlik: null, cemaat: null, meslek: state.meslek, pazarPayi: 0, musteri: 0, pazarMusteri: state.pazar_musteri ?? 0,
-      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null, itibar: null,
+      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null, itibar: null, proje: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
       butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, mulkGeliri: 0, hazinePayi: 0, kazanc: 0, gelir: 0, netAlt: 0, netUst: 0 },
@@ -5380,6 +5440,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       oto: { acik: !!is.depo_oto?.acik, yuzde: is.depo_oto?.yuzde ?? 50 },
     },
     uretim: uretimTavani(state) !== null ? { tavan: uretimTavani(state)! } : null,
+    proje: projeGorunumuHesapla(state, genf),
     itibar: itibarVarMi(state)
       ? {
           ad: { tr: ITIBAR_ADI[state.meslek as "Tüccar" | "Zanaatkâr"].tr, en: ITIBAR_ADI[state.meslek as "Tüccar" | "Zanaatkâr"].en },
@@ -5645,6 +5706,28 @@ export async function isletmeOgretiSec(
     durum: isletmeGorunumuHesapla(state),
   };
 }
+
+/** Zanaatkâr: atölye projesi başlatır / bırakır / süre dolunca karar verir. Turu tüketmez. */
+async function projeEylemi<T extends object>(id: string, uygula: (state: CharacterState) => T): Promise<T & { state: CharacterState; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (!state.isletme || projeKatalogu(state).length === 0) throw new Error("Bu mesleğin bir atölye projesi yok.");
+  const sonuc = uygula(state);
+  await oturumKaydet(state);
+  return { ...sonuc, state, durum: isletmeGorunumuHesapla(state) };
+}
+export const isletmeProjeBaslat = (id: string, projeId: string, hat?: string | null) =>
+  projeEylemi(id, (state) => {
+    projeBaslat(state, projeId, hat);
+    return {};
+  });
+export const isletmeProjeBirak = (id: string) =>
+  projeEylemi(id, (state) => {
+    projeBirak(state);
+    return {};
+  });
+export const isletmeProjeKarar = (id: string, secim: string) => projeEylemi(id, (state) => ({ sonuc: projeKararVer(state, secim) }));
 
 /** Din Adamı: bekleyen münazaraya cevap ("ilim" | "halk" | "cekil"). Turu tüketmez. */
 export async function isletmeMunazaraVer(

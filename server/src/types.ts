@@ -989,7 +989,8 @@ export interface IsletmeUyari {
     | "yarali_iyilesti"
     | "limit_asimi"
     | "savas_saglik"
-    | "hizmet_sonuc";
+    | "hizmet_sonuc"
+    | "proje_sonuc";
   hat?: string;
   /** hizmet_sonuc: görev başarıyla mı bitti; yariyolda = koşul bittiği için erken kapandı (hat = görev id). */
   basari?: boolean;
@@ -1043,6 +1044,8 @@ export interface IsletmeDokum {
   depoMasrafi: number;
   /** Dükkân giderinin yatırım kısmı (v14); eski kayıtlarda yok. */
   yatirimMasrafi?: number;
+  /** Dükkân giderinin atölye/ticaret projesi kısmı (yoksa proje yok). */
+  projeMasrafi?: number;
   /** Lonca aidatı: satışın %3'ü (v8.2). */
   loncaAidati: number;
   /** satış − alım − depo masrafı (çalışan maaşı ayrıca giderlerde). */
@@ -1423,6 +1426,26 @@ export interface BirlikDurumu {
   yarali_hizi?: number;
 }
 
+/** Yürüyen proje: `kalan` yıl dolunca `karar_bekliyor` olur (oyuncu sürer/uzatır/vazgeçer); karar verilmeden oyun devam etmez. */
+export interface ProjeDurumu {
+  id: string;
+  /** Hedef hat (hat gerektirmeyen projelerde null). */
+  hat: string | null;
+  kalan: number;
+  gecen: number;
+  /** Bir kez uzatıldı mı (ikinci kez uzatılamaz, ikinci denemede başarı şansı artar). */
+  uzatildi: boolean;
+  karar_bekliyor: boolean;
+}
+
+/** Zanaatkâr geliştirmeleri: hat başına verim/model kademesi, tezgâh icadı, projeyle erken açılan hatlar. */
+export interface AtolyeDurumu {
+  verim: Record<string, number>;
+  model: Record<string, number>;
+  tezgah: number;
+  acilan_hatlar: string[];
+}
+
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
 export interface IsletmeDurumu {
   hatlar: IsletmeHat[];
@@ -1468,6 +1491,10 @@ export interface IsletmeDurumu {
   imtiyazlar?: Record<string, number>;
   /** Tüccar Güven / Zanaatkâr Ustalık (0-100, tarafsız 50; yoksa 50). game/itibar.ts */
   itibar?: number;
+  /** Yürüyen atölye/ticaret projesi (aynı anda tek); yoksa null. game/proje.ts */
+  proje?: ProjeDurumu | null;
+  /** Zanaatkâr: tamamlanan geliştirmelerin kalıcı etkileri. game/atolye.ts */
+  atolye?: AtolyeDurumu;
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
   tekel_hat?: string | null;
   /** Yalnız Din Adamı (cemaat modu). */

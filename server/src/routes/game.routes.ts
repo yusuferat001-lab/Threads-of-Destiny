@@ -60,6 +60,9 @@ import {
   isletmeKararVer,
   isletmeOgretiSec,
   isletmeMunazaraVer,
+  isletmeProjeBaslat,
+  isletmeProjeBirak,
+  isletmeProjeKarar,
   birlikDoktrinSec,
   birlikTechizatSec,
   birlikBirlikSec,
@@ -365,6 +368,34 @@ gameRouter.post("/:id/isletme/ogreti", async (req, res) => {
   if (typeof ogretiId !== "string") return res.status(400).json({ hata: "Geçersiz öğreti." });
   try {
     res.json(await isletmeOgretiSec(req.params.id, ogretiId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/proje", async (req, res) => {
+  const { projeId, hat } = req.body ?? {};
+  if (typeof projeId !== "string") return res.status(400).json({ hata: "Geçersiz proje." });
+  try {
+    res.json(await isletmeProjeBaslat(req.params.id, projeId, typeof hat === "string" ? hat : null));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/proje/birak", async (req, res) => {
+  try {
+    res.json(await isletmeProjeBirak(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/proje/karar", async (req, res) => {
+  const { secim } = req.body ?? {};
+  if (typeof secim !== "string") return res.status(400).json({ hata: "Geçersiz proje kararı." });
+  try {
+    res.json(await isletmeProjeKarar(req.params.id, secim));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
