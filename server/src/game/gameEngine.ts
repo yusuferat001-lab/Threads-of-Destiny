@@ -218,6 +218,7 @@ import {
   ogretiSec,
   faaliyetTahmini,
 } from "./cemaat";
+import { ITIBAR_ADI, ITIBAR_KOTU_IS, itibarDegeri, itibarEkle, itibarUstLimit, itibarVarMi, itibarYillikDegisim } from "./itibar";
 import {
   AHLAK_BANTLARI,
   ASEVI_KADEME_ETKISI,
@@ -4714,6 +4715,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
     if ((state.ajan_gorevleri ?? []).some((g) => g.ajanId === ajan.id)) throw new Error(`${ajan.isim} zaten bir işte.`);
     state.para = paraYuvarla(state.para - maliyet);
     state.kotu_is_kilit = { ...(state.kotu_is_kilit ?? {}), [tanim.id]: state.yil + tanim.cooldownYil };
+    itibarEkle(state, -ITIBAR_KOTU_IS);
     state.ajan_gorevleri = [
       ...(state.ajan_gorevleri ?? []),
       { ajanId: ajan.id, isId: tanim.id, hedefRakipAd: hedefRakip?.ad ?? null, verilisYili: state.yil },
@@ -4729,6 +4731,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
 
   state.para = paraYuvarla(state.para - maliyet);
   state.kotu_is_kilit = { ...(state.kotu_is_kilit ?? {}), [tanim.id]: state.yil + tanim.cooldownYil };
+  itibarEkle(state, -ITIBAR_KOTU_IS); // Tüccar/Zanaatkâr: karanlık iş güveni/ustalığı zedeler
 
   const sans = kotuIsBasariSansi(state, tanim);
   const kazandi = rollSuccess(sans);
@@ -5098,6 +5101,8 @@ export interface IsletmeGorunumu {
   depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dukkanGideri: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
   /** Üretim modundaki mesleklerde yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
+  /** Tüccar Güven / Zanaatkâr Ustalık: değer, üst sınır, tahmini gelecek yıl değişimi; diğer mesleklerde null. */
+  itibar: { ad: IkiDilMetin; deger: number; limit: number; gelecek: number } | null;
   /** v11: başlangıç ürünü seçimi (yalnız Tüccar/Zanaatkâr); `bekliyor` iken oyun devam etmez. */
   urunSecimi: { bekliyor: boolean; secilen: string | null; secenekler: { id: string; simge: string; ad: IkiDilMetin; kesim: "temel" | "savas" | "luks"; ozet: IkiDilMetin }[] };
   hatlar: IsletmeHatGorunumu[];
@@ -5242,7 +5247,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   if (!profil || !is) {
     return {
       aktif: false, birlik: null, cemaat: null, meslek: state.meslek, pazarPayi: 0, musteri: 0, pazarMusteri: state.pazar_musteri ?? 0,
-      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
+      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null, itibar: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
       butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0, mulkGeliri: 0, hazinePayi: 0, kazanc: 0, gelir: 0, netAlt: 0, netUst: 0 },
@@ -5375,6 +5380,14 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       oto: { acik: !!is.depo_oto?.acik, yuzde: is.depo_oto?.yuzde ?? 50 },
     },
     uretim: uretimTavani(state) !== null ? { tavan: uretimTavani(state)! } : null,
+    itibar: itibarVarMi(state)
+      ? {
+          ad: { tr: ITIBAR_ADI[state.meslek as "Tüccar" | "Zanaatkâr"].tr, en: ITIBAR_ADI[state.meslek as "Tüccar" | "Zanaatkâr"].en },
+          deger: Math.round(itibarDegeri(state) * 10) / 10,
+          limit: itibarUstLimit(state),
+          gelecek: Math.round(itibarYillikDegisim(state, is.onceki_karsilanamayan_orani ?? 0) * 10) / 10,
+        }
+      : null,
     urunSecimi: {
       bekliyor: urunSecimiBekliyorMu(state),
       secilen: is.ana_urun ?? null,

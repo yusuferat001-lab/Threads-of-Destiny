@@ -10,6 +10,7 @@ import {
   TEZGAH_URETIM_KADEME,
   TEZGAH_FIYAT_PRIMI,
 } from "./isletme";
+import { ITIBAR_UST, ITIBAR_YATIRIM_YILLIK } from "./itibar";
 import { DEVSIRME_BUROSU_ER, KISLA_BAKIM, KISLA_ER_LIMITI, REVIR_KAYIP_KADEME, TALIM_ALANI_TAVAN, TALIM_ALANI_YILLIK } from "../data/birlik";
 import { ASEVI_AHLAK_YILLIK, ASEVI_INANAN_YILLIK, ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
 
@@ -76,6 +77,14 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
     case "devsirme": {
       const i = Math.min(k, DEVSIRME_BUROSU_ER.length - 1);
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : d === "tr" ? `Yıllık +${DEVSIRME_BUROSU_ER[i]} er` : `+${DEVSIRME_BUROSU_ER[i]} soldiers/yr`));
+    }
+    case "itibar": {
+      const i = Math.min(k, ITIBAR_UST.length - 1);
+      return dili((d) =>
+        i === 0
+          ? d === "tr" ? `Üst sınır ${ITIBAR_UST[0]}` : `Ceiling ${ITIBAR_UST[0]}`
+          : d === "tr" ? `Yıllık +${ITIBAR_YATIRIM_YILLIK[i]} · üst sınır ${ITIBAR_UST[i]}` : `+${ITIBAR_YATIRIM_YILLIK[i]}/yr · ceiling ${ITIBAR_UST[i]}`
+      );
     }
     case "talim": {
       const i = Math.min(k, TALIM_ALANI_TAVAN.length - 1);

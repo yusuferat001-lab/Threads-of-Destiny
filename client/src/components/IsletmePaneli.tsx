@@ -11,6 +11,7 @@ import { useDil } from '../DilContext';
 import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
+import { BilgiNotu } from './BilgiNotu';
 import { IsletmeOrtak } from './IsletmeOrtak';
 import { cemaatUyariMetni } from './CemaatPaneli';
 import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
@@ -47,6 +48,10 @@ const M = {
   pazar: { tr: 'Toplam pazar', en: 'Whole market' },
   kisi: { tr: 'kişi', en: 'people' },
   slot: { tr: 'Açık hat', en: 'Open lines' },
+  itibarUst: { tr: 'üst sınır', en: 'ceiling' },
+  itibarGelecek: { tr: 'gelecek yıl', en: 'next year' },
+  itibarNotTuccar: { tr: 'Güven: mal zamanında ve eksiksiz teslim edildikçe artar; stok bitmesi ve karanlık işler kırar. Yüksekken müşteri sana daha çok gelir, düşükken küser. Üst sınırı Hesap Odası yükseltir.', en: 'Trust grows when goods are delivered on time and in full; stock-outs and dark deeds break it. When high, customers favour you; when low, they shun you. The Counting House raises its ceiling.' },
+  itibarNotZanaat: { tr: 'Ustalık: talep eksiksiz karşılandıkça artar; karanlık işler kırar. Yüksekken ürünlerin daha iyi fiyata gider, düşükken fiyat kırılır. Üst sınırı Usta Odası yükseltir.', en: 'Mastery grows when demand is met in full; dark deeds break it. When high your goods sell at better prices; when low prices are cut. The Master\'s Hall raises its ceiling.' },
   depo: { tr: 'Depo', en: 'Warehouse' },
   curume: { tr: 'çürüme', en: 'spoilage' },
   bakim: { tr: 'bakım', en: 'upkeep' },
@@ -509,6 +514,23 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             💰 {dil === 'en' ? 'Earnings' : 'Kazanç'}: <strong className={isaretSinifi(durum.butce.kazanc)}>{durum.butce.kazanc >= 0 ? '+' : ''}{formatPara(durum.butce.kazanc)} {pb}{t('yil')}</strong>
           </span>
         </div>
+
+        {durum.itibar && (
+          <div className="isletme-itibar">
+            <strong>
+              {d(durum.itibar.ad)}: {durum.itibar.deger}
+            </strong>
+            <BilgiNotu metin={durum.meslek === 'Tüccar' ? t('itibarNotTuccar') : t('itibarNotZanaat')} />
+            <div className="cemaat-bar" aria-label={d(durum.itibar.ad)}>
+              <div className="cemaat-bar-dolgu" style={{ width: `${durum.itibar.deger}%` }} />
+              <i className="cemaat-bar-cizgi" style={{ left: `${durum.itibar.limit}%` }} />
+            </div>
+            <span className="isletme-fiyat-not">
+              {t('itibarUst')} {durum.itibar.limit} · {t('itibarGelecek')} {durum.itibar.gelecek >= 0 ? '+' : ''}
+              {durum.itibar.gelecek}
+            </span>
+          </div>
+        )}
 
         <details className="isletme-ozet-detay">
           <summary>{t('dahaFazla')}</summary>

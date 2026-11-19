@@ -35,7 +35,7 @@ export interface HatTanimi {
 }
 
 /** Yatırımın motor etkisi: id'ye değil bu türe bakılır. */
-export type YatirimEtkisi = "depo" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim" | "kisla" | "revir" | "devsirme" | "talim";
+export type YatirimEtkisi = "depo" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim" | "kisla" | "revir" | "devsirme" | "talim" | "itibar";
 
 export interface YatirimTanimi {
   id: string;
@@ -151,6 +151,7 @@ const FIYAT_ASEVI = [8, 15, 24, 36];
 const FIYAT_REVIR = [16, 26, 41, 60]; // v67: ×1,2 // Asker revir (≈1 yıllık net'ten başlar)
 const FIYAT_DEVSIRME = [24, 42, 62, 90]; // v67: ×1,2
 const FIYAT_TALIM = [18, 32, 50, 75]; // v67 Madde 6: Talim Alanı
+const FIYAT_ITIBAR = [16, 28, 44, 64]; // Hesap Odası / Usta Odası (itibar üst sınırı)
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
   simge: "🏚️",
@@ -189,6 +190,28 @@ const YATIRIM_GUVENLIK_ZANAAT: YatirimTanimi = {
   ad: { tr: "Atölye Güvenliği", en: "Workshop Security" },
 };
 
+const YATIRIM_HESAP_ODASI: YatirimTanimi = {
+  id: "hesap_odasi",
+  simge: "⚖️",
+  ad: { tr: "Hesap Odası", en: "Counting House" },
+  aciklama: {
+    tr: "Defterlerin ve mührün güvenilir olduğu bir oda. Güven ekseninin üst sınırını yükseltir ve her yıl biraz güven kazandırır.",
+    en: "A room where ledgers and seal can be trusted. Raises the ceiling of your Trust and earns a little each year.",
+  },
+  etki: "itibar",
+  fiyatlar: FIYAT_ITIBAR,
+};
+const YATIRIM_USTA_ODASI: YatirimTanimi = {
+  ...YATIRIM_HESAP_ODASI,
+  id: "usta_odasi",
+  simge: "🎖️",
+  ad: { tr: "Usta Odası", en: "Master's Hall" },
+  aciklama: {
+    tr: "Lonca mührünün ve usta işlerinin sergilendiği oda. Ustalık ekseninin üst sınırını yükseltir ve her yıl biraz ustalık kazandırır.",
+    en: "A hall for the guild seal and masterwork. Raises the ceiling of your Mastery and earns a little each year.",
+  },
+};
+
 const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
   YATIRIM_DEPO,
   {
@@ -204,6 +227,7 @@ const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
   },
   YATIRIM_TANITIM,
   YATIRIM_GUVENLIK_TUCCAR,
+  YATIRIM_HESAP_ODASI,
 ];
 
 const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
@@ -221,6 +245,7 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
   YATIRIM_DEPO,
   YATIRIM_TANITIM,
   YATIRIM_GUVENLIK_ZANAAT,
+  YATIRIM_USTA_ODASI,
 ];
 
 // ── Din Adamı (cemaat işletmesi, v10: mum "satmaz"; bağış + faaliyet geliri, stok yok) ──

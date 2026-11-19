@@ -1466,6 +1466,8 @@ export interface IsletmeDurumu {
   baslangic_yili?: number;
   /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati, vakif_muafiyeti, kutsal_gun_imtiyazi). */
   imtiyazlar?: Record<string, number>;
+  /** Tüccar Güven / Zanaatkâr Ustalık (0-100, tarafsız 50; yoksa 50). game/itibar.ts */
+  itibar?: number;
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
   tekel_hat?: string | null;
   /** Yalnız Din Adamı (cemaat modu). */

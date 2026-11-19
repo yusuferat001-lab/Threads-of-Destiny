@@ -46,6 +46,7 @@ import {
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
+import { itibarBonusu, itibarYilSonu } from "./itibar";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatHesapla, cemaatYilIsle, faaliyetSlotSayisi, gelmeAraligi, type CemaatHesabi } from "./cemaat";
 import { BARIS_GANIMET_UST, GANIMET_PAYI_TANIMLARI, ganimetBrutTemel } from "../data/birlik";
 import { birlikBaslat, birlikHazirla, birlikHesapla, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
@@ -581,9 +582,9 @@ export function bonuslariBirlestir(kaynaklar: (UrunBonusu | null | undefined)[])
   return sonuc;
 }
 
-/** Bir hattın tüm bonusları (ana ürün; ileride geliştirme/kalite/sefer kaynakları buraya eklenir). `hatHesapla` ve çürüme bunu okur. */
+/** Bir hattın tüm bonusları (ana ürün, itibar; ileride geliştirme/kalite/sefer kaynakları buraya eklenir). `hatHesapla` ve çürüme bunu okur. */
 export function hatBonusu(state: CharacterState, hatId: string): UrunBonusu | null {
-  return bonuslariBirlestir([anaUrunBonusu(state, hatId)]);
+  return bonuslariBirlestir([anaUrunBonusu(state, hatId), itibarBonusu(state)]);
 }
 
 /** Oyuncunun henüz seçmediği başlangıç ürünü var mı? (yalnız API "ilerle" oyunları) */
@@ -1427,6 +1428,7 @@ function isletmeYilIsleIc(state: CharacterState, b: IsletmeBaglami): IsletmeYilS
     uyarilar.push({ kod: "kitle_kaybi" });
   }
   is.onceki_karsilanamayan_orani = karsilanamayanOrani;
+  itibarYilSonu(state, karsilanamayanOrani);
   if (satis > 0) {
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;

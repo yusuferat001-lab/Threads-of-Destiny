@@ -1405,6 +1405,8 @@ export interface IsletmeGorunumu {
   depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dukkanGideri: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
   /** Üretim modundaki mesleklerde (Zanaatkâr) yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
+  /** Tüccar Güven / Zanaatkâr Ustalık: değer, üst sınır, tahmini gelecek yıl değişimi; diğer mesleklerde null. */
+  itibar: { ad: DilliMetin; deger: number; limit: number; gelecek: number } | null;
   urunSecimi: {
     bekliyor: boolean;
     secilen: string | null;
